@@ -1,6 +1,6 @@
 #!/bin/bash
 
-LOG_FILE="$HOME/project/logs.log"
+LOG_FILE="$HOME/ProjectR/log/logs.log"
 
 # just a simple log function 
 log() {

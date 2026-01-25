@@ -1,8 +1,8 @@
 #!/bin/bash
-source lib/detect.sh
-source lib/install.sh
-source lib/utils.sh
-source lib/profiles.sh
+source $HOME/ProjectR/lib/detect.sh
+source $HOME/ProjectR/lib/install.sh
+source $HOME/ProjectR/lib/utils.sh
+source $HOME/ProjectR/lib/presets.sh
 PM="$(detect_pkg_manager)"
 trap graceful_exit SIGINT
 log START "Script started"

@@ -54,8 +54,8 @@ Built with readability, user experience, and future extensibility in mind.
 Clone the repository and run the script:
 
 ```bash
-git clone <your-repo-url>
-cd <repo-folder>
+git clone https://github.com/Painis888/ProjectR.git
+cd ProjectR
 bash main.sh
 
 
