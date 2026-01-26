@@ -55,7 +55,9 @@ Clone the repository and run the script:
 
 ```bash
 git clone https://github.com/Painis888/ProjectR.git
+
 cd ProjectR
+
 bash main.sh
 
 
