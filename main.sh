@@ -82,6 +82,7 @@ EOF
   echo -e "${BARRIER}    ║${RST}${OPTION} [32] Procs        ${INFO}- Modern replacement for 'ps'${RST}"
   echo -e "${BARRIER}    ║${RST}${OPTION} [33] Tldr         ${INFO}- Simplified, community-driven man pages${RST}"
   echo -e "${BARRIER}    ║${RST}${OPTION} [34] Node.Js      ${INFO}- JavaScript Runtime environment${RST}"
+  echo -e "${BARRIER}    ║${RST}${OPTION} [35] Gh           ${INFO}- A github-cli client${RST}"
   echo -e "${BARRIER}    ╚══════════════════════════════════════╝ ${RST}"
 
   echo ""
@@ -182,6 +183,7 @@ while true; do
   32) install_pkg procs procs "Procs: Morden 'ps'" ;;
   33) install_pkg tldr tldr "Tldr: Man pages" ;;
   34) install_pkg npm nodejs "Node.Js: JavaScript Runtime environment," ;;
+  35) install_pkg gh gh "Gh: Guthub-Cli" ;;
   # Install commands for pip tools
   01)
     echo ""

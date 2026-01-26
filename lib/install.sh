@@ -5,9 +5,9 @@ SKIPPED_PKGS=()
 FAILED_PKGS=()
 
 # Source others
-source lib/detect.sh
-source lib/utils.sh
-source lib/profiles.sh
+source $HOME/ProjectR/lib/detect.sh
+source $HOME/ProjectR/lib/utils.sh
+source $HOME/ProjectR/lib/presets.sh
 
 # This function here installs all tools put in it.
 install_all() {
@@ -45,6 +45,7 @@ install_all() {
         install_pkg dust dust "Dust: Better version of du," 
         install_pkg procs procs "Procs: Morden 'ps'," 
         install_pkg tldr tldr "Tldr: Man pages," 
+        install_pkg gh gh "Gh: Guthub-Cli"
         # ---- PIP TOOLS ----
         ensure_pip_package "holehe" "Holehe,"
         ensure_pip_package "asciiquarium" "Asciiqurium,"

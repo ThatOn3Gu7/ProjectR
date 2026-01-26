@@ -35,6 +35,7 @@ PRESET_DEV=(
   "proce|procs|Procs: Morden 'ps',"
   "croc|croc|Croc: File-sender,"
   "zoxide|zoxide|Zoxide: Smarter cd,"
+  "gh|gh|Gh: Github-cli"
 )
 
 # Fun tools
