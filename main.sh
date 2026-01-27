@@ -96,6 +96,7 @@ EOF
   echo -e "${BARRIER}   ╔══════════════════╗ ${RST}"
   echo -e "${BARRIER}   ║${RST}${OPTION} [0] Install ALL tools${RST}"
   echo -e "${BARRIER}   ║${RST}${OPTION} [p] Install by preset${RST}"
+  echo -e "${BARRIER}   ║${RST}${OPTION} [a] Are any tool's installed?${RST}"
   echo -e "${BARRIER}   ║${RST}${ERROR} [e] Exit script${RST}"
   echo -e "${BARRIER}   ╚══════════════════╝ ${RST}"
   echo ""
@@ -108,18 +109,18 @@ EOF
 profile_menu() {
  while true; do
   clear
-  log ENTER "User entered sub-menu 'install-sresets'"
+   log ENTER "User entered sub-menu 'install-sresets'"
   echo -e "${OPTION}${BOLD}"
-  boxed_text center "Choose the preset you want to install"
+   boxed_text center "Choose the preset you want to install"
   echo -e "${OPTION}"
-  boxed_text center "[1] Minimal tools
+   boxed_text center "[1] Minimal tools
 [2] Developer tools
 [3] Fun tools"
   echo -e "${ERROR}"
-  boxed_text center "[b]ack to main menu"
+   boxed_text center "[b]ack to main menu"
   echo -e "${RST}"
   echo -ne "${INFO}${BOLD} [*] Choose an option: ${RST}"
-  read profile_choice
+   read profile_choice
   echo ""
   case "$profile_choice" in
     1) log INSTALL "User chose to install 'Minimal tools preset'"
@@ -148,8 +149,8 @@ while true; do
   case "$tool_choice" in
   # Install commands for apt tools.
   1) install_pkg git git "Git: Version control," ;;
-  2) install_pkg curl curl "Curl: File downloader 2" ;;
-  3) install_pkg wget wget "Wget: File downloader" ;;
+  2) install_pkg curl curl "Curl: HTTP request" ;;
+  3) install_pkg wget wget "Wget: Command-line downloader" ;;
   4) install_pkg bat bat "Bat: A better cat" ;;
   5) install_pkg htop htop "Htop: Hardware use Checker" ;;
   6) install_pkg fish fish "Fish: A advanced Shell" ;;
@@ -195,41 +196,14 @@ while true; do
     echo ""
     ensure_pip_package "wttr" "Wttr"
     ;;
-  0)
-   # Checks for Internet before proceeding
-    is_internet_up 
-
-    # Update package lists
-    echo ""
-    start_spinner " [*] Updateing package list.."
-    pkg_update
-    stop_spinner "${OPTION}${BOLD} [✓] Package list refreshed..${RST}"
-    echo ""
-    sleep 0.1
-    echo -e "${INFO}"
-   if ask_yes_no " [!] Do you also want to upgrade the system?"; then
-    echo -e "${RST}"
-    start_spinner " [*] Upgrading system..."
-    pkg_upgrade
-    stop_spinner "${OPTION}${BOLD} [✓] System Upgrade complete..${RST}"
-    else
-    boxed_text center "[*] Skipping system upgrade"
-   fi
-
-    echo -e "${OPTION}$BOLD"
-    boxed_text center "[*] Installing all essential tools"
-    echo -e "${RST}"
-    log INSTALL "User chose to install all tools"
+  0) clear
     install_all
-    echo ""
-    post_install_summary
-    echo -e "${OPTION}${BOLD}" 
-   boxed_text center "[✓] All selected tools processed. Press enter to continue.."
-    echo -e "${RST}"
-    read
     ;;
-  p|P|preset|Preset)
+  p|P)
     profile_menu
+    ;;
+  a|A) clear
+    installation_check_2
     ;;
   e|E)
     graceful_exit

@@ -1,7 +1,69 @@
 #!/bin/bash
-
+# -- log creation --
 LOG_FILE="$HOME/ProjectR/log/logs.log"
 
+installation_check() {
+   local cmd=$1 # Tool name to check if its installed or not
+   local name="$2" # A name to show to user
+
+  if command -v "$cmd" >/dev/null 2>&1; then
+     echo -e "${OPTION}${BOLD}   [✓] $name is installed${RST}"
+    sleep 0.1
+   else
+     echo -e "${ERROR}${BOLD}   [✗] $name is NOT installed${RST}"
+    sleep 0.1
+  fi
+}
+
+installation_check_2() {
+ echo -e "${OPTION}${BOLD}"
+   boxed_text center " [*] Checking if any tools are installed"
+ echo -e "${RST}"
+  installation_check git "Git" 
+  installation_check curl "Curl" 
+  installation_check wget "Wget" 
+  installation_check bat "Bat" 
+  installation_check htop "Htop" 
+  installation_check fish "Fish" 
+  installation_check ssh "OpenSSH" 
+  installation_check python3 "Python3" 
+  installation_check nmap "Nmap" 
+  installation_check cacademo "Libcaca" 
+  installation_check speedtest-go "Speedtest-Go" 
+  installation_check cpufetch "CPUfetch" 
+  installation_check neofetch "Neofetch" 
+  installation_check ranger "Ranger" 
+  installation_check nano "Nano" 
+  installation_check sl "Steam Locomotive," 
+  installation_check ncdu "Ncdu" 
+  installation_check nvim "Neovim" 
+  installation_check cbonsai "Cbonsai" 
+  installation_check asciinema "Asciinema" 
+  installation_check croc "Croc" 
+  installation_check fzf "Fzf" 
+  installation_check zoxide "Zoxide" 
+  installation_check zsh "Z shell" 
+  installation_check duf "Duf" 
+  installation_check tty-clock "tty-clock" 
+  installation_check pipes.sh "Pipes.sh" 
+  installation_check yazi "Yazi" 
+  installation_check lsd "Lsd" 
+  installation_check broot "Broot" 
+  installation_check dust "Dust" 
+  installation_check procs "Procs" 
+  installation_check tldr "Tldr" 
+  installation_check gh "Gh"
+  installation_check holehe "Holehe"
+  installation_check asciiquarium "Asciiqurium"
+  installation_check wttr "Wttr.io"
+
+ echo -e "${OPTION}${BOLD}"
+  boxed_text center " [✓] Taks complete.. press ENTER to continue"
+ echo -e "${RST}"
+
+  # Time to raed result
+  read
+}
 # just a simple log function 
 log() {
     local level="$1"
