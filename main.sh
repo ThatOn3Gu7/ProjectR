@@ -40,10 +40,8 @@ show_menu() {
 EOF
   echo -e "${RST}"
 
-  # I aligned these by adding spaces so the dashes "-" all line up vertically
   echo -e "${OPTION}${BOLD}"
   boxed_text left "[*] Select the pkg/tool you want to install:" 
-  echo -e "${RST}"
 
   echo -e "${BARRIER}   ╔═════════════╗ ${RST}"
   echo -e "${BARRIER}   ║ ${RST}dpkg tools: ${BARRIER}║${RST}"
@@ -57,7 +55,7 @@ EOF
   echo -e "${BARRIER}    ║${RST}${OPTION} [7]  OpenSSH      ${INFO}- SSH access ${OPTION}(Dev)${RST}"
   echo -e "${BARRIER}    ║${RST}${OPTION} [8]  Python       ${INFO}- Programming language ${OPTION}(Min)${RST}"
   echo -e "${BARRIER}    ║${RST}${OPTION} [9]  Nmap         ${INFO}- Network scanning ${OPTION}(Min)${RST}"
-  echo -e "${BARRIER}    ║${RST}${OPTION} [10] Libcaca      ${INFO}- Fire magic effects ${OPTION}(Fun)${RST}"
+  echo -e "${BARRIER}    ║${RST}${OPTION} [10] Libcaca      ${INFO}- A fire effect ${OPTION}(Fun)${RST}"
   echo -e "${BARRIER}    ║${RST}${OPTION} [11] Speedtest-go ${INFO}- Internet speed-test ${OPTION}(Fun)${RST}"
   echo -e "${BARRIER}    ║${RST}${OPTION} [12] Cpufetch     ${INFO}- CPU information ${OPTION}(Fun)${RST}"
   echo -e "${BARRIER}    ║${RST}${OPTION} [13] Neofetch     ${INFO}- System information ${OPTION}(Min)${RST}"
@@ -236,11 +234,11 @@ while true; do
   e|E)
     graceful_exit
     ;;
-  *)
+  *) 
     echo -e "${ERROR}${BOLD}"
     boxed_text center "[x] Invalid input: '$tool_choice'. Please select the right option."
     echo -e "${RST}"
-    sleep 1
+    sleep 2
     continue # This restarts the loop immediately
     ;;
   esac

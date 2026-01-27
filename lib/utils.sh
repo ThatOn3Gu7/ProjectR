@@ -12,6 +12,7 @@ log() {
 # startup internet Check
 startup_wifi_check() {
   if ! check_internet; then
+    log ERROR "No internet connection"
     echo -e "${ERROR}${BOLD}"
     boxed_text center "        It seems that you are not onlile
 Please make sure to turn on WI-FI to continue :)"
@@ -21,7 +22,8 @@ Please make sure to turn on WI-FI to continue :)"
     read -rsn 1 reply    # read silently, no echo
     tput cnorm        # restore cursor
   case "$reply" in
-    y|Y|yes|YES) clear ;;
+    y|Y) log ENTER "User still continued"
+      clear ;;
     *) exit 0 ;;
   esac
   fi
@@ -31,9 +33,10 @@ Please make sure to turn on WI-FI to continue :)"
 is_internet_up() {
     # Check for internet connection
     if ! check_internet; then
+      log ERROR "No internet connection"
       echo ""
       echo -e "${ERROR}${BOLD}"
-      boxed_text center "[!] No internet connection detected. Don't you have it?"
+      boxed_text center "[!] No internet connection detected. Did you lose it?"
       echo -e "${OPTION}${BOLD}"
       boxed_text center "[*] Please have stable internet connection to continue ;)"
       echo -e "${RST}" 
@@ -47,6 +50,7 @@ is_internet_up() {
 }
 # post-install summary pop-up
 post_install_summary() {
+    log OK "Post-Installation-Summary shown"
     echo ""
     echo -e "${OPTION}${BOLD}"
     boxed_text center " [*] Post-Installation Summary" 
@@ -184,6 +188,7 @@ ask_yes_no() {
 }
 # Updates package list based on detected package manager
 pkg_update() {
+  log OK "pkg list updated"
    PM="$(detect_pkg_manager)"
     case "$PM" in
         apt)
@@ -237,6 +242,7 @@ pkg_update() {
 
 # Upgrades system based on detected package manager.
 pkg_upgrade() {
+  log OK "pkg/system upgraded"
    PM="$(detect_pkg_manager)"
     case "$PM" in
         apt)  apt upgrade -y >/dev/null 2>&1 ;;
