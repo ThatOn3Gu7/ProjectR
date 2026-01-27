@@ -71,9 +71,9 @@ install_all() {
     install_pkg tldr tldr "Tldr: Man pages," 
     install_pkg gh gh "Gh: Guthub-Cli"
     # ---- PIP TOOLS ----
-    ensure_pip_package "holehe" "Holehe,"
-    ensure_pip_package "asciiquarium" "Asciiqurium,"
-    ensure_pip_package "wttr" "Wttr.io,"
+    install_pip_package "holehe" "Holehe,"
+    install_pip_package "asciiquarium" "Asciiqurium,"
+    install_pip_package "wttr" "Wttr.io,"
     # -- post-install-summary
     echo ""
     post_install_summary

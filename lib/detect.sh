@@ -99,7 +99,7 @@ is_pkg_installed() {
 
 # Function to ensure pip packages are installed
 # Usage: ensure_pip_package <package_name> [pip_package_name]
-ensure_pip_package() {
+install_pip_package() {
     local command_name="$1"
     local package_name="${2:-$1}"  # Use second arg if provided, otherwise use command name
     local install_cmd=""

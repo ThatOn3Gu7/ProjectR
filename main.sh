@@ -24,7 +24,7 @@ startup_wifi_check
 
 # --- SETUP ESSENTIAL TOOLS INSTALLATION MENU ---
 show_menu() {
- # clear
+  clear
   # cool LOGO
   echo -e "${LOGO}${BOLD}"
   cat <<"EOF" | lolcat
@@ -203,7 +203,7 @@ while true; do
     profile_menu
     ;;
   a|A) clear
-    installation_check_2
+    check_tool_2
     ;;
   e|E)
     graceful_exit
