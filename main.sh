@@ -203,7 +203,7 @@ while true; do
     profile_menu
     ;;
   a|A) clear
-    check_tool_2
+    check_tool_main
     ;;
   e|E)
     graceful_exit
