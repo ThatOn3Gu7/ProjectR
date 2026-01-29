@@ -30,6 +30,7 @@ install_all() {
      boxed_text center "[*] Skipping system upgrade"
   fi
 
+  clear
    echo -e "${OPTION}$BOLD"
     boxed_text center "[*] Installing all essential tools"
    echo -e "${RST}"
@@ -239,5 +240,63 @@ Please make sure to turn on WI-FI to continue ;)"
         fi
         # echo -e "${OPTION}${BOLD} [✓] $name has installed successfully.${RST}"
         sleep 1
+    fi
+}
+
+# Function to inatall pip packages
+# Usage: ensure_pip_package <package_name> [pip_package_name]
+install_pip_package() {
+    local command_name="$1"
+    local package_name="${2:-$1}"  # Use second arg if provided, otherwise use command name
+    local install_cmd=""
+
+    # For internet Check-up before continue
+    if ! check_internet; then
+     echo -e "${ERROR}${BOLD}"
+      boxed_text center "        It seems that you are not onlile
+Please make sure to turn on WI-FI to continue ;)"
+      echo -e "${RST}"
+      log FAIL "$package_name not installed (no internet)"
+      exit 0
+    fi
+    # Determine which pip to use
+    if command -v pip3 &> /dev/null; then
+        install_cmd="pip3"
+    elif command -v pip &> /dev/null; then
+        install_cmd="pip"
+    else
+        echo -e "${ERROR}${BOLD}"
+        boxed_text center "[x] ERROR: Neither pip nor pip3 is available.."
+        echo -e "${RST}"
+        sleep 3
+        return 1
+    fi
+    
+    # Check if command already exists
+    if command -v "$command_name" &> /dev/null; then
+        echo -e "${OPTION}${BOLD} [✓] $package_name is already installed - Skipping ${RST}"
+        log SKIPPED "$package_name was already installed (Skipped)"
+        sleep 3
+        return 0
+    fi
+    
+    # Install the package
+    echo -e "${OPTION}${BOLD} [*] Installing: $package_name...${RST}"
+    if ! $install_cmd install --quiet "$command_name"; then
+        echo -e "${ERROR}${BOLD} [x] ERROR: Failed to install $package_name..${RST}" >&2
+        log FAIL "$package_name failed to installed"
+        sleep 3
+        return 1
+    fi
+    # Verify installation
+    if command -v "$command_name" &> /dev/null; then
+        echo -e "${OPTION}${BOLD} [✓] Successfully installed $package_name..${RST}"
+        log INSTALLED "$package_name successfully installed"
+        sleep 3
+        return 0
+    else
+        echo -e "${ERROR} [!] WARNING: $package_name installed but '$command_name' command not found..${RST}" >&2
+        sleep 3
+        return 0  # Still return success as package was installed
     fi
 }

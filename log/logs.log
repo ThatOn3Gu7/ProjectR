@@ -78,3 +78,25 @@
 [13:03:05] [ERROR] No internet connection
 [13:03:06] [ENTER] User still continued
 [13:03:27] [EXIT] Exited script
+[20:19:12] [START] Script started
+[20:19:18] [EXIT] Exited script
+[20:21:34] [START] Script started
+[20:21:36] [EXIT] Exited script
+[20:33:27] [START] Script started
+[20:33:49] [EXIT] Exited script
+[20:35:29] [START] Script started
+[20:35:39] [ERROR] No internet connection
+[20:35:42] [ENTER] User still continued
+[20:36:11] [EXIT] Exited script
+[20:48:27] [START] Script started
+[20:48:41] [SKIPPED] Holehe was already installed (Skipped)
+[20:48:47] [EXIT] Exited script
+[20:49:46] [START] Script started
+[20:49:50] [OK] pkg list updated
+[20:50:18] [OK] pkg/system upgraded
+[20:50:18] [INSTALL] User chose to install all tools
+[20:50:19] [SKIPPED] Git: Version control, was already installed (Skipped)
+[20:50:20] [SKIPPED] Curl: File downloader 2, was already installed (Skipped)
+[20:50:21] [SKIPPED] Wget: File downloader, was already installed (Skipped)
+[20:50:22] [SKIPPED] Bat: Better then 'cat', was already installed (Skipped)
+[20:50:34] [FAIL] Htop: Hardware use Checker, not installed (no internet)

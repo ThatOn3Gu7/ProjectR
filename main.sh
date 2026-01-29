@@ -47,50 +47,44 @@ EOF
   echo -e "${BARRIER}   ╔═════════════╗ ${RST}"
   echo -e "${BARRIER}   ║ ${RST}dpkg tools: ${BARRIER}║${RST}"
   echo -e "${BARRIER}   ╚╔════════════╝═════════════════════════╗ ${RST}"
-  echo -e "${BARRIER}    ║${RST}${OPTION} [${WHITE}1${OPTION}]  Git          ${INFO}- Version control ${OPTION}(Min)${RST}"
-  echo -e "${BARRIER}    ║${RST}${OPTION} [${WHITE}2${OPTION}]  Curl         ${INFO}- HTTP requests ${OPTION}(Min)${RST}"
-  echo -e "${BARRIER}    ║${RST}${OPTION} [${WHITE}3${OPTION}]  Wget         ${INFO}- File downloads ${OPTION}(Min)${RST}"
-  echo -e "${BARRIER}    ║${RST}${OPTION} [${WHITE}4${OPTION}]  Bat          ${INFO}- 'cat' with syntax highlighting ${OPTION}(Min)${RST}"
-  echo -e "${BARRIER}    ║${RST}${OPTION} [${WHITE}5${OPTION}]  Htop         ${INFO}- Process viewer ${OPTION}(Min)${RST}"
-  echo -e "${BARRIER}    ║${RST}${OPTION} [${WHITE}6${OPTION}]  Fish         ${INFO}- Friendly shell ${OPTION}(Min)${RST}"
-  echo -e "${BARRIER}    ║${RST}${OPTION} [${WHITE}7${OPTION}]  OpenSSH      ${INFO}- SSH access ${OPTION}(Dev)${RST}"
-  echo -e "${BARRIER}    ║${RST}${OPTION} [${WHITE}8${OPTION}]  Python       ${INFO}- Programming language ${OPTION}(Min)${RST}"
-  echo -e "${BARRIER}    ║${RST}${OPTION} [${WHITE}9${OPTION}]  Nmap         ${INFO}- Network scanning ${OPTION}(Min)${RST}"
-  echo -e "${BARRIER}    ║${RST}${OPTION} [${WHITE}10${OPTION}] Libcaca      ${INFO}- A fire effect ${OPTION}(Fun)${RST}"
-  echo -e "${BARRIER}    ║${RST}${OPTION} [${WHITE}11${OPTION}] Speedtest-go ${INFO}- Internet speed-test ${OPTION}(Fun)${RST}"
-  echo -e "${BARRIER}    ║${RST}${OPTION} [${WHITE}12${OPTION}] Cpufetch     ${INFO}- CPU information ${OPTION}(Fun)${RST}"
-  echo -e "${BARRIER}    ║${RST}${OPTION} [${WHITE}13${OPTION}] Neofetch     ${INFO}- System information ${OPTION}(Min)${RST}"
-  echo -e "${BARRIER}    ║${RST}${OPTION} [${WHITE}14${OPTION}] Ranger       ${INFO}- Terminal file manager ${OPTION}(Dev)${RST}"
-  echo -e "${BARRIER}    ║${RST}${OPTION} [${WHITE}15${OPTION}] Nano         ${INFO}- Text editor ${OPTION}(Min)${RST}"
-  echo -e "${BARRIER}    ║${RST}${OPTION} [${WHITE}16${OPTION}] Sl           ${INFO}- Steam Locomotive ${OPTION}(Fun)${RST}"
-  echo -e "${BARRIER}    ║${RST}${OPTION} [${WHITE}17${OPTION}] Ncdu         ${INFO}- NCurses disk usage analyzer ${OPTION}(Dev)${RST}"
-  echo -e "${BARRIER}    ║${RST}${OPTION} [${WHITE}18${OPTION}] Neovim       ${INFO}- Best code editor ${OPTION}(Dev)${RST}"
-  echo -e "${BARRIER}    ║${RST}${OPTION} [${WHITE}19${OPTION}] Cbonsai      ${INFO}- Japanise bonsai tree ${OPTION}(Fun)${RST}"
-  echo -e "${BARRIER}    ║${RST}${OPTION} [${WHITE}20${OPTION}] Asciinema    ${INFO}- Terminal recording tool ${OPTION}(Fun)${RST}"
-  echo -e "${BARRIER}    ║${RST}${OPTION} [${WHITE}21${OPTION}] Croc         ${INFO}- File transferring tool ${OPTION}(Dev)${RST}"
-  echo -e "${BARRIER}    ║${RST}${OPTION} [${WHITE}22${OPTION}] Fzf          ${INFO}- File finder ${OPTION}(Dev)${RST}"
-  echo -e "${BARRIER}    ║${RST}${OPTION} [${WHITE}23${OPTION}] Zoxide       ${INFO}- Smarter cd command ${OPTION}(Dev)${RST}"
-  echo -e "${BARRIER}    ║${RST}${OPTION} [${WHITE}24${OPTION}] Zsh          ${INFO}- Best shell ever ${OPTION}(Dev)${RST}"
-  echo -e "${BARRIER}    ║${RST}${OPTION} [${WHITE}25${OPTION}] Duf          ${INFO}- Disk Usage/Free utility ${OPTION}(Min)${RST}"
-  echo -e "${BARRIER}    ║${RST}${OPTION} [${WHITE}26${OPTION}] tty-clock    ${INFO}- A terminal clock ${OPTION}(Fun)${RST}"
-  echo -e "${BARRIER}    ║${RST}${OPTION} [${WHITE}27${OPTION}] Pipes.sh     ${INFO}- A cool tool for ${OPTION}(Fun)${RST}"
-  echo -e "${BARRIER}    ║${RST}${OPTION} [${WHITE}28${OPTION}] Yazi         ${INFO}- Amazing filemanager for terminal ${OPTION}(Dev)${RST}"
-  echo -e "${BARRIER}    ║${RST}${OPTION} [${WHITE}29${OPTION}] Lsd          ${INFO}- An 'ls' alternative with icons/colors ${OPTION}(Min)${RST}"
-  echo -e "${BARRIER}    ║${RST}${OPTION} [${WHITE}30${OPTION}] Broot        ${INFO}- Navigate directories with overviews ${OPTION}(Min)${RST}"
-  echo -e "${BARRIER}    ║${RST}${OPTION} [${WHITE}31${OPTION}] Dust         ${INFO}- More intuitive version of du ${OPTION}(Dev)${RST}"
-  echo -e "${BARRIER}    ║${RST}${OPTION} [${WHITE}32${OPTION}] Procs        ${INFO}- Modern replacement for 'ps' ${OPTION}(Dev)${RST}"
-  echo -e "${BARRIER}    ║${RST}${OPTION} [${WHITE}33${OPTION}] Tldr         ${INFO}- Simplified, community-driven man pages ${OPTION}(Dev)${RST}"
-  echo -e "${BARRIER}    ║${RST}${OPTION} [${WHITE}34${OPTION}] Node.Js      ${INFO}- JavaScript Runtime environment ${OPTION}(Dev)${RST}"
-  echo -e "${BARRIER}    ║${RST}${OPTION} [${WHITE}35${OPTION}] Gh           ${INFO}- A github-cli client ${OPTION}(Dev)${RST}"
-  echo -e "${BARRIER}    ╚══════════════════════════════════════╝ ${RST}"
-
-  echo ""
-  echo -e "${BARRIER}   ╔════════════╗ ${RST}"
-  echo -e "${BARRIER}   ║ ${RST}pip tools: ${BARRIER}║${RST}"
-  echo -e "${BARRIER}   ╚╔═══════════╝═════════════════════════╗ ${RST}"
-  echo -e "${BARRIER}    ║${RST}${OPTION} [${WHITE}01${OPTION}] Holehe          ${INFO}- Email OSINT scanner ${OPTION}(OSINT)${RST}"
-  echo -e "${BARRIER}    ║${RST}${OPTION} [${WHITE}02${OPTION}] Asciiquarium    ${INFO}- View of the sea ${OPTION}(Fun)${RST}"
-  echo -e "${BARRIER}    ║${RST}${OPTION} [${WHITE}03${OPTION}] Wttr            ${INFO}- A weather tool ${OPTION}(Fun)${RST}"
+  echo -e "${BARRIER}    ║${RST}${OPTION} [${WHITE}1${OPTION}]  Git           ${INFO}- Version control ${OPTION}(Min)${RST}"
+  echo -e "${BARRIER}    ║${RST}${OPTION} [${WHITE}2${OPTION}]  Curl          ${INFO}- HTTP requests ${OPTION}(Min)${RST}"
+  echo -e "${BARRIER}    ║${RST}${OPTION} [${WHITE}3${OPTION}]  Wget          ${INFO}- File downloads ${OPTION}(Min)${RST}"
+  echo -e "${BARRIER}    ║${RST}${OPTION} [${WHITE}4${OPTION}]  Bat           ${INFO}- 'cat' with syntax highlighting ${OPTION}(Min)${RST}"
+  echo -e "${BARRIER}    ║${RST}${OPTION} [${WHITE}5${OPTION}]  Htop          ${INFO}- Process viewer ${OPTION}(Min)${RST}"
+  echo -e "${BARRIER}    ║${RST}${OPTION} [${WHITE}6${OPTION}]  Fish          ${INFO}- Friendly shell ${OPTION}(Min)${RST}"
+  echo -e "${BARRIER}    ║${RST}${OPTION} [${WHITE}7${OPTION}]  OpenSSH       ${INFO}- SSH access ${OPTION}(Dev)${RST}"
+  echo -e "${BARRIER}    ║${RST}${OPTION} [${WHITE}8${OPTION}]  Python        ${INFO}- Programming language ${OPTION}(Min)${RST}"
+  echo -e "${BARRIER}    ║${RST}${OPTION} [${WHITE}9${OPTION}]  Nmap          ${INFO}- Network scanning ${OPTION}(Min)${RST}"
+  echo -e "${BARRIER}    ║${RST}${OPTION} [${WHITE}10${OPTION}] Libcaca       ${INFO}- A fire effect ${OPTION}(Fun)${RST}"
+  echo -e "${BARRIER}    ║${RST}${OPTION} [${WHITE}11${OPTION}] Speedtest-go  ${INFO}- Internet speed-test ${OPTION}(Fun)${RST}"
+  echo -e "${BARRIER}    ║${RST}${OPTION} [${WHITE}12${OPTION}] Cpufetch      ${INFO}- CPU information ${OPTION}(Fun)${RST}"
+  echo -e "${BARRIER}    ║${RST}${OPTION} [${WHITE}13${OPTION}] Neofetch      ${INFO}- System information ${OPTION}(Min)${RST}"
+  echo -e "${BARRIER}    ║${RST}${OPTION} [${WHITE}14${OPTION}] Ranger        ${INFO}- Terminal file manager ${OPTION}(Dev)${RST}"
+  echo -e "${BARRIER}    ║${RST}${OPTION} [${WHITE}15${OPTION}] Nano          ${INFO}- Text editor ${OPTION}(Min)${RST}"
+  echo -e "${BARRIER}    ║${RST}${OPTION} [${WHITE}16${OPTION}] Sl            ${INFO}- Steam Locomotive ${OPTION}(Fun)${RST}"
+  echo -e "${BARRIER}    ║${RST}${OPTION} [${WHITE}17${OPTION}] Ncdu          ${INFO}- NCurses disk usage analyzer ${OPTION}(Dev)${RST}"
+  echo -e "${BARRIER}    ║${RST}${OPTION} [${WHITE}18${OPTION}] Neovim        ${INFO}- Best code editor ${OPTION}(Dev)${RST}"
+  echo -e "${BARRIER}    ║${RST}${OPTION} [${WHITE}19${OPTION}] Cbonsai       ${INFO}- Japanise bonsai tree ${OPTION}(Fun)${RST}"
+  echo -e "${BARRIER}    ║${RST}${OPTION} [${WHITE}20${OPTION}] Asciinema     ${INFO}- Terminal recording tool ${OPTION}(Fun)${RST}"
+  echo -e "${BARRIER}    ║${RST}${OPTION} [${WHITE}21${OPTION}] Croc          ${INFO}- File transferring tool ${OPTION}(Dev)${RST}"
+  echo -e "${BARRIER}    ║${RST}${OPTION} [${WHITE}22${OPTION}] Fzf           ${INFO}- File finder ${OPTION}(Dev)${RST}"
+  echo -e "${BARRIER}    ║${RST}${OPTION} [${WHITE}23${OPTION}] Zoxide        ${INFO}- Smarter cd command ${OPTION}(Dev)${RST}"
+  echo -e "${BARRIER}    ║${RST}${OPTION} [${WHITE}24${OPTION}] Zsh           ${INFO}- Best shell ever ${OPTION}(Dev)${RST}"
+  echo -e "${BARRIER}    ║${RST}${OPTION} [${WHITE}25${OPTION}] Duf           ${INFO}- Disk Usage/Free utility ${OPTION}(Min)${RST}"
+  echo -e "${BARRIER}    ║${RST}${OPTION} [${WHITE}26${OPTION}] tty-clock     ${INFO}- A terminal clock ${OPTION}(Fun)${RST}"
+  echo -e "${BARRIER}    ║${RST}${OPTION} [${WHITE}27${OPTION}] Pipes.sh      ${INFO}- A cool tool for ${OPTION}(Fun)${RST}"
+  echo -e "${BARRIER}    ║${RST}${OPTION} [${WHITE}28${OPTION}] Yazi          ${INFO}- Amazing filemanager for terminal ${OPTION}(Dev)${RST}"
+  echo -e "${BARRIER}    ║${RST}${OPTION} [${WHITE}29${OPTION}] Lsd           ${INFO}- An 'ls' alternative with icons/colors ${OPTION}(Min)${RST}"
+  echo -e "${BARRIER}    ║${RST}${OPTION} [${WHITE}30${OPTION}] Broot         ${INFO}- Navigate directories with overviews ${OPTION}(Min)${RST}"
+  echo -e "${BARRIER}    ║${RST}${OPTION} [${WHITE}31${OPTION}] Dust          ${INFO}- More intuitive version of du ${OPTION}(Dev)${RST}"
+  echo -e "${BARRIER}    ║${RST}${OPTION} [${WHITE}32${OPTION}] Procs         ${INFO}- Modern replacement for 'ps' ${OPTION}(Dev)${RST}"
+  echo -e "${BARRIER}    ║${RST}${OPTION} [${WHITE}33${OPTION}] Tldr          ${INFO}- Simplified, community-driven man pages ${OPTION}(Dev)${RST}"
+  echo -e "${BARRIER}    ║${RST}${OPTION} [${WHITE}34${OPTION}] Node.Js       ${INFO}- JavaScript Runtime environment ${OPTION}(Dev)${RST}"
+  echo -e "${BARRIER}    ║${RST}${OPTION} [${WHITE}35${OPTION}] Gh            ${INFO}- A github-cli client ${OPTION}(Dev)${RST}"
+  echo -e "${BARRIER}    ║${RST}${OPTION} [${WHITE}36${OPTION}] Holehe        ${INFO}- Email OSINT scanner ${OPTION}(OSINT)${RST}"
+  echo -e "${BARRIER}    ║${RST}${OPTION} [${WHITE}37${OPTION}] Asciiquarium  ${INFO}- View of the sea ${OPTION}(Fun)${RST}"
+  echo -e "${BARRIER}    ║${RST}${OPTION} [${WHITE}38${OPTION}] Wttr          ${INFO}- A weather tool ${OPTION}(Fun)${RST}"
   echo -e "${BARRIER}    ╚═════════════════════════════════════╝ ${RST}"
 
   echo ""
@@ -182,21 +176,13 @@ while true; do
   31) install_pkg dust dust "Dust: Better version of du" ;;
   32) install_pkg procs procs "Procs: Morden 'ps'" ;;
   33) install_pkg tldr tldr "Tldr: Man pages" ;;
-  34) install_pkg npm nodejs "Node.Js: JavaScript Runtime environment," ;;
+  34) install_pkg npm nodejs "Node.Js: JS Runtime env," ;;
   35) install_pkg gh gh "Gh: Guthub-Cli" ;;
   # Install commands for pip tools
-  01)
-    echo ""
-    ensure_pip_package "holehe" "Holehe"
-    ;;
-  02)
-    echo ""
-    ensure_pip_package "asciiquarium" "Asciiquarium"
-    ;;
-  03)
-    echo ""
-    ensure_pip_package "wttr" "Wttr"
-    ;;
+  36) install_pip_package "holehe" "Holehe" ;;
+  37) install_pip_package "asciiquarium" "Asciiquarium" ;;
+  38) install_pip_package "wttr" "Wttr" ;;
+
   0) clear
     install_all
     ;;
