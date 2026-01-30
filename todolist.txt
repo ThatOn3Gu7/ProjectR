@@ -1,0 +1,105 @@
+==============================
+PROJECT IMPROVEMENT CHECKLIST
+==============================
+
+[STRUCTURE & CLEANUP]
+
+1) config.sh (central configuration file)
+   - Store user choices (environment, auto-update, logging, etc.)
+   - Avoid hard-coded values across scripts
+
+2) constants.sh (symbols & UI constants)
+   - Icons (✓ ✗ *)
+   - Colors
+   - Common strings
+   - Keeps UI consistent and easier to edit
+
+------------------------------------------------
+
+[USER EXPERIENCE / FEATURES]
+
+3) Tool Status Overview (PARTIAL)
+   - Show which tools are installed vs missing
+   - Count installed / missing tools
+   - Optional categories (network, dev, utils)
+
+4) Post-install Summary (BASIC DONE)
+   - Improve formatting
+   - Show:
+     - Installed tools
+     - Skipped tools
+     - Failed tools
+   - Optional boxed output
+
+5) Graceful Exit Improvements
+   - Better exit summary
+   - Random or styled goodbye messages
+
+------------------------------------------------
+
+[UI / VISUAL IMPROVEMENTS]
+
+6) Boxed Text UI (DONE, expandable)
+   - Optional border styles
+   - Optional titles
+   - Width limits
+   - Reuse for headers & summaries
+
+7) Spinner Improvements (PARTIAL)
+   - Spinner wrapper function
+   - Failure / success state handling
+   - Optional timeout support
+
+------------------------------------------------
+
+[NETWORK & SAFETY]
+
+8) Internet Check Enhancements
+   - Retry mechanism
+   - Offline mode
+   - Skip installs instead of exiting
+
+9) Dry-run Mode
+   - Preview what would be installed
+   - No actual system changes
+   - Useful for testing & safety
+
+------------------------------------------------
+
+[PRESETS & PROFILES]
+
+10) Preset Improvements
+    - Save custom presets
+    - Load last used preset automatically
+
+------------------------------------------------
+
+[LOGGING & DEBUGGING]
+
+11) Log Levels
+    - INFO / WARN / ERROR / DEBUG
+    - Filter log output based on level
+
+12) Error Snapshots
+    - Save failed command
+    - Timestamp
+    - Reason for failure
+
+------------------------------------------------
+
+[POSTPONED / ADVANCED — SKIP FOR NOW]
+
+13) Environment-based menus (Termux vs Desktop)
+    - Attempted, postponed
+    - Revisit only with PC access
+
+14) Cross-platform install abstraction
+    - One install command for all OSes
+    - Hard, long-term goal
+
+==============================
+STATUS NOTE:
+- If something feels too hard → SKIP IT
+- Stability > Features
+- One item at a time
+==============================
