@@ -78,6 +78,7 @@
 [13:03:05] [ERROR] No internet connection
 [13:03:06] [ENTER] User still continued
 [13:03:27] [EXIT] Exited script
+<<<<<<< HEAD
 [20:19:12] [START] Script started
 [20:19:18] [EXIT] Exited script
 [20:21:34] [START] Script started
@@ -100,3 +101,52 @@
 [20:50:21] [SKIPPED] Wget: File downloader, was already installed (Skipped)
 [20:50:22] [SKIPPED] Bat: Better then 'cat', was already installed (Skipped)
 [20:50:34] [FAIL] Htop: Hardware use Checker, not installed (no internet)
+=======
+[16:14:48] [START] Script started
+[16:15:23] [START] Script started
+[16:15:31] [SKIPPED] Git: Version control, was already installed (Skipped)
+[16:15:33] [SKIPPED] Curl: HTTP request was already installed (Skipped)
+[16:15:34] [SKIPPED] Wget: Command-line downloader was already installed (Skipped)
+[16:16:04] [EXIT] Exited script
+[16:18:42] [START] Script started
+[16:18:55] [EXIT] Exited script
+[16:19:08] [START] Script started
+[16:21:33] [START] Script started
+[16:21:44] [SKIPPED] Git: Version control, was already installed (Skipped)
+[16:21:45] [SKIPPED] Curl: HTTP request was already installed (Skipped)
+[16:21:46] [SKIPPED] Wget: Command-line downloader was already installed (Skipped)
+[16:21:47] [SKIPPED] Bat: A better cat was already installed (Skipped)
+[16:21:55] [SKIPPED] Git: Version control, was already installed (Skipped)
+[16:21:56] [SKIPPED] Zoxide: A better 'cd' was already installed (Skipped)
+[16:21:57] [SKIPPED] Gh: Guthub-Cli was already installed (Skipped)
+[16:22:39] [EXIT] Exited script
+[16:23:17] [START] Script started
+[16:23:34] [EXIT] Exited script
+[16:24:17] [START] Script started
+[16:24:29] [EXIT] Exited script
+[16:25:04] [START] Script started
+[16:25:07] [EXIT] Exited script
+[16:25:54] [START] Script started
+[16:26:12] [SKIPPED] Git: Version control, was already installed (Skipped)
+[16:26:14] [SKIPPED] Curl: HTTP request was already installed (Skipped)
+[16:26:15] [SKIPPED] Bat: A better cat was already installed (Skipped)
+[16:26:16] [SKIPPED] Fish: A advanced Shell was already installed (Skipped)
+[16:26:17] [SKIPPED] Python3: Coding language was already installed (Skipped)
+[16:26:19] [SKIPPED] Libcaca: Cool fire was already installed (Skipped)
+[16:26:20] [SKIPPED] Node.Js: JavaScript Runtime environment, was already installed (Skipped)
+[16:26:44] [EXIT] Exited script
+[16:28:25] [START] Script started
+[16:28:36] [EXIT] Exited script
+[16:30:08] [START] Script started
+[16:30:40] [EXIT] Exited script
+[16:32:29] [START] Script started
+[16:33:02] [EXIT] Exited script
+>>>>>>> testlab
+[16:42:00] [START] Script started
+[16:43:01] [START] Script started
+[16:43:11] [SKIPPED] Git: Version control, was already installed (Skipped)
+[16:43:12] [SKIPPED] Curl: HTTP request was already installed (Skipped)
+[16:43:14] [SKIPPED] Bat: A better cat was already installed (Skipped)
+[16:43:15] [SKIPPED] Libcaca: Cool fire was already installed (Skipped)
+[16:43:16] [SKIPPED] Ncdu: du Checker was already installed (Skipped)
+[16:43:20] [EXIT] Exited script

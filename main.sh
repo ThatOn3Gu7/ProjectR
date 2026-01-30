@@ -91,13 +91,12 @@ EOF
   echo -e "${BARRIER}   ╔══════════════════╗ ${RST}"
   echo -e "${BARRIER}   ║${RST}${OPTION} [${WHITE}0${OPTION}] Install ALL tools${RST}"
   echo -e "${BARRIER}   ║${RST}${OPTION} [${WHITE}p${OPTION}] Install by preset${RST}"
-  echo -e "${BARRIER}   ║${RST}${OPTION} [${WHITE}a${OPTION}] Are any tool's installed?${RST}"
-  echo -e "${BARRIER}   ║${RST}${OPTION} [${ERROR}e${OPTION}] Exit script${RST}"
+  echo -e "${BARRIER}   ║${RST}${OPTION} [${WHITE}a${OPTION}] Inspect installed tools${RST}"
+  echo -e "${BARRIER}   ║${RST}${OPTION} [${ERROR}e${OPTION}] Exits the script${RST}"
   echo -e "${BARRIER}   ╚══════════════════╝ ${RST}"
-  echo ""
 
-  echo -ne "${INFO}${BOLD} [*] Choose an option: ${RST}"
-  read tool_choice
+  echo -e "${OPTION}${BOLD}"
+  read -p " [*] Enter the tool numbers (separate by spaces): " -a selections
   echo ""
 }
 
@@ -140,8 +139,9 @@ profile_menu() {
 }
 
 while true; do
-  show_menu
-  case "$tool_choice" in
+ show_menu
+  for selected in "${selections[@]}"; do
+   case $selected in
   # Install commands for apt tools.
   1) install_pkg git git "Git: Version control," ;;
   2) install_pkg curl curl "Curl: HTTP request" ;;
@@ -197,10 +197,11 @@ while true; do
     ;;
   *) 
     echo -e "${ERROR}${BOLD}"
-    boxed_text center "[x] Invalid input: '$tool_choice'. Please select the right option."
+    boxed_text center "[x] Invalid input: '$selections'. Please select the right option."
     echo -e "${RST}"
     sleep 2
     continue # This restarts the loop immediately
     ;;
   esac
+ done
 done
