@@ -325,7 +325,8 @@ pkg_upgrade() {
 
 # Prints a message whenever user decides to exit the script.
 graceful_exit() {
-   log EXIT "Exited script"
+  log EXIT "Exited script"
+   echo ""
     echo -e "${INFO}${BOLD}"
     boxed_text center " Thanks for using the script
      See you next time "
