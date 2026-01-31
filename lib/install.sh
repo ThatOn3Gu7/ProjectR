@@ -11,6 +11,7 @@ source $HOME/ProjectR/lib/presets.sh
 
 # This function here installs all tools put in it.
 install_all() {
+    log INSTALL "User chose to install all tools"
    # Checks for Internet before proceeding
     is_internet_up 
     # Update package lists
@@ -30,12 +31,12 @@ install_all() {
      boxed_text center "[*] Skipping system upgrade"
   fi
 
-  clear
+ clear
+  tput civis
    echo -e "${OPTION}$BOLD"
     boxed_text center "[*] Installing all essential tools"
    echo -e "${RST}"
-    log INSTALL "User chose to install all tools"
-    
+   
     # ---- APT TOOLS ----
     install_pkg git git "Git: Version control," 
     install_pkg curl curl "Curl: File downloader 2," 
@@ -75,6 +76,7 @@ install_all() {
     install_pip_package "holehe" "Holehe,"
     install_pip_package "asciiquarium" "Asciiqurium,"
     install_pip_package "wttr" "Wttr.io,"
+    install_pkg tmux tmux "Tmux: A multitasker,"
     # -- post-install-summary
     echo ""
     post_install_summary
@@ -82,6 +84,7 @@ install_all() {
    boxed_text center "[✓] Install All Completed. Press ENTER to continue.."
     echo -e "${RST}"
     read
+  tput cnorm
 
 }
 
@@ -172,7 +175,7 @@ Please make sure to turn on WI-FI to continue ;)"
         echo -e "${OPTION}${BOLD} [✓] $name is already installed - Skipping..${RST}"
         SKIPPED_PKGS+=("$name")
         log SKIPPED "$name was already installed (Skipped)"
-        sleep 1
+        sleep 0.1
     else
         echo ""
         echo -e "${INFO}${BOLD} [*] Installing: $name..${RST}"

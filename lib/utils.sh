@@ -19,6 +19,7 @@ check_tool_main() {
  echo -e "${OPTION}${BOLD}"
    boxed_text center " [*] Checking if any tools are installed"
  echo -e "${RST}"
+ tput civis
  check_tool git "Git" 
  check_tool curl "Curl" 
  check_tool wget "Wget" 
@@ -56,6 +57,7 @@ check_tool_main() {
  check_tool holehe "Holehe"
  check_tool asciiquarium "Asciiqurium"
  check_tool wttr "Wttr.io"
+ check_tool tmux "Tmux"
 
  echo -e "${OPTION}${BOLD}"
   boxed_text center " [✓] Taks complete.. press ENTER to continue"
@@ -63,6 +65,7 @@ check_tool_main() {
 
   # Time to raed result
   read
+ tput cnorm
 }
 # just a simple log function 
 log() {

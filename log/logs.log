@@ -150,3 +150,164 @@
 [16:43:15] [SKIPPED] Libcaca: Cool fire was already installed (Skipped)
 [16:43:16] [SKIPPED] Ncdu: du Checker was already installed (Skipped)
 [16:43:20] [EXIT] Exited script
+[10:02:40] [START] Script started
+[10:02:53] [SKIPPED] Tmux: A multitasker was already installed (Skipped)
+[10:02:58] [EXIT] Exited script
+[10:03:35] [START] Script started
+[10:04:17] [SKIPPED] Git: Version control, was already installed (Skipped)
+[10:04:18] [SKIPPED] Tmux: A multitasker was already installed (Skipped)
+[10:04:21] [EXIT] Exited script
+[14:30:47] [START] Script started
+[14:31:03] [EXIT] Exited script
+[14:33:54] [START] Script started
+[14:34:15] [EXIT] Exited script
+[14:35:25] [START] Script started
+[14:35:35] [ERROR] No internet connection
+[14:35:37] [ENTER] User still continued
+[14:35:47] [EXIT] Exited script
+[14:35:50] [START] Script started
+[14:36:00] [ERROR] No internet connection
+[14:36:02] [ENTER] User still continued
+[14:36:11] [EXIT] Exited script
+[14:36:31] [START] Script started
+[14:36:41] [ERROR] No internet connection
+[14:36:46] [ENTER] User still continued
+[14:37:40] [EXIT] Exited script
+[14:40:30] [START] Script started
+[14:40:58] [EXIT] Exited script
+[14:42:38] [START] Script started
+[14:43:01] [OK] pkg list updated
+[14:43:20] [OK] pkg/system upgraded
+[14:45:13] [INSTALL] User chose to install all tools
+[14:45:13] [SKIPPED] Git: Version control, was already installed (Skipped)
+[14:45:15] [SKIPPED] Curl: File downloader 2, was already installed (Skipped)
+[14:45:16] [SKIPPED] Wget: File downloader, was already installed (Skipped)
+[14:45:17] [SKIPPED] Bat: Better then 'cat', was already installed (Skipped)
+[14:45:19] [SKIPPED] Htop: Hardware use Checker, was already installed (Skipped)
+[14:45:20] [SKIPPED] Fish: A advanced Shell, was already installed (Skipped)
+[14:45:21] [SKIPPED] OpenSSH: Server deployment, was already installed (Skipped)
+[14:45:22] [SKIPPED] Python3: Coding language, was already installed (Skipped)
+[14:45:24] [SKIPPED] Nmap: Network scanner, was already installed (Skipped)
+[14:45:24] [EXIT] Exited script
+[14:50:20] [START] Script started
+[14:50:24] [INSTALL] User chose to install all tools
+[14:50:34] [ERROR] No internet connection
+[14:50:45] [START] Script started
+[14:50:55] [ERROR] No internet connection
+[14:51:00] [ENTER] User still continued
+[14:51:02] [INSTALL] User chose to install all tools
+[14:51:03] [OK] pkg list updated
+[14:51:10] [SKIPPED] Git: Version control, was already installed (Skipped)
+[14:51:11] [SKIPPED] Curl: File downloader 2, was already installed (Skipped)
+[14:51:12] [SKIPPED] Wget: File downloader, was already installed (Skipped)
+[14:51:14] [SKIPPED] Bat: Better then 'cat', was already installed (Skipped)
+[14:51:15] [SKIPPED] Htop: Hardware use Checker, was already installed (Skipped)
+[14:51:16] [SKIPPED] Fish: A advanced Shell, was already installed (Skipped)
+[14:51:17] [SKIPPED] OpenSSH: Server deployment, was already installed (Skipped)
+[14:51:19] [SKIPPED] Python3: Coding language, was already installed (Skipped)
+[14:51:20] [SKIPPED] Nmap: Network scanner, was already installed (Skipped)
+[14:51:21] [SKIPPED] Libcaca: Cool fire, was already installed (Skipped)
+[14:51:23] [SKIPPED] Speedtest-Go: WI-FI-speed Checker, was already installed (Skipped)
+[14:51:24] [SKIPPED] CPUfetch: Cpu-info, was already installed (Skipped)
+[14:51:25] [SKIPPED] Neofetch: System-info, was already installed (Skipped)
+[14:51:26] [SKIPPED] Ranger: A Filamanager, was already installed (Skipped)
+[14:51:28] [SKIPPED] Nano: Text editor, was already installed (Skipped)
+[14:51:29] [SKIPPED] Sl: Steam Locomotive, was already installed (Skipped)
+[14:51:30] [SKIPPED] Ncdu: du Checker, was already installed (Skipped)
+[14:51:32] [SKIPPED] Neovim: Best code editor, was already installed (Skipped)
+[14:51:33] [SKIPPED] Node.Js: JavaScript Runtime environment, was already installed (Skipped)
+[14:52:03] [SKIPPED] Cbonsai: Japanise tree, was already installed (Skipped)
+[14:52:05] [SKIPPED] Asciinema: Terminal-recoder, was already installed (Skipped)
+[14:52:06] [SKIPPED] Croc: File-sender, was already installed (Skipped)
+[14:52:07] [SKIPPED] Fzf: File-finder, was already installed (Skipped)
+[14:52:09] [SKIPPED] Zoxide: Smarter cd, was already installed (Skipped)
+[14:52:10] [SKIPPED] Zsh: Most awesome shell, was already installed (Skipped)
+[14:52:51] [SKIPPED] Duf: File/dir size Checker, was already installed (Skipped)
+[14:52:52] [SKIPPED] tty-clock: A big clock, was already installed (Skipped)
+[14:52:54] [SKIPPED] Pipes.sh: Line-Snake, was already installed (Skipped)
+[14:52:55] [SKIPPED] Yazi: Filamanager, was already installed (Skipped)
+[14:52:56] [SKIPPED] Lsd: 'ls' alternative, was already installed (Skipped)
+[14:52:57] [SKIPPED] Broot: Filenavigator, was already installed (Skipped)
+[14:52:59] [SKIPPED] Dust: Better version of du, was already installed (Skipped)
+[14:53:00] [SKIPPED] Procs: Morden 'ps', was already installed (Skipped)
+[14:53:01] [SKIPPED] Tldr: Man pages, was already installed (Skipped)
+[14:53:02] [SKIPPED] Gh: Guthub-Cli was already installed (Skipped)
+[14:53:04] [SKIPPED] Holehe, was already installed (Skipped)
+[14:53:07] [SKIPPED] Asciiqurium, was already installed (Skipped)
+[14:53:10] [SKIPPED] Wttr.io, was already installed (Skipped)
+[14:53:14] [SKIPPED] Tmux: A multitasker was already installed (Skipped)
+[14:53:15] [OK] Post-Installation-Summary shown
+[14:53:52] [EXIT] Exited script
+[15:00:25] [START] Script started
+[15:00:28] [INSTALL] User chose to install all tools
+[15:00:29] [OK] pkg list updated
+[15:00:42] [SKIPPED] Git: Version control, was already installed (Skipped)
+[15:00:43] [SKIPPED] Curl: File downloader 2, was already installed (Skipped)
+[15:00:45] [SKIPPED] Wget: File downloader, was already installed (Skipped)
+[15:00:46] [SKIPPED] Bat: Better then 'cat', was already installed (Skipped)
+[15:00:47] [SKIPPED] Htop: Hardware use Checker, was already installed (Skipped)
+[15:00:48] [SKIPPED] Fish: A advanced Shell, was already installed (Skipped)
+[15:00:50] [SKIPPED] OpenSSH: Server deployment, was already installed (Skipped)
+[15:00:51] [SKIPPED] Python3: Coding language, was already installed (Skipped)
+[15:00:52] [SKIPPED] Nmap: Network scanner, was already installed (Skipped)
+[15:00:53] [SKIPPED] Libcaca: Cool fire, was already installed (Skipped)
+[15:00:55] [SKIPPED] Speedtest-Go: WI-FI-speed Checker, was already installed (Skipped)
+[15:00:56] [SKIPPED] CPUfetch: Cpu-info, was already installed (Skipped)
+[15:00:57] [SKIPPED] Neofetch: System-info, was already installed (Skipped)
+[15:00:58] [SKIPPED] Ranger: A Filamanager, was already installed (Skipped)
+[15:01:00] [SKIPPED] Nano: Text editor, was already installed (Skipped)
+[15:01:01] [SKIPPED] Sl: Steam Locomotive, was already installed (Skipped)
+[15:01:02] [SKIPPED] Ncdu: du Checker, was already installed (Skipped)
+[15:01:04] [SKIPPED] Neovim: Best code editor, was already installed (Skipped)
+[15:01:05] [SKIPPED] Node.Js: JavaScript Runtime environment, was already installed (Skipped)
+[15:01:10] [EXIT] Exited script
+[15:01:26] [START] Script started
+[15:01:29] [INSTALL] User chose to install all tools
+[15:01:39] [ERROR] No internet connection
+[15:01:47] [START] Script started
+[15:01:51] [INSTALL] User chose to install all tools
+[15:01:51] [OK] pkg list updated
+[15:01:56] [SKIPPED] Git: Version control, was already installed (Skipped)
+[15:01:58] [SKIPPED] Curl: File downloader 2, was already installed (Skipped)
+[15:01:59] [SKIPPED] Wget: File downloader, was already installed (Skipped)
+[15:02:00] [SKIPPED] Bat: Better then 'cat', was already installed (Skipped)
+[15:02:01] [SKIPPED] Htop: Hardware use Checker, was already installed (Skipped)
+[15:02:03] [SKIPPED] Fish: A advanced Shell, was already installed (Skipped)
+[15:02:04] [SKIPPED] OpenSSH: Server deployment, was already installed (Skipped)
+[15:02:05] [SKIPPED] Python3: Coding language, was already installed (Skipped)
+[15:02:06] [SKIPPED] Nmap: Network scanner, was already installed (Skipped)
+[15:02:08] [SKIPPED] Libcaca: Cool fire, was already installed (Skipped)
+[15:02:09] [SKIPPED] Speedtest-Go: WI-FI-speed Checker, was already installed (Skipped)
+[15:02:10] [SKIPPED] CPUfetch: Cpu-info, was already installed (Skipped)
+[15:02:11] [SKIPPED] Neofetch: System-info, was already installed (Skipped)
+[15:02:12] [SKIPPED] Ranger: A Filamanager, was already installed (Skipped)
+[15:02:24] [FAIL] Nano: Text editor, not installed (no internet)
+[15:05:15] [START] Script started
+[15:05:17] [INSTALL] User chose to install all tools
+[15:05:17] [OK] pkg list updated
+[15:05:23] [SKIPPED] Git: Version control, was already installed (Skipped)
+[15:05:23] [SKIPPED] Curl: File downloader 2, was already installed (Skipped)
+[15:05:23] [SKIPPED] Wget: File downloader, was already installed (Skipped)
+[15:05:24] [SKIPPED] Bat: Better then 'cat', was already installed (Skipped)
+[15:05:24] [SKIPPED] Htop: Hardware use Checker, was already installed (Skipped)
+[15:05:25] [SKIPPED] Fish: A advanced Shell, was already installed (Skipped)
+[15:05:25] [SKIPPED] OpenSSH: Server deployment, was already installed (Skipped)
+[15:05:25] [SKIPPED] Python3: Coding language, was already installed (Skipped)
+[15:05:26] [SKIPPED] Nmap: Network scanner, was already installed (Skipped)
+[15:05:26] [SKIPPED] Libcaca: Cool fire, was already installed (Skipped)
+[15:05:27] [SKIPPED] Speedtest-Go: WI-FI-speed Checker, was already installed (Skipped)
+[15:05:27] [SKIPPED] CPUfetch: Cpu-info, was already installed (Skipped)
+[15:05:27] [SKIPPED] Neofetch: System-info, was already installed (Skipped)
+[15:05:28] [SKIPPED] Ranger: A Filamanager, was already installed (Skipped)
+[15:05:28] [SKIPPED] Nano: Text editor, was already installed (Skipped)
+[15:05:29] [SKIPPED] Sl: Steam Locomotive, was already installed (Skipped)
+[15:05:29] [SKIPPED] Ncdu: du Checker, was already installed (Skipped)
+[15:05:29] [SKIPPED] Neovim: Best code editor, was already installed (Skipped)
+[15:05:30] [SKIPPED] Node.Js: JavaScript Runtime environment, was already installed (Skipped)
+[15:05:45] [FAIL] Cbonsai: Japanise tree, not installed (no internet)
+[15:39:39] [START] Script started
+[15:47:25] [EXIT] Exited script
+[15:47:27] [START] Script started
+[15:48:34] [EXIT] Exited script
+[15:49:30] [START] Script started
+[15:50:13] [EXIT] Exited script

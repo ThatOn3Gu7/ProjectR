@@ -24,10 +24,9 @@ WHITE="\e[97m"  # Bright White Text
 startup_wifi_check
 
 # --- SETUP ESSENTIAL TOOLS INSTALLATION MENU ---
-show_menu() {
-  clear
+show_main_menu() {
+ clear
   # cool LOGO
-  echo -e "${LOGO}${BOLD}"
   cat <<"EOF" | lolcat
 
       _       ___   __   __   ___     _              _   _     ___
@@ -39,7 +38,6 @@ show_menu() {
 
         ━━━━━━━━━━━━━━ [ SETUP ESSENTIAL TOOLS ] ━━━━━━━━━━━━━━
 EOF
-  echo -e "${RST}"
 
   echo -e "${OPTION}${BOLD}"
   boxed_text left "[*] Select the pkg/tool you want to install:" 
@@ -85,16 +83,17 @@ EOF
   echo -e "${BARRIER}    ║${RST}${OPTION} [${WHITE}36${OPTION}] Holehe        ${INFO}- Email OSINT scanner ${OPTION}(OSINT)${RST}"
   echo -e "${BARRIER}    ║${RST}${OPTION} [${WHITE}37${OPTION}] Asciiquarium  ${INFO}- View of the sea ${OPTION}(Fun)${RST}"
   echo -e "${BARRIER}    ║${RST}${OPTION} [${WHITE}38${OPTION}] Wttr          ${INFO}- A weather tool ${OPTION}(Fun)${RST}"
+  echo -e "${BARRIER}    ║${RST}${OPTION} [${WHITE}39${OPTION}] Tmux          ${INFO}- A multitasker tool ${OPTION}(Dev)${RST}"
   echo -e "${BARRIER}    ╚═════════════════════════════════════╝ ${RST}"
 
-  echo ""
-  echo -e "${BARRIER}   ╔══════════════════╗ ${RST}"
-  echo -e "${BARRIER}   ║${RST}${OPTION} [${WHITE}0${OPTION}] Install ALL tools${RST}"
-  echo -e "${BARRIER}   ║${RST}${OPTION} [${WHITE}p${OPTION}] Install by preset${RST}"
-  echo -e "${BARRIER}   ║${RST}${OPTION} [${WHITE}a${OPTION}] Inspect installed tools${RST}"
-  echo -e "${BARRIER}   ║${RST}${OPTION} [${ERROR}e${OPTION}] Exits the script${RST}"
-  echo -e "${BARRIER}   ╚══════════════════╝ ${RST}"
-
+echo ""
+echo -e "${BARRIER}   ╔══════════════════╗ ${RST}"
+echo -e "${BARRIER}   ║${RST}${OPTION} [${WHITE}0${OPTION}] Install ALL tools${RST}"
+echo -e "${BARRIER}   ║${RST}${OPTION} [${WHITE}p${OPTION}] Install by preset${RST}"
+echo -e "${BARRIER}   ║${RST}${OPTION} [${WHITE}i${OPTION}] Inspect installed tools${RST}"
+echo -e "${BARRIER}   ║${RST}${OPTION} [${WHITE}u${OPTION}] Uninstall tools${RST}"
+echo -e "${BARRIER}   ║${RST}${OPTION} [${ERROR}e${OPTION}] Exits the script${RST}"
+echo -e "${BARRIER}   ╚══════════════════╝ ${RST}"
   echo -e "${OPTION}${BOLD}"
   read -p " [*] Enter the tool numbers (separate by spaces): " -a selections
   echo ""
@@ -139,7 +138,7 @@ profile_menu() {
 }
 
 while true; do
- show_menu
+ show_main_menu
   for selected in "${selections[@]}"; do
    case $selected in
   # Install commands for apt tools.
@@ -182,6 +181,7 @@ while true; do
   36) install_pip_package "holehe" "Holehe" ;;
   37) install_pip_package "asciiquarium" "Asciiquarium" ;;
   38) install_pip_package "wttr" "Wttr" ;;
+  39) install_pkg tmux tmux "Tmux: A multitasker" ;;
 
   0) clear
     install_all
@@ -189,8 +189,11 @@ while true; do
   p|P)
     profile_menu
     ;;
-  a|A) clear
+  i|I) clear
     check_tool_main
+    ;;
+  u|U) clear
+    show_uninstall_menu
     ;;
   e|E)
     graceful_exit
