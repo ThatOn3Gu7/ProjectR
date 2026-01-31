@@ -4,7 +4,7 @@ source $HOME/ProjectR/lib/install.sh
 source $HOME/ProjectR/lib/utils.sh
 source $HOME/ProjectR/lib/presets.sh
 source $HOME/ProjectR/lib/uninstall.sh
-PM="$(detect_pkg_manager)"
+# PM="$(detect_pkg_manager)"
 trap graceful_exit SIGINT
 log START "Script started"
 # source /data/data/com.termux/files/home/project/lib/detect.sh
@@ -194,7 +194,7 @@ while true; do
     check_tool_main
     ;;
   u|U) clear
-    uninstall_pkg_menu 
+    uninstall_menu
     ;;
   e|E)
     graceful_exit

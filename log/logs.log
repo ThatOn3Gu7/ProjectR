@@ -2,3 +2,118 @@
 [19:31:39] [EXIT] Exited script
 [19:34:11] [START] Script started
 [19:35:30] [EXIT] Exited script
+[19:52:04] [START] Script started
+[19:52:45] [EXIT] Exited script
+[19:52:48] [START] Script started
+[19:54:44] [EXIT] Exited script
+[20:01:32] [START] Script started
+[20:01:45] [EXIT] Exited script
+[20:01:46] [START] Script started
+[20:02:01] [EXIT] Exited script
+[20:37:21] [START] Script started
+[20:37:21] [ERROR] No internet connection
+[20:40:11] [START] Script started
+[20:40:11] [ERROR] No internet connection
+[20:41:14] [START] Script started
+[20:41:14] [ERROR] No internet connection
+[20:41:17] [ENTER] User still continued
+[20:41:50] [EXIT] Exited script
+[20:51:32] [START] Script started
+[20:51:35] [INSTALL] User chose to install all tools
+[20:51:35] [OK] pkg list updated
+[20:51:49] [OK] pkg/system upgraded
+[20:52:02] [EXIT] Exited script
+[20:52:30] [START] Script started
+[20:52:32] [INSTALL] User chose to install all tools
+[20:52:32] [OK] pkg list updated
+[20:52:49] [EXIT] Exited script
+[20:53:07] [START] Script started
+[20:53:09] [INSTALL] User chose to install all tools
+[20:53:10] [OK] pkg list updated
+[20:53:58] [EXIT] Exited script
+[20:55:04] [START] Script started
+[20:55:18] [EXIT] Exited script
+[20:55:54] [START] Script started
+[20:55:56] [INSTALL] User chose to install all tools
+[20:55:56] [OK] pkg list updated
+[20:56:04] [OK] pkg/system upgraded
+[20:56:34] [FAIL] Git: Version control, not installed (no internet)
+[20:57:42] [START] Script started
+[20:57:51] [EXIT] Exited script
+[20:58:44] [START] Script started
+[20:58:59] [INSTALL] User chose to install all tools
+[20:58:59] [OK] pkg list updated
+[20:59:06] [SKIPPED] Git: Version control, was already installed (Skipped)
+[20:59:06] [SKIPPED] Curl: File downloader 2, was already installed (Skipped)
+[20:59:06] [SKIPPED] Wget: File downloader, was already installed (Skipped)
+[20:59:07] [SKIPPED] Bat: Better then 'cat', was already installed (Skipped)
+[20:59:07] [SKIPPED] Htop: Hardware use Checker, was already installed (Skipped)
+[20:59:07] [SKIPPED] Fish: A advanced Shell, was already installed (Skipped)
+[20:59:08] [SKIPPED] OpenSSH: Server deployment, was already installed (Skipped)
+[20:59:08] [SKIPPED] Python3: Coding language, was already installed (Skipped)
+[20:59:08] [SKIPPED] Nmap: Network scanner, was already installed (Skipped)
+[20:59:09] [SKIPPED] Libcaca: Cool fire, was already installed (Skipped)
+[20:59:19] [FAIL] Speedtest-Go: WI-FI-speed Checker, not installed (no internet)
+[21:01:35] [START] Script started
+[21:02:27] [EXIT] Exited script
+[21:02:29] [START] Script started
+[21:02:36] [EXIT] Exited script
+[21:04:31] [START] Script started
+[21:04:34] [INSTALL] User chose to install all tools
+[21:04:34] [OK] pkg list updated
+[21:05:04] [FAIL] Git: Version control, not installed (no internet)
+[21:05:22] [START] Script started
+[21:05:30] [EXIT] Exited script
+[21:08:10] [START] Script started
+[21:08:13] [INSTALL] User chose to install all tools
+[21:08:13] [OK] pkg list updated
+[21:08:21] [SKIPPED] Git: Version control, was already installed (Skipped)
+[21:08:21] [SKIPPED] Curl: File downloader 2, was already installed (Skipped)
+[21:08:22] [SKIPPED] Wget: File downloader, was already installed (Skipped)
+[21:08:22] [SKIPPED] Bat: Better then 'cat', was already installed (Skipped)
+[21:08:22] [SKIPPED] Htop: Hardware use Checker, was already installed (Skipped)
+[21:08:33] [FAIL] Fish: A advanced Shell, not installed (no internet)
+[21:10:16] [START] Script started
+[21:10:56] [SKIPPED] Wget: Command-line downloader was already installed (Skipped)
+[21:10:59] [SKIPPED] Wget: Command-line downloader was already installed (Skipped)
+[21:11:09] [EXIT] Exited script
+[21:34:38] [START] Script started
+[21:34:38] [ERROR] No internet connection
+[21:34:43] [ENTER] User still continued
+[21:35:07] [INSTALLED] Wget: Command-line downloader installed successfully
+[21:37:55] [EXIT] Exited script
+[21:41:47] [START] Script started
+[21:42:01] [EXIT] Exited script
+[21:45:55] [START] Script started
+[21:47:54] [EXIT] Exited script
+[21:48:02] [START] Script started
+[21:48:55] [INSTALL] User chose to install all tools
+[21:48:55] [OK] pkg list updated
+[21:49:04] [SKIPPED] Git: Version control, was already installed (Skipped)
+[21:49:04] [SKIPPED] Curl: File downloader 2, was already installed (Skipped)
+[21:49:08] [FAIL] Wget: File downloader, failed to install
+[21:49:10] [SKIPPED] Bat: Better then 'cat', was already installed (Skipped)
+[21:49:10] [SKIPPED] Htop: Hardware use Checker, was already installed (Skipped)
+[21:49:20] [FAIL] Fish: A advanced Shell, not installed (no internet)
+[21:51:46] [START] Script started
+[21:51:49] [INSTALL] User chose to install all tools
+[21:51:49] [OK] pkg list updated
+[21:52:05] [FAIL] Git: Version control, not installed (no internet)
+[21:52:08] [START] Script started
+[21:52:18] [INSTALLED] Wget: Command-line downloader installed successfully
+[21:53:45] [EXIT] Exited script
+[21:53:46] [START] Script started
+[21:53:53] [SKIPPED] Wget: Command-line downloader was already installed (Skipped)
+[21:54:43] [INSTALLED] Wget: Command-line downloader installed successfully
+[21:56:37] [EXIT] Exited script
+[21:56:41] [START] Script started
+[21:57:09] [INSTALLED] Wget: Command-line downloader installed successfully
+[21:58:32] [EXIT] Exited script
+[21:58:34] [START] Script started
+[21:58:36] [SKIPPED] Wget: Command-line downloader was already installed (Skipped)
+[21:59:18] [EXIT] Exited script
+[21:59:22] [START] Script started
+[21:59:47] [ENTER] User entered sub-menu 'install-sresets'
+[21:59:52] [INSTALL] User chose to install 'Minimal tools preset'
+[21:59:52] [SKIPPED] Git: Version Control, was already installed (Skipped)
+[22:00:02] [FAIL] Curl: Feature-rich URL transfer tool, not installed (no internet)

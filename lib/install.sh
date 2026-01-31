@@ -156,7 +156,7 @@ install_neovim_full() {
 
 # This script is here to identify and use the package manager it finds on the system to install packages
 install_pkg() {
-    cmd="$(is_pkg_installed)"  # command to check (git, curl, nmap, etc.)
+    local cmd="$1"  # command to check (git, curl, nmap, etc.)
     local pkg="$2"     # package name to install
     local name="$3"    # pretty name for display
 
@@ -170,22 +170,23 @@ install_pkg() {
 Please make sure to turn on WI-FI to continue ;)"
       echo -e "${RST}"
       log FAIL "$name not installed (no internet)"
+       tput cnorm
       exit 0
     fi
     # installing or Skipped massges
-    if $cmd; then
+    if command -v "$cmd" >/dev/null 2>&1; then
         echo -e "${OPTION}${BOLD} [✓] $name is already installed - Skipping..${RST}"
         SKIPPED_PKGS+=("$name")
         log SKIPPED "$name was already installed (Skipped)"
         sleep 0.1
     else
-        echo ""
-        echo -e "${INFO}${BOLD} [*] Installing: $name..${RST}"
+        echo -e "${INFO}${BOLD}"
+         start_spinner " [*] Installing: $name.."
 
        # Use the detected package manager to install 
        case $PM in
         apt)
-            apt-get update && apt-get install -y "$pkg"
+            apt-get update >/dev/null 2>&1 && apt-get install -y "$pkg" >/dev/null 2>&1
             ;;
         dnf|yum)
             sudo $PM install -y "$pkg"
@@ -228,19 +229,23 @@ Please make sure to turn on WI-FI to continue ;)"
                 winget install -e --id "$pkg"
             done
             ;;
-            *)
-                echo -e "${ERROR}${BOLD} [x] Unsupported package manager: $PM${RST}"
+            *) stop_spinner
+               echo -e "${ERROR}${BOLD} [x] Unsupported package manager: $PM${RST}"
                 return 1
                 ;;
         esac
         # detection for post-install summary
         if [ $? -eq 0 ]; then
           INSTALLED_PKGS+=("$name")
-           echo -e "${OPTION}${BOLD} [✓] $name has installed successfully.${RST}"
+           echo -e "${OPTION}${BOLD}"
+            stop_spinner " [✓] $name has installed successfully."
+           echo -e "${RST}"
            log INSTALLED "$name installed successfully"
          else
           FAILED_PKGS+=("$name")
-           echo -e "${ERROR}${BOLD} [x] Failed to install $name.${RST}"
+           echo -e "${ERROR}${BOLD}" 
+            stop_spinner "[x] Failed to install $name."
+           echo -e "${RST}"
            log FAIL "$name failed to install"
         fi
         # echo -e "${OPTION}${BOLD} [✓] $name has installed successfully.${RST}"
@@ -262,6 +267,7 @@ install_pip_package() {
 Please make sure to turn on WI-FI to continue ;)"
       echo -e "${RST}"
       log FAIL "$package_name not installed (no internet)"
+       tput cnorm
       exit 0
     fi
     # Determine which pip to use

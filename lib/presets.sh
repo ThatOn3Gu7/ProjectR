@@ -36,6 +36,7 @@ PRESET_DEV=(
   "croc|croc|Croc: File-sender,"
   "zoxide|zoxide|Zoxide: Smarter cd,"
   "gh|gh|Gh: Github-cli"
+  "tmux|tmux|Tmux: A Multitasker"
 )
 
 # Fun tools
