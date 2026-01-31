@@ -3,11 +3,13 @@
 INSTALLED_PKGS=()
 SKIPPED_PKGS=()
 FAILED_PKGS=()
-
 # Source others
 source $HOME/ProjectR/lib/detect.sh
 source $HOME/ProjectR/lib/utils.sh
 source $HOME/ProjectR/lib/presets.sh
+
+# detect_pkg_manager for install and tool check
+PM="$(detect_pkg_manager)"
 
 # This function here installs all tools put in it.
 install_all() {
@@ -159,7 +161,7 @@ install_pkg() {
     local name="$3"    # pretty name for display
 
     # Detect package manager
-    PM="$(detect_pkg_manager)"
+    # PM="$(detect_pkg_manager)"
 
     # For internet Check-up before continue
     if ! check_internet; then
