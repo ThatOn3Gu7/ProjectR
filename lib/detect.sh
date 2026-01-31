@@ -47,7 +47,7 @@ detect_pkg_manager() {
 # Check if the package is already installed (cross-platform)
 is_pkg_installed() {
     local pkg="$1"
-    local PM="$(detect_pkg_manager)"
+    # local PM="$(detect_pkg_manager)"
 
     case "$PM" in
         apt)

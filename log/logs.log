@@ -117,3 +117,22 @@
 [16:30:40] [EXIT] Exited script
 [16:32:29] [START] Script started
 [16:33:02] [EXIT] Exited script
+[17:32:43] [START] Script started
+[17:34:06] [EXIT] Exited script
+[17:34:07] [START] Script started
+[17:35:52] [EXIT] Exited script
+[17:35:53] [START] Script started
+[17:36:37] [EXIT] Exited script
+[17:36:39] [START] Script started
+[17:39:46] [EXIT] Exited script
+[17:39:51] [START] Script started
+[17:40:58] [EXIT] Exited script
+[17:41:01] [START] Script started
+[17:41:09] [SKIPPED] tty-clock: A big clock was already installed (Skipped)
+[17:41:27] [EXIT] Exited script
+[17:48:19] [START] Script started
+[17:48:23] [SKIPPED] Git: Version control, was already installed (Skipped)
+[17:49:04] [EXIT] Exited script
+[17:49:55] [START] Script started
+[17:49:56] [SKIPPED] Git: Version control, was already installed (Skipped)
+[17:50:05] [EXIT] Exited script

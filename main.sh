@@ -143,15 +143,15 @@ while true; do
   for selected in "${selections[@]}"; do
    case $selected in
   # Install commands for apt tools.
-  1) install_pkg git git "Git: Version control," ;;
-  2) install_pkg curl curl "Curl: HTTP request" ;;
-  3) install_pkg wget wget "Wget: Command-line downloader" ;;
-  4) install_pkg bat bat "Bat: A better cat" ;;
-  5) install_pkg htop htop "Htop: Hardware use Checker" ;;
-  6) install_pkg fish fish "Fish: A advanced Shell" ;;
-  7) install_pkg ssh openssh "OpenSSH: Server deployment" ;;
-  8) install_pkg python3 python3 "Python3: Coding language" ;;
-  9) install_pkg nmap nmap "Nmap: Network scanner" ;;
+  1)  install_pkg git git "Git: Version control," ;;
+  2)  install_pkg curl curl "Curl: HTTP request" ;;
+  3)  install_pkg wget wget "Wget: Command-line downloader" ;;
+  4)  install_pkg bat bat "Bat: A better cat" ;;
+  5)  install_pkg htop htop "Htop: Hardware use Checker" ;;
+  6)  install_pkg fish fish "Fish: A advanced Shell" ;;
+  7)  install_pkg ssh openssh "OpenSSH: Server deployment" ;;
+  8)  install_pkg python3 python3 "Python3: Coding language" ;;
+  9)  install_pkg nmap nmap "Nmap: Network scanner" ;;
   10) install_pkg cacademo libcaca "Libcaca: Cool fire" ;;
   11) install_pkg speedtest-go speedtest-go "Speedtest-Go: WI-FI-speed Checker " ;;
   12) install_pkg cpufetch cpufetch "CPUfetch: Cpu-info" ;;
