@@ -14,12 +14,12 @@ log START "Script started"
 # Define colors for a dark terminal environment (Termux/Hack look)
 LOGO="\e[96m"    # Bright Cyan (For Logo/Headers)
 INFO="\e[93m"    # Bright Yellow/Gold (For infor text/prompts)
-OPTION="\e[92m"  # Bright Green (For menu options)
-ERROR="\e[91m"   # Bright Red (For errors)
-BARRIER="\e[95m" # Bright Magenta (For visual dividers/barriers)
+OPT="\e[92m"  # Bright Green (For menu options)
+ERR="\e[91m"   # Bright Red (For errors)
+BARR="\e[95m" # Bright Magenta (For visual dividers/barriers)
 RST="\e[0m"      # Reset/No Color (Crucial for prompt fix)
 BOLD="\e[1m"     # Bold text
-WHITE="\e[97m"  # Bright White Text
+WHI="\e[97m"  # Bright White Text
 
 # a call for startup internet check
 startup_wifi_check
@@ -40,62 +40,62 @@ show_main_menu() {
         ━━━━━━━━━━━━━━ [ SETUP ESSENTIAL TOOLS ] ━━━━━━━━━━━━━━
 EOF
 
-  echo -e "${OPTION}${BOLD}"
+  echo -e "${OPT}${BOLD}"
   boxed_text left "[*] Select the pkg/tool you want to install:" 
 
-  echo -e "${BARRIER}   ╔═════════════╗ ${RST}"
-  echo -e "${BARRIER}   ║ ${RST}dpkg tools: ${BARRIER}║${RST}"
-  echo -e "${BARRIER}   ╚╔════════════╝═════════════════════════╗ ${RST}"
-  echo -e "${BARRIER}    ║${RST}${OPTION} [${WHITE}1${OPTION}]  Git           ${INFO}- Version control ${OPTION}(Min)${RST}"
-  echo -e "${BARRIER}    ║${RST}${OPTION} [${WHITE}2${OPTION}]  Curl          ${INFO}- HTTP requests ${OPTION}(Min)${RST}"
-  echo -e "${BARRIER}    ║${RST}${OPTION} [${WHITE}3${OPTION}]  Wget          ${INFO}- File downloads ${OPTION}(Min)${RST}"
-  echo -e "${BARRIER}    ║${RST}${OPTION} [${WHITE}4${OPTION}]  Bat           ${INFO}- 'cat' with syntax highlighting ${OPTION}(Min)${RST}"
-  echo -e "${BARRIER}    ║${RST}${OPTION} [${WHITE}5${OPTION}]  Htop          ${INFO}- Process viewer ${OPTION}(Min)${RST}"
-  echo -e "${BARRIER}    ║${RST}${OPTION} [${WHITE}6${OPTION}]  Fish          ${INFO}- Friendly shell ${OPTION}(Min)${RST}"
-  echo -e "${BARRIER}    ║${RST}${OPTION} [${WHITE}7${OPTION}]  OpenSSH       ${INFO}- SSH access ${OPTION}(Dev)${RST}"
-  echo -e "${BARRIER}    ║${RST}${OPTION} [${WHITE}8${OPTION}]  Python        ${INFO}- Programming language ${OPTION}(Min)${RST}"
-  echo -e "${BARRIER}    ║${RST}${OPTION} [${WHITE}9${OPTION}]  Nmap          ${INFO}- Network scanning ${OPTION}(Min)${RST}"
-  echo -e "${BARRIER}    ║${RST}${OPTION} [${WHITE}10${OPTION}] Libcaca       ${INFO}- A fire effect ${OPTION}(Fun)${RST}"
-  echo -e "${BARRIER}    ║${RST}${OPTION} [${WHITE}11${OPTION}] Speedtest-go  ${INFO}- Internet speed-test ${OPTION}(Fun)${RST}"
-  echo -e "${BARRIER}    ║${RST}${OPTION} [${WHITE}12${OPTION}] Cpufetch      ${INFO}- CPU information ${OPTION}(Fun)${RST}"
-  echo -e "${BARRIER}    ║${RST}${OPTION} [${WHITE}13${OPTION}] Neofetch      ${INFO}- System information ${OPTION}(Min)${RST}"
-  echo -e "${BARRIER}    ║${RST}${OPTION} [${WHITE}14${OPTION}] Ranger        ${INFO}- Terminal file manager ${OPTION}(Dev)${RST}"
-  echo -e "${BARRIER}    ║${RST}${OPTION} [${WHITE}15${OPTION}] Nano          ${INFO}- Text editor ${OPTION}(Min)${RST}"
-  echo -e "${BARRIER}    ║${RST}${OPTION} [${WHITE}16${OPTION}] Sl            ${INFO}- Steam Locomotive ${OPTION}(Fun)${RST}"
-  echo -e "${BARRIER}    ║${RST}${OPTION} [${WHITE}17${OPTION}] Ncdu          ${INFO}- NCurses disk usage analyzer ${OPTION}(Dev)${RST}"
-  echo -e "${BARRIER}    ║${RST}${OPTION} [${WHITE}18${OPTION}] Neovim        ${INFO}- Best code editor ${OPTION}(Dev)${RST}"
-  echo -e "${BARRIER}    ║${RST}${OPTION} [${WHITE}19${OPTION}] Cbonsai       ${INFO}- Japanise bonsai tree ${OPTION}(Fun)${RST}"
-  echo -e "${BARRIER}    ║${RST}${OPTION} [${WHITE}20${OPTION}] Asciinema     ${INFO}- Terminal recording tool ${OPTION}(Fun)${RST}"
-  echo -e "${BARRIER}    ║${RST}${OPTION} [${WHITE}21${OPTION}] Croc          ${INFO}- File transferring tool ${OPTION}(Dev)${RST}"
-  echo -e "${BARRIER}    ║${RST}${OPTION} [${WHITE}22${OPTION}] Fzf           ${INFO}- File finder ${OPTION}(Dev)${RST}"
-  echo -e "${BARRIER}    ║${RST}${OPTION} [${WHITE}23${OPTION}] Zoxide        ${INFO}- Smarter cd command ${OPTION}(Dev)${RST}"
-  echo -e "${BARRIER}    ║${RST}${OPTION} [${WHITE}24${OPTION}] Zsh           ${INFO}- Best shell ever ${OPTION}(Dev)${RST}"
-  echo -e "${BARRIER}    ║${RST}${OPTION} [${WHITE}25${OPTION}] Duf           ${INFO}- Disk Usage/Free utility ${OPTION}(Min)${RST}"
-  echo -e "${BARRIER}    ║${RST}${OPTION} [${WHITE}26${OPTION}] tty-clock     ${INFO}- A terminal clock ${OPTION}(Fun)${RST}"
-  echo -e "${BARRIER}    ║${RST}${OPTION} [${WHITE}27${OPTION}] Pipes.sh      ${INFO}- A cool tool for ${OPTION}(Fun)${RST}"
-  echo -e "${BARRIER}    ║${RST}${OPTION} [${WHITE}28${OPTION}] Yazi          ${INFO}- Amazing filemanager for terminal ${OPTION}(Dev)${RST}"
-  echo -e "${BARRIER}    ║${RST}${OPTION} [${WHITE}29${OPTION}] Lsd           ${INFO}- An 'ls' alternative with icons/colors ${OPTION}(Min)${RST}"
-  echo -e "${BARRIER}    ║${RST}${OPTION} [${WHITE}30${OPTION}] Broot         ${INFO}- Navigate directories with overviews ${OPTION}(Min)${RST}"
-  echo -e "${BARRIER}    ║${RST}${OPTION} [${WHITE}31${OPTION}] Dust          ${INFO}- More intuitive version of du ${OPTION}(Dev)${RST}"
-  echo -e "${BARRIER}    ║${RST}${OPTION} [${WHITE}32${OPTION}] Procs         ${INFO}- Modern replacement for 'ps' ${OPTION}(Dev)${RST}"
-  echo -e "${BARRIER}    ║${RST}${OPTION} [${WHITE}33${OPTION}] Tldr          ${INFO}- Simplified, community-driven man pages ${OPTION}(Dev)${RST}"
-  echo -e "${BARRIER}    ║${RST}${OPTION} [${WHITE}34${OPTION}] Node.Js       ${INFO}- JavaScript Runtime environment ${OPTION}(Dev)${RST}"
-  echo -e "${BARRIER}    ║${RST}${OPTION} [${WHITE}35${OPTION}] Gh            ${INFO}- A github-cli client ${OPTION}(Dev)${RST}"
-  echo -e "${BARRIER}    ║${RST}${OPTION} [${WHITE}36${OPTION}] Holehe        ${INFO}- Email OSINT scanner ${OPTION}(OSINT)${RST}"
-  echo -e "${BARRIER}    ║${RST}${OPTION} [${WHITE}37${OPTION}] Asciiquarium  ${INFO}- View of the sea ${OPTION}(Fun)${RST}"
-  echo -e "${BARRIER}    ║${RST}${OPTION} [${WHITE}38${OPTION}] Wttr          ${INFO}- A weather tool ${OPTION}(Fun)${RST}"
-  echo -e "${BARRIER}    ║${RST}${OPTION} [${WHITE}39${OPTION}] Tmux          ${INFO}- A multitasker tool ${OPTION}(Dev)${RST}"
-  echo -e "${BARRIER}    ╚═════════════════════════════════════╝ ${RST}"
+  echo -e "${BARR}   ╔═════════════╗ ${RST}"
+  echo -e "${BARR}   ║ ${RST}dpkg tools: ${BARR}║${RST}"
+  echo -e "${BARR}   ╚╔════════════╝═════════════════════════╗ ${RST}"
+  echo -e "${BARR}    ║${RST}${OPT} [${WHI}1${OPT}]  Git           ${INFO}- Version control ${OPT}(Min)${RST}"
+  echo -e "${BARR}    ║${RST}${OPT} [${WHI}2${OPT}]  Curl          ${INFO}- HTTP requests ${OPT}(Min)${RST}"
+  echo -e "${BARR}    ║${RST}${OPT} [${WHI}3${OPT}]  Wget          ${INFO}- File downloads ${OPT}(Min)${RST}"
+  echo -e "${BARR}    ║${RST}${OPT} [${WHI}4${OPT}]  Bat           ${INFO}- 'cat' with syntax highlighting ${OPT}(Min)${RST}"
+  echo -e "${BARR}    ║${RST}${OPT} [${WHI}5${OPT}]  Htop          ${INFO}- Process viewer ${OPT}(Min)${RST}"
+  echo -e "${BARR}    ║${RST}${OPT} [${WHI}6${OPT}]  Fish          ${INFO}- Friendly shell ${OPT}(Min)${RST}"
+  echo -e "${BARR}    ║${RST}${OPT} [${WHI}7${OPT}]  OpenSSH       ${INFO}- SSH access ${OPT}(Dev)${RST}"
+  echo -e "${BARR}    ║${RST}${OPT} [${WHI}8${OPT}]  Python        ${INFO}- Programming language ${OPT}(Min)${RST}"
+  echo -e "${BARR}    ║${RST}${OPT} [${WHI}9${OPT}]  Nmap          ${INFO}- Network scanning ${OPT}(Min)${RST}"
+  echo -e "${BARR}    ║${RST}${OPT} [${WHI}10${OPT}] Libcaca       ${INFO}- A fire effect ${OPT}(Fun)${RST}"
+  echo -e "${BARR}    ║${RST}${OPT} [${WHI}11${OPT}] Speedtest-go  ${INFO}- Internet speed-test ${OPT}(Fun)${RST}"
+  echo -e "${BARR}    ║${RST}${OPT} [${WHI}12${OPT}] Cpufetch      ${INFO}- CPU information ${OPT}(Fun)${RST}"
+  echo -e "${BARR}    ║${RST}${OPT} [${WHI}13${OPT}] Neofetch      ${INFO}- System information ${OPT}(Min)${RST}"
+  echo -e "${BARR}    ║${RST}${OPT} [${WHI}14${OPT}] Ranger        ${INFO}- Terminal file manager ${OPT}(Dev)${RST}"
+  echo -e "${BARR}    ║${RST}${OPT} [${WHI}15${OPT}] Nano          ${INFO}- Text editor ${OPT}(Min)${RST}"
+  echo -e "${BARR}    ║${RST}${OPT} [${WHI}16${OPT}] Sl            ${INFO}- Steam Locomotive ${OPT}(Fun)${RST}"
+  echo -e "${BARR}    ║${RST}${OPT} [${WHI}17${OPT}] Ncdu          ${INFO}- NCurses disk usage analyzer ${OPT}(Dev)${RST}"
+  echo -e "${BARR}    ║${RST}${OPT} [${WHI}18${OPT}] Neovim        ${INFO}- Best code editor ${OPT}(Dev)${RST}"
+  echo -e "${BARR}    ║${RST}${OPT} [${WHI}19${OPT}] Cbonsai       ${INFO}- Japanise bonsai tree ${OPT}(Fun)${RST}"
+  echo -e "${BARR}    ║${RST}${OPT} [${WHI}20${OPT}] Asciinema     ${INFO}- Terminal recording tool ${OPT}(Fun)${RST}"
+  echo -e "${BARR}    ║${RST}${OPT} [${WHI}21${OPT}] Croc          ${INFO}- File transferring tool ${OPT}(Dev)${RST}"
+  echo -e "${BARR}    ║${RST}${OPT} [${WHI}22${OPT}] Fzf           ${INFO}- File finder ${OPT}(Dev)${RST}"
+  echo -e "${BARR}    ║${RST}${OPT} [${WHI}23${OPT}] Zoxide        ${INFO}- Smarter cd command ${OPT}(Dev)${RST}"
+  echo -e "${BARR}    ║${RST}${OPT} [${WHI}24${OPT}] Zsh           ${INFO}- Best shell ever ${OPT}(Dev)${RST}"
+  echo -e "${BARR}    ║${RST}${OPT} [${WHI}25${OPT}] Duf           ${INFO}- Disk Usage/Free utility ${OPT}(Min)${RST}"
+  echo -e "${BARR}    ║${RST}${OPT} [${WHI}26${OPT}] tty-clock     ${INFO}- A terminal clock ${OPT}(Fun)${RST}"
+  echo -e "${BARR}    ║${RST}${OPT} [${WHI}27${OPT}] Pipes.sh      ${INFO}- A cool tool for ${OPT}(Fun)${RST}"
+  echo -e "${BARR}    ║${RST}${OPT} [${WHI}28${OPT}] Yazi          ${INFO}- Amazing filemanager for terminal ${OPT}(Dev)${RST}"
+  echo -e "${BARR}    ║${RST}${OPT} [${WHI}29${OPT}] Lsd           ${INFO}- An 'ls' alternative with icons/colors ${OPT}(Min)${RST}"
+  echo -e "${BARR}    ║${RST}${OPT} [${WHI}30${OPT}] Broot         ${INFO}- Navigate directories with overviews ${OPT}(Min)${RST}"
+  echo -e "${BARR}    ║${RST}${OPT} [${WHI}31${OPT}] Dust          ${INFO}- More intuitive version of du ${OPT}(Dev)${RST}"
+  echo -e "${BARR}    ║${RST}${OPT} [${WHI}32${OPT}] Procs         ${INFO}- Modern replacement for 'ps' ${OPT}(Dev)${RST}"
+  echo -e "${BARR}    ║${RST}${OPT} [${WHI}33${OPT}] Tldr          ${INFO}- Simplified, community-driven man pages ${OPT}(Dev)${RST}"
+  echo -e "${BARR}    ║${RST}${OPT} [${WHI}34${OPT}] Node.Js       ${INFO}- JavaScript Runtime environment ${OPT}(Dev)${RST}"
+  echo -e "${BARR}    ║${RST}${OPT} [${WHI}35${OPT}] Gh            ${INFO}- A github-cli client ${OPT}(Dev)${RST}"
+  echo -e "${BARR}    ║${RST}${OPT} [${WHI}36${OPT}] Holehe        ${INFO}- Email OSINT scanner ${OPT}(OSINT)${RST}"
+  echo -e "${BARR}    ║${RST}${OPT} [${WHI}37${OPT}] Asciiquarium  ${INFO}- View of the sea ${OPT}(Fun)${RST}"
+  echo -e "${BARR}    ║${RST}${OPT} [${WHI}38${OPT}] Wttr          ${INFO}- A weather tool ${OPT}(Fun)${RST}"
+  echo -e "${BARR}    ║${RST}${OPT} [${WHI}39${OPT}] Tmux          ${INFO}- A multitasker tool ${OPT}(Dev)${RST}"
+  echo -e "${BARR}    ╚═════════════════════════════════════╝ ${RST}"
 
 echo ""
-echo -e "${BARRIER}   ╔══════════════════╗ ${RST}"
-echo -e "${BARRIER}   ║${RST}${OPTION} [${WHITE}0${OPTION}] Install ALL tools${RST}"
-echo -e "${BARRIER}   ║${RST}${OPTION} [${WHITE}p${OPTION}] Install by preset${RST}"
-echo -e "${BARRIER}   ║${RST}${OPTION} [${WHITE}i${OPTION}] Inspect installed tools${RST}"
-echo -e "${BARRIER}   ║${RST}${OPTION} [${WHITE}u${OPTION}] Uninstall tools${RST}"
-echo -e "${BARRIER}   ║${RST}${OPTION} [${ERROR}e${OPTION}] Exits the script${RST}"
-echo -e "${BARRIER}   ╚══════════════════╝ ${RST}"
-  echo -e "${OPTION}${BOLD}"
+echo -e "${BARR}   ╔══════════════════╗ ${RST}"
+echo -e "${BARR}   ║${RST}${OPT} [${WHI}0${OPT}] Install ALL tools${RST}"
+echo -e "${BARR}   ║${RST}${OPT} [${WHI}p${OPT}] Install by preset${RST}"
+echo -e "${BARR}   ║${RST}${OPT} [${WHI}i${OPT}] Inspect installed tools${RST}"
+echo -e "${BARR}   ║${RST}${OPT} [${WHI}u${OPT}] Uninstall tools${RST}"
+echo -e "${BARR}   ║${RST}${OPT} [${ERR}e${OPT}] Exits the script${RST}"
+echo -e "${BARR}   ╚══════════════════╝ ${RST}"
+  echo -e "${OPT}${BOLD}"
   read -p " [*] Enter the tool numbers (separate by spaces): " -a selections
   echo ""
 }
@@ -104,13 +104,13 @@ profile_menu() {
  while true; do
   clear
    log ENTER "User entered sub-menu 'install-sresets'"
-  echo -e "${OPTION}${BOLD}"
+  echo -e "${OPT}${BOLD}"
    boxed_text center "Choose the preset you want to install"
-  echo -e "${OPTION}"
+  echo -e "${OPT}"
    boxed_text center "[1] Minimal tools
 [2] Developer tools
 [3] Fun tools"
-  echo -e "${ERROR}"
+  echo -e "${ERR}"
    boxed_text center "[b]ack to main menu"
   echo -e "${RST}"
   echo -ne "${INFO}${BOLD} [*] Choose an option: ${RST}"
@@ -130,7 +130,7 @@ profile_menu() {
        return 0
       ;;
     *) echo ""
-       echo -e "${ERROR}"
+       echo -e "${ERR}"
       boxed_text center "[x] Invalid choice: '$profile_choice', Please select the right option."
        echo -e "${RST}"
       sleep 3
@@ -200,7 +200,7 @@ while true; do
     graceful_exit
     ;;
   *) 
-    echo -e "${ERROR}${BOLD}"
+    echo -e "${ERR}${BOLD}"
     boxed_text center "[x] Invalid input: '$selections'. Please select the right option."
     echo -e "${RST}"
     sleep 2

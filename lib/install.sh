@@ -20,7 +20,7 @@ install_all() {
    echo ""
     start_spinner " [*] Updateing package list.."
      pkg_update
-    stop_spinner "${OPTION}${BOLD} [✓] Package list refreshed..${RST}"
+    stop_spinner "${OPT}${BOLD} [✓] Package list refreshed..${RST}"
    echo ""
     sleep 0.1
    echo -e "${INFO}"
@@ -28,14 +28,14 @@ install_all() {
     echo -e "${RST}"
      start_spinner " [*] Upgrading system..."
       pkg_upgrade
-     stop_spinner "${OPTION}${BOLD} [✓] System Upgrade complete..${RST}"
+     stop_spinner "${OPT}${BOLD} [✓] System Upgrade complete..${RST}"
     else
      boxed_text center "[*] Skipping system upgrade"
   fi
 
  clear
   tput civis
-   echo -e "${OPTION}$BOLD"
+   echo -e "${OPT}$BOLD"
     boxed_text center "[*] Installing all essential tools"
    echo -e "${RST}"
    
@@ -82,7 +82,7 @@ install_all() {
     # -- post-install-summary
     echo ""
     post_install_summary
-    echo -e "${OPTION}${BOLD}" 
+    echo -e "${OPT}${BOLD}" 
    boxed_text center "[✓] Install All Completed. Press ENTER to continue.."
     echo -e "${RST}"
     read
@@ -104,29 +104,29 @@ install_preset() {
 install_zsh_full() {
  install_pkg zsh zsh "Zsh: Most awesome shell,"
    sleep 1
-    echo -e "${OPTION}${BOLD}"
+    echo -e "${OPT}${BOLD}"
     if ask_yes_no " [*] Do you want you install oh-my-zsh?"; then
      if [ -d "$HOME/.oh-my-zsh" ]; then
-         echo -e "${OPTION}${BOLD} [✓] Oh My Zsh already exists. Skipping...${RST}"
+         echo -e "${OPT}${BOLD} [✓] Oh My Zsh already exists. Skipping...${RST}"
           sleep 2
        else 
-         echo -e "${OPTION}${BOLD} [*] Installing Oh-My-Zsh framework...${RST}"
+         echo -e "${OPT}${BOLD} [*] Installing Oh-My-Zsh framework...${RST}"
        KEEP_ZSHRC=yes RUNZSH=no CHSH=no \
          sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
       fi
      fi
     sleep 1 
-    echo -e "${OPTION}${BOLD}"
+    echo -e "${OPT}${BOLD}"
      if ask_yes_no " [!] Do you also want to install p10k..?"; then
       if [ -d "$HOME/.oh-my-zsh/custom/themes/powerlevel10k" ]; then
        echo -e "${INFO}${BOLD} [✓] Powerlevel10k is already configured - Skipping..${RST}"
        sleep 3
        return 0 
       else  
-       echo -e "${OPTION}${BOLD} [*] Installing p10k..${RST}"
+       echo -e "${OPT}${BOLD} [*] Installing p10k..${RST}"
        git clone --depth=1 https://github.com/romkatv/powerlevel10k.git "${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k"
        echo ""
-       echo -e "${OPTION}${BOLD} [✓] Powerlevel10k is now installed, type: p10k configure${RST}"
+       echo -e "${OPT}${BOLD} [✓] Powerlevel10k is now installed, type: p10k configure${RST}"
       fi
      fi
 }
@@ -137,10 +137,10 @@ install_neovim_full() {
 
   # Use the exact path that the LS command just confirmed
   local NV_CONFIG="$HOME/.config/nvim"
-  echo -e "${OPTION}${BOLD}"
+  echo -e "${OPT}${BOLD}"
  if ask_yes_no " [*] Do you want to install NvChad for NeoVim?"; then
   if [ -d "$NV_CONFIG" ]; then
-    echo -e "${OPTION}${BOLD} [✓] NvChad configuration already exists - Skipping..${RST}"
+    echo -e "${OPT}${BOLD} [✓] NvChad configuration already exists - Skipping..${RST}"
     sleep 1
   else
     echo ""
@@ -148,7 +148,7 @@ install_neovim_full() {
       mkdir -p "$HOME/.config"
       git clone https://github.com/NvChad/starter ~/.config/nvim
      echo ""
-    echo -e "${OPTION}${BOLD} [✓] NvChad has been configured successfully.${RST}"
+    echo -e "${OPT}${BOLD} [✓] NvChad has been configured successfully.${RST}"
    sleep 2
   fi
  fi
@@ -165,7 +165,7 @@ install_pkg() {
 
     # For internet Check-up before continue
     if ! check_internet; then
-     echo -e "${ERROR}${BOLD}"
+     echo -e "${ERR}${BOLD}"
       boxed_text center "        It seems that you are not onlile
 Please make sure to turn on WI-FI to continue ;)"
       echo -e "${RST}"
@@ -175,10 +175,10 @@ Please make sure to turn on WI-FI to continue ;)"
     fi
     # installing or Skipped massges
     if command -v "$cmd" >/dev/null 2>&1; then
-        echo -e "${OPTION}${BOLD} [✓] $name is already installed - Skipping..${RST}"
+        echo -e "${OPT}${BOLD} [✓] $name is already installed - Skipping..${RST}"
         SKIPPED_PKGS+=("$name")
         log SKIPPED "$name was already installed (Skipped)"
-        sleep 0.1
+        sleep 1
     else
         echo -e "${INFO}${BOLD}"
          start_spinner " [*] Installing: $name.."
@@ -230,25 +230,25 @@ Please make sure to turn on WI-FI to continue ;)"
             done
             ;;
             *) stop_spinner
-               echo -e "${ERROR}${BOLD} [x] Unsupported package manager: $PM${RST}"
+               echo -e "${ERR}${BOLD} [x] Unsupported package manager: $PM${RST}"
                 return 1
                 ;;
         esac
         # detection for post-install summary
         if [ $? -eq 0 ]; then
           INSTALLED_PKGS+=("$name")
-           echo -e "${OPTION}${BOLD}"
+           echo -e "${OPT}${BOLD}"
             stop_spinner " [✓] $name has installed successfully."
            echo -e "${RST}"
            log INSTALLED "$name installed successfully"
          else
           FAILED_PKGS+=("$name")
-           echo -e "${ERROR}${BOLD}" 
+           echo -e "${ERR}${BOLD}" 
             stop_spinner "[x] Failed to install $name."
            echo -e "${RST}"
            log FAIL "$name failed to install"
         fi
-        # echo -e "${OPTION}${BOLD} [✓] $name has installed successfully.${RST}"
+        # echo -e "${OPT}${BOLD} [✓] $name has installed successfully.${RST}"
         sleep 1
     fi
 }
@@ -262,7 +262,7 @@ install_pip_package() {
 
     # For internet Check-up before continue
     if ! check_internet; then
-     echo -e "${ERROR}${BOLD}"
+     echo -e "${ERR}${BOLD}"
       boxed_text center "        It seems that you are not onlile
 Please make sure to turn on WI-FI to continue ;)"
       echo -e "${RST}"
@@ -276,8 +276,8 @@ Please make sure to turn on WI-FI to continue ;)"
     elif command -v pip &> /dev/null; then
         install_cmd="pip"
     else
-        echo -e "${ERROR}${BOLD}"
-        boxed_text center "[x] ERROR: Neither pip nor pip3 is available.."
+        echo -e "${ERR}${BOLD}"
+        boxed_text center "[x] ERR: Neither pip nor pip3 is available.."
         echo -e "${RST}"
         sleep 3
         return 1
@@ -285,28 +285,28 @@ Please make sure to turn on WI-FI to continue ;)"
     
     # Check if command already exists
     if command -v "$command_name" &> /dev/null; then
-        echo -e "${OPTION}${BOLD} [✓] $package_name is already installed - Skipping ${RST}"
+        echo -e "${OPT}${BOLD} [✓] $package_name is already installed - Skipping ${RST}"
         log SKIPPED "$package_name was already installed (Skipped)"
         sleep 3
         return 0
     fi
     
     # Install the package
-    echo -e "${OPTION}${BOLD} [*] Installing: $package_name...${RST}"
+    echo -e "${OPT}${BOLD} [*] Installing: $package_name...${RST}"
     if ! $install_cmd install --quiet "$command_name"; then
-        echo -e "${ERROR}${BOLD} [x] ERROR: Failed to install $package_name..${RST}" >&2
+        echo -e "${ERR}${BOLD} [x] ERR: Failed to install $package_name..${RST}" >&2
         log FAIL "$package_name failed to installed"
         sleep 3
         return 1
     fi
     # Verify installation
     if command -v "$command_name" &> /dev/null; then
-        echo -e "${OPTION}${BOLD} [✓] Successfully installed $package_name..${RST}"
+        echo -e "${OPT}${BOLD} [✓] Successfully installed $package_name..${RST}"
         log INSTALLED "$package_name successfully installed"
         sleep 3
         return 0
     else
-        echo -e "${ERROR} [!] WARNING: $package_name installed but '$command_name' command not found..${RST}" >&2
+        echo -e "${ERR} [!] WARNING: $package_name installed but '$command_name' command not found..${RST}" >&2
         sleep 3
         return 0  # Still return success as package was installed
     fi

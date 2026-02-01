@@ -37,6 +37,7 @@ PRESET_DEV=(
   "zoxide|zoxide|Zoxide: Smarter cd,"
   "gh|gh|Gh: Github-cli"
   "tmux|tmux|Tmux: A Multitasker"
+  "lazygit|lazygit|Lazygit: A TUI for Git"
 )
 
 # Fun tools

@@ -28,7 +28,7 @@ uninstall_pkg() {
     pkg) pkg uninstall -y "$pkg" ;;
     apt) apt remove -y "$pkg" ;;
     *)
-      echo -e "${ERROR} [!] Unsupported package manager..${RST}"
+      echo -e "${ERR} [!] Unsupported package manager..${RST}"
       return
       ;;
   esac >/dev/null 2>&1

@@ -37,7 +37,7 @@ detect_pkg_manager() {
     elif command -v scoop >/dev/null 2>&1; then
         echo "scoop"
     else
-        echo -e "${ERROR}${BOLD}"
+        echo -e "${ERR}${BOLD}"
         boxed_text center "[x] No reqired package maneger found.."
         echo -e "${RST}"
         return 1
@@ -87,7 +87,7 @@ is_pkg_installed() {
             scoop list "$pkg" >/dev/null 2>&1
             ;;
         *)
-          echo -e "${ERROR}${BOLD}"
+          echo -e "${ERR}${BOLD}"
            boxed_text center " [!] Could not determine if pkg is already installed.."
           echo -e "${RST}"
           sleep 3

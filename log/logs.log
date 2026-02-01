@@ -117,3 +117,25 @@
 [21:59:52] [INSTALL] User chose to install 'Minimal tools preset'
 [21:59:52] [SKIPPED] Git: Version Control, was already installed (Skipped)
 [22:00:02] [FAIL] Curl: Feature-rich URL transfer tool, not installed (no internet)
+[23:40:03] [START] Script started
+[23:40:37] [INSTALLED] Tmux: A multitasker installed successfully
+[23:40:44] [EXIT] Exited script
+[12:55:58] [START] Script started
+[12:56:16] [EXIT] Exited script
+[12:57:16] [START] Script started
+[12:57:20] [EXIT] Exited script
+[12:58:56] [START] Script started
+[12:59:00] [EXIT] Exited script
+[12:59:04] [START] Script started
+[12:59:25] [SKIPPED] Git: Version control, was already installed (Skipped)
+[12:59:25] [SKIPPED] Curl: HTTP request was already installed (Skipped)
+[12:59:26] [SKIPPED] Wget: Command-line downloader was already installed (Skipped)
+[12:59:49] [EXIT] Exited script
+[13:04:02] [START] Script started
+[13:04:13] [SKIPPED] Git: Version control, was already installed (Skipped)
+[13:04:19] [EXIT] Exited script
+[13:05:38] [START] Script started
+[13:05:43] [SKIPPED] Git: Version control, was already installed (Skipped)
+[13:05:44] [SKIPPED] Zoxide: A better 'cd' was already installed (Skipped)
+[13:05:45] [SKIPPED] Bat: A better cat was already installed (Skipped)
+[13:05:52] [EXIT] Exited script

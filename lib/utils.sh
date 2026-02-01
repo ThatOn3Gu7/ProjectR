@@ -7,16 +7,16 @@ check_tool() {
    local name="$2" # A name to show to user
 
   if command -v "$cmd" >/dev/null 2>&1; then
-     echo -e "${OPTION}${BOLD}   [✓] $name is installed${RST}"
+     echo -e "${OPT}${BOLD}   [✓] $name is installed${RST}"
     sleep 0.1
    else
-     echo -e "${ERROR}${BOLD}   [✗] $name is NOT installed${RST}"
+     echo -e "${ERR}${BOLD}   [✗] $name is NOT installed${RST}"
     sleep 0.1
   fi
 }
 
 check_tool_main() {
- echo -e "${OPTION}${BOLD}"
+ echo -e "${OPT}${BOLD}"
    boxed_text center " [*] Checking if any tools are installed"
  echo -e "${RST}"
  tput civis
@@ -59,7 +59,7 @@ check_tool_main() {
  check_tool wttr "Wttr.io"
  check_tool tmux "Tmux"
 
- echo -e "${OPTION}${BOLD}"
+ echo -e "${OPT}${BOLD}"
   boxed_text center " [✓] Taks complete.. press ENTER to continue"
  echo -e "${RST}"
 
@@ -77,11 +77,11 @@ log() {
 # startup internet Check
 startup_wifi_check() {
   if ! check_internet; then
-    log ERROR "No internet connection"
-    echo -e "${ERROR}${BOLD}"
+    log ERR "No internet connection"
+    echo -e "${ERR}${BOLD}"
     boxed_text center "        It seems that you are not onlile
 Please make sure to turn on WI-FI to continue :)"
-    echo -e "${OPTION}${BOLD}"
+    echo -e "${OPT}${BOLD}"
     boxed_text center " [!] Still continue? [y/N]"
     tput civis        # hide cursor
     read -rsn 1 reply    # read silently, no echo
@@ -98,17 +98,17 @@ Please make sure to turn on WI-FI to continue :)"
 is_internet_up() {
     # Check for internet connection
     if ! check_internet; then
-      log ERROR "No internet connection"
+      log ERR "No internet connection"
       echo ""
-      echo -e "${ERROR}${BOLD}"
+      echo -e "${ERR}${BOLD}"
       boxed_text center "[!] No internet connection detected. Did you lose it?"
-      echo -e "${OPTION}${BOLD}"
+      echo -e "${OPT}${BOLD}"
       boxed_text center "[*] Please have stable internet connection to continue ;)"
       echo -e "${RST}" 
       exit 0
     else
       clear
-      echo -e "${OPTION}${BOLD}"
+      echo -e "${OPT}${BOLD}"
        boxed_text center "[✓] Internet connection detected. Proceeding."
       echo -e ${RST}
     fi
@@ -117,7 +117,7 @@ is_internet_up() {
 post_install_summary() {
     log OK "Post-Installation-Summary shown"
     echo ""
-    echo -e "${OPTION}${BOLD}"
+    echo -e "${OPT}${BOLD}"
     boxed_text center " [*] Post-Installation Summary" 
     echo -e "${RST}"
 
@@ -130,7 +130,7 @@ post_install_summary() {
     fi
 
     if [ ${#SKIPPED_PKGS[@]} -gt 0 ]; then
-        echo -e "${OPTION}${BOLD}Skipped:${RST}"
+        echo -e "${OPT}${BOLD}Skipped:${RST}"
         for pkg in "${SKIPPED_PKGS[@]}"; do
             echo " [ → ] $pkg"
         done
@@ -138,7 +138,7 @@ post_install_summary() {
     fi
 
     if [ ${#FAILED_PKGS[@]} -gt 0 ]; then
-        echo -e "${ERROR}${BOLD}Failed:${RST}"
+        echo -e "${ERR}${BOLD}Failed:${RST}"
         for pkg in "${FAILED_PKGS[@]}"; do
             echo " [ ✗ ] $pkg"
         done
@@ -296,7 +296,7 @@ pkg_update() {
             scoop update >/dev/null 2>&1
             ;;
         *)
-          echo -e "${ERROR}${BOLD}"
+          echo -e "${ERR}${BOLD}"
           boxed_text center " [!] No supported package manager found, So package list not updated"
           echo -e "${RST}"
           stop_spinner
@@ -317,7 +317,7 @@ pkg_upgrade() {
         brew) brew upgrade >/dev/null 2>&1 ;;
         pkg) pkg upgrade -y >/dev/null 2>&1 ;;
         *)
-          echo -e "${ERROR}${BOLD}"
+          echo -e "${ERR}${BOLD}"
           boxed_text center "[!] System upgrade not supported for: $PM..${RST}"
           echo -e "${RST}"
           stop_spinner  
