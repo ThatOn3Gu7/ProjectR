@@ -79,6 +79,7 @@ install_all() {
     install_pip_package "asciiquarium" "Asciiqurium,"
     install_pip_package "wttr" "Wttr.io,"
     install_pkg tmux tmux "Tmux: A multitasker,"
+    install_pkg lazygit lazygit "Lazygit: A git TUI,"
     # -- post-install-summary
     echo ""
     post_install_summary
@@ -175,18 +176,18 @@ Please make sure to turn on WI-FI to continue ;)"
     fi
     # installing or Skipped massges
     if command -v "$cmd" >/dev/null 2>&1; then
-        echo -e "${OPT}${BOLD} [✓] $name is already installed - Skipping..${RST}"
+        echo -e "${OPT}${BOLD}  [✓] $name is already installed - Skipping..${RST}"
         SKIPPED_PKGS+=("$name")
         log SKIPPED "$name was already installed (Skipped)"
         sleep 1
     else
-        echo -e "${INFO}${BOLD}"
-         start_spinner " [*] Installing: $name.."
+      echo ""
+       start_spinner "  [*] Installing: $name.."
 
        # Use the detected package manager to install 
        case $PM in
         apt)
-            apt-get update >/dev/null 2>&1 && apt-get install -y "$pkg" >/dev/null 2>&1
+            apt-get update && apt-get install -y "$pkg"
             ;;
         dnf|yum)
             sudo $PM install -y "$pkg"
@@ -233,7 +234,7 @@ Please make sure to turn on WI-FI to continue ;)"
                echo -e "${ERR}${BOLD} [x] Unsupported package manager: $PM${RST}"
                 return 1
                 ;;
-        esac
+        esac >/dev/null 2>&1
         # detection for post-install summary
         if [ $? -eq 0 ]; then
           INSTALLED_PKGS+=("$name")

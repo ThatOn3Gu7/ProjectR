@@ -2,6 +2,15 @@
 # -- log creation --
 LOG_FILE="$HOME/ProjectR/log/logs.log"
 
+# -- Small message for installer --
+be_patient() {
+  clear 
+   echo -e "${OPT}${BOLD}"
+    boxed_text center "[*] Installation may take a while, Please be patient"
+   echo -e "${INFO}${BOLD}"
+}
+
+# -- checkes if a tools is installed --
 check_tool() {
    local cmd=$1 # Tool name to check if its installed or not
    local name="$2" # A name to show to user
@@ -14,7 +23,7 @@ check_tool() {
     sleep 0.1
   fi
 }
-
+# -- Calls the tool checker repeatedly --
 check_tool_main() {
  echo -e "${OPT}${BOLD}"
    boxed_text center " [*] Checking if any tools are installed"
@@ -45,7 +54,7 @@ check_tool_main() {
  check_tool zoxide "Zoxide" 
  check_tool zsh "Z shell" 
  check_tool duf "Duf" 
- check_tool tty-clock "tty-clock" 
+ check_tool tty-clock "Tty-clock" 
  check_tool pipes.sh "Pipes.sh" 
  check_tool yazi "Yazi" 
  check_tool lsd "Lsd" 
@@ -58,6 +67,7 @@ check_tool_main() {
  check_tool asciiquarium "Asciiqurium"
  check_tool wttr "Wttr.io"
  check_tool tmux "Tmux"
+ check_tool lazygit "Lazygit"           
 
  echo -e "${OPT}${BOLD}"
   boxed_text center " [✓] Taks complete.. press ENTER to continue"

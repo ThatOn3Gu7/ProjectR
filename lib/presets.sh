@@ -37,7 +37,7 @@ PRESET_DEV=(
   "zoxide|zoxide|Zoxide: Smarter cd,"
   "gh|gh|Gh: Github-cli"
   "tmux|tmux|Tmux: A Multitasker"
-  "lazygit|lazygit|Lazygit: A TUI for Git"
+  "lazygit|lazygit|Lazygit: A git TUI"
 )
 
 # Fun tools
@@ -46,7 +46,7 @@ PRESET_FUN=(
   "neofetch|neofetch|Neofetch: Systom info,"
   "cbonsai|cbonsai|Cbonsai: Japanise tree,"
   "cpufetch|cpufetch|CPUfetch: Cpu-info,"
-  "ttty-clock|ttty-clock|tty-clock: A big clock,"
+  "ttty-clock|ttty-clock|Tty-clock: A terminal clock,"
   "pipes.sh|pipes.sh|Pipes.sh: Line-Snake,"
   "speedtest-go|speedtest-go|Speedtest-Go: WI-FI-speed Checker,"
   "cacafire|libcaca|Libcaca: Cool fire,"

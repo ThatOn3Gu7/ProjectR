@@ -12,13 +12,13 @@ log START "Script started"
 # source /data/data/com.termux/files/home/project/lib/utils.sh
 # # ---  COLORS AND STYLING ---
 # Define colors for a dark terminal environment (Termux/Hack look)
-LOGO="\e[96m"    # Bright Cyan (For Logo/Headers)
-INFO="\e[93m"    # Bright Yellow/Gold (For infor text/prompts)
+LOGO="\e[96m" # Bright Cyan (For Logo/Headers)
+INFO="\e[93m" # Bright Yellow/Gold (For infor text/prompts)
 OPT="\e[92m"  # Bright Green (For menu options)
-ERR="\e[91m"   # Bright Red (For errors)
+ERR="\e[91m"  # Bright Red (For errors)
 BARR="\e[95m" # Bright Magenta (For visual dividers/barriers)
-RST="\e[0m"      # Reset/No Color (Crucial for prompt fix)
-BOLD="\e[1m"     # Bold text
+RST="\e[0m"   # Reset/No Color (Crucial for prompt fix)
+BOLD="\e[1m"  # Bold text
 WHI="\e[97m"  # Bright White Text
 
 # a call for startup internet check
@@ -43,9 +43,9 @@ EOF
   echo -e "${OPT}${BOLD}"
   boxed_text left "[*] Select the pkg/tool you want to install:" 
 
-  echo -e "${BARR}   ╔═════════════╗ ${RST}"
-  echo -e "${BARR}   ║ ${RST}dpkg tools: ${BARR}║${RST}"
-  echo -e "${BARR}   ╚╔════════════╝═════════════════════════╗ ${RST}"
+  echo -e "${BARR}   ╔═════════════════╗ ${RST}"
+  echo -e "${BARR}   ║ ${RST}Available pkgs: ${BARR}║${RST}"
+  echo -e "${BARR}   ╚╔════════════════╝═══════════════════╗ ${RST}"
   echo -e "${BARR}    ║${RST}${OPT} [${WHI}1${OPT}]  Git           ${INFO}- Version control ${OPT}(Min)${RST}"
   echo -e "${BARR}    ║${RST}${OPT} [${WHI}2${OPT}]  Curl          ${INFO}- HTTP requests ${OPT}(Min)${RST}"
   echo -e "${BARR}    ║${RST}${OPT} [${WHI}3${OPT}]  Wget          ${INFO}- File downloads ${OPT}(Min)${RST}"
@@ -71,7 +71,7 @@ EOF
   echo -e "${BARR}    ║${RST}${OPT} [${WHI}23${OPT}] Zoxide        ${INFO}- Smarter cd command ${OPT}(Dev)${RST}"
   echo -e "${BARR}    ║${RST}${OPT} [${WHI}24${OPT}] Zsh           ${INFO}- Best shell ever ${OPT}(Dev)${RST}"
   echo -e "${BARR}    ║${RST}${OPT} [${WHI}25${OPT}] Duf           ${INFO}- Disk Usage/Free utility ${OPT}(Min)${RST}"
-  echo -e "${BARR}    ║${RST}${OPT} [${WHI}26${OPT}] tty-clock     ${INFO}- A terminal clock ${OPT}(Fun)${RST}"
+  echo -e "${BARR}    ║${RST}${OPT} [${WHI}26${OPT}] Tty-clock     ${INFO}- A terminal clock ${OPT}(Fun)${RST}"
   echo -e "${BARR}    ║${RST}${OPT} [${WHI}27${OPT}] Pipes.sh      ${INFO}- A cool tool for ${OPT}(Fun)${RST}"
   echo -e "${BARR}    ║${RST}${OPT} [${WHI}28${OPT}] Yazi          ${INFO}- Amazing filemanager for terminal ${OPT}(Dev)${RST}"
   echo -e "${BARR}    ║${RST}${OPT} [${WHI}29${OPT}] Lsd           ${INFO}- An 'ls' alternative with icons/colors ${OPT}(Min)${RST}"
@@ -85,16 +85,21 @@ EOF
   echo -e "${BARR}    ║${RST}${OPT} [${WHI}37${OPT}] Asciiquarium  ${INFO}- View of the sea ${OPT}(Fun)${RST}"
   echo -e "${BARR}    ║${RST}${OPT} [${WHI}38${OPT}] Wttr          ${INFO}- A weather tool ${OPT}(Fun)${RST}"
   echo -e "${BARR}    ║${RST}${OPT} [${WHI}39${OPT}] Tmux          ${INFO}- A multitasker tool ${OPT}(Dev)${RST}"
+  echo -e "${BARR}    ║${RST}${OPT} [${WHI}40${OPT}] Lazygit       ${INFO}- An TUI for git ${OPT}(Dev)${RST}"
   echo -e "${BARR}    ╚═════════════════════════════════════╝ ${RST}"
 
 echo ""
-echo -e "${BARR}   ╔══════════════════╗ ${RST}"
-echo -e "${BARR}   ║${RST}${OPT} [${WHI}0${OPT}] Install ALL tools${RST}"
-echo -e "${BARR}   ║${RST}${OPT} [${WHI}p${OPT}] Install by preset${RST}"
-echo -e "${BARR}   ║${RST}${OPT} [${WHI}i${OPT}] Inspect installed tools${RST}"
-echo -e "${BARR}   ║${RST}${OPT} [${WHI}u${OPT}] Uninstall tools${RST}"
-echo -e "${BARR}   ║${RST}${OPT} [${ERR}e${OPT}] Exits the script${RST}"
-echo -e "${BARR}   ╚══════════════════╝ ${RST}"
+
+
+echo -e "${BARR}   ╔════════════════╗ ${RST}"
+echo -e "${BARR}   ║ ${RST}Other Options: ${BARR}║${RST}"
+echo -e "${BARR}   ╚╔═══════════════╝══╗ ${RST}"
+echo -e "${BARR}    ║${RST}${OPT} [${WHI}0${OPT}] Install ALL tools${RST}"
+echo -e "${BARR}    ║${RST}${OPT} [${WHI}p${OPT}] Install by preset${RST}"
+echo -e "${BARR}    ║${RST}${OPT} [${WHI}i${OPT}] Inspect installed tools${RST}"
+echo -e "${BARR}    ║${RST}${OPT} [${WHI}u${OPT}] Uninstall tools${RST}"
+echo -e "${BARR}    ║${RST}${OPT} [${ERR}e${OPT}] Exits the script${RST}"
+echo -e "${BARR}    ╚══════════════════╝ ${RST}"
   echo -e "${OPT}${BOLD}"
   read -p " [*] Enter the tool numbers (separate by spaces): " -a selections
   echo ""
@@ -143,46 +148,86 @@ while true; do
   for selected in "${selections[@]}"; do
    case $selected in
   # Install commands for apt tools.
-  1)  install_pkg git git "Git: Version control," ;;
-  2)  install_pkg curl curl "Curl: HTTP request" ;;
-  3)  install_pkg wget wget "Wget: Command-line downloader" ;;
-  4)  install_pkg bat bat "Bat: A better cat" ;;
-  5)  install_pkg htop htop "Htop: Hardware use Checker" ;;
-  6)  install_pkg fish fish "Fish: A advanced Shell" ;;
-  7)  install_pkg ssh openssh "OpenSSH: Server deployment" ;;
-  8)  install_pkg python3 python3 "Python3: Coding language" ;;
-  9)  install_pkg nmap nmap "Nmap: Network scanner" ;;
-  10) install_pkg cacademo libcaca "Libcaca: Cool fire" ;;
+  1) be_patient
+   install_pkg git git "Git: Version control," ;;
+  2) be_patient 
+    install_pkg curl curl "Curl: HTTP request" ;;
+  3) be_patient
+    install_pkg wget wget "Wget: Command-line downloader" ;;
+  4) be_patient
+    install_pkg bat bat "Bat: A better cat" ;;
+  5)  be_patient
+    install_pkg htop htop "Htop: Hardware use Checker" ;;
+  6)  be_patient
+    install_pkg fish fish "Fish: A advanced Shell" ;;
+  7)  be_patient
+    install_pkg ssh openssh "OpenSSH: Server deployment" ;;
+  8)  be_patient
+    install_pkg python3 python3 "Python3: Coding language" ;;
+  9)  be_patient
+    install_pkg nmap nmap "Nmap: Network scanner" ;;
+  10) be_patient
+    install_pkg cacademo libcaca "Libcaca: Cool fire" ;;
   11) install_pkg speedtest-go speedtest-go "Speedtest-Go: WI-FI-speed Checker " ;;
-  12) install_pkg cpufetch cpufetch "CPUfetch: Cpu-info" ;;
-  13) install_pkg neofetch neofetch "Neofetch: System-info" ;;
-  14) install_pkg ranger ranger "Ranger: Also a Filamanager" ;;
-  15) install_pkg nano nano "Nano: Text editor" ;;
-  16) install_pkg sl sl "Steam Locomotive" ;;
-  17) install_pkg ncdu ncdu "Ncdu: du Checker" ;;
-  18) install_neovim_full ;;
-  19) install_pkg cbonsai cbonsai "Cbonsai: Japanise tree" ;;
-  20) install_pkg asciinema asciinema "Asciinema: Terminal-recoder" ;;
-  21) install_pkg croc croc "Croc: File-sender" ;;
-  22) install_pkg fzf fzf "Fzf: File-finder" ;;
-  23) install_pkg zoxide zoxide "Zoxide: A better 'cd'" ;;
-  24) install_zsh_full ;;
-  25) install_pkg duf duf "Duf: File/dir size Checker" ;;
-  26) install_pkg tty-clock tty-clock "tty-clock: A big clock" ;;
-  27) install_pkg pipes.sh pipes.sh "Pipes.sh: Snake" ;;
-  28) install_pkg yazi yazi "Yazi: Filamanager" ;;
-  29) install_pkg lsd lsd "Lsd: 'ls' alternative" ;;
-  30) install_pkg broot broot "Broot: Filenavigator" ;; 
-  31) install_pkg dust dust "Dust: Better version of du" ;;
-  32) install_pkg procs procs "Procs: Morden 'ps'" ;;
-  33) install_pkg tldr tldr "Tldr: Man pages" ;;
-  34) install_pkg npm nodejs "Node.Js: JS Runtime env," ;;
-  35) install_pkg gh gh "Gh: Guthub-Cli" ;;
+  12) be_patient
+    install_pkg cpufetch cpufetch "CPUfetch: Cpu-info" ;;
+  13) be_patient
+    install_pkg neofetch neofetch "Neofetch: System-info" ;;
+  14) be_patient
+    install_pkg ranger ranger "Ranger: Also a Filamanager" ;;
+  15) be_patient
+    install_pkg nano nano "Nano: Text editor" ;;
+  16) be_patient
+    install_pkg sl sl "Steam Locomotive" ;;
+  17) be_patient
+    install_pkg ncdu ncdu "Ncdu: du Checker" ;;
+  18) be_patient
+    install_neovim_full ;;
+  19) be_patient
+    install_pkg cbonsai cbonsai "Cbonsai: Japanise tree" ;;
+  20) be_patient
+    install_pkg asciinema asciinema "Asciinema: Terminal-recoder" ;;
+  21) be_patient
+    install_pkg croc croc "Croc: File-sender" ;;
+  22) be_patient
+    install_pkg fzf fzf "Fzf: File-finder" ;;
+  23) be_patient
+    install_pkg zoxide zoxide "Zoxide: A better 'cd'" ;;
+  24) be_patient
+    install_zsh_full ;;
+  25) be_patient
+    install_pkg duf duf "Duf: File/dir size Checker" ;;
+  26) be_patient
+    install_pkg tty-clock tty-clock "Tty-clock: A terminal clock" ;;
+  27) be_patient
+    install_pkg pipes.sh pipes.sh "Pipes.sh: Snake" ;;
+  28) be_patient
+    install_pkg yazi yazi "Yazi: Filamanager" ;;
+  29) be_patient
+    install_pkg lsd lsd "Lsd: 'ls' alternative" ;;
+  30) be_patient
+    install_pkg broot broot "Broot: Filenavigator" ;; 
+  31) be_patient
+    install_pkg dust dust "Dust: Better version of du" ;;
+  32) be_patient
+    install_pkg procs procs "Procs: Morden 'ps'" ;;
+  33) be_patient
+    install_pkg tldr tldr "Tldr: Man pages" ;;
+  34) be_patient
+    install_pkg npm nodejs "Node.Js: JS Runtime env," ;;
+  35) be_patient
+    install_pkg gh gh "Gh: Guthub-Cli" ;;
   # Install commands for pip tools
-  36) install_pip_package "holehe" "Holehe" ;;
-  37) install_pip_package "asciiquarium" "Asciiquarium" ;;
-  38) install_pip_package "wttr" "Wttr" ;;
-  39) install_pkg tmux tmux "Tmux: A multitasker" ;;
+  36) be_patient
+  install_pip_package "holehe" "Holehe" ;;
+  37) be_patient
+    install_pip_package "asciiquarium" "Asciiquarium" ;;
+  38) be_patient
+    install_pip_package "wttr" "Wttr" ;;
+  39) be_patient
+    install_pkg tmux tmux "Tmux: A multitasker" ;;
+  40) be_patient
+    install_pkg lazygit lazygit "Lazygit: A git TUI" ;;
 
   0) clear
     install_all

@@ -139,3 +139,129 @@
 [13:05:44] [SKIPPED] Zoxide: A better 'cd' was already installed (Skipped)
 [13:05:45] [SKIPPED] Bat: A better cat was already installed (Skipped)
 [13:05:52] [EXIT] Exited script
+[16:28:52] [START] Script started
+[16:28:52] [ERR] No internet connection
+[16:28:54] [ENTER] User still continued
+[16:29:24] [START] Script started
+[16:29:24] [ERR] No internet connection
+[16:29:26] [ENTER] User still continued
+[16:29:44] [EXIT] Exited script
+[16:30:45] [START] Script started
+[16:30:45] [ERR] No internet connection
+[16:30:47] [ENTER] User still continued
+[16:31:00] [FAIL] Git: Version control, not installed (no internet)
+[17:33:20] [START] Script started
+[17:33:20] [ERR] No internet connection
+[17:33:21] [ENTER] User still continued
+[17:34:35] [EXIT] Exited script
+[17:43:40] [START] Script started
+[17:43:41] [ERR] No internet connection
+[17:43:42] [ENTER] User still continued
+[17:44:06] [EXIT] Exited script
+[18:00:22] [START] Script started
+[18:00:45] [EXIT] Exited script
+[18:03:37] [START] Script started
+[18:04:52] [EXIT] Exited script
+[18:10:05] [START] Script started
+[18:11:43] [EXIT] Exited script
+[18:13:00] [START] Script started
+[18:15:02] [EXIT] Exited script
+[18:15:03] [START] Script started
+[18:15:13] [ERR] No internet connection
+[18:15:15] [ENTER] User still continued
+[18:18:26] [EXIT] Exited script
+[18:37:55] [START] Script started
+[18:38:33] [EXIT] Exited script
+[18:41:06] [START] Script started
+[18:42:27] [EXIT] Exited script
+[18:42:28] [START] Script started
+[18:45:38] [EXIT] Exited script
+[18:45:45] [START] Script started
+[18:45:59] [EXIT] Exited script
+[18:46:02] [START] Script started
+[18:46:45] [EXIT] Exited script
+[19:02:36] [START] Script started
+[19:18:21] [EXIT] Exited script
+[19:18:31] [START] Script started
+[19:18:56] [EXIT] Exited script
+[19:19:35] [START] Script started
+[19:20:03] [EXIT] Exited script
+[19:20:05] [START] Script started
+[19:20:40] [EXIT] Exited script
+[19:20:42] [START] Script started
+[19:21:09] [EXIT] Exited script
+[19:21:48] [START] Script started
+[19:22:38] [EXIT] Exited script
+[19:22:39] [START] Script started
+[19:24:16] [EXIT] Exited script
+[19:24:18] [START] Script started
+[19:24:46] [EXIT] Exited script
+[19:24:48] [START] Script started
+[19:25:08] [EXIT] Exited script
+[19:25:27] [START] Script started
+[19:30:51] [EXIT] Exited script
+[19:30:52] [START] Script started
+[19:31:18] [EXIT] Exited script
+[19:31:19] [START] Script started
+[19:31:47] [EXIT] Exited script
+[19:32:45] [START] Script started
+[19:33:23] [EXIT] Exited script
+[19:33:24] [START] Script started
+[19:33:48] [EXIT] Exited script
+[19:33:49] [START] Script started
+[19:34:40] [EXIT] Exited script
+[19:34:51] [START] Script started
+[19:35:01] [ERR] No internet connection
+[19:35:03] [ENTER] User still continued
+[19:35:21] [EXIT] Exited script
+[19:37:51] [START] Script started
+[19:38:52] [EXIT] Exited script
+[19:38:54] [START] Script started
+[19:40:32] [EXIT] Exited script
+[19:40:36] [START] Script started
+[19:41:16] [EXIT] Exited script
+[19:41:18] [START] Script started
+[19:41:34] [EXIT] Exited script
+[19:42:15] [START] Script started
+[19:44:12] [EXIT] Exited script
+[19:47:41] [START] Script started
+[19:48:43] [START] Script started
+[19:49:58] [START] Script started
+[19:50:48] [EXIT] Exited script
+[19:50:54] [START] Script started
+[19:51:54] [EXIT] Exited script
+[20:05:03] [START] Script started
+[20:07:04] [INSTALLED] Croc: File-sender installed successfully
+[20:07:48] [EXIT] Exited script
+[20:07:50] [START] Script started
+[20:07:58] [INSTALLED] Croc: File-sender installed successfully
+[20:10:07] [EXIT] Exited script
+[20:10:34] [START] Script started
+[20:11:19] [INSTALLED] Croc: File-sender installed successfully
+[20:11:27] [EXIT] Exited script
+[20:11:29] [START] Script started
+[20:12:40] [EXIT] Exited script
+[20:12:48] [START] Script started
+[20:12:56] [INSTALLED] Croc: File-sender installed successfully
+[20:16:25] [EXIT] Exited script
+[20:22:45] [START] Script started
+[20:22:53] [INSTALLED] Croc: File-sender installed successfully
+[20:23:21] [EXIT] Exited script
+[20:47:29] [START] Script started
+[20:47:33] [SKIPPED] Croc: File-sender was already installed (Skipped)
+[20:47:48] [FAIL] Croc: File-sender not installed (no internet)
+[20:48:09] [START] Script started
+[20:48:14] [SKIPPED] Croc: File-sender was already installed (Skipped)
+[20:49:04] [EXIT] Exited script
+[20:49:06] [START] Script started
+[20:49:16] [ERR] No internet connection
+[20:49:23] [START] Script started
+[20:49:27] [SKIPPED] Croc: File-sender was already installed (Skipped)
+[20:50:10] [EXIT] Exited script
+[20:50:38] [START] Script started
+[20:50:47] [INSTALLED] Croc: File-sender installed successfully
+[20:51:12] [EXIT] Exited script
+[20:51:14] [START] Script started
+[20:51:23] [INSTALLED] Croc: File-sender installed successfully
+[20:51:46] [INSTALLED] Croc: File-sender installed successfully
+[20:51:53] [EXIT] Exited script
