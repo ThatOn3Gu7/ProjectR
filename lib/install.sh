@@ -134,7 +134,7 @@ install_zsh_full() {
 # The follwoing commands are for installing Neovim & NvChad.
 install_neovim_full() {
   install_pkg nvim neovim "Neovim: Best code editor,"
-  install_pkg npm nodejs "Node.Js: JavaScript Runtime environment,"
+  install_pkg npm nodejs "Node.Js: JS Runtime env,"
 
   # Use the exact path that the LS command just confirmed
   local NV_CONFIG="$HOME/.config/nvim"
@@ -160,9 +160,6 @@ install_pkg() {
     local cmd="$1"  # command to check (git, curl, nmap, etc.)
     local pkg="$2"     # package name to install
     local name="$3"    # pretty name for display
-
-    # Detect package manager
-    # PM="$(detect_pkg_manager)"
 
     # For internet Check-up before continue
     if ! check_internet; then
@@ -239,13 +236,13 @@ Please make sure to turn on WI-FI to continue ;)"
         if [ $? -eq 0 ]; then
           INSTALLED_PKGS+=("$name")
            echo -e "${OPT}${BOLD}"
-            stop_spinner " [✓] $name has installed successfully."
+            stop_spinner "  [✓] $name has installed successfully."
            echo -e "${RST}"
            log INSTALLED "$name installed successfully"
          else
           FAILED_PKGS+=("$name")
            echo -e "${ERR}${BOLD}" 
-            stop_spinner "[x] Failed to install $name."
+            stop_spinner "  [x] Failed to install $name."
            echo -e "${RST}"
            log FAIL "$name failed to install"
         fi
@@ -277,11 +274,11 @@ Please make sure to turn on WI-FI to continue ;)"
     elif command -v pip &> /dev/null; then
         install_cmd="pip"
     else
-        echo -e "${ERR}${BOLD}"
+       echo -e "${ERR}${BOLD}"
         boxed_text center "[x] ERR: Neither pip nor pip3 is available.."
-        echo -e "${RST}"
-        sleep 3
-        return 1
+      echo -e "${RST}"
+       sleep 3
+      return 1
     fi
     
     # Check if command already exists
@@ -293,19 +290,22 @@ Please make sure to turn on WI-FI to continue ;)"
     fi
     
     # Install the package
-    echo -e "${OPT}${BOLD} [*] Installing: $package_name...${RST}"
+    start_spinner "  [*] Installing: $package_name ($install_cmd)..."
+    # Error handling
     if ! $install_cmd install --quiet "$command_name"; then
-        echo -e "${ERR}${BOLD} [x] ERR: Failed to install $package_name..${RST}" >&2
+        echo -e "${ERR}${BOLD}  [x] ERR: Failed to install $package_name..${RST}" >&2
         log FAIL "$package_name failed to installed"
         sleep 3
         return 1
     fi
     # Verify installation
     if command -v "$command_name" &> /dev/null; then
-        echo -e "${OPT}${BOLD} [✓] Successfully installed $package_name..${RST}"
-        log INSTALLED "$package_name successfully installed"
-        sleep 3
-        return 0
+      echo -e "${OPT}${BOLD}"
+       stop_spinner "  [✓] Successfully installed: $package_name ($install_cmd).."
+      echo -e "${RST}"
+       log INSTALLED "$package_name successfully installed"
+       sleep 3
+      return 0
     else
         echo -e "${ERR} [!] WARNING: $package_name installed but '$command_name' command not found..${RST}" >&2
         sleep 3

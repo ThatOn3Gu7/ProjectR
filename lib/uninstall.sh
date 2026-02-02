@@ -7,37 +7,16 @@ source $HOME/ProjectR/lib/utils.sh
 # -- detect pkg manager for deletion --
 PM="$(detect_pkg_manager)"
 
-# -- the uninstall funtion (for apt/etc)--
-uninstall_pkg() {
- local pkg="$1"
- local name="$2"
-  start_spinner "   [*] Removing pkg: $name.."
+# ---  COLORS AND STYLING ---
+LOGO="\e[96m" # Bright Cyan (For Logo/Headers)
+INFO="\e[93m" # Bright Yellow/Gold (For infor text/prompts)
+OPT="\e[92m"  # Bright Green (For menu options)
+ERR="\e[91m"  # Bright Red (For errors)
+BARR="\e[95m" # Bright Magenta (For visual dividers/barriers)
+RST="\e[0m"   # Reset/No Color (Crucial for prompt fix)
+BOLD="\e[1m"  # Bold text
+WHI="\e[97m"  # Bright White Text
 
-  case "$PM" in
-    pkg) pkg uninstall -y "$pkg" ;;
-    apt) apt remove -y "$pkg" ;;
-    *)
-      echo -e "${ERR} [!] Unsupported package manager..$PM ${RST}"
-      return
-      ;;
-  esac >/dev/null 2>&1
-
-  stop_spinner "   [✓] Removed: $name successfully.."
-}
-# -- the sec uninstall funtion (for pip/pip3) --
-uninstall_pip() {
- local pkg="$1"
- local name="$2"
-  start_spinner "   [*] Removing $name (pip)"
-
-  if command -v pip3 >/dev/null 2>&1; then
-    pip3 uninstall -y "$pkg"
-  else
-    pip uninstall -y "$pkg"
-  fi >/dev/null 2>&1
-
-  stop_spinner "   [✓] Removed $name pkg successfully (pip)"
-}
 # -- uninstaller menu --
 uninstall_menu() {
   while true; do
@@ -106,52 +85,141 @@ EOF
   echo -e "${RST}"
  for choice in "${choices[@]}"; do
    case "$choice" in
-  01|1) uninstall_pkg git "Git" ;;
-  02|2) uninstall_pkg curl "Curl" ;;
-  03|3) uninstall_pkg wget "Wget" ;;
-  04|4) uninstall_pkg bat "Bat" ;;
-  05|5) uninstall_pkg htop "Htop" ;;
-  06|6) uninstall_pkg fish "Fish" ;;
-  07|7) uninstall_pkg ssh "OpenSSH" ;;
-  08|8) uninstall_pkg python3 "Python3" ;;
-  09|9) uninstall_pkg nmap "Nmap" ;;
-    10) uninstall_pkg cacademo "Libcaca" ;;
-    11) uninstall_pkg speedtest-go "Speedtest-Go" ;;
-    12) uninstall_pkg cpufetch "CPUfetch" ;;
-    13) uninstall_pkg neofetch "Neofetch" ;;
-    14) uninstall_pkg ranger "Ranger" ;;
-    15) uninstall_pkg nano "Nano" ;;
-    16) uninstall_pkg sl "Steam Locomotive," ;;
-    17) uninstall_pkg ncdu "Ncdu" ;;
-    18) uninstall_pkg nvim "Neovim" ;;
-    19) uninstall_pkg cbonsai "Cbonsai" ;;
-    20) uninstall_pkg asciinema "Asciinema" ;;
-    21) uninstall_pkg croc "Croc" ;;
-    22) uninstall_pkg fzf "Fzf" ;;
-    23) uninstall_pkg zoxide "Zoxide" ;;
-    24) uninstall_pkg zsh "Z shell" ;;
-    25) uninstall_pkg duf "Duf" ;;
-    26) uninstall_pkg tty-clock "Tty-clock" ;;
-    27) uninstall_pkg pipes.sh "Pipes.sh" ;;
-    28) uninstall_pkg yazi "Yazi" ;;
-    29) uninstall_pkg lsd "Lsd" ;;
-    30) uninstall_pkg broot "Broot" ;;
-    31) uninstall_pkg dust "Dust" ;;
-    32) uninstall_pkg procs "Procs" ;;
-    33) uninstall_pkg tldr "Tldr" ;;
-    34) uninstall_pkg nodejs "Node.Js" ;;
-    35) uninstall_pkg gh "Gh";;
-    36) uninstall_pip holehe "Holehe";;
-    37) uninstall_pip asciiquarium "Asciiqurium";;
-    38) uninstall_pip wttr "Wttr.io";;
-    39) uninstall_pkg tmux "Tmux";;
-    40) uninstall_pkg lazygit "Lazygit" ;;
-     b|B) return ;;
-     e|E) graceful_exit;;
-     *) echo -e "$WARN [!] Invalid option: $choice$RST" ;;
+   1) echo -e "${RST}"
+     uninstall_pkg git git "Git"  ;;
+   2) echo -e "${ERR}"
+     uninstall_pkg curl curl "Curl";;
+   3) echo -e "${ERR}"
+     uninstall_pkg wget wget "Wget";;
+   4) echo -e "${ERR}"
+     uninstall_pkg bat bat "Bat";;
+   5) echo -e "${ERR}"
+     uninstall_pkg htop htop "Htop";;
+   6) echo -e "${ERR}"
+     uninstall_pkg fish fish "Fish";;
+   7) echo -e "${ERR}"
+     uninstall_pkg ssh openssh "OpenSSH";;
+   8) echo -e "${ERR}"
+     uninstall_pkg python3 python3 "Python3";;
+   9) echo -e "${ERR}"
+     uninstall_pkg nmap nmap "Nmap";;
+   10) echo -e "${ERR}" 
+     uninstall_pkg cacademo libcaca "Libcaca";;
+   11) echo -e "${ERR}"
+     uninstall_pkg speedtest-go speedtest-go "Speedtest-go" ;;
+   12) echo -e "${ERR}"
+     uninstall_pkg cpufetch cpufetch "Cpufetch";;
+   13) echo -e "${ERR}"
+     uninstall_pkg neofetch neofetch "Neofetch";;
+   14) echo -e "${ERR}"
+     uninstall_pkg ranger ranger "Ranger";;
+   15) echo -e "${ERR}"
+     uninstall_pkg nano nano "Nano";;
+   16) echo -e "${ERR}"
+     uninstall_pkg sl sl "Sl";;
+   17) echo -e "${ERR}"
+     uninstall_pkg ncdu ncdu "Ncdu" ;;
+   18) echo -e "${ERR}"
+     uninstall_pkg nvim neovim "Neovim";;
+   19) echo -e "${ERR}"
+     uninstall_pkg cbonsai cbonsai "Cbonsai";;
+   20) echo -e "${ERR}"
+     uninstall_pkg asciinema asciinema "Asciinema";;
+   21) echo -e "${ERR}"
+     uninstall_pkg croc croc "Croc";;
+   22) echo -e "${ERR}"
+     uninstall_pkg fzf fzf "Fzf";;
+   23) echo -e "${ERR}"
+     uninstall_pkg zoxide zoxide "Zoxide" ;;
+   24) echo -e "${ERR}"
+     uninstall_pkg zsh zsh "Zsh";;
+   25) echo -e "${ERR}"
+     uninstall_pkg duf duf "Duf";;
+   26) echo -e "${ERR}"
+     uninstall_pkg tty-clock tty-clock "Tty-clock";;
+   27) echo -e "${ERR}"
+     uninstall_pkg pipes.sh pipes.sh "Pipes.sh";;
+   28) echo -e "${ERR}"
+     uninstall_pkg yazi yazi "Yazi";;
+   29) echo -e "${ERR}"
+     uninstall_pkg lsd lsd "Lsd";;
+   30) echo -e "${ERR}"
+     uninstall_pkg broot broot "Broot";;
+   31) echo -e "${ERR}"
+     uninstall_pkg dust dust "Dust";;
+   32) echo -e "${ERR}"
+     uninstall_pkg procs procs "Procs";;
+   33) echo -e "${ERR}"
+     uninstall_pkg tldr tldr "Tldr";;
+   34) echo -e "${ERR}"
+     uninstall_pkg npm node.js "Node.Js";;
+   35) echo -e "${ERR}"
+     uninstall_pkg gh gh "Gh";;
+   36) echo -e "${ERR}"
+     uninstall_pkg holehe "Holehe";;
+   37) echo -e "${ERR}"
+     uninstall_pip asciiquarium "Asciiqurium";;
+   38) echo -e "${ERR}"
+     uninstall_pip wttr "Wttr.io";;
+   39) echo -e "${ERR}"
+     uninstall_pip tmux tmux "Tmux";;
+   40) echo -e "${ERR}"
+     uninstall_pkg lazygit lazygit "Lazygit";;
+   b|B) return ;;
+   e|E) graceful_exit;;
+     *) echo -e "${ERR} [!] Invalid option: $choice ${RST}" ;;
    esac
   done
-   echo ""
+   echo -e "${OPT}"
     read -p " [*] Press ENTER to continue..."
+   echo -e "${RST}"
 done
+}
+
+# -- the sec uninstall funtion (for pip/pip3) --
+uninstall_pip() {
+ local pkg=$1
+ local name="$2"
+ if command -v "$pkg" >/dev/null 2>&1; then
+   start_spinner "   [*] Removing pkg: $name (pip).."
+ else 
+   echo -e "${ERR}  [!] Package: $pkg not found (pip) ${RST}"
+    sleep 2
+   return
+ fi
+ if command -v pip3 >/dev/null 2>&1; then
+    pip3 uninstall -y "$pkg"
+  else
+    pip uninstall -y "$pkg"
+ fi >/dev/null 2>&1
+
+ echo -e "${OPT}"
+  stop_spinner "   [✓] Removed $name pkg successfully (pip)"
+ echo -e "${RST}"
+}
+
+# -- the uninstall funtion (for apt/etc)--
+uninstall_pkg() {
+ local cmd="$1"
+ local pkg="$2"
+ local name="$3"
+  # -- detection --
+  if command -v "$cmd" >/dev/null 2>&1; then
+    start_spinner "   [*] Removing pkg: $name.."
+  else
+    echo -e "${ERR}  [!] Package: $name not found..${RST}"
+    sleep 2
+   return
+  fi 
+  case "$PM" in
+    pkg) pkg uninstall -y "$pkg" ;;
+    apt) apt remove -y "$pkg" ;;
+    *)
+      echo -e "${ERR} [!] Unsupported package manager..$PM ${RST}"
+      return
+      ;;
+  esac >/dev/null 2>&1
+ echo -e "${OPT}"
+  stop_spinner "   [✓] Removed: $name successfully.."
+ echo -e "${RST}"
 }

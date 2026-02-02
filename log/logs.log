@@ -271,3 +271,51 @@
 [23:55:31] [EXIT] Exited script
 [23:56:29] [START] Script started
 [23:56:44] [EXIT] Exited script
+[14:20:45] [START] Script started
+[14:20:45] [ERR] No internet connection
+[14:20:47] [ENTER] User still continued
+[14:22:05] [INSTALLED] Croc: File-sender installed successfully
+[14:22:38] [EXIT] Exited script
+[14:23:45] [START] Script started
+[14:24:42] [EXIT] Exited script
+[14:25:44] [START] Script started
+[14:31:59] [EXIT] Exited script
+[14:32:00] [START] Script started
+[14:32:11] [INSTALLED] Croc: File-sender installed successfully
+[14:33:03] [EXIT] Exited script
+[14:36:54] [START] Script started
+[14:37:12] [INSTALLED] Croc: File-sender installed successfully
+[14:37:45] [EXIT] Exited script
+[14:38:29] [START] Script started
+[14:38:36] [INSTALLED] Croc: File-sender installed successfully
+[14:46:02] [EXIT] Exited script
+[14:46:03] [START] Script started
+[14:46:11] [INSTALLED] Croc: File-sender installed successfully
+[14:47:19] [EXIT] Exited script
+[14:47:42] [START] Script started
+[14:47:49] [INSTALLED] Croc: File-sender installed successfully
+[14:48:05] [EXIT] Exited script
+[14:49:09] [START] Script started
+[14:49:17] [INSTALLED] Croc: File-sender installed successfully
+[14:49:53] [EXIT] Exited script
+[14:58:59] [START] Script started
+[14:59:11] [INSTALLED] Croc: File-sender installed successfully
+[15:01:31] [EXIT] Exited script
+[15:07:24] [START] Script started
+[15:08:25] [EXIT] Exited script
+[15:09:32] [START] Script started
+[15:10:34] [INSTALLED] Wttr successfully installed
+[15:11:11] [EXIT] Exited script
+[15:11:12] [START] Script started
+[15:11:19] [INSTALLED] Wttr successfully installed
+[15:11:36] [EXIT] Exited script
+[15:43:33] [START] Script started
+[15:43:33] [ERR] No internet connection
+[15:43:35] [ENTER] User still continued
+[15:44:11] [FAIL] Wttr not installed (no internet)
+[15:44:16] [START] Script started
+[15:44:26] [INSTALLED] Wttr successfully installed
+[15:44:47] [EXIT] Exited script
+[15:46:00] [START] Script started
+[15:46:07] [INSTALLED] Wttr successfully installed
+[15:46:29] [EXIT] Exited script

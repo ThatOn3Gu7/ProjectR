@@ -10,8 +10,7 @@ log START "Script started"
 # source /data/data/com.termux/files/home/project/lib/detect.sh
 # source /data/data/com.termux/files/home/project/lib/install.sh
 # source /data/data/com.termux/files/home/project/lib/utils.sh
-# # ---  COLORS AND STYLING ---
-# Define colors for a dark terminal environment (Termux/Hack look)
+# ---  COLORS AND STYLING ---
 LOGO="\e[96m" # Bright Cyan (For Logo/Headers)
 INFO="\e[93m" # Bright Yellow/Gold (For infor text/prompts)
 OPT="\e[92m"  # Bright Green (For menu options)
