@@ -199,7 +199,7 @@ Please make sure to turn on WI-FI to continue ;)"
             brew install "$pkg"
             ;;
         apk)
-            sudo apk add "$pkg"
+            apk add "$pkg"
             ;;
         emerge)
             sudo emerge -av "$pkg"

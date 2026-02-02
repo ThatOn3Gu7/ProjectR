@@ -11,7 +11,7 @@ log START "Script started"
 # source /data/data/com.termux/files/home/project/lib/install.sh
 # source /data/data/com.termux/files/home/project/lib/utils.sh
 # ---  COLORS AND STYLING ---
-LOGO="\e[96m" # Bright Cyan (For Logo/Headers)
+LOGO="\033[1;31m" # Bright Cyan (For Logo/Headers)
 INFO="\e[93m" # Bright Yellow/Gold (For infor text/prompts)
 OPT="\e[92m"  # Bright Green (For menu options)
 ERR="\e[91m"  # Bright Red (For errors)
@@ -26,15 +26,20 @@ startup_wifi_check
 # --- SETUP ESSENTIAL TOOLS INSTALLATION MENU ---
 show_main_menu() {
  clear
-  # cool LOGO
+  # cool LOGO with colors
+ # echo -e "${LOGO}${BOLD}"
   cat <<"EOF" | lolcat
 
-      _       ___   __   __   ___     _              _   _     ___
-     | |     | __|  \ \ / /  | __|   | |      ___   | | | |   | _ \
-     | |__   | _|    \ V /   | _|    | |__   |___|  | |_| |   |  _/
-     |____|  |___|   _\_/_   |___|   |____|  _____   \___/   _|_|_
-   _|"""""|_|"""""|_| """"|_|"""""|_|"""""|_|     |_|"""""|_| """ |
-   "`-0-0-'"`-0-0-'"`-0-0-'"`-0-0-'"`-0-0-'"`-0-0-'"`-0-0-'"`-0-0-'
+    ██▓███   ██▀███   ▒█████   ▄████▄  ▓█████   ██████     ██▀███  
+   ▓██░  ██▒▓██ ▒ ██▒▒██▒  ██▒▒██▀ ▀█  ▓█   ▀ ▒██    ▒    ▓██ ▒ ██▒
+   ▓██░ ██▓▒▓██ ░▄█ ▒▒██░  ██▒▒▓█    ▄ ▒███   ░ ▓██▄      ▓██ ░▄█ ▒
+   ▒██▄█▓▒ ▒▒██▀▀█▄  ▒██   ██░▒▓▓▄ ▄██▒▒▓█  ▄   ▒   ██▒   ▒██▀▀█▄  
+   ▒██▒ ░  ░░██▓ ▒██▒░ ████▓▒░▒ ▓███▀ ░░▒████▒▒██████▒▒   ░██▓ ▒██▒
+   ▒▓▒░ ░  ░░ ▒▓ ░▒▓░░ ▒░▒░▒░ ░ ░▒ ▒  ░░░ ▒░ ░▒ ▒▓▒ ▒ ░   ░ ▒▓ ░▒▓░
+   ░▒ ░       ░▒ ░ ▒░  ░ ▒ ▒░   ░  ▒    ░ ░  ░░ ░▒  ░ ░     ░▒ ░ ▒░
+   ░░         ░░   ░ ░ ░ ░ ▒  ░           ░   ░  ░  ░       ░░   ░ 
+               ░         ░ ░  ░ ░         ░  ░      ░        ░     
+                              ░                                    
 
    [--------------------------------------------------------------]
      > Purpose: Made to install tools/utilities.
