@@ -40,7 +40,6 @@ show_main_menu() {
    ░░         ░░   ░ ░ ░ ░ ▒  ░           ░   ░  ░  ░       ░░   ░ 
                ░         ░ ░  ░ ░         ░  ░      ░        ░     
                               ░                                    
-
    [--------------------------------------------------------------]
      > Purpose: Made to install tools/utilities.
      > C0ded by: ThatOn3Gu7
@@ -177,7 +176,8 @@ while true; do
     install_pkg nmap nmap "Nmap: Network scanner" ;;
   10) be_patient
     install_pkg cacademo libcaca "Libcaca: Cool fire" ;;
-  11) install_pkg speedtest-go speedtest-go "Speedtest-Go: WI-FI-speed Checker " ;;
+  11) be_patient
+    install_pkg speedtest-go speedtest-go "Speedtest-Go: WI-FI-speed Checker " ;;
   12) be_patient
     install_pkg cpufetch cpufetch "CPUfetch: Cpu-info" ;;
   13) be_patient

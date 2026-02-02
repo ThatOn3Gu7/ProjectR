@@ -18,24 +18,27 @@ install_all() {
     is_internet_up 
     # Update package lists
    echo ""
-    start_spinner " [*] Updateing package list.."
+    start_spinner "  [*] Updateing package list.."
      pkg_update
-    stop_spinner "${OPT}${BOLD} [✓] Package list refreshed..${RST}"
+    stop_spinner "${OPT}${BOLD}  [✓] Package list refreshed..${RST}"
    echo ""
     sleep 0.1
    echo -e "${INFO}"
-  if ask_yes_no " [!] Do you also want to upgrade the system?"; then
+  if ask "  [!] Upgrade the system?" "n" 5; then
     echo -e "${RST}"
-     start_spinner " [*] Upgrading system..."
+     start_spinner "  [*] Upgrading system..."
       pkg_upgrade
-     stop_spinner "${OPT}${BOLD} [✓] System Upgrade complete..${RST}"
+     stop_spinner "${OPT}${BOLD}  [✓] System Upgrade complete..${RST}"
     else
-     boxed_text center "[*] Skipping system upgrade"
+     echo ""
+      boxed_text center "  [*] Skipping system upgrade"
+    sleep 2
   fi
 
  clear
   tput civis
-   echo -e "${OPT}$BOLD"
+  be_patient
+   echo -e "${OPT}${BOLD}"
     boxed_text center "[*] Installing all essential tools"
    echo -e "${RST}"
    
@@ -50,7 +53,7 @@ install_all() {
     install_pkg python3 python3 "Python3: Coding language," 
     install_pkg nmap nmap "Nmap: Network scanner," 
     install_pkg cacademo libcaca "Libcaca: Cool fire," 
-    install_pkg speedtest-go speedtest-go "Speedtest-Go: WI-FI-speed Checker," 
+    install_pkg speedtest-go speedtest-go "Speedtest-Go: Net-speed tester," 
     install_pkg cpufetch cpufetch "CPUfetch: Cpu-info," 
     install_pkg neofetch neofetch "Neofetch: System-info," 
     install_pkg ranger ranger "Ranger: A Filamanager," 
@@ -82,15 +85,14 @@ install_all() {
     install_pkg lazygit lazygit "Lazygit: A git TUI,"
     # -- post-install-summary
     echo ""
-    post_install_summary
+     post_install_summary
     echo -e "${OPT}${BOLD}" 
-   boxed_text center "[✓] Install All Completed. Press ENTER to continue.."
+     boxed_text center "[✓] Install All Completed. Press ENTER to continue.."
     echo -e "${RST}"
-    read
+   read
   tput cnorm
 
 }
-
 # For profile preset install
 install_preset() {
     local preset=("$@")
@@ -100,32 +102,31 @@ install_preset() {
         install_pkg "$cmd" "$pkg" "$name"
     done
 }
-
 # The follwoing commands are for installing zsh & oh my zsh.
 install_zsh_full() {
  install_pkg zsh zsh "Zsh: Most awesome shell,"
    sleep 1
-    echo -e "${OPT}${BOLD}"
-    if ask_yes_no " [*] Do you want you install oh-my-zsh?"; then
+    # echo -e "${INFO}${BOLD}"
+    if ask "  [*] Install oh-my-zsh?" "n" 3; then
      if [ -d "$HOME/.oh-my-zsh" ]; then
-         echo -e "${OPT}${BOLD} [✓] Oh My Zsh already exists. Skipping...${RST}"
-          sleep 2
+       echo -e "${OPT}${BOLD}  [✓] Oh-My-Zsh already exists. Skipping...${RST}"
+         sleep 2
        else 
-         echo -e "${OPT}${BOLD} [*] Installing Oh-My-Zsh framework...${RST}"
+         echo -e "${INFO}${BOLD}  [*] Installing Oh-My-Zsh framework...${RST}"
        KEEP_ZSHRC=yes RUNZSH=no CHSH=no \
-         sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
-      fi
+         sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" >/dev/null 2>&1
      fi
+    fi
     sleep 1 
-    echo -e "${OPT}${BOLD}"
-     if ask_yes_no " [!] Do you also want to install p10k..?"; then
+    # echo -e "${INFO}${BOLD}"
+     if ask "  [*] Also clone Powerlevel10k..?" "n" 3; then
       if [ -d "$HOME/.oh-my-zsh/custom/themes/powerlevel10k" ]; then
-       echo -e "${INFO}${BOLD} [✓] Powerlevel10k is already configured - Skipping..${RST}"
+       echo -e "${OPT}${BOLD}  [✓] Powerlevel10k is already configured - Skipping..${RST}"
        sleep 3
        return 0 
       else  
-       echo -e "${OPT}${BOLD} [*] Installing p10k..${RST}"
-       git clone --depth=1 https://github.com/romkatv/powerlevel10k.git "${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k"
+       echo -e "${INFO}${BOLD}  [*] Installing: p10k..${RST}"
+       git clone --depth=1 https://github.com/romkatv/powerlevel10k.git "${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k" >/dev/null 2>&1
        echo ""
        echo -e "${OPT}${BOLD} [✓] Powerlevel10k is now installed, type: p10k configure${RST}"
       fi
@@ -138,18 +139,18 @@ install_neovim_full() {
 
   # Use the exact path that the LS command just confirmed
   local NV_CONFIG="$HOME/.config/nvim"
-  echo -e "${OPT}${BOLD}"
- if ask_yes_no " [*] Do you want to install NvChad for NeoVim?"; then
+  # echo -e "${INFO}${BOLD}"
+ if ask "  [*] Install NvChad for NeoVim?" "n" 3; then
   if [ -d "$NV_CONFIG" ]; then
-    echo -e "${OPT}${BOLD} [✓] NvChad configuration already exists - Skipping..${RST}"
+    echo -e "${OPT}${BOLD}  [✓] NvChad conf already exists - Skipping..${RST}"
     sleep 1
   else
     echo ""
-     echo -e "${INFO}${BOLD} [*] Downloading NvChad starter kit...${RST}"
-      mkdir -p "$HOME/.config"
+     echo -e "${INFO}${BOLD}  [*] Downloading NvChad conf...${RST}"
+      mkdir -p "$HOME/.config/"
       git clone https://github.com/NvChad/starter ~/.config/nvim
      echo ""
-    echo -e "${OPT}${BOLD} [✓] NvChad has been configured successfully.${RST}"
+    echo -e "${OPT}${BOLD}  [✓] NvChad installed successfully.${RST}"
    sleep 2
   fi
  fi
@@ -176,7 +177,7 @@ Please make sure to turn on WI-FI to continue ;)"
         echo -e "${OPT}${BOLD}  [✓] $name is already installed - Skipping..${RST}"
         SKIPPED_PKGS+=("$name")
         log SKIPPED "$name was already installed (Skipped)"
-        sleep 1
+        sleep 0.1
     else
       echo ""
        start_spinner "  [*] Installing: $name.."
@@ -228,7 +229,7 @@ Please make sure to turn on WI-FI to continue ;)"
             done
             ;;
             *) stop_spinner
-               echo -e "${ERR}${BOLD} [x] Unsupported package manager: $PM${RST}"
+               echo -e "${ERR}${BOLD}  [x] Unsupported package manager: $PM${RST}"
                 return 1
                 ;;
         esac >/dev/null 2>&1
@@ -275,7 +276,7 @@ Please make sure to turn on WI-FI to continue ;)"
         install_cmd="pip"
     else
        echo -e "${ERR}${BOLD}"
-        boxed_text center "[x] ERR: Neither pip nor pip3 is available.."
+        boxed_text center "  [x] ERR: Neither pip nor pip3 is available.."
       echo -e "${RST}"
        sleep 3
       return 1
@@ -283,7 +284,7 @@ Please make sure to turn on WI-FI to continue ;)"
     
     # Check if command already exists
     if command -v "$command_name" &> /dev/null; then
-        echo -e "${OPT}${BOLD} [✓] $package_name is already installed - Skipping ${RST}"
+        echo -e "${OPT}${BOLD}  [✓] $package_name is already installed - Skipping ${RST}"
         log SKIPPED "$package_name was already installed (Skipped)"
         sleep 3
         return 0
@@ -307,7 +308,7 @@ Please make sure to turn on WI-FI to continue ;)"
        sleep 3
       return 0
     else
-        echo -e "${ERR} [!] WARNING: $package_name installed but '$command_name' command not found..${RST}" >&2
+        echo -e "${ERR}  [!] WARNING: $package_name installed but '$command_name' command not found..${RST}" >&2
         sleep 3
         return 0  # Still return success as package was installed
     fi
