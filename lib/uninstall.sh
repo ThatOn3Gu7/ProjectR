@@ -180,19 +180,29 @@ done
 uninstall_pip() {
  local pkg=$1
  local name="$2"
- if command -v "$pkg" >/dev/null 2>&1; then
-   start_spinner "   [*] Removing pkg: $name (pip).."
- else 
-   echo -e "${ERR}  [!] Package: $pkg not found (pip) ${RST}"
+
+ # CAPTURE THE RESPONSE
+ local response
+ response=$(ask "  [!] Are you sure?" "n" 4)
+    
+ # CHECK THE RESPONSE STRING
+ if [ "$response" = "y" ]; then
+ # -- detection --
+  if command -v "$pkg" >/dev/null 2>&1; then
+    start_spinner "   [*] Removing pkg: $name (pip).."
+   else 
+    echo -e "${ERR}  [!] Package: $pkg not found (pip) ${RST}"
     sleep 2
-   return
+    return
+  fi
  fi
+ # -- uninstall --
  if command -v pip3 >/dev/null 2>&1; then
     pip3 uninstall -y "$pkg"
   else
     pip uninstall -y "$pkg"
  fi >/dev/null 2>&1
-
+ # -- stop spinner --
  echo -e "${OPT}"
   stop_spinner "   [✓] Removed $name pkg successfully (pip)"
  echo -e "${RST}"
@@ -203,23 +213,30 @@ uninstall_pkg() {
  local cmd="$1"
  local pkg="$2"
  local name="$3"
-  # -- detection --
-  if command -v "$cmd" >/dev/null 2>&1; then
-    start_spinner "   [*] Removing pkg: $name.."
-  else
-    echo -e "${ERR}  [!] Package: $name not found..${RST}"
-    sleep 2
-   return
-  fi 
-  case "$PM" in
-    pkg) pkg uninstall -y "$pkg" ;;
-    apt) apt remove -y "$pkg" ;;
-    *)
-      echo -e "${ERR} [!] Unsupported package manager..$PM ${RST}"
-      return
-      ;;
-  esac >/dev/null 2>&1
- echo -e "${OPT}"
-  stop_spinner "   [✓] Removed: $name successfully.."
- echo -e "${RST}"
+
+  # -- Confirmation --
+  # Use if statement directly - NO $(ask ...)
+   if ! ask "  [!] Are you sure?" "n" 4; then
+      echo -e "${INFO}  [→] Skipping: $name${RST}"
+      return 0
+   fi
+   # -- detection --
+   if command -v "$cmd" >/dev/null 2>&1; then
+     start_spinner "   [*] Removing pkg: $name.."
+   else
+     echo -e "${ERR}  [!] Package: $name not found..${RST}"
+     sleep 2
+    return
+   fi 
+   case "$PM" in
+     pkg) pkg uninstall -y "$pkg" ;;
+     apt) apt remove -y "$pkg" ;;
+     *)
+       echo -e "${ERR} [!] Unsupported package manager..$PM ${RST}"
+       return
+       ;;
+   esac >/dev/null 2>&1
+  echo -e "${OPT}"
+   stop_spinner "   [✓] Removed: $name successfully.."
+  echo -e "${RST}"
 }
