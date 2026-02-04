@@ -7,12 +7,12 @@ check_dependency() {
     local install_hint="$3"  # Optional: How to install
     
     if command -v "$cmd" >/dev/null 2>&1; then
-        echo -e "${OPT}${BOLD} [✓] $name is available${RST}"
+        # echo -e "${OPT}${BOLD} [✓] $name is available${RST}"
         return 0
     else
         echo -e "${ERR}${BOLD} [✗] $name is NOT installed${RST}"
         if [ -n "$install_hint" ]; then
-            echo -e "${INFO}      Hint: $install_hint${RST}"
+            echo -e "${INFO} [!] Installation hint: $install_hint${RST}"
         fi
         return 1
     fi
@@ -23,16 +23,17 @@ check_dependencies_menu() {
     local missing_count=0
     local missing_deps=()
     
-    echo -e "${LOGO}${BOLD}"
+    echo -e "${BLUE}${BOLD}"
     boxed_text center " [*] Dependency Check!"
     echo -e "${RST}"
     
     # Define your dependencies here
     # Format: "command:Display Name:Install Hint"
     local dependencies=(
-        "lolcat:lolcat (Colors):Install with 'pkg install ruby && gem install lolcat' or 'apt install lolcat'"
-        "git:Git (Optional):'pkg install git' or 'apt install git'"
-        "curl:cURL (Optional):'pkg install curl' or 'apt install curl'"
+        "lolcat:lolcat (Required):'apt install ruby && gem install lolcat' or 'apt install lolcat'"
+        "git:Git (Required):'apt install git'"
+        "curl:cURL (Required):'apt install curl'"
+        "croc:croc (Not Required):'apt install croc'"
     )
     
     # Check each dependency
@@ -47,8 +48,10 @@ check_dependencies_menu() {
     
     # If nothing missing, return
     if [ $missing_count -eq 0 ]; then
-        echo ""
-        echo -e "${OPT}${BOLD} [✓] All dependencies satisfied${RST}"
+        # echo ""
+        echo -e "${OPT}${BOLD}"
+        boxed_text center "[✓] All dependencies satisfied"
+        echo -e "${RST}"
         sleep 1
         return 0
     fi
@@ -95,7 +98,7 @@ auto_install_dependencies() {
     local PM="$(detect_pkg_manager)"
     
     echo ""
-    echo -e "${INFO}${BOLD} [*] Attempting to install missing dependencies...${RST}"
+    echo -e "${BLUE}${BOLD} [*] Attempting to install missing dependencies...${RST}"
     
     for dep in "${deps[@]}"; do
         IFS=":" read -r cmd name hint <<< "$dep"
@@ -106,7 +109,7 @@ auto_install_dependencies() {
             lolcat)
                 install_lolcat
                 ;;
-            git|curl|wget)
+            git|curl|wget|croc)
                 # Use system package manager
                 case "$PM" in
                     apt|pkg)
@@ -166,7 +169,10 @@ install_lolcat() {
         pacman)
             start_spinner " [*] Installing lolcat..."
             pacman -Sy --noconfirm lolcat >/dev/null 2>&1
-            stop_spinner ""
+             if [ $? -eq 0 ]; then
+                 stop_spinner " [✓] Installed lolcat"
+                 return 0
+             fi
             ;;
     esac
     
@@ -194,8 +200,8 @@ show_install_commands() {
     
     for dep in "${deps[@]}"; do
         IFS=":" read -r cmd name hint <<< "$dep"
-        echo -e "${OPT}${BOLD} [*] $name:${RST}"
-        echo -e "${INFO} [!] $hint${RST}"
+        echo -e "${OPT}${BOLD} [*] For: $name:${RST}"
+        echo -e "${INFO} [!] Try: $hint${RST}"
         echo ""
     done
     

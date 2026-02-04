@@ -87,8 +87,8 @@ EOF
   echo -e "${RST}"
  for choice in "${choices[@]}"; do
    case "$choice" in
-   1) echo -e "${RST}"
-     uninstall_pkg git git "Git"  ;;
+   # 1) echo -e "${RST}"
+   #   uninstall_pkg git git "Git"  ;;
    2) echo -e "${ERR}"
      uninstall_pkg curl curl "Curl";;
    3) echo -e "${ERR}"

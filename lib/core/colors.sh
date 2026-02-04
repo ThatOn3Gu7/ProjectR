@@ -1,6 +1,6 @@
 #!/bin/bash
 # ---  COLORS AND STYLING ---
-LOGO="\033[1;31m" # Bright Cyan (For Logo/Headers)
+BLUE="\e[1;94m" # Bright Blue
 INFO="\e[93m" # Bright Yellow/Gold (For infor text/prompts)
 OPT="\e[92m"  # Bright Green (For menu options)
 ERR="\e[91m"  # Bright Red (For errors)

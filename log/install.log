@@ -1171,3 +1171,52 @@
 [21:52:18] [EXIT] Exited script
 [21:54:52] [START] Script started
 [21:55:01] [EXIT] Exited script
+[22:28:20] [START] Script started
+[22:28:27] [SKIPPED] Croc: File-sender was already installed (Skipped)
+[22:29:15] [INSTALLED] Croc: File-sender installed successfully
+[22:29:23] [INSTALLED] Wttr successfully installed
+[22:30:03] [INSTALLED] Croc: File-sender installed successfully
+[22:30:06] [INSTALL] User chose to install all tools
+[22:30:06] [OK] pkg list updated
+[22:30:18] [SKIPPED] Git: Version control, was already installed (Skipped)
+[22:30:18] [SKIPPED] Curl: File downloader 2, was already installed (Skipped)
+[22:30:18] [SKIPPED] Wget: File downloader, was already installed (Skipped)
+[22:30:19] [SKIPPED] Bat: Better then 'cat', was already installed (Skipped)
+[22:30:19] [SKIPPED] Htop: Hardware use Checker, was already installed (Skipped)
+[22:30:19] [SKIPPED] Fish: A advanced Shell, was already installed (Skipped)
+[22:30:19] [SKIPPED] OpenSSH: Server deployment, was already installed (Skipped)
+[22:30:20] [SKIPPED] Python3: Coding language, was already installed (Skipped)
+[22:30:20] [SKIPPED] Nmap: Network scanner, was already installed (Skipped)
+[22:30:20] [SKIPPED] Libcaca: Cool fire, was already installed (Skipped)
+[22:30:21] [SKIPPED] Speedtest-Go: Net-speed test, was already installed (Skipped)
+[22:30:21] [SKIPPED] CPUfetch: Cpu-info, was already installed (Skipped)
+[22:30:21] [SKIPPED] Neofetch: System-info, was already installed (Skipped)
+[22:30:22] [SKIPPED] Ranger: A Filamanager, was already installed (Skipped)
+[22:30:22] [SKIPPED] Nano: Text editor, was already installed (Skipped)
+[22:30:22] [SKIPPED] Sl: Steam Locomotive, was already installed (Skipped)
+[22:30:23] [SKIPPED] Ncdu: du Checker, was already installed (Skipped)
+[22:30:23] [SKIPPED] Neovim: Best code editor, was already installed (Skipped)
+[22:30:23] [SKIPPED] Node.Js: JS Runtime env, was already installed (Skipped)
+[22:30:27] [SKIPPED] Cbonsai: Japanise tree, was already installed (Skipped)
+[22:30:27] [SKIPPED] Asciinema: Terminal-recoder, was already installed (Skipped)
+[22:30:27] [SKIPPED] Croc: File-sender, was already installed (Skipped)
+[22:30:28] [SKIPPED] Fzf: File-finder, was already installed (Skipped)
+[22:30:28] [SKIPPED] Zoxide: Smarter cd, was already installed (Skipped)
+[22:30:28] [SKIPPED] Zsh: Most awesome shell, was already installed (Skipped)
+[22:30:37] [SKIPPED] Duf: File/dir size Checker, was already installed (Skipped)
+[22:30:37] [SKIPPED] tty-clock: A big clock, was already installed (Skipped)
+[22:30:37] [SKIPPED] Pipes.sh: Line-Snake, was already installed (Skipped)
+[22:30:38] [SKIPPED] Yazi: Filamanager, was already installed (Skipped)
+[22:30:38] [SKIPPED] Lsd: 'ls' alternative, was already installed (Skipped)
+[22:30:38] [SKIPPED] Broot: Filenavigator, was already installed (Skipped)
+[22:30:39] [SKIPPED] Dust: Better version of du, was already installed (Skipped)
+[22:30:39] [SKIPPED] Procs: Morden 'ps', was already installed (Skipped)
+[22:30:39] [SKIPPED] Tldr: Man pages, was already installed (Skipped)
+[22:30:40] [SKIPPED] Gh: Guthub-Cli was already installed (Skipped)
+[22:30:40] [SKIPPED] Holehe, was already installed (Skipped)
+[22:30:43] [SKIPPED] Asciiqurium, was already installed (Skipped)
+[22:30:46] [SKIPPED] Wttr.io, was already installed (Skipped)
+[22:30:50] [SKIPPED] Tmux: A multitasker, was already installed (Skipped)
+[22:30:50] [SKIPPED] Lazygit: A git TUI, was already installed (Skipped)
+[22:30:50] [OK] Post-Installation-Summary shown
+[22:31:06] [EXIT] Exited script
