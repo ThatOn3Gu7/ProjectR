@@ -1,16 +1,11 @@
 #!/bin/bash
+source $HOME/ProjectR/lib/system/detect.sh
 # For post-install summary detection
 INSTALLED_PKGS=()
 SKIPPED_PKGS=()
 FAILED_PKGS=()
-# Source others
-source $HOME/ProjectR/lib/detect.sh
-source $HOME/ProjectR/lib/utils.sh
-source $HOME/ProjectR/lib/presets.sh
-
 # detect_pkg_manager for install and tool check
 PM="$(detect_pkg_manager)"
-
 # This function here installs all tools put in it.
 install_all() {
     log INSTALL "User chose to install all tools"
@@ -40,7 +35,7 @@ install_all() {
   be_patient
    echo -e "${OPT}${BOLD}"
     boxed_text center "[*] Installing all essential tools"
-   echo -e "${RST}"
+    echo -e "${RST}"
    
     # ---- APT TOOLS ----
     install_pkg git git "Git: Version control," 
@@ -53,7 +48,7 @@ install_all() {
     install_pkg python3 python3 "Python3: Coding language," 
     install_pkg nmap nmap "Nmap: Network scanner," 
     install_pkg cacademo libcaca "Libcaca: Cool fire," 
-    install_pkg speedtest-go speedtest-go "Speedtest-Go: Net-speed tester," 
+    install_pkg speedtest-go speedtest-go "Speedtest-Go: Net-speed test," 
     install_pkg cpufetch cpufetch "CPUfetch: Cpu-info," 
     install_pkg neofetch neofetch "Neofetch: System-info," 
     install_pkg ranger ranger "Ranger: A Filamanager," 
@@ -93,7 +88,8 @@ install_all() {
   tput cnorm
 
 }
-# For profile preset install
+
+# For profile preset installation
 install_preset() {
     local preset=("$@")
 
@@ -102,61 +98,7 @@ install_preset() {
         install_pkg "$cmd" "$pkg" "$name"
     done
 }
-# The follwoing commands are for installing zsh & oh my zsh.
-install_zsh_full() {
- install_pkg zsh zsh "Zsh: Most awesome shell,"
-   sleep 1
-    # echo -e "${INFO}${BOLD}"
-    if ask "  [*] Install oh-my-zsh?" "n" 3; then
-     if [ -d "$HOME/.oh-my-zsh" ]; then
-       echo -e "${OPT}${BOLD}  [✓] Oh-My-Zsh already exists. Skipping...${RST}"
-         sleep 2
-       else 
-         echo -e "${INFO}${BOLD}  [*] Installing Oh-My-Zsh framework...${RST}"
-       KEEP_ZSHRC=yes RUNZSH=no CHSH=no \
-         sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" >/dev/null 2>&1
-     fi
-    fi
-    sleep 1 
-    # echo -e "${INFO}${BOLD}"
-     if ask "  [*] Also clone Powerlevel10k..?" "n" 3; then
-      if [ -d "$HOME/.oh-my-zsh/custom/themes/powerlevel10k" ]; then
-       echo -e "${OPT}${BOLD}  [✓] Powerlevel10k is already configured - Skipping..${RST}"
-       sleep 3
-       return 0 
-      else  
-       echo -e "${INFO}${BOLD}  [*] Installing: p10k..${RST}"
-       git clone --depth=1 https://github.com/romkatv/powerlevel10k.git "${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k" >/dev/null 2>&1
-       echo ""
-       echo -e "${OPT}${BOLD} [✓] Powerlevel10k is now installed, type: p10k configure${RST}"
-      fi
-     fi
-}
-# The follwoing commands are for installing Neovim & NvChad.
-install_neovim_full() {
-  install_pkg nvim neovim "Neovim: Best code editor,"
-  install_pkg npm nodejs "Node.Js: JS Runtime env,"
-
-  # Use the exact path that the LS command just confirmed
-  local NV_CONFIG="$HOME/.config/nvim"
-  # echo -e "${INFO}${BOLD}"
- if ask "  [*] Install NvChad for NeoVim?" "n" 3; then
-  if [ -d "$NV_CONFIG" ]; then
-    echo -e "${OPT}${BOLD}  [✓] NvChad conf already exists - Skipping..${RST}"
-    sleep 1
-  else
-    echo ""
-     echo -e "${INFO}${BOLD}  [*] Downloading NvChad conf...${RST}"
-      mkdir -p "$HOME/.config/"
-      git clone https://github.com/NvChad/starter ~/.config/nvim
-     echo ""
-    echo -e "${OPT}${BOLD}  [✓] NvChad installed successfully.${RST}"
-   sleep 2
-  fi
- fi
-}
-
-# This script is here to identify and use the package manager it finds on the system to install packages
+# -- main installer function --
 install_pkg() {
     local cmd="$1"  # command to check (git, curl, nmap, etc.)
     local pkg="$2"     # package name to install

@@ -1,21 +1,23 @@
-#!/usr/bin/env bash
+#!/bin/bash
 
-# -- source the others --
-source $HOME/ProjectR/lib/detect.sh
-source $HOME/ProjectR/lib/utils.sh
+PROJECT_DIR="$HOME/ProjectR"
 
-# -- detect pkg manager for deletion --
-PM="$(detect_pkg_manager)"
+# PHASE 1: ABSOLUTE ESSENTIALS (SAME AS MAIN)
+source "$PROJECT_DIR/lib/core/colors.sh"
+source "$PROJECT_DIR/lib/core/logging.sh"
+source "$PROJECT_DIR/lib/core/display.sh"
+source "$PROJECT_DIR/lib/core/spinner.sh"
+source "$PROJECT_DIR/lib/core/prompts.sh"
 
-# ---  COLORS AND STYLING ---
-LOGO="\e[96m" # Bright Cyan (For Logo/Headers)
-INFO="\e[93m" # Bright Yellow/Gold (For infor text/prompts)
-OPT="\e[92m"  # Bright Green (For menu options)
-ERR="\e[91m"  # Bright Red (For errors)
-BARR="\e[95m" # Bright Magenta (For visual dividers/barriers)
-RST="\e[0m"   # Reset/No Color (Crucial for prompt fix)
-BOLD="\e[1m"  # Bold text
-WHI="\e[97m"  # Bright White Text
+# PHASE 2: SYSTEM DETECTION
+source "$PROJECT_DIR/lib/system/detect.sh"
+source "$PROJECT_DIR/lib/system/network.sh"
+source "$PROJECT_DIR/lib/system/checker.sh"
+
+# PHASE 3: UNINSTALL FUNCTIONS (LOAD BEFORE MENU)
+if [ -f "$PROJECT_DIR/lib/features/uninstaller.sh" ]; then
+    source "$PROJECT_DIR/lib/features/uninstaller.sh"
+fi
 
 # -- uninstaller menu --
 uninstall_menu() {
@@ -165,8 +167,8 @@ EOF
      uninstall_pip tmux tmux "Tmux";;
    40) echo -e "${ERR}"
      uninstall_pkg lazygit lazygit "Lazygit";;
-   b|B) return ;;
-   e|E) graceful_exit;;
+  b|B) return ;;
+  e|E) graceful_exit;;
      *) echo -e "${ERR} [!] Invalid option: $choice ${RST}" ;;
    esac
   done
@@ -174,69 +176,4 @@ EOF
     read -p " [*] Press ENTER to continue..."
    echo -e "${RST}"
 done
-}
-
-# -- the sec uninstall funtion (for pip/pip3) --
-uninstall_pip() {
- local pkg=$1
- local name="$2"
-
- # CAPTURE THE RESPONSE
- local response
- response=$(ask "  [!] Are you sure?" "n" 4)
-    
- # CHECK THE RESPONSE STRING
- if [ "$response" = "y" ]; then
- # -- detection --
-  if command -v "$pkg" >/dev/null 2>&1; then
-    start_spinner "   [*] Removing pkg: $name (pip).."
-   else 
-    echo -e "${ERR}  [!] Package: $pkg not found (pip) ${RST}"
-    sleep 2
-    return
-  fi
- fi
- # -- uninstall --
- if command -v pip3 >/dev/null 2>&1; then
-    pip3 uninstall -y "$pkg"
-  else
-    pip uninstall -y "$pkg"
- fi >/dev/null 2>&1
- # -- stop spinner --
- echo -e "${OPT}"
-  stop_spinner "   [✓] Removed $name pkg successfully (pip)"
- echo -e "${RST}"
-}
-
-# -- the uninstall funtion (for apt/etc)--
-uninstall_pkg() {
- local cmd="$1"
- local pkg="$2"
- local name="$3"
-
-  # -- Confirmation --
-  # Use if statement directly - NO $(ask ...)
-   if ! ask "  [!] Are you sure?" "n" 4; then
-      echo -e "${INFO}  [→] Skipping: $name${RST}"
-      return 0
-   fi
-   # -- detection --
-   if command -v "$cmd" >/dev/null 2>&1; then
-     start_spinner "   [*] Removing pkg: $name.."
-   else
-     echo -e "${ERR}  [!] Package: $name not found..${RST}"
-     sleep 2
-    return
-   fi 
-   case "$PM" in
-     pkg) pkg uninstall -y "$pkg" ;;
-     apt) apt remove -y "$pkg" ;;
-     *)
-       echo -e "${ERR} [!] Unsupported package manager..$PM ${RST}"
-       return
-       ;;
-   esac >/dev/null 2>&1
-  echo -e "${OPT}"
-   stop_spinner "   [✓] Removed: $name successfully.."
-  echo -e "${RST}"
 }
