@@ -1,25 +1,40 @@
 #!/bin/bash
-source $HOME/ProjectR/lib/detect.sh
-source $HOME/ProjectR/lib/install.sh
-source $HOME/ProjectR/lib/utils.sh
-source $HOME/ProjectR/lib/presets.sh
-source $HOME/ProjectR/lib/uninstall.sh
+
+# PROJECTR MAIN INSTALLER - EXPLICIT LOADING
+
+PROJECT_DIR="$HOME/ProjectR"
+
+# PHASE 1: ABSOLUTE ESSENTIALS
+source "$PROJECT_DIR/lib/core/colors.sh"          # Colors MUST come first
+source "$PROJECT_DIR/lib/core/logging.sh"         # Logging functions
+source "$PROJECT_DIR/lib/core/display.sh"         # boxed_text and display
+source "$PROJECT_DIR/lib/core/spinner.sh"         # Spinner functions
+source "$PROJECT_DIR/lib/core/prompts.sh"         # ask() function
+
+# PHASE 2: SYSTEM DETECTION
+source "$PROJECT_DIR/lib/system/detect.sh"        # Package manager detection
+source "$PROJECT_DIR/lib/system/network.sh"       # Internet checking
+source "$PROJECT_DIR/lib/system/checker.sh"       # Tool checking functions
+source "$PROJECT_DIR/lib/system/dependencies.sh"  # Dependency checking
+
+# PHASE 3: CORE FEATURES
+source "$PROJECT_DIR/lib/features/presets.sh"     # Preset configurations
+source "$PROJECT_DIR/lib/features/installer.sh"   # Main install functions
+source "$PROJECT_DIR/lib/features/post_install.sh" # Post-install tasks
+source "$PROJECT_DIR/lib/features/neovim_setup.sh" # Neovim setup
+source "$PROJECT_DIR/lib/features/zsh_setup.sh"   # Zsh/OhMyZsh setup
+source "$PROJECT_DIR/lib/features/upgrade.sh"     # Upgrade functions
+source "$PROJECT_DIR/lib/features/update.sh"      # Update functions
+
+# PHASE 4: SUB-MENUS (DEPEND ON EVERYTHING ABOVE)
+source "$PROJECT_DIR/lib/sub_menus/presets.sh"     # Presets menu
+source "$PROJECT_DIR/lib/sub_menus/uninstall.sh"   # Uninstall menu
+
 # PM="$(detect_pkg_manager)"
 trap graceful_exit SIGINT
 log START "Script started"
-# source /data/data/com.termux/files/home/project/lib/detect.sh
-# source /data/data/com.termux/files/home/project/lib/install.sh
-# source /data/data/com.termux/files/home/project/lib/utils.sh
-# ---  COLORS AND STYLING ---
-LOGO="\033[1;31m" # Bright Cyan (For Logo/Headers)
-INFO="\e[93m" # Bright Yellow/Gold (For infor text/prompts)
-OPT="\e[92m"  # Bright Green (For menu options)
-ERR="\e[91m"  # Bright Red (For errors)
-BARR="\e[95m" # Bright Magenta (For visual dividers/barriers)
-RST="\e[0m"   # Reset/No Color (Crucial for prompt fix)
-BOLD="\e[1m"  # Bold text
-WHI="\e[97m"  # Bright White Text
-
+# -- dependencies check -- 
+check_dependencies_menu
 # a call for startup internet check
 startup_wifi_check
 
@@ -27,7 +42,6 @@ startup_wifi_check
 show_main_menu() {
  clear
   # cool LOGO with colors
- # echo -e "${LOGO}${BOLD}"
   cat <<"EOF" | lolcat
 
     ██▓███   ██▀███   ▒█████   ▄████▄  ▓█████   ██████     ██▀███  
@@ -111,44 +125,6 @@ echo -e "${BARR}    ╚══════════════════╝
   echo -e "${OPT}${BOLD}"
   read -p " [*] Enter the tool numbers (separate by spaces): " -a selections
   echo ""
-}
-
-profile_menu() {
- while true; do
-  clear
-   log ENTER "User entered sub-menu 'install-sresets'"
-  echo -e "${OPT}${BOLD}"
-   boxed_text center "Choose the preset you want to install"
-  echo -e "${OPT}"
-   boxed_text center "[1] Minimal tools
-[2] Developer tools
-[3] Fun tools"
-  echo -e "${ERR}"
-   boxed_text center "[b]ack to main menu"
-  echo -e "${RST}"
-  echo -ne "${INFO}${BOLD} [*] Choose an option: ${RST}"
-   read profile_choice
-  echo ""
-  case "$profile_choice" in
-    1) log INSTALL "User chose to install 'Minimal tools preset'"
-      install_preset "${PRESET_MINIMAL[@]}"
-      ;;
-    2) log INSTALL "User chose to install 'Developer tools preset'"
-      install_preset "${PRESET_DEV[@]}"
-      ;;
-    3) log INSTALL "User chose to install 'Fun tools preset'"
-      install_preset "${PRESET_FUN[@]}"
-      ;;
-    b|B) log LEFT "User exited sub-menu 'install-sresets'"
-       return 0
-      ;;
-    *) echo ""
-       echo -e "${ERR}"
-      boxed_text center "[x] Invalid choice: '$profile_choice', Please select the right option."
-       echo -e "${RST}"
-      sleep 3
-  esac
- done
 }
 
 while true; do
@@ -242,7 +218,7 @@ while true; do
     install_all
     ;;
   p|P)
-    profile_menu
+    preset_menu
     ;;
   i|I) clear
     check_tool_main

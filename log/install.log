@@ -993,3 +993,181 @@
 [00:47:54] [SKIPPED] Htop: Hardware use Checker, was already installed (Skipped)
 [00:47:54] [SKIPPED] Fish: A advanced Shell, was already installed (Skipped)
 [00:47:54] [EXIT] Exited script
+[14:51:48] [START] Script started
+[14:53:03] [INSTALLED] Croc: File-sender installed successfully
+[14:53:28] [INSTALLED] Croc: File-sender installed successfully
+[14:53:31] [EXIT] Exited script
+[14:53:55] [START] Script started
+[14:54:37] [INSTALLED] Croc: File-sender installed successfully
+[14:55:04] [INSTALLED] Croc: File-sender installed successfully
+[14:55:09] [SKIPPED] Wttr was already installed (Skipped)
+[14:55:27] [EXIT] Exited script
+[14:57:39] [START] Script started
+[14:58:27] [EXIT] Exited script
+[15:03:52] [START] Script started
+[15:04:35] [INSTALLED] Croc: File-sender installed successfully
+[15:04:42] [INSTALLED] Wttr successfully installed
+[15:14:08] [EXIT] Exited script
+[15:14:17] [START] Script started
+[15:14:52] [INSTALLED] Croc: File-sender installed successfully
+[15:14:59] [INSTALLED] Wttr successfully installed
+[15:15:54] [EXIT] Exited script
+[15:15:55] [START] Script started
+[15:16:03] [INSTALLED] Croc: File-sender installed successfully
+[15:17:30] [EXIT] Exited script
+[15:17:32] [START] Script started
+[15:17:40] [INSTALLED] Croc: File-sender installed successfully
+[15:18:00] [INSTALLED] Croc: File-sender installed successfully
+[15:18:16] [EXIT] Exited script
+[15:20:13] [START] Script started
+[15:20:23] [INSTALLED] Croc: File-sender installed successfully
+[15:24:43] [EXIT] Exited script
+[15:24:44] [START] Script started
+[15:24:52] [INSTALLED] Croc: File-sender installed successfully
+[15:27:00] [INSTALLED] Croc: File-sender installed successfully
+[15:27:04] [EXIT] Exited script
+[15:27:05] [START] Script started
+[15:27:26] [EXIT] Exited script
+[15:30:34] [START] Script started
+[15:30:44] [INSTALLED] Croc: File-sender installed successfully
+[15:31:11] [EXIT] Exited script
+[15:33:02] [START] Script started
+[15:33:05] [SKIPPED] Croc: File-sender was already installed (Skipped)
+[15:33:33] [EXIT] Exited script
+[15:35:46] [START] Script started
+[15:36:45] [EXIT] Exited script
+[15:36:46] [START] Script started
+[15:36:56] [EXIT] Exited script
+[15:39:28] [START] Script started
+[15:39:39] [EXIT] Exited script
+[15:40:27] [START] Script started
+[15:40:40] [EXIT] Exited script
+[15:43:32] [START] Script started
+[15:43:34] [SKIPPED] Croc: File-sender was already installed (Skipped)
+[15:44:13] [EXIT] Exited script
+[15:44:15] [START] Script started
+[15:44:22] [INSTALLED] Croc: File-sender installed successfully
+[15:45:16] [EXIT] Exited script
+[16:06:41] [START] Script started
+[16:06:59] [EXIT] Exited script
+[16:07:01] [START] Script started
+[16:07:10] [INSTALLED] Croc: File-sender installed successfully
+[16:08:30] [EXIT] Exited script
+[16:19:58] [START] Script started
+[16:20:09] [INSTALLED] Croc: File-sender installed successfully
+[16:20:39] [EXIT] Exited script
+[16:21:39] [START] Script started
+[16:21:47] [INSTALLED] Croc: File-sender installed successfully
+[16:22:37] [EXIT] Exited script
+[16:23:13] [START] Script started
+[16:23:15] [INSTALL] User chose to install all tools
+[16:23:15] [OK] pkg list updated
+[16:23:27] [SKIPPED] Git: Version control, was already installed (Skipped)
+[16:23:27] [SKIPPED] Curl: File downloader 2, was already installed (Skipped)
+[16:23:28] [SKIPPED] Wget: File downloader, was already installed (Skipped)
+[16:23:28] [SKIPPED] Bat: Better then 'cat', was already installed (Skipped)
+[16:23:28] [SKIPPED] Htop: Hardware use Checker, was already installed (Skipped)
+[16:23:29] [SKIPPED] Fish: A advanced Shell, was already installed (Skipped)
+[16:23:29] [SKIPPED] OpenSSH: Server deployment, was already installed (Skipped)
+[16:23:29] [SKIPPED] Python3: Coding language, was already installed (Skipped)
+[16:23:30] [SKIPPED] Nmap: Network scanner, was already installed (Skipped)
+[16:23:30] [SKIPPED] Libcaca: Cool fire, was already installed (Skipped)
+[16:23:30] [SKIPPED] Speedtest-Go: Net-speed tester, was already installed (Skipped)
+[16:23:31] [SKIPPED] CPUfetch: Cpu-info, was already installed (Skipped)
+[16:23:31] [SKIPPED] Neofetch: System-info, was already installed (Skipped)
+[16:23:31] [SKIPPED] Ranger: A Filamanager, was already installed (Skipped)
+[16:23:32] [SKIPPED] Nano: Text editor, was already installed (Skipped)
+[16:23:32] [SKIPPED] Sl: Steam Locomotive, was already installed (Skipped)
+[16:23:32] [SKIPPED] Ncdu: du Checker, was already installed (Skipped)
+[16:23:33] [SKIPPED] Neovim: Best code editor, was already installed (Skipped)
+[16:23:33] [SKIPPED] Node.Js: JS Runtime env, was already installed (Skipped)
+[16:23:36] [SKIPPED] Cbonsai: Japanise tree, was already installed (Skipped)
+[16:23:37] [SKIPPED] Asciinema: Terminal-recoder, was already installed (Skipped)
+[16:23:37] [SKIPPED] Croc: File-sender, was already installed (Skipped)
+[16:23:37] [SKIPPED] Fzf: File-finder, was already installed (Skipped)
+[16:23:38] [SKIPPED] Zoxide: Smarter cd, was already installed (Skipped)
+[16:23:38] [SKIPPED] Zsh: Most awesome shell, was already installed (Skipped)
+[16:23:47] [SKIPPED] Duf: File/dir size Checker, was already installed (Skipped)
+[16:23:47] [SKIPPED] tty-clock: A big clock, was already installed (Skipped)
+[16:23:47] [SKIPPED] Pipes.sh: Line-Snake, was already installed (Skipped)
+[16:23:48] [SKIPPED] Yazi: Filamanager, was already installed (Skipped)
+[16:23:48] [SKIPPED] Lsd: 'ls' alternative, was already installed (Skipped)
+[16:23:48] [SKIPPED] Broot: Filenavigator, was already installed (Skipped)
+[16:23:49] [SKIPPED] Dust: Better version of du, was already installed (Skipped)
+[16:23:49] [SKIPPED] Procs: Morden 'ps', was already installed (Skipped)
+[16:23:49] [SKIPPED] Tldr: Man pages, was already installed (Skipped)
+[16:23:50] [SKIPPED] Gh: Guthub-Cli was already installed (Skipped)
+[16:23:50] [SKIPPED] Holehe, was already installed (Skipped)
+[16:23:53] [SKIPPED] Asciiqurium, was already installed (Skipped)
+[16:23:56] [SKIPPED] Wttr.io, was already installed (Skipped)
+[16:24:00] [SKIPPED] Tmux: A multitasker, was already installed (Skipped)
+[16:24:00] [SKIPPED] Lazygit: A git TUI, was already installed (Skipped)
+[16:24:00] [OK] Post-Installation-Summary shown
+[16:24:10] [EXIT] Exited script
+[16:26:14] [START] Script started
+[16:26:15] [INSTALL] User chose to install all tools
+[16:26:16] [OK] pkg list updated
+[16:26:23] [SKIPPED] Git: Version control, was already installed (Skipped)
+[16:26:24] [SKIPPED] Curl: File downloader 2, was already installed (Skipped)
+[16:26:24] [SKIPPED] Wget: File downloader, was already installed (Skipped)
+[16:26:24] [SKIPPED] Bat: Better then 'cat', was already installed (Skipped)
+[16:26:25] [SKIPPED] Htop: Hardware use Checker, was already installed (Skipped)
+[16:26:25] [SKIPPED] Fish: A advanced Shell, was already installed (Skipped)
+[16:26:25] [SKIPPED] OpenSSH: Server deployment, was already installed (Skipped)
+[16:26:25] [SKIPPED] Python3: Coding language, was already installed (Skipped)
+[16:26:26] [EXIT] Exited script
+[16:26:27] [START] Script started
+[16:26:29] [INSTALL] User chose to install all tools
+[16:26:29] [OK] pkg list updated
+[16:26:34] [OK] pkg/system upgraded
+[16:26:35] [SKIPPED] Git: Version control, was already installed (Skipped)
+[16:26:35] [SKIPPED] Curl: File downloader 2, was already installed (Skipped)
+[16:26:35] [SKIPPED] Wget: File downloader, was already installed (Skipped)
+[16:26:36] [SKIPPED] Bat: Better then 'cat', was already installed (Skipped)
+[16:26:36] [SKIPPED] Htop: Hardware use Checker, was already installed (Skipped)
+[16:26:36] [SKIPPED] Fish: A advanced Shell, was already installed (Skipped)
+[16:26:36] [SKIPPED] OpenSSH: Server deployment, was already installed (Skipped)
+[16:26:37] [SKIPPED] Python3: Coding language, was already installed (Skipped)
+[16:26:37] [SKIPPED] Nmap: Network scanner, was already installed (Skipped)
+[16:26:37] [SKIPPED] Libcaca: Cool fire, was already installed (Skipped)
+[16:26:38] [SKIPPED] Speedtest-Go: Net-speed tester, was already installed (Skipped)
+[16:26:38] [SKIPPED] CPUfetch: Cpu-info, was already installed (Skipped)
+[16:26:38] [SKIPPED] Neofetch: System-info, was already installed (Skipped)
+[16:26:38] [SKIPPED] Ranger: A Filamanager, was already installed (Skipped)
+[16:26:39] [SKIPPED] Nano: Text editor, was already installed (Skipped)
+[16:26:39] [EXIT] Exited script
+[21:07:57] [START] Script started
+[21:10:43] [EXIT] Exited script
+[21:10:46] [START] Script started
+[21:12:08] [EXIT] Exited script
+[21:12:09] [START] Script started
+[21:12:45] [EXIT] Exited script
+[21:12:46] [START] Script started
+[21:13:39] [EXIT] Exited script
+[21:13:41] [START] Script started
+[21:13:46] [EXIT] Exited script
+[21:20:40] [START] Script started
+[21:22:06] [EXIT] Exited script
+[21:23:45] [START] Script started
+[21:24:22] [EXIT] Exited script
+[21:25:33] [START] Script started
+[21:26:08] [EXIT] Exited script
+[21:36:14] [START] Script started
+[21:37:20] [EXIT] Exited script
+[21:37:22] [START] Script started
+[21:39:02] [EXIT] Exited script
+[21:39:05] [START] Script started
+[21:39:57] [INSTALLED] Croc: File-sender installed successfully
+[21:43:22] [INSTALLED] Croc: File-sender installed successfully
+[21:43:30] [INSTALLED] Wttr successfully installed
+[21:46:59] [EXIT] Exited script
+[21:50:05] [START] Script started
+[21:50:16] [ERR] No internet connection
+[21:51:12] [START] Script started
+[21:51:26] [EXIT] Exited script
+[21:51:40] [START] Script started
+[21:51:46] [SKIPPED] Croc: File-sender was already installed (Skipped)
+[21:51:56] [INSTALLED] Wttr successfully installed
+[21:52:18] [EXIT] Exited script
+[21:54:52] [START] Script started
+[21:55:01] [EXIT] Exited script
