@@ -11,7 +11,7 @@ preset_menu() {
 EOF
 
   echo -e "${OPT}${BOLD}"
-   boxed_text center "Choose the preset you want to install"
+   boxed_text center " [*] Choose the preset you want to install!"
   echo -e "${OPT}"
    boxed_text center "[1] Minimal tools
 [2] Developer tools

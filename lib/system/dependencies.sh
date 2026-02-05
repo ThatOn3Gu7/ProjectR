@@ -30,10 +30,9 @@ check_dependencies_menu() {
     # Define your dependencies here
     # Format: "command:Display Name:Install Hint"
     local dependencies=(
-        "lolcat:lolcat (Required):'apt install ruby && gem install lolcat' or 'apt install lolcat'"
+        "lolcat:lolcat (Required):'apt install ruby && gem install lolcat'"
         "git:Git (Required):'apt install git'"
         "curl:cURL (Required):'apt install curl'"
-        "croc:croc (Not Required):'apt install croc'"
     )
     
     # Check each dependency
@@ -50,9 +49,10 @@ check_dependencies_menu() {
     if [ $missing_count -eq 0 ]; then
         # echo ""
         echo -e "${OPT}${BOLD}"
-        boxed_text center "[✓] All dependencies satisfied"
+         boxed_text center "[✓] All dependencies satisfied"
         echo -e "${RST}"
-        sleep 1
+         sleep 1
+         clear
         return 0
     fi
     

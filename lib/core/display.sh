@@ -73,6 +73,7 @@ graceful_exit() {
     boxed_text center " Thanks for using the script
      See you next time "
     echo -e "${RST}"
+    stop_spinner
     tput cnorm
    exit 0
 }
