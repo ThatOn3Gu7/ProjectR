@@ -1,34 +1,27 @@
 #!/bin/bash
 
-# PROJECTR MAIN INSTALLER - EXPLICIT LOADING
+# -- source all the others --
+source lib/core/colors.sh
+source lib/core/logging.sh
+source lib/core/display.sh
+source lib/core/spinner.sh
+source lib/core/prompts.sh
 
-PROJECT_DIR="$HOME/ProjectR"
+source lib/system/detect.sh 
+source lib/system/network.sh
+source lib/system/checker.sh
+source lib/system/dependencies.sh
 
-# PHASE 1: ABSOLUTE ESSENTIALS
-source "$PROJECT_DIR/lib/core/colors.sh"          # Colors MUST come first
-source "$PROJECT_DIR/lib/core/logging.sh"         # Logging functions
-source "$PROJECT_DIR/lib/core/display.sh"         # boxed_text and display
-source "$PROJECT_DIR/lib/core/spinner.sh"         # Spinner functions
-source "$PROJECT_DIR/lib/core/prompts.sh"         # ask() function
+source lib/features/presets.sh
+source lib/features/installer.sh
+source lib/features/post_install.sh
+source lib/features/neovim_setup.sh
+source lib/features/zsh_setup.sh
+source lib/features/upgrade.sh
+source lib/features/update.sh
 
-# PHASE 2: SYSTEM DETECTION
-source "$PROJECT_DIR/lib/system/detect.sh"        # Package manager detection
-source "$PROJECT_DIR/lib/system/network.sh"       # Internet checking
-source "$PROJECT_DIR/lib/system/checker.sh"       # Tool checking functions
-source "$PROJECT_DIR/lib/system/dependencies.sh"  # Dependency checking
-
-# PHASE 3: CORE FEATURES
-source "$PROJECT_DIR/lib/features/presets.sh"     # Preset configurations
-source "$PROJECT_DIR/lib/features/installer.sh"   # Main install functions
-source "$PROJECT_DIR/lib/features/post_install.sh" # Post-install tasks
-source "$PROJECT_DIR/lib/features/neovim_setup.sh" # Neovim setup
-source "$PROJECT_DIR/lib/features/zsh_setup.sh"   # Zsh/OhMyZsh setup
-source "$PROJECT_DIR/lib/features/upgrade.sh"     # Upgrade functions
-source "$PROJECT_DIR/lib/features/update.sh"      # Update functions
-
-# PHASE 4: SUB-MENUS (DEPEND ON EVERYTHING ABOVE)
-source "$PROJECT_DIR/lib/sub_menus/presets.sh"     # Presets menu
-source "$PROJECT_DIR/lib/sub_menus/uninstall.sh"   # Uninstall menu
+source lib/sub_menus/presets.sh
+source lib/sub_menus/uninstall.sh
 
 # PM="$(detect_pkg_manager)"
 trap graceful_exit SIGINT
@@ -165,7 +158,7 @@ while true; do
   16) be_patient
     install_pkg sl sl "Steam Locomotive" ;;
   17) be_patient
-    install_pkg ncdu ncdu "Ncdu: du Checker" ;;
+    install_pkg ncdu ncdu "Ncdu: disk use analyser" ;;
   18) be_patient
     install_neovim_full ;;
   19) be_patient
@@ -175,7 +168,7 @@ while true; do
   21) be_patient
     install_pkg croc croc "Croc: File-sender" ;;
   22) be_patient
-    install_pkg fzf fzf "Fzf: File-finder" ;;
+    install_pkg fzf fzf "Fzf: Fuzzy-finder" ;;
   23) be_patient
     install_pkg zoxide zoxide "Zoxide: A better 'cd'" ;;
   24) be_patient
@@ -189,11 +182,11 @@ while true; do
   28) be_patient
     install_pkg yazi yazi "Yazi: Filamanager" ;;
   29) be_patient
-    install_pkg lsd lsd "Lsd: 'ls' alternative" ;;
+    install_pkg lsd lsd "Lsd: Batter 'ls' alternative" ;;
   30) be_patient
     install_pkg broot broot "Broot: Filenavigator" ;; 
   31) be_patient
-    install_pkg dust dust "Dust: Better version of du" ;;
+    install_pkg dust dust "Dust: Better 'du' alternative" ;;
   32) be_patient
     install_pkg procs procs "Procs: Morden 'ps'" ;;
   33) be_patient

@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # -- log creation --
-LOG_FILE="$HOME/ProjectR/log/install.log"
+LOG_FILE="log/install.log"
 
 # just a simple log function 
 log() {

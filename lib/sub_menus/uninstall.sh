@@ -1,22 +1,18 @@
 #!/bin/bash
 
-PROJECT_DIR="$HOME/ProjectR"
 
-# PHASE 1: ABSOLUTE ESSENTIALS (SAME AS MAIN)
-source "$PROJECT_DIR/lib/core/colors.sh"
-source "$PROJECT_DIR/lib/core/logging.sh"
-source "$PROJECT_DIR/lib/core/display.sh"
-source "$PROJECT_DIR/lib/core/spinner.sh"
-source "$PROJECT_DIR/lib/core/prompts.sh"
+source lib/core/colors.sh
+source lib/core/logging.sh
+source lib/core/display.sh
+source lib/core/spinner.sh
+source lib/core/prompts.sh
 
-# PHASE 2: SYSTEM DETECTION
-source "$PROJECT_DIR/lib/system/detect.sh"
-source "$PROJECT_DIR/lib/system/network.sh"
-source "$PROJECT_DIR/lib/system/checker.sh"
+source lib/system/detect.sh
+source lib/system/network.sh
+source lib/system/checker.sh
 
-# PHASE 3: UNINSTALL FUNCTIONS (LOAD BEFORE MENU)
-if [ -f "$PROJECT_DIR/lib/features/uninstaller.sh" ]; then
-    source "$PROJECT_DIR/lib/features/uninstaller.sh"
+if [ -f lib/features/uninstaller.sh ]; then
+    source lib/features/uninstaller.sh
 fi
 
 # -- uninstaller menu --
