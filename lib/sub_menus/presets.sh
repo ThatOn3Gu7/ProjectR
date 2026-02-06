@@ -13,7 +13,8 @@ EOF
   echo -e "${OPT}${BOLD}"
    boxed_text center " [*] Choose the preset you want to install!"
   echo -e "${OPT}"
-   boxed_text center "[1] Minimal tools
+   boxed_text center \
+"[1] Minimal tools
 [2] Developer tools
 [3] Fun tools"
   echo -e "${ERR}"
