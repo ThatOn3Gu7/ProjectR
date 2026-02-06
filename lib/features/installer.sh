@@ -9,25 +9,25 @@ PM="$(detect_pkg_manager)"
 # This function here installs all tools put in it.
 install_all() {
     log INSTALL "User chose to install all tools"
-  #  # Checks for Internet before proceeding
-  #   is_internet_up 
-  #  # Update package lists
-  #  echo ""
-  #   start_spinner "  [*] Updateing package list.."
-  #    pkg_update
-  #   stop_spinner "${OPT}${BOLD}  [✓] Package list refreshed..${RST}"
-  #   sleep 0.1
-  #  echo -e "${INFO}"
-  # if ask "  [!] Upgrade the system?" "n" 5; then
-  #   echo -e "${RST}"
-  #    start_spinner "  [*] Upgrading system..."
-  #     pkg_upgrade
-  #    stop_spinner "${OPT}${BOLD}  [✓] System Upgrade complete..${RST}"
-  #   else
-  #    echo ""
-  #     boxed_text center "  [*] Skipping system upgrade"
-  #   sleep 2
-  # fi
+   # Checks for Internet before proceeding
+    is_internet_up 
+   # Update package lists
+   echo ""
+    start_spinner "  [*] Updateing package list.."
+     pkg_update
+    stop_spinner "${OPT}${BOLD}  [✓] Package list refreshed..${RST}"
+    sleep 0.1
+   echo -e "${INFO}"
+  if ask "  [!] Upgrade the system?" "n" 5; then
+    echo -e "${RST}"
+     start_spinner "  [*] Upgrading system..."
+      pkg_upgrade
+     stop_spinner "${OPT}${BOLD}  [✓] System Upgrade complete..${RST}"
+    else
+     echo ""
+      boxed_text center "  [*] Skipping system upgrade"
+    sleep 2
+  fi
 
  clear
   tput civis
@@ -109,7 +109,7 @@ install_pkg() {
         echo -e "${OPT}${BOLD}  [✓] $name is already installed - Skipping..${RST}"
         SKIPPED_PKGS+=("$name")
         log SKIPPED "$name was already installed (Skipped)"
-        # sleep 1
+        sleep 1
     else
        start_spinner "  [*] Installing: $name.."
 
@@ -178,8 +178,7 @@ install_pkg() {
            echo -e "${RST}"
            log FAIL "$name failed to install"
         fi
-        # echo -e "${OPT}${BOLD} [✓] $name has installed successfully.${RST}"
-        sleep 1
+        sleep 2
     fi
 }
 
@@ -208,7 +207,7 @@ install_pip_package() {
      SKIPPED_PKGS+=("$package_name")
       echo -e "${OPT}${BOLD}  [✓] $package_name is already installed - Skipping ${RST}"
         log SKIPPED "$package_name was already installed (Skipped)"
-       # sleep 1
+       sleep 1
       return 0
     fi
     
