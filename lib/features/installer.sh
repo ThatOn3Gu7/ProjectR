@@ -11,12 +11,11 @@ install_all() {
     log INSTALL "User chose to install all tools"
    # Checks for Internet before proceeding
     is_internet_up 
-    # Update package lists
+   # Update package lists
    echo ""
     start_spinner "  [*] Updateing package list.."
      pkg_update
     stop_spinner "${OPT}${BOLD}  [✓] Package list refreshed..${RST}"
-   echo ""
     sleep 0.1
    echo -e "${INFO}"
   if ask "  [!] Upgrade the system?" "n" 5; then
@@ -34,7 +33,7 @@ install_all() {
   tput civis
   be_patient
    echo -e "${OPT}${BOLD}"
-    boxed_text center "[*] Installing all essential tools"
+    boxed_text center "[*] Installing all tools"
     echo -e "${RST}"
    
     # ---- APT TOOLS ----
@@ -78,11 +77,12 @@ install_all() {
     install_pip_package "wttr" "Wttr.io,"
     install_pkg tmux tmux "Tmux: A multitasker,"
     install_pkg lazygit lazygit "Lazygit: A git TUI,"
+    install_pkg ani-cli ani-cli "Ani-cli: A anime streamer"
     # -- post-install-summary
     echo ""
      post_install_summary
     echo -e "${OPT}${BOLD}" 
-     boxed_text center "[✓] Install All Completed. Press ENTER to continue.."
+     boxed_text center "[✓] installation Completed. Press ENTER to continue.."
     echo -e "${RST}"
    read
   tput cnorm
@@ -104,22 +104,12 @@ install_pkg() {
     local pkg="$2"     # package name to install
     local name="$3"    # pretty name for display
 
-    # For internet Check-up before continue
-    if ! check_internet; then
-     echo -e "${ERR}${BOLD}"
-      boxed_text center "        It seems that you are not onlile
-Please make sure to turn on WI-FI to continue ;)"
-      echo -e "${RST}"
-      log FAIL "$name not installed (no internet)"
-       tput cnorm
-      exit 0
-    fi
     # installing or Skipped massges
     if command -v "$cmd" >/dev/null 2>&1; then
         echo -e "${OPT}${BOLD}  [✓] $name is already installed - Skipping..${RST}"
         SKIPPED_PKGS+=("$name")
         log SKIPPED "$name was already installed (Skipped)"
-        sleep 0.1
+        # sleep 1
     else
        start_spinner "  [*] Installing: $name.."
 
@@ -225,20 +215,20 @@ Please make sure to turn on WI-FI to continue ;)"
     
     # Check if command already exists
     if command -v "$command_name" &> /dev/null; then
-        echo -e "${OPT}${BOLD}  [✓] $package_name is already installed - Skipping ${RST}"
+      echo -e "${OPT}${BOLD}  [✓] $package_name is already installed - Skipping ${RST}"
         log SKIPPED "$package_name was already installed (Skipped)"
-        sleep 3
-        return 0
+       sleep 1
+      return 0
     fi
     
     # Install the package
     start_spinner "  [*] Installing: $package_name ($install_cmd)..."
     # Error handling
     if ! $install_cmd install --quiet "$command_name"; then
-        echo -e "${ERR}${BOLD}  [x] ERR: Failed to install $package_name..${RST}" >&2
+       echo -e "${ERR}${BOLD}  [x] ERR: Failed to install $package_name..${RST}" >&2
         log FAIL "$package_name failed to installed"
         sleep 3
-        return 1
+       return 1
     fi
     # Verify installation
     if command -v "$command_name" &> /dev/null; then

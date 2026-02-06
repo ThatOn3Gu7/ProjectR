@@ -9,25 +9,28 @@ post_install_summary() {
     echo -e "${RST}"
 
     if [ ${#INSTALLED_PKGS[@]} -gt 0 ]; then
-        echo -e "${SUCCESS}${BOLD}Installed:${RST}"
+        echo -e "${OPT}${BOLD} [*] Installed:${RST}"
+         echo ""
         for pkg in "${INSTALLED_PKGS[@]}"; do
-            echo " [ ✓ ] $pkg"
+            echo -e "   ${OPT}[✓]${RST} $pkg"
         done
         echo ""
     fi
 
     if [ ${#SKIPPED_PKGS[@]} -gt 0 ]; then
-        echo -e "${OPT}${BOLD}Skipped:${RST}"
+        echo -e "${INFO}${BOLD} [*] Skipped:${RST}"
+         echo ""
         for pkg in "${SKIPPED_PKGS[@]}"; do
-            echo " [ → ] $pkg"
+            echo -e "   ${BLUE}[→]${RST} $pkg"
         done
         echo ""
     fi
 
     if [ ${#FAILED_PKGS[@]} -gt 0 ]; then
-        echo -e "${ERR}${BOLD}Failed:${RST}"
+        echo -e "${ERR}${BOLD} [!] Failed:${RST}"
+         echo ""
         for pkg in "${FAILED_PKGS[@]}"; do
-            echo " [ ✗ ] $pkg"
+            echo -e "   ${ERR}[✗]${RST} $pkg"
         done
         echo ""
     fi

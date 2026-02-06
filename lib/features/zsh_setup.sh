@@ -11,8 +11,13 @@ install_zsh_full() {
          sleep 2
        else 
          echo -e "${INFO}${BOLD}  [*] Installing Oh-My-Zsh framework...${RST}"
-       KEEP_ZSHRC=yes RUNZSH=no CHSH=no \
-         sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" >/dev/null 2>&1
+         echo ""
+         echo -e "${ERR}  [*] The script will auto-exit after this because of Shell change..${RST}"
+         echo ""
+         echo -e "${INFO}  [*] Make sure to clone some useful plugins to make full use of ohmyzsh.."
+         echo ""
+       KEEP_ZSHRC=yes \
+         sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" 
      fi
     fi
     sleep 1 

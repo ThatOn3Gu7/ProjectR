@@ -75,6 +75,7 @@ EOF
  echo -e "   [38] ${OPT} Wttr${RST}"
  echo -e "   [39] ${OPT} Tmux${RST}"
  echo -e "   [40] ${OPT} Lazygit${RST}"
+ echo -e "   [41] ${OPT} Ani-cli${RST}"
  echo ""
  echo -e "${INFO}  [b] Back to main-menu ${RST}"
  echo -e "${ERR}  [e] Exit Script"
@@ -163,6 +164,8 @@ EOF
      uninstall_pip tmux tmux "Tmux";;
    40) echo -e "${ERR}"
      uninstall_pkg lazygit lazygit "Lazygit";;
+   41) echo -e "${ERR}"
+     uninstall_pkg ani-cli ani-cli "Ani-cli";;
   b|B) return ;;
   e|E) graceful_exit;;
      *) echo -e "${ERR} [!] Invalid option: $choice ${RST}" ;;

@@ -49,4 +49,5 @@ PRESET_FUN=(
   "pipes.sh|pipes.sh|Pipes.sh: Line-Snake,"
   "speedtest-go|speedtest-go|Speedtest-Go: WI-FI-speed Checker,"
   "cacafire|libcaca|Libcaca: AsCii Art Library,"
+  "ani-cli|ani-cli|Ani-cli: A anime streamer"
 )

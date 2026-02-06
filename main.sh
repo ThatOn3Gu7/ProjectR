@@ -1,17 +1,17 @@
 #!/bin/bash
 
-# -- source all the others --
+# -- source all the other utilitys --
 source lib/core/colors.sh
 source lib/core/logging.sh
 source lib/core/display.sh
 source lib/core/spinner.sh
 source lib/core/prompts.sh
-
+# -- system logics sourced --
 source lib/system/detect.sh 
 source lib/system/network.sh
 source lib/system/checker.sh
 source lib/system/dependencies.sh
-
+# -- function logics sourced --
 source lib/features/presets.sh
 source lib/features/installer.sh
 source lib/features/post_install.sh
@@ -19,10 +19,9 @@ source lib/features/neovim_setup.sh
 source lib/features/zsh_setup.sh
 source lib/features/upgrade.sh
 source lib/features/update.sh
-
+# -- sub_menus sourced --
 source lib/sub_menus/presets.sh
 source lib/sub_menus/uninstall.sh
-
 # PM="$(detect_pkg_manager)"
 trap graceful_exit SIGINT
 log START "Script started"
@@ -30,10 +29,9 @@ log START "Script started"
 check_dependencies_menu
 # a call for startup internet check
 startup_wifi_check
-
-# --- SETUP ESSENTIAL TOOLS INSTALLATION MENU ---
+# -- main installer menu  --
 show_main_menu() {
- clear
+ # clear
   # cool LOGO with colors
   cat <<"EOF" | lolcat
 
@@ -101,6 +99,7 @@ EOF
   echo -e "${BARR}    ║${RST}${OPT} [${WHI}38${OPT}] Wttr          ${INFO}- A weather tool ${OPT}(Fun)${RST}"
   echo -e "${BARR}    ║${RST}${OPT} [${WHI}39${OPT}] Tmux          ${INFO}- A multitasker tool ${OPT}(Dev)${RST}"
   echo -e "${BARR}    ║${RST}${OPT} [${WHI}40${OPT}] Lazygit       ${INFO}- An TUI for git ${OPT}(Dev)${RST}"
+  echo -e "${BARR}    ║${RST}${OPT} [${WHI}41${OPT}] Ani-cli       ${INFO}- A terminal anime streaming tool (Fun) ${OPT}(Dev)${RST}"
   echo -e "${BARR}    ╚═════════════════════════════════════╝ ${RST}"
 
 echo ""
@@ -206,7 +205,8 @@ while true; do
     install_pkg tmux tmux "Tmux: A multitasker" ;;
   40) be_patient
     install_pkg lazygit lazygit "Lazygit: A git TUI" ;;
-
+  41) be_patient
+    install_pkg ani-cli ani-cli "Ani-cli: A anime streamer" ;;
   0) clear
     install_all
     ;;

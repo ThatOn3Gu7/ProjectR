@@ -58,6 +58,7 @@ check_tool_main() {
  check_tool wttr "Wttr.io"
  check_tool tmux "Tmux"
  check_tool lazygit "Lazygit"           
+ check_tool ani-cli "Ani-cli"           
 
  echo -e "${OPT}${BOLD}"
   boxed_text center " [✓] Taks complete.. press ENTER to continue"
