@@ -76,6 +76,8 @@ EOF
  echo -e "   [39] ${OPT} Tmux${RST}"
  echo -e "   [40] ${OPT} Lazygit${RST}"
  echo -e "   [41] ${OPT} Ani-cli${RST}"
+ echo -e "   [42] ${OPT} Code-Server${RST}"
+ echo -e "   [43] ${OPT} Pipx${RST}"
  echo ""
  echo -e "${INFO}  [b] Back to main-menu ${RST}"
  echo -e "${ERR}  [e] Exit Script"
@@ -155,17 +157,21 @@ EOF
    35) echo -e "${ERR}"
      uninstall_pkg gh gh "Gh";;
    36) echo -e "${ERR}"
-     uninstall_pkg holehe "Holehe";;
+     uninstall_pip holehe "Holehe";;
    37) echo -e "${ERR}"
      uninstall_pip asciiquarium "Asciiqurium";;
    38) echo -e "${ERR}"
      uninstall_pip wttr "Wttr.io";;
    39) echo -e "${ERR}"
-     uninstall_pip tmux tmux "Tmux";;
+     uninstall_pkg tmux tmux "Tmux";;
    40) echo -e "${ERR}"
      uninstall_pkg lazygit lazygit "Lazygit";;
    41) echo -e "${ERR}"
      uninstall_pkg ani-cli ani-cli "Ani-cli";;
+   42) echo -e "${ERR}"
+     uninstall_pkg code-server code-server "Code-Server";;
+   43) echo -e "${ERR}"
+    uninstall_pip pipx pipx "Pipx" ;;
   b|B) return ;;
   e|E) graceful_exit;;
      *) echo -e "${ERR} [!] Invalid option: $choice ${RST}" ;;

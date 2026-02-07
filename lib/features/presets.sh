@@ -37,6 +37,8 @@ PRESET_DEV=(
   "gh|gh|Gh: Github-cli"
   "tmux|tmux|Tmux: A Multitasker"
   "lazygit|lazygit|Lazygit: A git TUI"
+  "code-server|code-server|Code-Server: VsCode on android"
+  "pipx|pipx|Pipx: A python-cli tools installer"
 )
 
 # Fun tools

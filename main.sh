@@ -99,7 +99,9 @@ EOF
   echo -e "${BARR}    ║${RST}${OPT} [${WHI}38${OPT}] Wttr          ${INFO}- A weather tool ${OPT}(Fun)${RST}"
   echo -e "${BARR}    ║${RST}${OPT} [${WHI}39${OPT}] Tmux          ${INFO}- A multitasker tool ${OPT}(Dev)${RST}"
   echo -e "${BARR}    ║${RST}${OPT} [${WHI}40${OPT}] Lazygit       ${INFO}- An TUI for git ${OPT}(Dev)${RST}"
-  echo -e "${BARR}    ║${RST}${OPT} [${WHI}41${OPT}] Ani-cli       ${INFO}- A terminal anime streaming tool (Fun) ${OPT}(Dev)${RST}"
+  echo -e "${BARR}    ║${RST}${OPT} [${WHI}41${OPT}] Ani-cli       ${INFO}- A terminal anime streaming tool ${OPT}(Fun)${RST}"
+  echo -e "${BARR}    ║${RST}${OPT} [${WHI}42${OPT}] Code-Server   ${INFO}- VsCode on android ${OPT}(Dev)${RST}"
+  echo -e "${BARR}    ║${RST}${OPT} [${WHI}43${OPT}] Pipx          ${INFO}- A python-cli tool installer ${OPT}(Dev)${RST}"
   echo -e "${BARR}    ╚═════════════════════════════════════╝ ${RST}"
 
 echo ""
@@ -196,17 +198,21 @@ while true; do
     install_pkg gh gh "Gh: Guthub-Cli" ;;
   # Install commands for pip tools
   36) be_patient
-  install_pip_package "holehe" "Holehe" ;;
+    install_pip "holehe" "Holehe" ;;
   37) be_patient
-    install_pip_package "asciiquarium" "Asciiquarium" ;;
+    install_pip "asciiquarium" "Asciiquarium" ;;
   38) be_patient
-    install_pip_package "wttr" "Wttr" ;;
+    install_pip "wttr" "Wttr" ;;
   39) be_patient
     install_pkg tmux tmux "Tmux: A multitasker" ;;
   40) be_patient
     install_pkg lazygit lazygit "Lazygit: A git TUI" ;;
   41) be_patient
     install_pkg ani-cli ani-cli "Ani-cli: A anime streamer" ;;
+  42) be_patient
+    install_pkg code-server code-server "Code-Server: VsCode on android" ;;
+  43) be_patient
+    install_pkg pipx pipx "Pipx: A python-cli installer" ;;
   0) clear
     install_all
     ;;

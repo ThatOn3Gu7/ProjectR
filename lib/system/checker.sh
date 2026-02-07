@@ -1,14 +1,18 @@
 #!/bin/bash
 
+FOUND_PKGS=()
+NOT_FOUND_PKGS=()
 # -- checkes if a tools is installed --
 check_tool() {
    local cmd=$1 # Tool name to check if its installed or not
    local name="$2" # A name to show to user
 
   if command -v "$cmd" >/dev/null 2>&1; then
+    FOUND_PKGS+=($cmd)
      echo -e "${OPT}${BOLD}   [✓] $name is installed${RST}"
     sleep 0.1
    else
+    NOT_FOUND_PKGS+=($cmd)
      echo -e "${ERR}${BOLD}   [✗] $name is NOT installed${RST}"
     sleep 0.1
   fi
@@ -58,13 +62,24 @@ check_tool_main() {
  check_tool wttr "Wttr.io"
  check_tool tmux "Tmux"
  check_tool lazygit "Lazygit"           
- check_tool ani-cli "Ani-cli"           
+ check_tool ani-cli "Ani-cli"
+ check_tool code-server "Code-Server"
+ check_tool pipx "Pipx"      
 
+   local total=$(( ${#FOUND_PKGS[@]} + ${#NOT_FOUND_PKGS[@]} ))
+    echo -e "${BLUE}${BLOD}"
+    boxed_text_full "center" \
+        " [*] ANALYSIS RESULTS" \
+        "" \
+        "● Total Analysis: $total" \
+        "● Already installed: ${#FOUND_PKGS[@]}" \
+        "● Not Found: ${#NOT_FOUND_PKGS[@]}"
+    echo -e "${RST}"
  echo -e "${OPT}${BOLD}"
   boxed_text center " [✓] Taks complete.. press ENTER to continue"
  echo -e "${RST}"
 
   # Time to raed result
-  read
+  read -s
  tput cnorm
 }

@@ -12,7 +12,7 @@ startup_wifi_check() {
     boxed_text center "        It seems that you are not onlile
 Please make sure to turn on WI-FI to continue :)"
     echo -e "${OPT}${BOLD}"
-    boxed_text center " [!] Still continue? [y/N]"
+    boxed_text center " [!] Continue Anyways? [y/N]"
     tput civis        # hide cursor
     read -rsn 1 reply    # read silently, no echo
     tput cnorm        # restore cursor

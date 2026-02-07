@@ -22,7 +22,7 @@ check_dependency() {
 check_dependencies_menu() {
     local missing_count=0
     local missing_deps=()
-    
+   clear 
     echo -e "${BLUE}${BOLD}"
     boxed_text center " [*] Dependency Check!"
     echo -e "${RST}"

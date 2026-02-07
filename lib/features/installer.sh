@@ -72,12 +72,13 @@ install_all() {
     install_pkg tldr tldr "Tldr: Man pages,"
     install_pkg gh gh "Gh: Guthub-Cli"
     # ---- PIP TOOLS ----
-    install_pip_package "holehe" "Holehe,"
-    install_pip_package "asciiquarium" "Asciiqurium,"
-    install_pip_package "wttr" "Wttr.io,"
+    install_pip "holehe" "Holehe,"
+    install_pip "asciiquarium" "Asciiqurium,"
+    install_pip "wttr" "Wttr.io,"
     install_pkg tmux tmux "Tmux: A multitasker,"
     install_pkg lazygit lazygit "Lazygit: A git TUI,"
     install_pkg ani-cli ani-cli "Ani-cli: A anime streamer"
+    install_pkg code-server code-server "Code-Server: VsCode on android"
     # -- post-install-summary
     echo ""
      post_install_summary
@@ -184,7 +185,7 @@ install_pkg() {
 
 # Function to inatall pip packages
 # Usage: ensure_pip_package <package_name> [pip_package_name]
-install_pip_package() {
+install_pip() {
     local command_name="$1"
     local package_name="${2:-$1}"  # Use second arg if provided, otherwise use command name
     local install_cmd=""
