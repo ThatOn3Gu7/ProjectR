@@ -2,6 +2,7 @@
 
 # -- source all the other utilitys --
 source lib/core/colors.sh
+source lib/core/progress_bar.sh
 source lib/core/logging.sh
 source lib/core/display.sh
 source lib/core/spinner.sh
@@ -48,7 +49,7 @@ show_main_menu() {
    [--------------------------------------------------------------]
      > Purpose: Made to install tools/utilities.
      > C0ded by: ThatOn3Gu7
-     > V3rsion: 1.0 | 2026-02-01
+     > V3rsion: 1.1 | 2026-02-10
      > Status: [ Ready to install packages ]
    [--------------------------------------------------------------]
 EOF
@@ -105,7 +106,6 @@ EOF
   echo -e "${BARR}    ╚═════════════════════════════════════╝ ${RST}"
 
 echo ""
-
 
 echo -e "${BARR}   ╔════════════════╗ ${RST}"
 echo -e "${BARR}   ║ ${RST}Other Options: ${BARR}║${RST}"

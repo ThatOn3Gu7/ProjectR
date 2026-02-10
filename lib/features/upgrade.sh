@@ -14,7 +14,6 @@ pkg_upgrade() {
           echo -e "${ERR}${BOLD}"
           boxed_text center "[!] System upgrade not supported for: $PM..${RST}"
           echo -e "${RST}"
-          stop_spinner  
             return 1
             ;;
     esac

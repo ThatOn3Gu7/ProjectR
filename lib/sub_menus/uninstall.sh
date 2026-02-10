@@ -30,7 +30,7 @@ uninstall_menu() {
    [--------------------------------------------------------------]
      > Purpose: Made to remove installed tools/utilities.
      > C0ded by: ThatOn3Gu7
-     > V3rsion: 1.0 | 2026-02-01
+     > V3rsion: 1.1 | 2026-02-10
      > Status: [ Ready to purge packages ]
    [--------------------------------------------------------------]
 

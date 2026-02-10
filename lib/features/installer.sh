@@ -13,16 +13,16 @@ install_all() {
     is_internet_up 
    # Update package lists
    echo ""
-    start_spinner "  [*] Updateing package list.."
-     pkg_update
-    stop_spinner "${OPT}${BOLD}  [✓] Package list refreshed..${RST}"
+   progress_run "Syncing repositories" \
+                 "Package lists updated" \
+                 pkg_update
     sleep 0.1
    echo -e "${INFO}"
   if ask "  [!] Upgrade the system?" "n" 5; then
     echo -e "${RST}"
-     start_spinner "  [*] Upgrading system..."
-      pkg_upgrade
-     stop_spinner "${OPT}${BOLD}  [✓] System Upgrade complete..${RST}"
+     progress_run "Upgrading system" \
+                  "System upgrade complete" \
+                  pkg_upgrade
     else
      echo ""
       boxed_text center "  [*] Skipping system upgrade"

@@ -15,10 +15,10 @@ Built with readability, user experience, and future extensibility in mind.
 - 🌐 **Internet connectivity checks**
   - Checked at script startup
   - Checked before bulk installs
-  - Checked before individual package installs
 
 - 📦 **Package installation system**
   - Install tools one-by-one
+  - Multi install (separated by space)
   - Install everything at once
   - Safe handling when offline
 
@@ -28,7 +28,7 @@ Built with readability, user experience, and future extensibility in mind.
   - Easy to extend with new presets
 
 - 📝 **Post-install summary**
-  - Shows what was installed
+  - Shows what was installed/skiped/failed
   - Helps verify successful setup
 
 - 🪵 **Logging system**
@@ -56,8 +56,10 @@ Clone the repository and run the script:
 ```bash
 git clone https://github.com/ThatOn3Gu7/ProjectR.git
 
+```bash
 cd ProjectR
 
+```bash
 bash main.sh
 
 
