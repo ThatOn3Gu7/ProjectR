@@ -54,10 +54,8 @@ Built with readability, user experience, and future extensibility in mind.
 Clone the repository and run the script:
 
 ```bash
-git clone https://github.com/ThatOn3Gu7/ProjectR.git
-
-cd ProjectR
-
+git clone https://github.com/ThatOn3Gu7/ProjectR.git\
+cd ProjectR\
 bash main.sh
 
 
