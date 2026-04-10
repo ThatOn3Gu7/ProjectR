@@ -60,7 +60,7 @@ check_dependencies_menu() {
     echo -e "${ERR}${BOLD} [!] $missing_count dependency(ies) missing!${RST}"
     echo ""
     
-    # Ask user what to do
+    # Tell user what to do
     echo -e "${INFO}${BOLD}"
     boxed_text left "Options:"
     echo -e "${RST}"
