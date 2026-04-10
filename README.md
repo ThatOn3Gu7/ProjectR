@@ -58,7 +58,6 @@ git clone https://github.com/ThatOn3Gu7/ProjectR.git
 
 cd ProjectR
 
-```bash
 bash main.sh
 
 
