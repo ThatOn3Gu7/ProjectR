@@ -60,7 +60,7 @@ EOF
   echo -e "${BARR}   ╔═════════════════╗ ${RST}"
   echo -e "${BARR}   ║ ${RST}Available pkgs: ${BARR}║${RST}"
   echo -e "${BARR}   ╚╔════════════════╝═══════════════════╗ ${RST}"
-  echo -e "${BARR}    ║${RST}${OPT} [${WHI}01${OPT}] Git           ${INFO}- Version control ${OPT}(Min)${RST}"
+  echo -e "${BARR}    ║${RST}${OPT} [${WHI}01${OPT}] Git           ${INFO}- Version control ${OPT}(Dev)${RST}"
   echo -e "${BARR}    ║${RST}${OPT} [${WHI}02${OPT}] Curl          ${INFO}- HTTP requests ${OPT}(Min)${RST}"
   echo -e "${BARR}    ║${RST}${OPT} [${WHI}03${OPT}] Wget          ${INFO}- File downloads ${OPT}(Min)${RST}"
   echo -e "${BARR}    ║${RST}${OPT} [${WHI}04${OPT}] Bat           ${INFO}- 'cat' with syntax highlighting ${OPT}(Min)${RST}"
