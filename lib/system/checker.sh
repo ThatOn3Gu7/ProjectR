@@ -9,18 +9,18 @@ check_tool() {
 
   if command -v "$cmd" >/dev/null 2>&1; then
     FOUND_PKGS+=($cmd)
-     echo -e "${OPT}${BOLD}   [✓] $name is installed${RST}"
+     echo -e "${OPT}${BOLD}     [✓] $name is installed${RST}"
     sleep 0.1
    else
     NOT_FOUND_PKGS+=($cmd)
-     echo -e "${ERR}${BOLD}   [✗] $name is NOT installed${RST}"
+     echo -e "${ERR}${BOLD}     [✗] $name is NOT installed${RST}"
     sleep 0.1
   fi
 }
 # -- Calls the tool checker repeatedly --
 check_tool_main() {
  echo -e "${OPT}${BOLD}"
-   boxed_text center " [*] Checking if any tools are installed"
+   boxed_text left "[*] Checking if any tools are installed:"
  echo -e "${RST}"
  tput civis
  check_tool git "Git" 
@@ -65,7 +65,8 @@ check_tool_main() {
  check_tool ani-cli "Ani-cli"
  check_tool code-server "Code-Server"
  check_tool pipx "Pipx"      
-
+ echo ""
+ echo "     _____________________________________________________________"
    local total=$(( ${#FOUND_PKGS[@]} + ${#NOT_FOUND_PKGS[@]} ))
     echo -e "${BLUE}${BLOD}"
     boxed_text_full "center" \
