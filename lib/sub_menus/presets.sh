@@ -4,7 +4,7 @@ preset_menu() {
  while true; do
   clear
    log ENTER "User entered sub-menu 'install-sresets'"
-  cat <<"EOF" #| lolcat
+  cat <<"EOF" | lolcat
 
 # Future ASCII art is to be here
 

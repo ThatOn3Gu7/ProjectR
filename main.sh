@@ -21,7 +21,6 @@ source lib/features/zsh_setup.sh
 source lib/features/upgrade.sh
 source lib/features/update.sh
 # -- sub_menus sourced --
-source lib/sub_menus/github_tools.sh
 source lib/sub_menus/presets.sh
 source lib/sub_menus/uninstall.sh
 # PM="$(detect_pkg_manager)"
@@ -35,7 +34,7 @@ startup_wifi_check
 show_main_menu() {
  # clear
   # cool LOGO with colors
-  cat <<"EOF" #| lolcat
+  cat <<"EOF" | lolcat
 
     ██▓███   ██▀███   ▒█████   ▄████▄  ▓█████   ██████     ██▀███  
    ▓██░  ██▒▓██ ▒ ██▒▒██▒  ██▒▒██▀ ▀█  ▓█   ▀ ▒██    ▒    ▓██ ▒ ██▒
@@ -113,12 +112,11 @@ echo -e "${BARR}   ║ ${RST}Other Options: ${BARR}║${RST}"
 echo -e "${BARR}   ╚╔═══════════════╝══╗ ${RST}"
 echo -e "${BARR}    ║${RST}${OPT} [${WHI}0${OPT}] Install ALL tools${RST}"
 echo -e "${BARR}    ║${RST}${OPT} [${WHI}p${OPT}] Install by preset${RST}"
-echo -e "${BARR}    ║${RST}${OPT} [${WHI}c${OPT}] Clone from github ${RST}"
 echo -e "${BARR}    ║${RST}${OPT} [${WHI}i${OPT}] Inspect installed tools${RST}"
 echo -e "${BARR}    ║${RST}${OPT} [${WHI}u${OPT}] Uninstall tools${RST}"
 echo -e "${BARR}    ║${RST}${OPT} [${ERR}e${OPT}] Exits the script${RST}"
 echo -e "${BARR}    ╚══════════════════╝ ${RST}"
-  echo -e "${INFO}${BOLD}"
+  echo -e "${OPT}${BOLD}"
   read -p " [*] Enter the tool numbers (separate by spaces): " -a selections
   echo ""
 }
@@ -226,9 +224,6 @@ while true; do
     ;;
   u|U) clear
     uninstall_menu
-    ;;
-  c|C) clear
-    github_tools
     ;;
   e|E)
     graceful_exit
