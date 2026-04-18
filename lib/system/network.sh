@@ -9,7 +9,7 @@ startup_wifi_check() {
   if ! check_internet; then
     log ERR "No internet connection"
     echo -e "${ERR}${BOLD}"
-    boxed_text center "        It seems that you are not onlile
+    boxed_text center "        It seems that you are not online
 Please make sure to turn on WI-FI to continue :)"
     echo -e "${OPT}${BOLD}"
     boxed_text center " [!] Continue Anyways? [y/N]"

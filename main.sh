@@ -34,7 +34,7 @@ startup_wifi_check
 show_main_menu() {
  # clear
   # cool LOGO with colors
-  cat <<"EOF" | lolcat
+  cat <<"EOF" #| lolcat
 
     ██▓███   ██▀███   ▒█████   ▄████▄  ▓█████   ██████     ██▀███  
    ▓██░  ██▒▓██ ▒ ██▒▒██▒  ██▒▒██▀ ▀█  ▓█   ▀ ▒██    ▒    ▓██ ▒ ██▒
@@ -92,7 +92,7 @@ EOF
   echo -e "${BARR}    ║${RST}${OPT} [${WHI}30${OPT}] Broot         ${INFO}- Navigate directories with overviews ${OPT}(Min)${RST}"
   echo -e "${BARR}    ║${RST}${OPT} [${WHI}31${OPT}] Dust          ${INFO}- More intuitive version of du ${OPT}(Dev)${RST}"
   echo -e "${BARR}    ║${RST}${OPT} [${WHI}32${OPT}] Procs         ${INFO}- Modern replacement for 'ps' ${OPT}(Dev)${RST}"
-  echo -e "${BARR}    ║${RST}${OPT} [${WHI}33${OPT}] Tldr          ${INFO}- Simplified, community-driven man pages ${OPT}(Dev)${RST}"
+  echo -e "${BARR}    ║${RST}${OPT} [${WHI}33${OPT}] Tldr          ${INFO}- Simpl, community-driven man pages ${OPT}(Dev)${RST}"
   echo -e "${BARR}    ║${RST}${OPT} [${WHI}34${OPT}] Node.Js       ${INFO}- JavaScript Runtime environment ${OPT}(Dev)${RST}"
   echo -e "${BARR}    ║${RST}${OPT} [${WHI}35${OPT}] Gh            ${INFO}- A github-cli client ${OPT}(Dev)${RST}"
   echo -e "${BARR}    ║${RST}${OPT} [${WHI}36${OPT}] Holehe        ${INFO}- Email OSINT scanner ${OPT}(OSINT)${RST}"
@@ -110,9 +110,9 @@ echo ""
 echo -e "${BARR}   ╔════════════════╗ ${RST}"
 echo -e "${BARR}   ║ ${RST}Other Options: ${BARR}║${RST}"
 echo -e "${BARR}   ╚╔═══════════════╝══╗ ${RST}"
-echo -e "${BARR}    ║${RST}${OPT} [${WHI}0${OPT}] Install ALL tools${RST}"
+echo -e "${BARR}    ║${RST}${OPT} [${WHI}0${OPT}] Install ALL ${RST}"
 echo -e "${BARR}    ║${RST}${OPT} [${WHI}p${OPT}] Install by preset${RST}"
-echo -e "${BARR}    ║${RST}${OPT} [${WHI}i${OPT}] Inspect installed tools${RST}"
+echo -e "${BARR}    ║${RST}${OPT} [${WHI}i${OPT}] Inspect installed ${RST}"
 echo -e "${BARR}    ║${RST}${OPT} [${WHI}u${OPT}] Uninstall tools${RST}"
 echo -e "${BARR}    ║${RST}${OPT} [${ERR}e${OPT}] Exits the script${RST}"
 echo -e "${BARR}    ╚══════════════════╝ ${RST}"
