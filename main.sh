@@ -212,7 +212,7 @@ while true; do
   42) be_patient
     install_pkg code-server code-server "Code-Server: VsCode on android" ;;
   43) be_patient
-    install_pkg pipx pipx "Pipx: A python-cli installer" ;;
+    install_pip pipx pipx "Pipx: A py-cli tools installer" ;;
   0) clear
     install_all
     ;;
