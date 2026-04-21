@@ -127,7 +127,7 @@ while true; do
    case $selected in
   # Install commands for apt tools.
   1) be_patient
-   install_pkg git git "Git: Version control," ;;
+   install_pkg git git "Git: Version control" ;;
   2) be_patient 
     install_pkg curl curl "Curl: HTTP request" ;;
   3) be_patient
@@ -193,7 +193,7 @@ while true; do
   33) be_patient
     install_pkg tldr tldr "Tldr: Man pages" ;;
   34) be_patient
-    install_pkg npm nodejs "Node.Js: JS Runtime env," ;;
+    install_pkg npm nodejs "Node.Js: JS Runtime env" ;;
   35) be_patient
     install_pkg gh gh "Gh: Guthub-Cli" ;;
   # Install commands for pip tools
