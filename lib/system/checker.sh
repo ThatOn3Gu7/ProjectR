@@ -66,7 +66,6 @@ check_tool_main() {
  check_tool code-server "Code-Server"
  check_tool pipx "Pipx"      
  echo ""
- echo "     _____________________________________________________________"
    local total=$(( ${#FOUND_PKGS[@]} + ${#NOT_FOUND_PKGS[@]} ))
     echo -e "${BLUE}${BLOD}"
     boxed_text_full "center" \

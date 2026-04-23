@@ -35,6 +35,8 @@ uninstall_menu() {
    [--------------------------------------------------------------]
 
 EOF
+echo -e "${OPT}"
+boxed_text left "[*] Available tools for deletion:"
 echo -e "${RST}"
  echo -e "   [01]${OPT} Git          ${INFO}- Version control  ${RST}"
  echo -e "   [02]${OPT} Curl         ${INFO}- HTTP requests  ${RST}"
@@ -80,6 +82,7 @@ echo -e "${RST}"
  echo -e "   [42]${OPT} Code-Server  ${INFO}- VsCode on android  ${RST}"
  echo -e "   [43]${OPT} Pipx         ${INFO}- A python-cli tool installer  ${RST}"
  echo ""
+ echo -e "${OPT}  [i] Inspect installed ${RST}"
  echo -e "${INFO}  [b] Back to main-menu ${RST}"
  echo -e "${ERR}  [e] Exit Script"
   echo -e "${INFO}"
@@ -173,6 +176,8 @@ echo -e "${RST}"
      uninstall_pkg code-server code-server "Code-Server";;
    43) echo -e "${ERR}"
     uninstall_pip pipx pipx "Pipx" ;;
+  i|I) clear
+    check_tool_main ;;
   b|B) return ;;
   e|E) graceful_exit;;
      *) echo -e "${ERR} [!] Invalid option: $choice ${RST}" ;;
