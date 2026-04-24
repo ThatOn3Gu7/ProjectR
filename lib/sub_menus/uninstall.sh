@@ -128,11 +128,12 @@ echo -e "${RST}"
      uninstall_pkg nvim neovim "Neovim"
       if [ -d $HOME/.config/nvim/ ]; then
        echo -e "${INFO}"
-      ask "[*] Also remove any nvim config (if used)" "y" 5
-       echo -e "${RST"
-       rm -rf ~/.config/nvim/ ~/.local/share/nvim/ ~/.cache/nvim/
-       else
-        return 0
+       if ask "[*] Also remove any nvim config (if used)" "y" 5; then
+        echo -e "${RST}"
+        rm -rf ~/.config/nvim/ ~/.local/share/nvim/ ~/.cache/nvim/
+      else
+         return 0
+       fi
       fi
      ;;
    19) echo -e "${ERR}"
