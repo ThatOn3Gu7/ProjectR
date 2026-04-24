@@ -125,7 +125,16 @@ echo -e "${RST}"
    17) echo -e "${ERR}"
      uninstall_pkg ncdu ncdu "Ncdu" ;;
    18) echo -e "${ERR}"
-     uninstall_pkg nvim neovim "Neovim";;
+     uninstall_pkg nvim neovim "Neovim"
+      if [ -d $HOME/.config/nvim/ ]; then
+       echo -e "${INFO}"
+      ask "[*] Also remove any nvim config (if used)" "y" 5
+       echo -e "${RST"
+       rm -rf ~/.config/nvim/ ~/.local/share/nvim/ ~/.cache/nvim/
+       else
+        return 0
+      fi
+     ;;
    19) echo -e "${ERR}"
      uninstall_pkg cbonsai cbonsai "Cbonsai";;
    20) echo -e "${ERR}"
