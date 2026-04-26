@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# The follwoing commands are for installing Neovim & NvChad.
+# The follwoing commands are for installing Neovim & NeoVim configs.
 install_neovim_full() {
   install_pkg nvim neovim "Neovim: Best code editor"
  
@@ -13,7 +13,7 @@ install_neovim_full() {
    # Check if any config exists
    if ask "  [*] Install a config for NeoVim?"; then
     if [ -d "$STANDARD_PATH" ] || [ -d "$NVCHAD_PATH" ] || [ -d "$LAZYVIM_PATH" ] || [ -d "$ASTRONVIM_PATH" ]; then
-        echo -e "${OPT}  [✓] A Neovim config is already installed!"
+        echo -e "${OPTION}  [✓] A Neovim config is already installed!"
          sleep 3
         return 0
        else
@@ -25,25 +25,25 @@ install_neovim_full() {
 check_nvim_config() {
  echo -e "${INFO}  [*] Which config would you like to install? ${RST}"
   echo ""
-   echo -e "${OPT}   [1] NvChad ${RST}"
-   echo -e "${OPT}   [2] LazyVim ${RST}"
-   echo -e "${OPT}   [3] AstroNvim ${RST}"
-   echo -e "${OPT}   [4] Skip ${RST}"
+   echo -e "${OPTION}   [1] NvChad ${RST}"
+   echo -e "${OPTION}   [2] LazyVim ${RST}"
+   echo -e "${OPTION}   [3] AstroNvim ${RST}"
+   echo -e "${OPTION}   [4] Skip ${RST}"
   echo ""
     echo -ne "${INFO}  [*] Select option (1-4): ${RST}"
    read confing_choice
    case "$confing_choice" in
         1)
-           echo -e  "${OPT}  [*] Cloning NvChad...${RST}"
+           echo -e  "${OPTION}  [*] Cloning NvChad...${RST}"
            git clone https://github.com/NvChad/NvChad ~/.config/nvim
            ;;
         2)
-           echo -e "${OPT}  [*] Cloning LazyVim starter template...${RST}"
+           echo -e "${OPTION}  [*] Cloning LazyVim starter template...${RST}"
            git clone https://github.com/LazyVim/starter ~/.config/nvim
            rm -rf ~/.config/nvim/.git
            ;;
         3)
-           echo -e "${OPT}  [*] Cloning AstroNvim...${RST}"
+           echo -e "${OPTION}  [*] Cloning AstroNvim...${RST}"
            git clone https://github.com/AstroNvim/AstroNvim ~/.config/nvim
            ;;
         4)

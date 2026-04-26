@@ -35,56 +35,56 @@ uninstall_menu() {
    [--------------------------------------------------------------]
 
 EOF
-echo -e "${OPT}"
+echo -e "${OPTION}"
 boxed_text left "[*] Available tools for deletion:"
 echo -e "${RST}"
- echo -e "   [01]${OPT} Git          ${INFO}- Version control  ${RST}"
- echo -e "   [02]${OPT} Curl         ${INFO}- HTTP requests  ${RST}"
- echo -e "   [03]${OPT} Wget         ${INFO}- File downloads  ${RST}"
- echo -e "   [04]${OPT} Bat          ${INFO}- 'cat' with syntax highlighting  ${RST}"
- echo -e "   [05]${OPT} Htop         ${INFO}- Process viewer  ${RST}"
- echo -e "   [06]${OPT} Fish         ${INFO}- Friendly shell  ${RST}"
- echo -e "   [07]${OPT} OpenSSH      ${INFO}- SSH access  ${RST}"
- echo -e "   [08]${OPT} Python       ${INFO}- Programming language  ${RST}"
- echo -e "   [09]${OPT} Nmap         ${INFO}- Network scanning  ${RST}"
- echo -e "   [10]${OPT} Libcaca      ${INFO}- A fire effect  ${RST}"
- echo -e "   [11]${OPT} Speedtest-go ${INFO}- Internet speed-test  ${RST}"
- echo -e "   [12]${OPT} Cpufetch     ${INFO}- CPU information  ${RST}"
- echo -e "   [13]${OPT} Neofetch     ${INFO}- System information  ${RST}"
- echo -e "   [14]${OPT} Ranger       ${INFO}- Terminal file manager  ${RST}"
- echo -e "   [15]${OPT} Nano         ${INFO}- Text editor  ${RST}"
- echo -e "   [16]${OPT} Sl           ${INFO}- Steam Locomotive  ${RST}"
- echo -e "   [17]${OPT} Ncdu         ${INFO}- NCurses disk usage analyzer  ${RST}"
- echo -e "   [18]${OPT} Neovim       ${INFO}- Best code editor  ${RST}"
- echo -e "   [19]${OPT} Cbonsai      ${INFO}- Japanise bonsai tree  ${RST}"
- echo -e "   [20]${OPT} Asciinema    ${INFO}- Terminal recording tool  ${RST}"
- echo -e "   [21]${OPT} Croc         ${INFO}- File transferring tool  ${RST}"
- echo -e "   [22]${OPT} Fzf          ${INFO}- File finder  ${RST}"
- echo -e "   [23]${OPT} Zoxide       ${INFO}- Smarter cd command  ${RST}"
- echo -e "   [24]${OPT} Zsh          ${INFO}- Best shell ever  ${RST}"
- echo -e "   [25]${OPT} Duf          ${INFO}- Disk Usage/Free utility  ${RST}"
- echo -e "   [26]${OPT} Tty-clock    ${INFO}- A terminal clock  ${RST}"
- echo -e "   [27]${OPT} Pipes.sh     ${INFO}- A cool tool for Fun ${RST}"
- echo -e "   [28]${OPT} Yazi         ${INFO}- Amazing filemanager for terminal  ${RST}"
- echo -e "   [29]${OPT} Lsd          ${INFO}- An 'ls' alternative with icons/colors  ${RST}"
- echo -e "   [30]${OPT} Broot        ${INFO}- Navigate directories with overviews  ${RST}"
- echo -e "   [31]${OPT} Dust         ${INFO}- More intuitive version of du  ${RST}"
- echo -e "   [32]${OPT} Procs        ${INFO}- Modern replacement for 'ps'  ${RST}"
- echo -e "   [33]${OPT} Tldr         ${INFO}- Simplified, community-driven man pages  ${RST}"
- echo -e "   [34]${OPT} Node.Js      ${INFO}- JavaScript Runtime environment  ${RST}"
- echo -e "   [35]${OPT} Gh           ${INFO}- A github-cli client  ${RST}"
- echo -e "   [36]${OPT} Holehe       ${INFO}- Email OSINT scanner  ${RST}"
- echo -e "   [37]${OPT} Asciiquarium ${INFO}- View of the sea  ${RST}"
- echo -e "   [38]${OPT} Wttr         ${INFO}- A weather tool  ${RST}"
- echo -e "   [39]${OPT} Tmux         ${INFO}- A multitasker tool  ${RST}"
- echo -e "   [40]${OPT} Lazygit      ${INFO}- An TUI for git  ${RST}"
- echo -e "   [41]${OPT} Ani-cli      ${INFO}- A terminal anime streaming tool  ${RST}"
- echo -e "   [42]${OPT} Code-Server  ${INFO}- VsCode on android  ${RST}"
- echo -e "   [43]${OPT} Pipx         ${INFO}- A python-cli tool installer  ${RST}"
+ echo -e "   [01]${OPTION} Git          ${INFO}- Version control  ${RST}"
+ echo -e "   [02]${OPTION} Curl         ${INFO}- HTTP requests  ${RST}"
+ echo -e "   [03]${OPTION} Wget         ${INFO}- File downloads  ${RST}"
+ echo -e "   [04]${OPTION} Bat          ${INFO}- 'cat' with syntax highlighting  ${RST}"
+ echo -e "   [05]${OPTION} Htop         ${INFO}- Process viewer  ${RST}"
+ echo -e "   [06]${OPTION} Fish         ${INFO}- Friendly shell  ${RST}"
+ echo -e "   [07]${OPTION} OpenSSH      ${INFO}- SSH access  ${RST}"
+ echo -e "   [08]${OPTION} Python       ${INFO}- Programming language  ${RST}"
+ echo -e "   [09]${OPTION} Nmap         ${INFO}- Network scanning  ${RST}"
+ echo -e "   [10]${OPTION} Libcaca      ${INFO}- A fire effect  ${RST}"
+ echo -e "   [11]${OPTION} Speedtest-go ${INFO}- Internet speed-test  ${RST}"
+ echo -e "   [12]${OPTION} Cpufetch     ${INFO}- CPU information  ${RST}"
+ echo -e "   [13]${OPTION} Neofetch     ${INFO}- System information  ${RST}"
+ echo -e "   [14]${OPTION} Ranger       ${INFO}- Terminal file manager  ${RST}"
+ echo -e "   [15]${OPTION} Nano         ${INFO}- Text editor  ${RST}"
+ echo -e "   [16]${OPTION} Sl           ${INFO}- Steam Locomotive  ${RST}"
+ echo -e "   [17]${OPTION} Ncdu         ${INFO}- NCurses disk usage analyzer  ${RST}"
+ echo -e "   [18]${OPTION} Neovim       ${INFO}- Best code editor  ${RST}"
+ echo -e "   [19]${OPTION} Cbonsai      ${INFO}- Japanise bonsai tree  ${RST}"
+ echo -e "   [20]${OPTION} Asciinema    ${INFO}- Terminal recording tool  ${RST}"
+ echo -e "   [21]${OPTION} Croc         ${INFO}- File transferring tool  ${RST}"
+ echo -e "   [22]${OPTION} Fzf          ${INFO}- File finder  ${RST}"
+ echo -e "   [23]${OPTION} Zoxide       ${INFO}- Smarter cd command  ${RST}"
+ echo -e "   [24]${OPTION} Zsh          ${INFO}- Best shell ever  ${RST}"
+ echo -e "   [25]${OPTION} Duf          ${INFO}- Disk Usage/Free utility  ${RST}"
+ echo -e "   [26]${OPTION} Tty-clock    ${INFO}- A terminal clock  ${RST}"
+ echo -e "   [27]${OPTION} Pipes.sh     ${INFO}- A cool tool for Fun ${RST}"
+ echo -e "   [28]${OPTION} Yazi         ${INFO}- Amazing filemanager for terminal  ${RST}"
+ echo -e "   [29]${OPTION} Lsd          ${INFO}- An 'ls' alternative with icons/colors  ${RST}"
+ echo -e "   [30]${OPTION} Broot        ${INFO}- Navigate directories with overviews  ${RST}"
+ echo -e "   [31]${OPTION} Dust         ${INFO}- More intuitive version of du  ${RST}"
+ echo -e "   [32]${OPTION} Procs        ${INFO}- Modern replacement for 'ps'  ${RST}"
+ echo -e "   [33]${OPTION} Tldr         ${INFO}- Simplified, community-driven man pages  ${RST}"
+ echo -e "   [34]${OPTION} Node.Js      ${INFO}- JavaScript Runtime environment  ${RST}"
+ echo -e "   [35]${OPTION} Gh           ${INFO}- A github-cli client  ${RST}"
+ echo -e "   [36]${OPTION} Holehe       ${INFO}- Email OSINT scanner  ${RST}"
+ echo -e "   [37]${OPTION} Asciiquarium ${INFO}- View of the sea  ${RST}"
+ echo -e "   [38]${OPTION} Wttr         ${INFO}- A weather tool  ${RST}"
+ echo -e "   [39]${OPTION} Tmux         ${INFO}- A multitasker tool  ${RST}"
+ echo -e "   [40]${OPTION} Lazygit      ${INFO}- An TUI for git  ${RST}"
+ echo -e "   [41]${OPTION} Ani-cli      ${INFO}- A terminal anime streaming tool  ${RST}"
+ echo -e "   [42]${OPTION} Code-Server  ${INFO}- VsCode on android  ${RST}"
+ echo -e "   [43]${OPTION} Pipx         ${INFO}- A python-cli tool installer  ${RST}"
  echo ""
- echo -e "${OPT}  [i] Inspect installed ${RST}"
+ echo -e "${OPTION}  [i] Inspect installed ${RST}"
  echo -e "${INFO}  [b] Back to main-menu ${RST}"
- echo -e "${ERR}  [e] Exit Script"
+ echo -e "${ERROR}  [e] Exit Script"
   echo -e "${INFO}"
    read -p " [*] Select numbers (space separated): " -a choices
   echo -e "${RST}"
@@ -92,39 +92,39 @@ echo -e "${RST}"
    case "$choice" in
    # 1) echo -e "${RST}"
    #   uninstall_pkg git git "Git"  ;;
-   2) echo -e "${ERR}"
+   2) echo -e "${ERROR}"
      uninstall_pkg curl curl "Curl";;
-   3) echo -e "${ERR}"
+   3) echo -e "${ERROR}"
      uninstall_pkg wget wget "Wget";;
-   4) echo -e "${ERR}"
+   4) echo -e "${ERROR}"
      uninstall_pkg bat bat "Bat";;
-   5) echo -e "${ERR}"
+   5) echo -e "${ERROR}"
      uninstall_pkg htop htop "Htop";;
-   6) echo -e "${ERR}"
+   6) echo -e "${ERROR}"
      uninstall_pkg fish fish "Fish";;
-   7) echo -e "${ERR}"
+   7) echo -e "${ERROR}"
      uninstall_pkg ssh openssh "OpenSSH";;
-   8) echo -e "${ERR}"
+   8) echo -e "${ERROR}"
      uninstall_pkg python3 python3 "Python3";;
-   9) echo -e "${ERR}"
+   9) echo -e "${ERROR}"
      uninstall_pkg nmap nmap "Nmap";;
-   10) echo -e "${ERR}" 
+   10) echo -e "${ERROR}" 
      uninstall_pkg cacademo libcaca "Libcaca";;
-   11) echo -e "${ERR}"
+   11) echo -e "${ERROR}"
      uninstall_pkg speedtest-go speedtest-go "Speedtest-go" ;;
-   12) echo -e "${ERR}"
+   12) echo -e "${ERROR}"
      uninstall_pkg cpufetch cpufetch "Cpufetch";;
-   13) echo -e "${ERR}"
+   13) echo -e "${ERROR}"
      uninstall_pkg neofetch neofetch "Neofetch";;
-   14) echo -e "${ERR}"
+   14) echo -e "${ERROR}"
      uninstall_pkg ranger ranger "Ranger";;
-   15) echo -e "${ERR}"
+   15) echo -e "${ERROR}"
      uninstall_pkg nano nano "Nano";;
-   16) echo -e "${ERR}"
+   16) echo -e "${ERROR}"
      uninstall_pkg sl sl "Sl";;
-   17) echo -e "${ERR}"
+   17) echo -e "${ERROR}"
      uninstall_pkg ncdu ncdu "Ncdu" ;;
-   18) echo -e "${ERR}"
+   18) echo -e "${ERROR}"
      uninstall_pkg nvim neovim "Neovim"
       if [ -d $HOME/.config/nvim/ ]; then
        echo -e "${INFO}"
@@ -136,64 +136,64 @@ echo -e "${RST}"
        fi
       fi
      ;;
-   19) echo -e "${ERR}"
+   19) echo -e "${ERROR}"
      uninstall_pkg cbonsai cbonsai "Cbonsai";;
-   20) echo -e "${ERR}"
+   20) echo -e "${ERROR}"
      uninstall_pkg asciinema asciinema "Asciinema";;
-   21) echo -e "${ERR}"
+   21) echo -e "${ERROR}"
      uninstall_pkg croc croc "Croc";;
-   22) echo -e "${ERR}"
+   22) echo -e "${ERROR}"
      uninstall_pkg fzf fzf "Fzf";;
-   23) echo -e "${ERR}"
+   23) echo -e "${ERROR}"
      uninstall_pkg zoxide zoxide "Zoxide" ;;
-   24) echo -e "${ERR}"
+   24) echo -e "${ERROR}"
      uninstall_pkg zsh zsh "Zsh";;
-   25) echo -e "${ERR}"
+   25) echo -e "${ERROR}"
      uninstall_pkg duf duf "Duf";;
-   26) echo -e "${ERR}"
+   26) echo -e "${ERROR}"
      uninstall_pkg tty-clock tty-clock "Tty-clock";;
-   27) echo -e "${ERR}"
+   27) echo -e "${ERROR}"
      uninstall_pkg pipes.sh pipes.sh "Pipes.sh";;
-   28) echo -e "${ERR}"
+   28) echo -e "${ERROR}"
      uninstall_pkg yazi yazi "Yazi";;
-   29) echo -e "${ERR}"
+   29) echo -e "${ERROR}"
      uninstall_pkg lsd lsd "Lsd";;
-   30) echo -e "${ERR}"
+   30) echo -e "${ERROR}"
      uninstall_pkg broot broot "Broot";;
-   31) echo -e "${ERR}"
+   31) echo -e "${ERROR}"
      uninstall_pkg dust dust "Dust";;
-   32) echo -e "${ERR}"
+   32) echo -e "${ERROR}"
      uninstall_pkg procs procs "Procs";;
-   33) echo -e "${ERR}"
+   33) echo -e "${ERROR}"
      uninstall_pkg tldr tldr "Tldr";;
-   34) echo -e "${ERR}"
+   34) echo -e "${ERROR}"
      uninstall_pkg npm node.js "Node.Js";;
-   35) echo -e "${ERR}"
+   35) echo -e "${ERROR}"
      uninstall_pkg gh gh "Gh";;
-   36) echo -e "${ERR}"
+   36) echo -e "${ERROR}"
      uninstall_pip holehe "Holehe";;
-   37) echo -e "${ERR}"
+   37) echo -e "${ERROR}"
      uninstall_pip asciiquarium "Asciiqurium";;
-   38) echo -e "${ERR}"
+   38) echo -e "${ERROR}"
      uninstall_pip wttr "Wttr.io";;
-   39) echo -e "${ERR}"
+   39) echo -e "${ERROR}"
      uninstall_pkg tmux tmux "Tmux";;
-   40) echo -e "${ERR}"
+   40) echo -e "${ERROR}"
      uninstall_pkg lazygit lazygit "Lazygit";;
-   41) echo -e "${ERR}"
+   41) echo -e "${ERROR}"
      uninstall_pkg ani-cli ani-cli "Ani-cli";;
-   42) echo -e "${ERR}"
+   42) echo -e "${ERROR}"
      uninstall_pkg code-server code-server "Code-Server";;
-   43) echo -e "${ERR}"
+   43) echo -e "${ERROR}"
     uninstall_pip pipx pipx "Pipx" ;;
   i|I) clear
     check_tool_main ;;
   b|B) return ;;
   e|E) graceful_exit;;
-     *) echo -e "${ERR} [!] Invalid option: $choice ${RST}" ;;
+     *) echo -e "${ERROR} [!] Invalid option: $choice ${RST}" ;;
    esac
   done
-   echo -e "${OPT}"
+   echo -e "${OPTION}"
     read -p " [*] Press ENTER to continue..."
    echo -e "${RST}"
 done

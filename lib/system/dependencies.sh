@@ -7,10 +7,10 @@ check_dependency() {
     local install_hint="$3"  # Optional: How to install
     
     if command -v "$cmd" >/dev/null 2>&1; then
-        # echo -e "${OPT}${BOLD} [✓] $name is available${RST}"
+        # echo -e "${OPTION}${BOLD} [✓] $name is available${RST}"
         return 0
     else
-        echo -e "${ERR}${BOLD} [✗] $name is NOT installed${RST}"
+        echo -e "${ERROR}${BOLD} [✗] $name is NOT installed${RST}"
         if [ -n "$install_hint" ]; then
             echo -e "${INFO} [!] Installation hint: $install_hint${RST}"
         fi
@@ -48,7 +48,7 @@ check_dependencies_menu() {
     # If nothing missing, return
     if [ $missing_count -eq 0 ]; then
         # echo ""
-        echo -e "${OPT}${BOLD}"
+        echo -e "${OPTION}${BOLD}"
          boxed_text center "[✓] All dependencies satisfied"
         echo -e "${RST}"
          sleep 1
@@ -57,17 +57,17 @@ check_dependencies_menu() {
     fi
     
     echo ""
-    echo -e "${ERR}${BOLD} [!] $missing_count dependency(ies) missing!${RST}"
+    echo -e "${ERROR}${BOLD} [!] $missing_count dependency(ies) missing!${RST}"
     echo ""
     
     # Tell user what to do
     echo -e "${INFO}${BOLD}"
     boxed_text left "Options:"
     echo -e "${RST}"
-    echo -e "${OPT}  [1] Try to auto-install missing dependencies${RST}"
-    echo -e "${OPT}  [2] Show installation commands${RST}"
-    echo -e "${OPT}  [3] Continue anyway (not recommended)${RST}"
-    echo -e "${ERR}  [4] Exit script${RST}"
+    echo -e "${OPTION}  [1] Try to auto-install missing dependencies${RST}"
+    echo -e "${OPTION}  [2] Show installation commands${RST}"
+    echo -e "${OPTION}  [3] Continue anyway (not recommended)${RST}"
+    echo -e "${ERROR}  [4] Exit script${RST}"
     echo ""
     
     local choice
@@ -123,13 +123,13 @@ auto_install_dependencies() {
                         fi
                         ;;
                     *)
-                        echo -e "${ERR}  [!] Cannot auto-install $name on $PM${RST}"
+                        echo -e "${ERROR}  [!] Cannot auto-install $name on $PM${RST}"
                         echo -e "${INFO} [!] Try: $hint${RST}"
                         ;;
                 esac
                 ;;
             *)
-                echo -e "${ERR}  [x] Cannot auto-install: $name${RST}"
+                echo -e "${ERROR}  [x] Cannot auto-install: $name${RST}"
                 echo -e "${INFO} [!] Manual install: $hint${RST}"
                 ;;
         esac
@@ -177,7 +177,7 @@ install_lolcat() {
     esac
     
     # If auto-install failed
-    echo -e "${ERR}  [✗] Could not auto-install lolcat${RST}"
+    echo -e "${ERROR}  [✗] Could not auto-install lolcat${RST}"
     echo -e "${INFO}  Try manual install:"
     echo -e "${INFO}  - For Termux: pkg install ruby && gem install lolcat"
     echo -e "${INFO}  - For Debian/Ubuntu: apt install lolcat"
@@ -200,7 +200,7 @@ show_install_commands() {
     
     for dep in "${deps[@]}"; do
         IFS=":" read -r cmd name hint <<< "$dep"
-        echo -e "${OPT}${BOLD} [*] For: $name:${RST}"
+        echo -e "${OPTION}${BOLD} [*] For: $name:${RST}"
         echo -e "${INFO} [!] Try: $hint${RST}"
         echo ""
     done
@@ -213,7 +213,7 @@ show_install_commands() {
 # Lightweight check (just lolcat) for startup
 check_lolcat() {
     if ! command -v lolcat >/dev/null 2>&1; then
-        echo -e "${ERR}${BOLD}"
+        echo -e "${ERROR}${BOLD}"
         boxed_text center " [!] lolcat not found - colors will be limited"
         echo -e "${INFO}${BOLD}"
         boxed_text center " [!] Install with: pkg install ruby && gem install lolcat"

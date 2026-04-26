@@ -32,7 +32,7 @@ install_all() {
  clear
   tput civis
   be_patient
-   echo -e "${OPT}${BOLD}"
+   echo -e "${OPTION}${BOLD}"
     boxed_text center "[*] Installing all tools"
     echo -e "${RST}"
    
@@ -82,7 +82,7 @@ install_all() {
     # -- post-install-summary
     echo ""
      post_install_summary
-    echo -e "${OPT}${BOLD}" 
+    echo -e "${OPTION}${BOLD}" 
      boxed_text center "[✓] installation Completed. Press ENTER to continue.."
     echo -e "${RST}"
    read -s
@@ -107,7 +107,7 @@ install_pkg() {
 
     # installing or Skipped massges
     if command -v "$cmd" >/dev/null 2>&1; then
-        echo -e "${OPT}${BOLD}  [✓] $name is already installed - Skipping..${RST}"
+        echo -e "${OPTION}${BOLD}  [✓] $name is already installed - Skipping..${RST}"
         SKIPPED_PKGS+=("$name")
         log SKIPPED "$name was already installed (Skipped)"
         sleep 1
@@ -168,7 +168,7 @@ install_pkg() {
         # detection for post-install summary
         if [ $? -eq 0 ]; then
           INSTALLED_PKGS+=("$name")
-           echo -e "${OPT}${BOLD}"
+           echo -e "${OPTION}${BOLD}"
             stop_spinner "  [✓] $name has installed successfully."
            echo -e "${RST}"
            log INSTALLED "$name installed successfully"
@@ -206,7 +206,7 @@ install_pip() {
     # Check if command already exists
     if command -v "$command_name" &> /dev/null; then
      SKIPPED_PKGS+=("$package_name")
-      echo -e "${OPT}${BOLD}  [✓] $package_name is already installed - Skipping ${RST}"
+      echo -e "${OPTION}${BOLD}  [✓] $package_name is already installed - Skipping ${RST}"
         log SKIPPED "$package_name was already installed (Skipped)"
        sleep 1
       return 0
@@ -225,7 +225,7 @@ install_pip() {
     # Verify installation
     if command -v "$command_name" &> /dev/null; then
      INSTALLED_PKGS+=("$package_name")
-      echo -e "${OPT}${BOLD}"
+      echo -e "${OPTION}${BOLD}"
        stop_spinner "  [✓] Successfully installed: $package_name ($install_cmd).."
       echo -e "${RST}"
        log INSTALLED "$package_name successfully installed"

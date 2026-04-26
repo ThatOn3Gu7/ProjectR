@@ -33,7 +33,7 @@ detect_pkg_manager() {
     elif command -v scoop >/dev/null 2>&1; then
         echo "scoop"
     else
-        echo -e "${ERR}${BOLD}"
+        echo -e "${ERROR}${BOLD}"
         boxed_text center "[x] No reqired package maneger found.."
         echo -e "${RST}"
         return 1

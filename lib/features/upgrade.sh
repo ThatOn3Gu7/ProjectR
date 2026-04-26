@@ -11,7 +11,7 @@ pkg_upgrade() {
         brew) brew upgrade >/dev/null 2>&1 ;;
         pkg) pkg upgrade -y >/dev/null 2>&1 ;;
         *)
-          echo -e "${ERR}${BOLD}"
+          echo -e "${ERROR}${BOLD}"
           boxed_text center "[!] System upgrade not supported for: $PM..${RST}"
           echo -e "${RST}"
             return 1

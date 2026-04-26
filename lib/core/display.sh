@@ -2,7 +2,7 @@
 # -- Small message for installer --
 be_patient() {
   clear 
-   echo -e "${OPT}${BOLD}"
+   echo -e "${OPTION}${BOLD}"
     boxed_text center "[*] Installation may take a while, Please be patient"
    echo -e "${INFO}${BOLD}"
 }

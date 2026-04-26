@@ -17,7 +17,7 @@ uninstall_pip() {
   if command -v "$pkg" >/dev/null 2>&1; then
     start_spinner "   [*] Removing pkg: $name (pip).."
    else 
-    echo -e "${ERR}  [!] Package: $pkg not found (pip) ${RST}"
+    echo -e "${ERROR}  [!] Package: $pkg not found (pip) ${RST}"
     sleep 2
     return
   fi
@@ -28,7 +28,7 @@ uninstall_pip() {
     pip uninstall -y "$pkg"
  fi >/dev/null 2>&1
  # -- stop spinner --
- echo -e "${OPT}"
+ echo -e "${OPTION}"
   stop_spinner "   [✓] Removed $name successfully (pip)"
  echo -e "${RST}"
 }
@@ -49,7 +49,7 @@ uninstall_pkg() {
    if command -v "$cmd" >/dev/null 2>&1; then
      start_spinner "   [*] Removing pkg: $name.."
    else
-     echo -e "${ERR}  [!] Package: $name not found..${RST}"
+     echo -e "${ERROR}  [!] Package: $name not found..${RST}"
      sleep 2
     return
    fi 
@@ -57,11 +57,11 @@ uninstall_pkg() {
      pkg) pkg uninstall -y "$pkg" ;;
      apt) apt remove -y "$pkg" ;;
      *)
-       echo -e "${ERR} [!] Unsupported package manager..$PM ${RST}"
+       echo -e "${ERROR} [!] Unsupported package manager..$PM ${RST}"
        return
        ;;
    esac >/dev/null 2>&1
-  echo -e "${OPT}"
+  echo -e "${OPTION}"
    stop_spinner "   [✓] Removed: $name successfully.."
   echo -e "${RST}"
 }

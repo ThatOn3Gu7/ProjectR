@@ -44,7 +44,7 @@ pkg_update() {
             scoop update >/dev/null 2>&1
             ;;
         *)
-          echo -e "${ERR}${BOLD}"
+          echo -e "${ERROR}${BOLD}"
           boxed_text center " [!] No supported package manager found, So package list not updated"
           echo -e "${RST}"
           stop_spinner

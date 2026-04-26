@@ -10,14 +10,14 @@ preset_menu() {
 
 EOF
 
-  echo -e "${OPT}${BOLD}"
+  echo -e "${OPTION}${BOLD}"
    boxed_text center " [*] Choose the preset you want to install!"
-  echo -e "${OPT}"
+  echo -e "${OPTION}"
    boxed_text center \
 "[1] Minimal tools
 [2] Developer tools
 [3] Fun tools"
-  echo -e "${ERR}"
+  echo -e "${ERROR}"
    boxed_text center "[b]ack to main menu"
   echo -e "${RST}"
   echo -ne "${INFO}${BOLD} [*] Choose an option: ${RST}"
@@ -37,7 +37,7 @@ EOF
        return 0
       ;;
     *) echo ""
-       echo -e "${ERR}"
+       echo -e "${ERROR}"
       boxed_text center "[x] Invalid choice: '$profile_choice', Please select the right option."
        echo -e "${RST}"
       sleep 3

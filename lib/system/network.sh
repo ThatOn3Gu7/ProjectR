@@ -7,11 +7,11 @@ check_internet() {
 # startup internet Check
 startup_wifi_check() {
   if ! check_internet; then
-    log ERR "No internet connection"
-    echo -e "${ERR}${BOLD}"
+    log ERROR "No internet connection"
+    echo -e "${ERROR}${BOLD}"
     boxed_text center "        It seems that you are not online
 Please make sure to turn on WI-FI to continue :)"
-    echo -e "${OPT}${BOLD}"
+    echo -e "${OPTION}${BOLD}"
     boxed_text center " [!] Continue Anyways? [y/N]"
     tput civis        # hide cursor
     read -rsn 1 reply    # read silently, no echo
@@ -27,17 +27,17 @@ Please make sure to turn on WI-FI to continue :)"
 is_internet_up() {
     # Check for internet connection
     if ! check_internet; then
-      log ERR "No internet connection"
+      log ERROR "No internet connection"
       echo ""
-      echo -e "${ERR}${BOLD}"
+      echo -e "${ERROR}${BOLD}"
       boxed_text center "[!] No internet connection detected. Did you lose it?"
-      echo -e "${OPT}${BOLD}"
+      echo -e "${OPTION}${BOLD}"
       boxed_text center "[*] Please have stable internet connection to continue ;)"
       echo -e "${RST}" 
       exit 0
     else
       clear
-      echo -e "${OPT}${BOLD}"
+      echo -e "${OPTION}${BOLD}"
        boxed_text center "[✓] Internet connection detected. Proceeding."
       echo -e ${RST}
     fi
