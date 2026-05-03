@@ -174,7 +174,7 @@ install_pkg() {
            log INSTALLED "$name installed successfully"
          else
           FAILED_PKGS+=("$name")
-           echo -e "${ERR}${BOLD}" 
+           echo -e "${ERROR}${BOLD}" 
             stop_spinner "  [x] Failed to install: $name."
            echo -e "${RST}"
            log FAIL "$name failed to install"

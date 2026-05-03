@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # -- source all the other utilitys --
-source lib/core/colors.sh
+source lib/core/colours.sh
 source lib/core/progress_bar.sh
 source lib/core/logging.sh
 source lib/core/display.sh
@@ -27,7 +27,7 @@ source lib/sub_menus/uninstall.sh
 trap graceful_exit SIGINT
 log START "Script started"
 # -- dependencies check -- 
-check_dependencies_menu
+ check_dependencies_menu
 # a call for startup internet check
 startup_wifi_check
 # -- main installer menu  --
@@ -116,8 +116,9 @@ echo -e "${BARR}    ║${RST}${OPTION} [${BRIGHT_WHITE}i${OPTION}] Inspect insta
 echo -e "${BARR}    ║${RST}${OPTION} [${BRIGHT_WHITE}u${OPTION}] Uninstall tools${RST}"
 echo -e "${BARR}    ║${RST}${OPTION} [${ERROR}e${OPTION}] Exits the script${RST}"
 echo -e "${BARR}    ╚══════════════════╝ ${RST}"
-  echo -e "${OPTION}${BOLD}"
-  read -p " [*] Enter the tool numbers (separate by spaces): " -a selections
+  echo ""
+  echo -ne " ${BG_GREEN}[*] Enter the tool numbers${RST} ${BOLD_BRIGHT_GREEN}(separate by spaces)${RST} : " 
+  read -a selections
   echo ""
 }
 

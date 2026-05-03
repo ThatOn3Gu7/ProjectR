@@ -42,7 +42,6 @@ check_dependencies_menu() {
             missing_deps+=("$cmd:$name:$hint")
             ((missing_count++))
         fi
-        sleep 0.1
     done
     
     # If nothing missing, return
@@ -62,16 +61,17 @@ check_dependencies_menu() {
     
     # Tell user what to do
     echo -e "${INFO}${BOLD}"
-    boxed_text left "Options:"
+     echo -e " ${BOLD_YELLOW}[*] Options:${RST}"
     echo -e "${RST}"
     echo -e "${OPTION}  [1] Try to auto-install missing dependencies${RST}"
-    echo -e "${OPTION}  [2] Show installation commands${RST}"
+    echo -e "${OPTION}  [2] Show manual installation commands${RST}"
     echo -e "${OPTION}  [3] Continue anyway (not recommended)${RST}"
     echo -e "${ERROR}  [4] Exit script${RST}"
     echo ""
     
     local choice
-    read -p " [*] Select option [1-4]: " choice
+    echo -ne " ${BOLD_BRIGHT_MAGENTA}[*] Select option [1-4]: ${RST}" 
+    read choice
     
     case $choice in
         1)
@@ -109,7 +109,7 @@ auto_install_dependencies() {
             lolcat)
                 install_lolcat
                 ;;
-            git|curl|wget|croc)
+            git|curl|wget)
                 # Use system package manager
                 case "$PM" in
                     apt|pkg)
@@ -137,7 +137,8 @@ auto_install_dependencies() {
     done
     
     echo ""
-    read -p " [*] Press ENTER to continue..."
+    echo -e "${BOLD_GREEN} [*] Press ENTER to continue...${RST}"
+    read 
 }
 
 # Special function to install lolcat (tricky on different systems)
@@ -178,10 +179,10 @@ install_lolcat() {
     
     # If auto-install failed
     echo -e "${ERROR}  [✗] Could not auto-install lolcat${RST}"
-    echo -e "${INFO}  Try manual install:"
-    echo -e "${INFO}  - For Termux: pkg install ruby && gem install lolcat"
-    echo -e "${INFO}  - For Debian/Ubuntu: apt install lolcat"
-    echo -e "${INFO}  - Or install from: https://github.com/busyloop/lolcat${RST}"
+    echo -e "${INFO}    Try manual install:"
+    echo -e "     - For Termux: pkg install ruby && gem install lolcat"
+    echo -e "     - For Debian/Ubuntu: apt install lolcat"
+    echo -e "     - Or install from: https://github.com/busyloop/lolcat${RST}"
     return 1
 }
 

@@ -1,7 +1,7 @@
 #!/bin/bash
 
 
-source lib/core/colors.sh
+source lib/core/colours.sh
 source lib/core/logging.sh
 source lib/core/display.sh
 source lib/core/spinner.sh
