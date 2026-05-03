@@ -130,7 +130,7 @@ echo -e "${RST}"
        echo -e "${INFO}"
        if ask "[*] Also remove any nvim config (if used)" "y" 5; then
         echo -e "${RST}"
-        rm -rf ~/.config/nvim/ ~/.local/share/nvim/ ~/.cache/nvim/
+        rm -rf ~/.config/nvim/ ~/.local/share/nvim/ ~/.cache/nvim/ ~/.local/state/nvim/
       else
          return 0
        fi

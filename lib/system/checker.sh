@@ -9,11 +9,11 @@ check_tool() {
 
   if command -v "$cmd" >/dev/null 2>&1; then
     FOUND_PKGS+=($cmd)
-     echo -e "${OPTION}${BOLD}     [✓] $name is installed${RST}"
+     echo -e "${OPTION}     [✓] $name is installed${RST}"
     sleep 0.1
    else
     NOT_FOUND_PKGS+=($cmd)
-     echo -e "${ERROR}${BOLD}     [✗] $name is NOT installed${RST}"
+     echo -e "${ERROR}     [✗] $name is NOT installed${RST}"
     sleep 0.1
   fi
 }

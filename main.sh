@@ -211,7 +211,16 @@ while true; do
   41) be_patient
     install_pkg ani-cli ani-cli "Ani-cli: A anime streamer" ;;
   42) be_patient
-    install_pkg code-server code-server "Code-Server: VsCode on android" ;;
+   echo -e "${OPTION}"
+    if ask "[*] tur-repo is required to imstall code-server, install it?"; then
+      echo -e "${RST}"
+      progress_run "Installing tur-repo" \
+                   "Installation successful" \
+                   apt insatll tur-repo
+       echo ""
+       install_pkg code-server code-server "Code-Server: VsCode on android"
+    fi
+    ;;
   43) be_patient
     install_pip pipx pipx "Pipx: A py-cli tools installer" ;;
   0) clear
