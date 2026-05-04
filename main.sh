@@ -46,12 +46,7 @@ show_main_menu() {
    ░░         ░░   ░ ░ ░ ░ ▒  ░           ░   ░  ░  ░       ░░   ░ 
                ░         ░ ░  ░ ░         ░  ░      ░        ░     
                               ░                                    
-   [--------------------------------------------------------------]
-     > Purpose: Made to install tools/utilities.
-     > C0ded by: ThatOn3Gu7
-     > V3rsion: 1.1 | 2026-02-10
-     > Status: [ Ready to install packages ]
-   [--------------------------------------------------------------]
+                                           > C0ded by: ThatOn3Gu7
 EOF
 
   echo -e "${OPTION}${BOLD}"
@@ -117,7 +112,7 @@ echo -e "${BARR}    ║${RST}${OPTION} [${BRIGHT_WHITE}u${OPTION}] Uninstall too
 echo -e "${BARR}    ║${RST}${OPTION} [${ERROR}e${OPTION}] Exits the script${RST}"
 echo -e "${BARR}    ╚══════════════════╝ ${RST}"
   echo ""
-  echo -ne " ${BG_GREEN}[*] Enter the tool numbers${RST} ${BOLD_BRIGHT_GREEN}(separate by spaces)${RST} : " 
+  echo -ne " ${BG_GREEN}[*] Enter the tool numbers ${RST} ${BOLD_BRIGHT_GREEN}(separate by spaces)${RST} : "
   read -a selections
   echo ""
 }
@@ -239,10 +234,8 @@ while true; do
     graceful_exit
     ;;
   *) 
-    echo -e "${ERROR}${BOLD}"
-    boxed_text center "[x] Invalid input: '$selections'. Please select the right option."
-    echo -e "${RST}"
-    sleep 2
+    echo -e " ${BG_BRIGHT_RED}[x] Invalid input:${RST}${BG_CYAN}${BOLD_BLUE}'$selections'${RST} ${BOLD_GREEN}Please select the right option.${RST}"
+    sleep 3
     continue # This restarts the loop immediately
     ;;
   esac
