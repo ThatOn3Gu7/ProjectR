@@ -7,10 +7,10 @@ check_dependency() {
     local install_hint="$3"  # Optional: How to install
     
     if command -v "$cmd" >/dev/null 2>&1; then
-        # echo -e "${OPTION}${BOLD} [✓] $name is available${RST}"
         return 0
     else
-        echo -e "${ERROR}${BOLD} [✗] $name is NOT installed${RST}"
+      clear
+        echo -e "${ERROR} [✗] $name is NOT installed${RST}"
         if [ -n "$install_hint" ]; then
             echo -e "${INFO} [!] Installation hint: $install_hint${RST}"
         fi
@@ -22,11 +22,11 @@ check_dependency() {
 check_dependencies_menu() {
     local missing_count=0
     local missing_deps=()
-   clear 
-    echo -e "${BLUE}${BOLD}"
-    boxed_text center " [*] Dependency Check!"
-    echo -e "${RST}"
-    
+   clear
+    echo ""
+    echo -e "${OPTION}   [*] Verifying required deps...${RST}"
+     sleep 2
+     echo ""
     # Define your dependencies here
     # Format: "command:Display Name:Install Hint"
     local dependencies=(
@@ -47,20 +47,18 @@ check_dependencies_menu() {
     # If nothing missing, return
     if [ $missing_count -eq 0 ]; then
         # echo ""
-        echo -e "${OPTION}${BOLD}"
-         boxed_text center "[✓] All dependencies satisfied"
-        echo -e "${RST}"
+        echo -e "${OPTION}   [✓] All dependencies satisfied ${RST}"
          sleep 1
          clear
         return 0
     fi
     
     echo ""
-    echo -e "${ERROR}${BOLD} [!] $missing_count dependency(ies) missing!${RST}"
+    echo -e "${ERROR} [!] $missing_count dependency(ies) missing!${RST}"
     echo ""
     
     # Tell user what to do
-    echo -e "${INFO}${BOLD}"
+    echo -e "${INFO}"
      echo -e " ${BOLD_YELLOW}[*] Options:${RST}"
     echo -e "${RST}"
     echo -e "${OPTION}  [1] Try to auto-install missing dependencies${RST}"
@@ -92,131 +90,181 @@ check_dependencies_menu() {
     esac
 }
 
-# Try to auto-install missing dependencies
+# Detect package manager and return appropriate install command
+get_install_cmd() {
+    local cmd="$1"
+    local pm=$(detect_pkg_manager)
+    
+    case "$pm" in
+        apt)
+            echo "apt install -y $cmd"
+            ;;
+        pacman)
+            echo "pacman -S --noconfirm $cmd"
+            ;;
+        dnf|yum)
+            echo "$pm install -y $cmd"
+            ;;
+        pkg)  # Termux
+            echo "pkg install -y $cmd"
+            ;;
+        brew)
+            echo "brew install $cmd"
+            ;;
+        *)
+            echo ""
+            ;;
+    esac
+}
+
+# Improved auto-install with better error handling
 auto_install_dependencies() {
     local deps=("$@")
-    local PM="$(detect_pkg_manager)"
+    local pm=$(detect_pkg_manager)
+    local failed=()
     
     echo ""
-    echo -e "${BLUE}${BOLD} [*] Attempting to install missing dependencies...${RST}"
+    echo -e "${BOLD_BLUE} [*] Attempting to install missing deps ${RST}"
     
     for dep in "${deps[@]}"; do
         IFS=":" read -r cmd name hint <<< "$dep"
         
-        echo -e "${INFO} [*] Installing: $name...${RST}"
+        echo -e "${INFO} [*] Installing: $name${RST}"
         
         case "$cmd" in
             lolcat)
-                install_lolcat
+                if install_lolcat; then
+                    echo -e "${OPTION} [✓] Success${RST}"
+                else
+                    failed+=("$name")
+                fi
                 ;;
             git|curl|wget)
-                # Use system package manager
-                case "$PM" in
-                    apt|pkg)
-                        start_spinner " [*] Installing $name..."
-                        $PM install -y "$cmd" >/dev/null 2>&1
-                        if [ $? -eq 0 ]; then
-                            stop_spinner "  [✓] Installed: $name"
-                        else
-                            stop_spinner "  [✗] Failed to install: $name"
-                            echo -e "${INFO}  [!] Try: $hint${RST}"
-                        fi
-                        ;;
-                    *)
-                        echo -e "${ERROR}  [!] Cannot auto-install $name on $PM${RST}"
-                        echo -e "${INFO} [!] Try: $hint${RST}"
-                        ;;
-                esac
+                local install_cmd=$(get_install_cmd "$cmd")
+                if [ -n "$install_cmd" ]; then
+                    start_spinner " [*] Running: $install_cmd"
+                    if eval "$install_cmd" >/dev/null 2>&1; then
+                        stop_spinner "  [✓] Installed: $cmd"
+                    else
+                        stop_spinner "  [✗] Failed to install: $cmd"
+                        failed+=("$name")
+                    fi
+                else
+                    echo -e "${ERROR}  [✗] No auto-install for: $pm${RST}"
+                    failed+=("$name")
+                fi
                 ;;
             *)
-                echo -e "${ERROR}  [x] Cannot auto-install: $name${RST}"
-                echo -e "${INFO} [!] Manual install: $hint${RST}"
+                echo -e "${ERROR}  [✗] Unsupported: $cmd${RST}"
+                failed+=("$name")
                 ;;
         esac
-        sleep 1
+        sleep 0.5
     done
     
-    echo ""
-    echo -e "${BOLD_GREEN} [*] Press ENTER to continue...${RST}"
-    read 
+    # Report results
+    if [ ${#failed[@]} -eq 0 ]; then
+        echo -e "${OPTION}  [✓] All dependencies installed! ${RST}"
+    else
+        echo -e "${ERROR}    [✗] Failed to install: ${failed[*]} ${RST}"
+        show_install_commands "${deps[@]}"
+    fi
+    
+    sleep 2
 }
-
 # Special function to install lolcat (tricky on different systems)
 install_lolcat() {
-    local PM="$(detect_pkg_manager)"
+    local pm=$(detect_pkg_manager)
     
-    case "$PM" in
+    # Try system package manager first
+    case "$pm" in
         apt)
-            start_spinner " [*] Installing lolcat via apt..."
-            apt install -y lolcat >/dev/null 2>&1
-            if [ $? -eq 0 ]; then
-                stop_spinner " [✓] Installed lolcat"
-                return 0
-            fi
-            stop_spinner ""
-            ;;
-        pkg)  # Termux
-            start_spinner " [*] Installing Ruby and lolcat..."
-            pkg install -y ruby >/dev/null 2>&1
-            if [ $? -eq 0 ]; then
-                gem install lolcat >/dev/null 2>&1
-                if [ $? -eq 0 ]; then
-                    stop_spinner " [✓] Installed lolcat"
-                    return 0
-                fi
-            fi
-            stop_spinner ""
+            apt install -y lolcat >/dev/null 2>&1 && return 0
+            # Fallback to gem if apt fails
+            apt install -y ruby >/dev/null 2>&1 && gem install lolcat 2>/dev/null && return 0
             ;;
         pacman)
-            start_spinner " [*] Installing lolcat..."
-            pacman -Sy --noconfirm lolcat >/dev/null 2>&1
-             if [ $? -eq 0 ]; then
-                 stop_spinner " [✓] Installed lolcat"
-                 return 0
-             fi
+            pacman -S --noconfirm lolcat 2>/dev/null && return 0
+            ;;
+        pkg)
+            pkg install -y ruby >/dev/null 2>&1 && gem install lolcat 2>/dev/null && return 0
+            ;;
+        brew)
+            brew install lolcat 2>/dev/null && return 0
+            ;;
+        apk) 
+            apk add lolcat >/dev/null 2>&1 && return 0
             ;;
     esac
     
-    # If auto-install failed
-    echo -e "${ERROR}  [✗] Could not auto-install lolcat${RST}"
-    echo -e "${INFO}    Try manual install:"
-    echo -e "     - For Termux: pkg install ruby && gem install lolcat"
-    echo -e "     - For Debian/Ubuntu: apt install lolcat"
-    echo -e "     - Or install from: https://github.com/busyloop/lolcat${RST}"
+    # Last resort: try gem directly
+    if command -v gem >/dev/null 2>&1; then
+        gem install lolcat 2>/dev/null && return 0
+    fi
+    
     return 1
 }
-
-# Show installation commands for missing deps
+# Generate install hints for multiple package managers
+get_install_hints() {
+    local cmd="$1"
+    
+    case "$cmd" in
+        lolcat)
+echo -e "${INFO}[*] Install lolcat on different systems: ${RST}"
+echo -e "${INFO} ├─ Debian/Ubuntu: ${OPTION}sudo apt install lolcat ${RST}"
+echo -e "${INFO} ├─ Arch Linux:    ${OPTION}sudo pacman -S lolcat ${RST}"
+echo -e "${INFO} ├─ Termux:        ${OPTION}pkg install ruby && gem install lolcat ${RST}"
+echo -e "${INFO} ├─ macOS:         ${OPTION}brew install lolcat ${RST}"
+echo -e "${INFO} └─ Manual:        ${OPTION}gem install lolcat ${RST}"
+            ;;
+         git)
+echo -e "${INFO} [*] Install git: ${RST}"
+echo -e "${INFO}  ├─ Debian/Ubuntu: ${OPTION}sudo apt install git ${RST}"
+echo -e "${INFO}  ├─ Arch:          ${OPTION}sudo pacman -S git ${RST}"
+echo -e "${INFO}  ├─ Termux:        ${OPTION}pkg install git ${RST}"
+echo -e "${INFO}  └─ macOS:         ${OPTION}brew install git ${RST}"
+           ;;
+       curl)
+echo -e "${INFO} [*] Install curl: ${RST}"
+echo -e "${INFO}  ├─ Debian/Ubuntu: ${OPTION}sudo apt install curl ${RST}"
+echo -e "${INFO}  ├─ Arch:          ${OPTION}sudo pacman -S curl ${RST}"
+echo -e "${INFO}  ├─ Termux:        ${OPTION}pkg install curl ${RST}"
+echo -e "${INFO}  └─ macOS:         ${OPTION}brew install curl ${RST}"
+            ;;
+        *)
+            echo -e "${INFO}  └─ Try: ${OPTION}$hint${RST}"
+            ;;
+    esac
+}
+# Improved show_install_commands
 show_install_commands() {
     local deps=("$@")
-    local PM="$(detect_pkg_manager)"
+    local pm=$(detect_pkg_manager)
     
     clear
-    echo -e "${LOGO}${BOLD}"
-    boxed_text center " [*] Installation Instructions"
+    echo -e "${BOLD_GREEN}"
+    boxed_text center " [*] Installation Instructions "
     echo -e "${RST}"
     
-    echo -e "${INFO} [*] Package manager detected: $PM${RST}"
-    echo ""
+    echo -e "${INFO} [*] 📦 Detected package manager: ${OPTION}$pm${RST}\n"
     
     for dep in "${deps[@]}"; do
         IFS=":" read -r cmd name hint <<< "$dep"
-        echo -e "${OPTION}${BOLD} [*] For: $name:${RST}"
-        echo -e "${INFO} [!] Try: $hint${RST}"
+        echo -e "${BOLD_YELLOW} ▶ $name${RST}"
+         echo ""
+        get_install_hints "$cmd"
         echo ""
     done
     
-    echo -e "${INFO} [*] After installing, restart the script.${RST}"
-    echo ""
-    read -p " [*] Press ENTER when ready to continue..."
+    echo -e "${INFO}💡 Tip: Run the script again after installing dependencies${RST}\n"
+    read -p " [*] Press ENTER to continue..."
 }
-
 # Lightweight check (just lolcat) for startup
 check_lolcat() {
     if ! command -v lolcat >/dev/null 2>&1; then
-        echo -e "${ERROR}${BOLD}"
+        echo -e "${ERROR}"
         boxed_text center " [!] lolcat not found - colors will be limited"
-        echo -e "${INFO}${BOLD}"
+        echo -e "${INFO}"
         boxed_text center " [!] Install with: pkg install ruby && gem install lolcat"
         echo -e "${INFO} [*] Or continue without full colors [Enter]${RST}"
         read

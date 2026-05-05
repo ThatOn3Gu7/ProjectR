@@ -34,7 +34,7 @@ startup_wifi_check
 show_main_menu() {
  # clear
   # cool LOGO with colors
-  cat <<"EOF" #| lolcat
+  cat <<"EOF" | lolcat
 
     ██▓███   ██▀███   ▒█████   ▄████▄  ▓█████   ██████     ██▀███  
    ▓██░  ██▒▓██ ▒ ██▒▒██▒  ██▒▒██▀ ▀█  ▓█   ▀ ▒██    ▒    ▓██ ▒ ██▒
