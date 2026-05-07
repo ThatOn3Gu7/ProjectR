@@ -1,38 +1,56 @@
 #!/bin/bash
 
-# Check for a single dependency
 check_dependency() {
     local cmd="$1"
     local name="$2"
-    local install_hint="$3"  # Optional: How to install
+    local pm=$(detect_pkg_manager)
     
     if command -v "$cmd" >/dev/null 2>&1; then
         return 0
     else
-      clear
+       echo ""
         echo -e "${ERROR} [✗] $name is NOT installed${RST}"
-        if [ -n "$install_hint" ]; then
-            echo -e "${INFO} [!] Installation hint: $install_hint${RST}"
-        fi
+        
+        # Generate cross-platform hint
+        local hint=""
+        case "$pm-$cmd" in
+            apt-lolcat)     hint="sudo apt install ruby && gem install lolcat" ;;
+            apt-curl)       hint="sudo apt install curl" ;;
+            apt-git)        hint="sudo apt install git" ;;
+            pacman-lolcat)  hint="sudo pacman -S lolcat" ;;
+            pacman-curl)    hint="sudo pacman -S curl" ;;
+            pacman-git)     hint="sudo pacman -S git" ;;
+            pkg-lolcat)     hint="pkg install ruby && gem install lolcat" ;;
+            pkg-curl)       hint="pkg install curl" ;;
+            pkg-git)        hint="pkg install git" ;;
+            brew-lolcat)    hint="brew install lolcat" ;;
+            brew-curl)      hint="brew install curl" ;;
+            brew-git)       hint="brew install git" ;;
+            apk-lolcat)     hint="apk add lolcat" ;;
+            apk-curl)       hint="apk add curl" ;;
+            apk-git)        hint="apk add git" ;;
+            *)              hint="Install $cmd using your package manager" ;;
+        esac
+        
+        echo -e "${INFO} [!] Try: $hint${RST}"
         return 1
     fi
 }
-
 # Check multiple dependencies and show menu if missing
 check_dependencies_menu() {
     local missing_count=0
     local missing_deps=()
    clear
     echo ""
-    echo -e "${OPTION}   [*] Verifying required deps...${RST}"
+    echo -e "${OPTION}  [*] Verifying required deps...${RST}"
      sleep 2
      echo ""
     # Define your dependencies here
     # Format: "command:Display Name:Install Hint"
     local dependencies=(
-        "lolcat:lolcat (Required):'apt install ruby && gem install lolcat'"
-        "git:Git (Required):'apt install git'"
-        "curl:cURL (Required):'apt install curl'"
+        "lolcat:Lolcat (Required)"
+        "git:Git (Required)"
+        "curl:cURL (Required)"
     )
     
     # Check each dependency
@@ -47,7 +65,7 @@ check_dependencies_menu() {
     # If nothing missing, return
     if [ $missing_count -eq 0 ]; then
         # echo ""
-        echo -e "${OPTION}   [✓] All dependencies satisfied ${RST}"
+        echo -e "${OPTION}  [✓] All dependencies satisfied ${RST}"
          sleep 1
          clear
         return 0
@@ -58,9 +76,8 @@ check_dependencies_menu() {
     echo ""
     
     # Tell user what to do
-    echo -e "${INFO}"
      echo -e " ${BOLD_YELLOW}[*] Options:${RST}"
-    echo -e "${RST}"
+    echo ""
     echo -e "${OPTION}  [1] Try to auto-install missing dependencies${RST}"
     echo -e "${OPTION}  [2] Show manual installation commands${RST}"
     echo -e "${OPTION}  [3] Continue anyway (not recommended)${RST}"
@@ -111,6 +128,9 @@ get_install_cmd() {
         brew)
             echo "brew install $cmd"
             ;;
+        apk) 
+            echo "apk add $cmd"
+            ;;
         *)
             echo ""
             ;;
@@ -139,7 +159,7 @@ auto_install_dependencies() {
                     failed+=("$name")
                 fi
                 ;;
-            git|curl|wget)
+            git|curl)
                 local install_cmd=$(get_install_cmd "$cmd")
                 if [ -n "$install_cmd" ]; then
                     start_spinner " [*] Running: $install_cmd"
@@ -164,9 +184,9 @@ auto_install_dependencies() {
     
     # Report results
     if [ ${#failed[@]} -eq 0 ]; then
-        echo -e "${OPTION}  [✓] All dependencies installed! ${RST}"
+        echo -e "${OPTION} [✓] Missing dependencies installed! ${RST}"
     else
-        echo -e "${ERROR}    [✗] Failed to install: ${failed[*]} ${RST}"
+        echo -e "${ERROR}  [✗] Failed to install: ${failed[*]} ${RST}"
         show_install_commands "${deps[@]}"
     fi
     
@@ -211,6 +231,7 @@ get_install_hints() {
     case "$cmd" in
         lolcat)
 echo -e "${INFO}[*] Install lolcat on different systems: ${RST}"
+echo -e "${INFO} |"
 echo -e "${INFO} ├─ Debian/Ubuntu: ${OPTION}sudo apt install lolcat ${RST}"
 echo -e "${INFO} ├─ Arch Linux:    ${OPTION}sudo pacman -S lolcat ${RST}"
 echo -e "${INFO} ├─ Termux:        ${OPTION}pkg install ruby && gem install lolcat ${RST}"
@@ -219,6 +240,7 @@ echo -e "${INFO} └─ Manual:        ${OPTION}gem install lolcat ${RST}"
             ;;
          git)
 echo -e "${INFO} [*] Install git: ${RST}"
+echo -e "${INFO}  |"
 echo -e "${INFO}  ├─ Debian/Ubuntu: ${OPTION}sudo apt install git ${RST}"
 echo -e "${INFO}  ├─ Arch:          ${OPTION}sudo pacman -S git ${RST}"
 echo -e "${INFO}  ├─ Termux:        ${OPTION}pkg install git ${RST}"
@@ -226,13 +248,14 @@ echo -e "${INFO}  └─ macOS:         ${OPTION}brew install git ${RST}"
            ;;
        curl)
 echo -e "${INFO} [*] Install curl: ${RST}"
+echo -e "${INFO}  |"
 echo -e "${INFO}  ├─ Debian/Ubuntu: ${OPTION}sudo apt install curl ${RST}"
 echo -e "${INFO}  ├─ Arch:          ${OPTION}sudo pacman -S curl ${RST}"
 echo -e "${INFO}  ├─ Termux:        ${OPTION}pkg install curl ${RST}"
 echo -e "${INFO}  └─ macOS:         ${OPTION}brew install curl ${RST}"
             ;;
         *)
-            echo -e "${INFO}  └─ Try: ${OPTION}$hint${RST}"
+            echo -e "${INFO} [*] No hints for:${OPTION} $cmd ${RST}"
             ;;
     esac
 }
@@ -258,17 +281,4 @@ show_install_commands() {
     
     echo -e "${INFO}💡 Tip: Run the script again after installing dependencies${RST}\n"
     read -p " [*] Press ENTER to continue..."
-}
-# Lightweight check (just lolcat) for startup
-check_lolcat() {
-    if ! command -v lolcat >/dev/null 2>&1; then
-        echo -e "${ERROR}"
-        boxed_text center " [!] lolcat not found - colors will be limited"
-        echo -e "${INFO}"
-        boxed_text center " [!] Install with: pkg install ruby && gem install lolcat"
-        echo -e "${INFO} [*] Or continue without full colors [Enter]${RST}"
-        read
-        return 1
-    fi
-    return 0
 }

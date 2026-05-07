@@ -1,5 +1,4 @@
 #!/bin/bash
-
 # -- source all the other utilitys --
 source lib/core/colours.sh
 source lib/core/progress_bar.sh
