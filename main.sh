@@ -232,8 +232,7 @@ while true; do
   e|E)
     graceful_exit
     ;;
-  *) 
-    echo -e " ${BG_BRIGHT_RED}[x] Invalid input:${RST}${BG_CYAN}${BOLD_BLUE}'$selections'${RST} ${BOLD_GREEN}Please select the right option.${RST}"
+  *) echo -e " ${BG_BRIGHT_RED}[!] Invalid option:${BG_BRIGHT_YELLOW}${BOLD_BRIGHT_BLACK} "$selections" ${RST}${OPTION} Please select the right option${RST}"
     sleep 3
     continue # This restarts the loop immediately
     ;;

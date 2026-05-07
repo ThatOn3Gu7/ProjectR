@@ -80,10 +80,10 @@ echo -e "${RST}"
  echo ""
  echo -e "${OPTION}  [i] Inspect installed ${RST}"
  echo -e "${INFO}  [b] Back to main-menu ${RST}"
- echo -e "${ERROR}  [e] Exit Script"
-  echo -e "${INFO}"
-   read -p " [*] Select numbers (space separated): " -a choices
-  echo -e "${RST}"
+ echo -e "${ERROR}  [e] Exit Script${RST}"
+  echo ""
+  echo -ne " ${BG_CYAN}[*] Select numbers ${RST} ${OPTION}(space separated)${RST} : "
+   read -a choices
  for choice in "${choices[@]}"; do
    case "$choice" in
    # 1) echo -e "${RST}"
@@ -186,7 +186,7 @@ echo -e "${RST}"
     check_tool_main ;;
   b|B) return ;;
   e|E) graceful_exit;;
-     *) echo -e "${ERROR} [!] Invalid option: $choice ${RST}" ;;
+  *) echo -e " ${BG_BRIGHT_RED}[!] Invalid option:${BG_BRIGHT_YELLOW}${BOLD_BRIGHT_BLACK} "$choice" ${RST}${OPTION} Please select the right option${RST}" ;;
    esac
   done
    echo -e "${OPTION}"
