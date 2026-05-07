@@ -72,7 +72,7 @@ EOF
   echo -e "${BARR}    ║${RST}${OPTION} [${BRIGHT_WHITE}16${OPTION}] Sl            ${INFO}- Steam Locomotive ${OPTION}(Fun)${RST}"
   echo -e "${BARR}    ║${RST}${OPTION} [${BRIGHT_WHITE}17${OPTION}] Ncdu          ${INFO}- NCurses disk usage analyzer ${OPTION}(Dev)${RST}"
   echo -e "${BARR}    ║${RST}${OPTION} [${BRIGHT_WHITE}18${OPTION}] Neovim        ${INFO}- Best code editor ${OPTION}(Dev)${RST}"
-  echo -e "${BARR}    ║${RST}${OPTION} [${BRIGHT_WHITE}19${OPTION}] Cbonsai       ${INFO}- Japanise bonsai tree ${OPTION}(Fun)${RST}"
+  echo -e "${BARR}    ║${RST}${OPTION} [${BRIGHT_WHITE}19${OPTION}] Cbonsai       ${INFO}- Japanese bonsai tree ${OPTION}(Fun)${RST}"
   echo -e "${BARR}    ║${RST}${OPTION} [${BRIGHT_WHITE}20${OPTION}] Asciinema     ${INFO}- Terminal recording tool ${OPTION}(Fun)${RST}"
   echo -e "${BARR}    ║${RST}${OPTION} [${BRIGHT_WHITE}21${OPTION}] Croc          ${INFO}- File transferring tool ${OPTION}(Dev)${RST}"
   echo -e "${BARR}    ║${RST}${OPTION} [${BRIGHT_WHITE}22${OPTION}] Fzf           ${INFO}- File finder ${OPTION}(Dev)${RST}"
@@ -158,9 +158,9 @@ while true; do
   18) be_patient
     install_neovim_full ;;
   19) be_patient
-    install_pkg cbonsai cbonsai "Cbonsai: Japanise tree" ;;
+    install_pkg cbonsai cbonsai "Cbonsai: Japanese tree" ;;
   20) be_patient
-    install_pkg asciinema asciinema "Asciinema: Terminal-recoder" ;;
+    install_pkg asciinema asciinema "Asciinema: Terminal-recorder" ;;
   21) be_patient
     install_pkg croc croc "Croc: File-sender" ;;
   22) be_patient
@@ -184,13 +184,13 @@ while true; do
   31) be_patient
     install_pkg dust dust "Dust: Better 'du' alternative" ;;
   32) be_patient
-    install_pkg procs procs "Procs: Morden 'ps'" ;;
+    install_pkg procs procs "Procs: Modern 'ps'" ;;
   33) be_patient
     install_pkg tldr tldr "Tldr: Man pages" ;;
   34) be_patient
     install_pkg npm nodejs "Node.Js: JS Runtime env" ;;
   35) be_patient
-    install_pkg gh gh "Gh: Guthub-Cli" ;;
+    install_pkg gh gh "Gh: Github-Cli" ;;
   # Install commands for pip tools
   36) be_patient
     install_pip "holehe" "Holehe" ;;
@@ -206,17 +206,17 @@ while true; do
     install_pkg ani-cli ani-cli "Ani-cli: A anime streamer" ;;
   42) be_patient
    echo -e "${OPTION}"
-    if ask "[*] tur-repo is required to imstall code-server, install it?"; then
+    if ask "[*] tur-repo is required to install code-server, install it?"; then
       echo -e "${RST}"
       progress_run "Installing tur-repo" \
                    "Installation successful" \
-                   apt insatll tur-repo
+                   apt install tur-repo
        echo ""
        install_pkg code-server code-server "Code-Server: VsCode on android"
     fi
     ;;
   43) be_patient
-    install_pip pipx pipx "Pipx: A py-cli tools installer" ;;
+    install_pip pipx "Pipx: A py-cli tools installer" ;;
   0) clear
     install_all
     ;;
@@ -232,7 +232,7 @@ while true; do
   e|E)
     graceful_exit
     ;;
-  *) echo -e " ${BG_BRIGHT_RED}[!] Invalid option:${BG_BRIGHT_YELLOW}${BOLD_BRIGHT_BLACK} "$selections" ${RST}${OPTION} Please select the right option${RST}"
+  *) echo -e " ${BG_BRIGHT_RED}[!] Invalid option:${BG_BRIGHT_YELLOW}${BOLD_BRIGHT_BLACK} "$selected" ${RST}${OPTION} Please select the right option${RST}"
     sleep 3
     continue # This restarts the loop immediately
     ;;

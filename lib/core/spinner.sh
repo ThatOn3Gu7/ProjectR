@@ -26,6 +26,8 @@ start_spinner() {
 }
 # Stop the spinner
 stop_spinner() {
+
+   [ -z "$SPINNER_PID" ] && return 0
     # This stops the background spinner
     kill "$SPINNER_PID" >/dev/null 2>&1
     wait "$SPINNER_PID" 2>/dev/null
