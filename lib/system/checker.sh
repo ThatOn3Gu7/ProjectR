@@ -1,7 +1,5 @@
 #!/bin/bash
 
-FOUND_PKGS=()
-NOT_FOUND_PKGS=()
 # -- checkes if a tools is installed --
 check_tool() {
    local cmd=$1 # Tool name to check if its installed or not
@@ -19,6 +17,10 @@ check_tool() {
 }
 # -- Calls the tool checker repeatedly --
 check_tool_main() {
+
+FOUND_PKGS=()
+NOT_FOUND_PKGS=()
+
  echo -e "${OPTION}${BOLD}"
    boxed_text left "[*] Checking if any tools are installed:"
  echo -e "${RST}"
