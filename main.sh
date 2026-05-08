@@ -27,7 +27,7 @@ source lib/sub_menus/uninstall.sh
 trap graceful_exit SIGINT
 log START "Script started"
 # -- dependencies check -- 
- check_dependencies_menu
+check_dependencies_menu
 # a call for startup internet check
 startup_wifi_check
 # -- main installer menu  --

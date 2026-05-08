@@ -2,7 +2,6 @@
 
 # -- log creation --
 LOG_FILE="log/install.log"
-
 # just a simple log function 
 log() {
     local level="$1"

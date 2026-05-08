@@ -1,13 +1,13 @@
 #!/bin/bash
-source $HOME/ProjectR/lib/system/detect.sh
-# For post-install summary detection
-INSTALLED_PKGS=()
-SKIPPED_PKGS=()
-FAILED_PKGS=()
+source lib/system/detect.sh
 # detect_pkg_manager for install and tool check
 PM="$(detect_pkg_manager)"
 # This function here installs all tools put in it.
 install_all() {
+# For post-install summary detection
+INSTALLED_PKGS=()
+SKIPPED_PKGS=()
+FAILED_PKGS=()
     log INSTALL "User chose to install all tools"
    # Checks for Internet before proceeding
     is_internet_up 
