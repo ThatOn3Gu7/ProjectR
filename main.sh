@@ -90,14 +90,14 @@ EOF
   echo -e "${BARR}    ║${RST}${OPTION} [${BRIGHT_WHITE}33${OPTION}] Tldr          ${INFO}- Simpl, community-driven man pages ${OPTION}(Dev)${RST}"
   echo -e "${BARR}    ║${RST}${OPTION} [${BRIGHT_WHITE}34${OPTION}] Node.Js       ${INFO}- JavaScript Runtime environment ${OPTION}(Dev)${RST}"
   echo -e "${BARR}    ║${RST}${OPTION} [${BRIGHT_WHITE}35${OPTION}] Gh            ${INFO}- A github-cli client ${OPTION}(Dev)${RST}"
-  echo -e "${BARR}    ║${RST}${OPTION} [${BRIGHT_WHITE}36${OPTION}] Holehe        ${INFO}- Email OSINT scanner ${OPTION}(OSINT)${RST}"
-  echo -e "${BARR}    ║${RST}${OPTION} [${BRIGHT_WHITE}37${OPTION}] Asciiquarium  ${INFO}- View of the sea ${OPTION}(Fun)${RST}"
-  echo -e "${BARR}    ║${RST}${OPTION} [${BRIGHT_WHITE}38${OPTION}] Wttr          ${INFO}- A weather tool ${OPTION}(Fun)${RST}"
+  echo -e "${BARR}    ║${RST}${OPTION} [${BRIGHT_WHITE}36${OPTION}] Holehe        ${INFO}- Email OSINT tool ${OPTION}(OSINT)${RST}"
+  echo -e "${BARR}    ║${RST}${OPTION} [${BRIGHT_WHITE}37${OPTION}] Asciiquarium  ${INFO}- Animated terminal aquarium ${OPTION}(Fun)${RST}"
+  echo -e "${BARR}    ║${RST}${OPTION} [${BRIGHT_WHITE}38${OPTION}] Wttr          ${INFO}- A Console weather service tool ${OPTION}(Fun)${RST}"
   echo -e "${BARR}    ║${RST}${OPTION} [${BRIGHT_WHITE}39${OPTION}] Tmux          ${INFO}- A multitasker tool ${OPTION}(Dev)${RST}"
   echo -e "${BARR}    ║${RST}${OPTION} [${BRIGHT_WHITE}40${OPTION}] Lazygit       ${INFO}- An TUI for git ${OPTION}(Dev)${RST}"
   echo -e "${BARR}    ║${RST}${OPTION} [${BRIGHT_WHITE}41${OPTION}] Ani-cli       ${INFO}- A terminal anime streaming tool ${OPTION}(Fun)${RST}"
   echo -e "${BARR}    ║${RST}${OPTION} [${BRIGHT_WHITE}42${OPTION}] Code-Server   ${INFO}- VsCode on android ${OPTION}(Dev)${RST}"
-  echo -e "${BARR}    ║${RST}${OPTION} [${BRIGHT_WHITE}43${OPTION}] Pipx          ${INFO}- A python-cli tool installer ${OPTION}(Dev)${RST}"
+  echo -e "${BARR}    ║${RST}${OPTION} [${BRIGHT_WHITE}43${OPTION}] Pipx          ${INFO}- A isolated Py-apps installer ${OPTION}(Dev)${RST}"
   echo -e "${BARR}    ╚═════════════════════════════════════╝ ${RST}"
 
 echo ""
@@ -194,11 +194,11 @@ while true; do
     install_pkg gh gh "Gh: Github-Cli" ;;
   # Install commands for pip tools
   36) be_patient
-    install_pip "holehe" "Holehe" ;;
+    install_lang "pip" "holehe" "Holehe: E-mail OSINT tool" "holehe" ;;
   37) be_patient
-    install_pip "asciiquarium" "Asciiquarium" ;;
+    install_lang "pip" "asciiquarium" "AACCIQuarium: Animated terminal aquarium" "asciiquarium" ;;
   38) be_patient
-    install_pip "wttr" "Wttr" ;;
+    install_lang "pip" "wttr" "Wttr.io: Console weather service" "wttr" ;;
   39) be_patient
     install_pkg tmux tmux "Tmux: A multitasker" ;;
   40) be_patient
@@ -217,7 +217,7 @@ while true; do
     fi
     ;;
   43) be_patient
-    install_pip pipx "Pipx: A py-cli tools installer" ;;
+    install_lang "pip" "pipx" "Pipx: A isolated Py-apps installer" "pipx" ;;
   0) clear
     install_all
     ;;
