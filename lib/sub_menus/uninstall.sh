@@ -167,11 +167,11 @@ echo -e "${RST}"
    35) echo -e "${ERROR}"
      uninstall_pkg gh gh "Gh";;
    36) echo -e "${ERROR}"
-     uninstall_pip holehe "Holehe";;
+     uninstall_lang pip3 holehe "Holehe";;
    37) echo -e "${ERROR}"
-     uninstall_pip asciiquarium "Asciiqurium";;
+     uninstall_lang pip3 asciiquarium "Asciiqurium";;
    38) echo -e "${ERROR}"
-     uninstall_pip wttr "Wttr.io";;
+     uninstall_lang pip3 wttr "Wttr.io";;
    39) echo -e "${ERROR}"
      uninstall_pkg tmux tmux "Tmux";;
    40) echo -e "${ERROR}"
@@ -181,7 +181,7 @@ echo -e "${RST}"
    42) echo -e "${ERROR}"
      uninstall_pkg code-server code-server "Code-Server";;
    43) echo -e "${ERROR}"
-    uninstall_pip pipx pipx "Pipx" ;;
+    uninstall_lang pip3 pipx "Pipx" ;;
   i|I) clear
     check_tool_main ;;
   b|B) return ;;
