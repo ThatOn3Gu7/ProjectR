@@ -2,7 +2,8 @@
 
 # -- package manager detection --
 detect_pkg_manager() {
-
+  # Android (Termux)
+  command -v termux-info >/dev/null 2>&1 && [ -d "~/data/data/com.termux" ] && echo "pkg" && return
   # Linux
   command -v apt >/dev/null 2>&1 && echo "apt" && return
   command -v apt-get >/dev/null 2>&1 && echo "apt-get" && return
@@ -50,9 +51,45 @@ detect_pkg_manager() {
   command -v flatpak >/dev/null 2>&1 && echo "flatpak" && return
   command -v snap >/dev/null 2>&1 && echo "snap" && return
   command -v appimage >/dev/null 2>&1 && echo "appimage" && return
-  
-  # Android (Termux)
-  command -v pkg >/dev/null 2>&1 && [ -d "/data/data/com.termux" ] && echo "termux-pkg" && return
-  
     echo "unknown"
+}
+# Detect package manager for a specific tool/context
+detect_pkg_for_tool() {
+    local tool_type="$1"  # "pip", "npm", "gem", "cargo", "system"
+    
+    case "$tool_type" in
+        pip)
+            if command -v pipx >/dev/null 2>&1; then
+                echo "pipx"
+            elif command -v pip3 >/dev/null 2>&1; then
+                echo "pip3"
+            elif command -v pip >/dev/null 2>&1; then
+                echo "pip"
+            else
+                echo "none"
+            fi
+            ;;
+        npm)
+            if command -v npm >/dev/null 2>&1; then
+                echo "npm"
+            elif command -v yarn >/dev/null 2>&1; then
+                echo "yarn"
+            else
+                echo "none"
+            fi
+            ;;
+        gem)
+            command -v gem >/dev/null 2>&1 && echo "gem" || echo "none"
+            ;;
+        cargo)
+            command -v cargo >/dev/null 2>&1 && echo "cargo" || echo "none"
+            ;;
+        system)
+            # Your existing detect_pkg_manager for system packages
+            detect_pkg_manager
+            ;;
+        *)
+            detect_pkg_manager
+            ;;
+    esac
 }

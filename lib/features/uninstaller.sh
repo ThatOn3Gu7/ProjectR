@@ -77,7 +77,6 @@ uninstall_pkg() {
  local name="$3"
 
   # -- Confirmation --
-  # Use if statement directly - NO $(ask ...)
    if ! ask "  [!] Are you sure? Action cannot be undone!"; then
       echo -e "${INFO}  [→] Skipping: $name${RST}"
       return 0
@@ -86,11 +85,15 @@ uninstall_pkg() {
    if command -v "$cmd" >/dev/null 2>&1; then
      start_spinner "   [*] Removing pkg: $name (via $PM).."
    else
-     echo -e "${ERROR}  [!] Package: $name not found..${RST}"
+     echo -e "${ERROR}  [!] Package: $name not found (on $PM)..${RST}"
      sleep 2
     return
    fi 
    case "$PM" in
+    # Android/Termux
+    pkg)
+        pkg uninstall "$pkg"
+        ;;
     # Linux
     apt|apt-get)
         apt purge -y "$pkg" 2>/dev/null || apt-get purge -y "$pkg"
@@ -168,10 +171,6 @@ uninstall_pkg() {
     appimage)
         echo -e "${OPTION} [*] AppImages have no package manager. Delete the .AppImage file manually. ${RST}"
         echo -e "${OPTION} [*] Try: rm ~/Applications/${pkg}.AppImage ${RST}"
-        ;;
-    # Android/Termux
-    termux-pkg)
-        pkg uninstall "$pkg"
         ;;
      *)
        echo -e "${ERROR} [!] Unsupported package manager..$PM ${RST}"

@@ -32,7 +32,7 @@ FAILED_PKGS=()
  clear
   tput civis
   be_patient
-   echo -e "${OPTION}${BOLD}"
+   echo -e "${OPTION}"
     boxed_text center "[*] Installing all tools"
     echo -e "${RST}"
    
@@ -72,18 +72,18 @@ FAILED_PKGS=()
     install_pkg tldr tldr "Tldr: Man pages"
     install_pkg gh gh "Gh: Github-Cli"
     # ---- PIP TOOLS ----
-    install_pip "holehe" "Holehe"
-    install_pip "asciiquarium" "Asciiqurium"
-    install_pip "wttr" "Wttr.io"
+    install_lang "pip" "holehe" "Holehe: E-mail OSINT tool" "holehe"
+    install_lang "pip" "asciiquarium" "AACCIQuarium: Animated terminal aquarium" "asciiquarium"
+    install_lang "pip" "wttr" "Wttr.io: Console weather service" "wttr"
     install_pkg tmux tmux "Tmux: A multitasker"
     install_pkg lazygit lazygit "Lazygit: A git TUI"
     install_pkg ani-cli ani-cli "Ani-cli: A anime streamer"
     install_pkg code-server code-server "Code-Server: VsCode on android"
-    install_pip "pipx" "Pipx"
+    install_lang "pip" "pipx" "Pipx: A isolated Py-app installer" "pipx"
     # -- post-install-summary
     echo ""
      post_install_summary
-    echo -e "${OPTION}${BOLD}" 
+    echo -e "${OPTION}" 
      boxed_text center "[✓] installation Completed. Press ENTER to continue.."
     echo -e "${RST}"
    read -s
@@ -101,6 +101,7 @@ install_preset() {
     done
 }
 # -- main installer function --
+# install_pkg "git" "git" "Git: Version control"
 install_pkg() {
     local cmd="$1"  # command to check (git, curl, nmap, etc.)
     local pkg="$2"     # package name to install
@@ -108,7 +109,7 @@ install_pkg() {
 
     # installing or Skipped massges
     if command -v "$cmd" >/dev/null 2>&1; then
-        echo -e "${OPTION}${BOLD}  [✓] $name is already installed - Skipping..${RST}"
+        echo -e "${OPTION}  [✓] $name is already installed - Skipping..${RST}"
         SKIPPED_PKGS+=("$name")
         log SKIPPED "$name was already installed (Skipped)"
         sleep 1
@@ -148,7 +149,7 @@ install_pkg() {
             sudo snap install "$pkg"
             ;;
         pkg)
-            sudo pkg install -y "$pkg"
+            pkg install -y "$pkg"
             ;;
         chocolatey)
             choco install -y "$pkg"
@@ -162,20 +163,20 @@ install_pkg() {
             done
             ;;
             *) stop_spinner
-               echo -e "${ERR}${BOLD}  [x] Unsupported package manager: $PM${RST}"
+               echo -e "${ERROR}  [x] Unsupported package manager: $PM${RST}"
                 return 1
                 ;;
         esac >/dev/null 2>&1
         # detection for post-install summary
         if [ $? -eq 0 ]; then
           INSTALLED_PKGS+=("$name")
-           echo -e "${OPTION}${BOLD}"
-            stop_spinner "  [✓] $name has installed successfully."
+           echo -e "${OPTION}"
+           stop_spinner "  [✓] $name has installed successfully (via $PM)."
            echo -e "${RST}"
            log INSTALLED "$name installed successfully"
          else
           FAILED_PKGS+=("$name")
-           echo -e "${ERROR}${BOLD}" 
+           echo -e "${ERROR}" 
             stop_spinner "  [x] Failed to install: $name."
            echo -e "${RST}"
            log FAIL "$name failed to install"
@@ -183,58 +184,75 @@ install_pkg() {
         sleep 2
     fi
 }
-
-# Function to inatall pip packages
-# Usage: ensure_pip_package <package_name> [pip_package_name]
-install_pip() {
-    local command_name="$1"
-    local package_name="${2:-$1}"  # Use second arg if provided, otherwise use command name
-    local install_cmd=""
-
-    # Determine which pip to use
-    if command -v pip3 &> /dev/null; then
-        install_cmd="pip3"
-    elif command -v pip &> /dev/null; then
-        install_cmd="pip"
-    else
-       echo -e "${ERR}${BOLD}"
-        boxed_text center "  [x] ERR: Neither pip nor pip3 is available.."
-      echo -e "${RST}"
-       sleep 3
-      return 1
+# Universal language package installer (replaces install_pip)
+# install_lang "pip" "holehe" "Holehe" "holehe"
+install_lang() {
+    local tool_type="$1"  # "pip", "npm", "gem", "cargo"
+    local pkg_name="$2"   # package name to install
+    local display_name="${3:-$pkg_name}" # package name to display
+    local cmd="${4:-$pkg_name}"  # command to check (optional)
+    
+    # If cmd not specified, use pkg_name as command
+    local check_cmd="${cmd:-$pkg_name}"
+    
+    # Detect the right package manager for this tool type
+    local lang_pm=$(detect_pkg_for_tool "$tool_type")
+    
+    # Check if already installed
+    if command -v "$check_cmd" >/dev/null 2>&1; then
+        echo -e "${OPTION}  [✓] $display_name is already installed - Skipping..${RST}"
+        SKIPPED_PKGS+=("$display_name")
+        log SKIPPED "$display_name was already installed"
+        sleep 1
+        return 0
     fi
     
-    # Check if command already exists
-    if command -v "$command_name" &> /dev/null; then
-     SKIPPED_PKGS+=("$package_name")
-      echo -e "${OPTION}${BOLD}  [✓] $package_name is already installed - Skipping ${RST}"
-        log SKIPPED "$package_name was already installed (Skipped)"
-       sleep 1
-      return 0
+    # Check if package manager exists
+    if [ "$lang_pm" = "none" ]; then
+        echo -e "${ERROR}  [✗] $tool_type package manager not found - Cannot install $display_name${RST}"
+        FAILED_PKGS+=("$display_name")
+        return 1
     fi
     
-    # Install the package
-    start_spinner "  [*] Installing: $package_name ($install_cmd)..."
-    # Error handling
-    if ! $install_cmd install --quiet "$command_name"; then
-      FAILED_PKGS+=("$package_name")
-       echo -e "${ERR}${BOLD}  [x] ERR: Failed to install $package_name..${RST}" >&2
-        log FAIL "$package_name failed to installed"
-        sleep 3
-       return 1
-    fi
+    start_spinner "  [*] Installing: $display_name (via $lang_pm).."
+    
+    # Install based on detected language manager
+    case "$lang_pm" in
+        pip|pip3|pipx)
+            $lang_pm install --quiet "$pkg_name" 2>/dev/null
+            ;;
+        npm)
+            npm install -g --quiet "$pkg_name" 2>/dev/null
+            ;;
+        yarn)
+            yarn global add --silent "$pkg_name" 2>/dev/null
+            ;;
+        gem)
+            gem install --silent "$pkg_name" 2>/dev/null
+            ;;
+        cargo)
+            cargo install --quiet "$pkg_name" 2>/dev/null
+            ;;
+        *)
+            stop_spinner
+            echo -e "${ERROR}  [✗] Unknown language manager: $lang_pm${RST}"
+            FAILED_PKGS+=("$display_name")
+            return 1
+            ;;
+    esac
+    
     # Verify installation
-    if command -v "$command_name" &> /dev/null; then
-     INSTALLED_PKGS+=("$package_name")
-      echo -e "${OPTION}${BOLD}"
-       stop_spinner "  [✓] Successfully installed: $package_name ($install_cmd).."
-      echo -e "${RST}"
-       log INSTALLED "$package_name successfully installed"
-       sleep 3
-      return 0
+    if command -v "$check_cmd" >/dev/null 2>&1; then
+        INSTALLED_PKGS+=("$display_name")
+        stop_spinner "${OPTION}  [✓] $display_name installed successfully (via $lang_pm)${RST}"
+        log INSTALLED "$display_name installed via $lang_pm"
+        sleep 1
+        return 0
     else
-        echo -e "${ERR}  [!] WARNING: $package_name installed but '$command_name' command not found..${RST}" >&2
-        sleep 3
-        return 0  # Still return success as package was installed
+        FAILED_PKGS+=("$display_name")
+        stop_spinner "${ERROR}  [✗] Failed to install: $display_name${RST}"
+        log FAIL "$display_name installation failed"
+        sleep 2
+        return 1
     fi
 }
