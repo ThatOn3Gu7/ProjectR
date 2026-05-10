@@ -18,7 +18,7 @@ FAILED_PKGS=()
                  pkg_update
     sleep 0.1
    echo -e "${INFO}"
-  if ask "  [!] Upgrade the system?" "n" 5; then
+  if ask "  [!] Upgrade the system?"; then
     echo -e "${RST}"
      progress_run "Upgrading system" \
                   "System upgrade complete" \
@@ -36,50 +36,23 @@ FAILED_PKGS=()
     boxed_text center "[*] Installing all tools"
     echo -e "${RST}"
    
-    # ---- APT TOOLS ----
-    install_pkg git git "Git: Version control"
-    install_pkg curl curl "Curl: HTTP requests"
-    install_pkg wget wget "Wget: File downloader"
-    install_pkg bat bat "Bat: Better 'cat' alternative"
-    install_pkg htop htop "Htop: Hardware use analyser"
-    install_pkg fish fish "Fish: An advanced Shell"
-    install_pkg ssh openssh "OpenSSH: Server deployment"
-    install_pkg python3 python3 "Python3: A coding language"
-    install_pkg nmap nmap "Nmap: Network scanner"
-    install_pkg cacademo libcaca "Libcaca: AsCii Art Library"
-    install_pkg speedtest-go speedtest-go "Speedtest-Go: Net-speed test"
-    install_pkg cpufetch cpufetch "CPUfetch: Cpu-info"
-    install_pkg neofetch neofetch "Neofetch: System-info"
-    install_pkg ranger ranger "Ranger: A File Manager"
-    install_pkg nano nano "Nano: Text editor"
-    install_pkg sl sl "Sl: Steam Locomotive"
-    install_pkg ncdu ncdu "Ncdu: disk use analyser"
-    install_neovim_full 
-    install_pkg cbonsai cbonsai "Cbonsai: CLI tree generator"
-    install_pkg asciinema asciinema "Asciinema: Terminal-recorder"
-    install_pkg croc croc "Croc: File-sender"
-    install_pkg fzf fzf "Fzf: Fuzzy-Finder"
-    install_pkg zoxide zoxide "Zoxide: A smarter 'cd'"
-    install_zsh_full 
-    install_pkg duf duf "Duf: File/dir size Checker"
-    install_pkg tty-clock tty-clock "tty-clock: A terminal clock"
-    install_pkg pipes.sh pipes.sh "Pipes.sh: Line-Snake"
-    install_pkg yazi yazi "Yazi: A File Manager"
-    install_pkg lsd lsd "Lsd: Batter 'ls' alternative"
-    install_pkg broot broot "Broot: Filenavigator"
-    install_pkg dust dust "Dust: Better 'du' alternative"
-    install_pkg procs procs "Procs: Modern 'ps'"
-    install_pkg tldr tldr "Tldr: Man pages"
-    install_pkg gh gh "Gh: Github-Cli"
-    # ---- PIP TOOLS ----
-    install_lang "pip" "holehe" "Holehe: E-mail OSINT tool" "holehe"
-    install_lang "pip" "asciiquarium" "AACCIQuarium: Animated terminal aquarium" "asciiquarium"
-    install_lang "pip" "wttr" "Wttr.io: Console weather service" "wttr"
-    install_pkg tmux tmux "Tmux: A multitasker"
-    install_pkg lazygit lazygit "Lazygit: A git TUI"
-    install_pkg ani-cli ani-cli "Ani-cli: A anime streamer"
-    install_pkg code-server code-server "Code-Server: VsCode on android"
-    install_lang "pip" "pipx" "Pipx: A isolated Py-app installer" "pipx"
+for entry in "${TOOLS[@]}"; do
+        IFS="|" read -r num cmd pkg name desc type extra cat <<< "$entry"
+
+        case "$type" in
+            pkg)
+                install_pkg "$cmd" "$pkg" "$name"
+                ;;
+            pip)
+                install_pip "$cmd" "$name"
+                ;;
+            special)
+                # Call the special install function by name
+                "$extra"
+                ;;
+        esac
+    done
+
     # -- post-install-summary
     echo ""
      post_install_summary
@@ -114,7 +87,7 @@ install_pkg() {
         log SKIPPED "$name was already installed (Skipped)"
         sleep 1
     else
-       start_spinner "  [*] Installing: $name.."
+       start_spinner "  [*] Installing: $name (via $PM).."
 
        # Use the detected package manager to install 
        case $PM in
@@ -170,16 +143,16 @@ install_pkg() {
         # detection for post-install summary
         if [ $? -eq 0 ]; then
           INSTALLED_PKGS+=("$name")
-           echo -e "${OPTION}"
-           stop_spinner "  [✓] $name has installed successfully (via $PM)."
-           echo -e "${RST}"
-           log INSTALLED "$name installed successfully"
-         else
+          echo -e "${OPTION}"
+          stop_spinner "  [✓] $name has installed successfully (via $PM)."
+          echo -e "${RST}"
+          log INSTALLED "$name installed successfully (via $PM)"
+        else
           FAILED_PKGS+=("$name")
-           echo -e "${ERROR}" 
-            stop_spinner "  [x] Failed to install: $name."
-           echo -e "${RST}"
-           log FAIL "$name failed to install"
+          echo -e "${ERROR}" 
+          stop_spinner "  [x] Failed to install: $name."
+          echo -e "${RST}"
+          log FAIL "$name failed to install (on $PM)"
         fi
         sleep 2
     fi
@@ -254,5 +227,17 @@ install_lang() {
         log FAIL "$display_name installation failed"
         sleep 2
         return 1
+    fi
+}
+#  install_code_server — special installer for code-server
+install_code_server() {
+    echo -e "${OPTION}"
+    if ask "[*] tur-repo is required to install code-server, install it?"; then
+        echo -e "${RST}"
+        progress_run "Installing tur-repo" \
+                     "Installation successful" \
+                     apt install tur-repo
+        echo ""
+        install_pkg code-server code-server "Code-Server: VSCode on Android"
     fi
 }

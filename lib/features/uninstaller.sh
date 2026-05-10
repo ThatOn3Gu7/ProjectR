@@ -4,9 +4,9 @@ PM="$(detect_pkg_manager)"
 
 # -- the sec uninstall funtion (for pip/pip3) --
 uninstall_lang() {
- local pm=$1
- local pkg=$2
- local name="$3"
+ local pm=$1 # what Lang-specific pkg manager to use
+ local pkg=$2 # pkg name to delete
+ local name="$3" # pkg name to display
  
 
   # -- Confirmation --

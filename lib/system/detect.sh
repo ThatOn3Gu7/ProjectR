@@ -59,12 +59,12 @@ detect_pkg_for_tool() {
     
     case "$tool_type" in
         pip)
-            if command -v pipx >/dev/null 2>&1; then
-                echo "pipx"
+            if command -v pip >/dev/null 2>&1; then
+                echo "pip"
             elif command -v pip3 >/dev/null 2>&1; then
                 echo "pip3"
-            elif command -v pip >/dev/null 2>&1; then
-                echo "pip"
+            elif command -v pipx >/dev/null 2>&1; then
+                echo "pipx"
             else
                 echo "none"
             fi
