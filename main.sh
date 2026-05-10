@@ -23,8 +23,8 @@ source lib/features/zsh_setup.sh
 source lib/features/upgrade.sh
 source lib/features/update.sh
 # -- sub_menus sourced --
-source lib/sub_menus/presets.sh
-source lib/sub_menus/uninstall.sh
+source lib/sub_menus/presets_menu.sh
+source lib/sub_menus/uninstall_menu.sh
 # PM="$(detect_pkg_manager)"
 trap graceful_exit SIGINT
 log START "Script started"
