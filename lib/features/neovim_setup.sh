@@ -5,14 +5,11 @@ install_neovim_full() {
   install_pkg nvim neovim "Neovim: Best code editor"
  
     # Common Neovim config paths
-    NVCHAD_PATH="$HOME/.config/nvim"
-    LAZYVIM_PATH="$HOME/.config/nvim-lazyvim"
-    ASTRONVIM_PATH="$HOME/.config/nvim-astronvim"
     STANDARD_PATH="$HOME/.config/nvim"
 
    # Check if any config exists
    if ask "  [*] Install a config for NeoVim?"; then
-    if [ -d "$STANDARD_PATH" ] || [ -d "$NVCHAD_PATH" ] || [ -d "$LAZYVIM_PATH" ] || [ -d "$ASTRONVIM_PATH" ]; then
+    if [ -d "$STANDARD_PATH" ]; then
         echo -e "${OPTION}  [✓] A Neovim config is already installed!"
          sleep 3
         return 0
@@ -51,7 +48,7 @@ check_nvim_config() {
            return 1
            ;;
         *)
-           echo -e "${ERR}  [!] Invalid option: $REPLY ${RST}"
+           echo -e "${ERROR}  [!] Invalid option: $confing_choice ${RST}"
            ;;
    esac
 }

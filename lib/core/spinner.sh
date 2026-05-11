@@ -6,9 +6,8 @@ start_spinner() {
     local message="$1"
     local spin_chars="|/-\\"
     local i=0
-
      # Don't start if already running
-     if [ -n "$SPINNER_PID" ]; then
+     if [ -n "${SPINNER_PID:-}" ]; then
          return 0
      fi
 
@@ -22,12 +21,12 @@ start_spinner() {
             sleep 0.1
         done
     ) &
-    SPINNER_PID=$!
+     SPINNER_PID=$!
 }
 # Stop the spinner
 stop_spinner() {
 
-   [ -z "$SPINNER_PID" ] && { echo -e "$1"; return 0; }
+    [ -z "${SPINNER_PID:-}" ] && { return 0; }
     # This stops the background spinner
     kill "$SPINNER_PID" >/dev/null 2>&1
     wait "$SPINNER_PID" 2>/dev/null

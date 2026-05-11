@@ -14,7 +14,7 @@ TOOLS=(
   "7|ssh|openssh|OpenSSH|SSH access|pkg|-|Dev"
   "8|python3|python3|Python|Programming language|pkg|-|Min"
   "9|nmap|nmap|Nmap|Network scanning|pkg|-|Min"
-  "10|cacademo|libcaca|Libcaca|A fire effect|pkg|-|Fun"
+  "10|cacafire|libcaca|Libcaca|A fire effect|pkg|-|Fun"
   "11|speedtest-go|speedtest-go|Speedtest-go|Internet speed-test|pkg|-|Fun"
   "12|cpufetch|cpufetch|Cpufetch|CPU information|pkg|-|Fun"
   "13|neofetch|neofetch|Neofetch|System information|pkg|-|Min"

@@ -1,5 +1,5 @@
 #!/bin/bash
-# set -uo pipefail
+set -uo pipefail
 # -- source all the other utilitys --
 source lib/core/colours.sh
 source lib/core/progress_bar.sh

@@ -5,7 +5,7 @@ pkg_update() {
    PM="$(detect_pkg_manager)"
     case "$PM" in
         apt)
-             apt update -y >/dev/null 2>&1
+             apt update >/dev/null 2>&1
             ;;
         dnf)
             sudo dnf makecache >/dev/null 2>&1
@@ -26,7 +26,7 @@ pkg_update() {
             brew update >/dev/null 2>&1
             ;;
         pkg) # Termux
-            pkg update -y >/dev/null 2>&1
+            pkg update >/dev/null 2>&1
             ;;
         nix)
             nix-channel --update >/dev/null 2>&1

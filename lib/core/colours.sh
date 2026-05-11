@@ -1,10 +1,5 @@
 #!/bin/bash
-# --- Semantic aliases (makes scripts readable) ---
-INFO="${BOLD_YELLOW}"
-OPTION="${BOLD_GREEN}"
-ERROR="${BOLD_RED}"
-BARR="${BRIGHT_MAGENTA}"
-
+#
 # --- Reset ---
 RST="\e[0m"
 
@@ -91,3 +86,10 @@ STRIKETHROUGH="\e[9m"
 # If you want BRIGHT_MAGENTA (was missing from your original):
 BRIGHT_MAGENTA="\e[0;95m"   # purple/bright magenta
 BOLD_BRIGHT_MAGENTA="\e[1;95m"
+
+# --- Semantic aliases (makes scripts readable) ---
+INFO="${BOLD_BRIGHT_YELLOW}"
+OPTION="${BOLD_BRIGHT_GREEN}"
+ERROR="${BOLD_BRIGHT_RED}"
+BARR="${BOLD_BRIGHT_MAGENTA}"
+
