@@ -44,7 +44,7 @@ for entry in "${TOOLS[@]}"; do
                 install_pkg "$cmd" "$pkg" "$name"
                 ;;
             pip)
-                install_pip "$cmd" "$name"
+                install_lang "pip" "$pkg" "$name" "$cmd"
                 ;;
             special)
                 # Call the special install function by name
@@ -142,16 +142,13 @@ install_pkg() {
         esac >/dev/null 2>&1
         # detection for post-install summary
         if [ $? -eq 0 ]; then
-          INSTALLED_PKGS+=("$name")
-          echo -e "${OPTION}"
-          stop_spinner "  [✓] $name has installed successfully (via $PM)."
-          echo -e "${RST}"
+          INSTALLED_PKGS+=("$name") 
+          stop_spinner "${OPTION}  [✓] $name has installed successfully (via $PM). ${RST}"
           log INSTALLED "$name installed successfully (via $PM)"
         else
           FAILED_PKGS+=("$name")
-          echo -e "${ERROR}" 
-          stop_spinner "  [x] Failed to install: $name."
-          echo -e "${RST}"
+          echo -e
+          stop_spinner "${ERROR}   [x] Failed to install: $name. ${RST}"
           log FAIL "$name failed to install (on $PM)"
         fi
         sleep 2
@@ -236,7 +233,7 @@ install_code_server() {
         echo -e "${RST}"
         progress_run "Installing tur-repo" \
                      "Installation successful" \
-                     apt install tur-repo
+                     pkg install tur-repo 
         echo ""
         install_pkg code-server code-server "Code-Server: VSCode on Android"
     fi

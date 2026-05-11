@@ -3,7 +3,8 @@
 # -- package manager detection --
 detect_pkg_manager() {
   # Android (Termux)
-  command -v termux-info >/dev/null 2>&1 && [ -d "~/data/data/com.termux" ] && echo "pkg" && return
+  [ -n "$PREFIX" ] && [[ "$PREFIX" == *termux* ]] && echo "pkg" && return
+  # command -v termux-info >/dev/null 2>&1 && [ -d "/data/data/com.termux" ] && echo "pkg" && return
   # Linux
   command -v apt >/dev/null 2>&1 && echo "apt" && return
   command -v apt-get >/dev/null 2>&1 && echo "apt-get" && return

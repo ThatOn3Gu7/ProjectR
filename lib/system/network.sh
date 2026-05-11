@@ -2,16 +2,18 @@
 
 # Checkes if internet connection is available or not. 
 check_internet() {
-  ping -c 1 8.8.8.8 >/dev/null 2>&1
+  ping -c 1 8.8.8.8 >/dev/null 2>&1 \
+  curl -s --max-time 5 https://8.8.8.8 >/dev/null 2>&1 || \
+  wget -q --timeout=5 -O /dev/null https://8.8.8.8 >/dev/null 2>&1
 }
 # startup internet Check
 startup_wifi_check() {
   if ! check_internet; then
     log ERROR "No internet connection"
-    echo -e "${ERROR}${BOLD}"
+    echo -e "${ERROR}"
     boxed_text center "        It seems that you are not online
 Please make sure to turn on WI-FI to continue :)"
-    echo -e "${OPTION}${BOLD}"
+    echo -e "${OPTION}"
     boxed_text center " [!] Continue Anyways? [y/N]"
     tput civis        # hide cursor
     read -rsn 1 reply    # read silently, no echo
@@ -29,15 +31,15 @@ is_internet_up() {
     if ! check_internet; then
       log ERROR "No internet connection"
       echo ""
-      echo -e "${ERROR}${BOLD}"
+      echo -e "${ERROR}"
       boxed_text center "[!] No internet connection detected. Did you lose it?"
-      echo -e "${OPTION}${BOLD}"
+      echo -e "${OPTION}"
       boxed_text center "[*] Please have stable internet connection to continue ;)"
       echo -e "${RST}" 
       exit 0
     else
       clear
-      echo -e "${OPTION}${BOLD}"
+      echo -e "${OPTION}"
        boxed_text center "[✓] Internet connection detected. Proceeding."
       echo -e ${RST}
     fi

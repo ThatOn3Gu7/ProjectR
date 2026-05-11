@@ -76,7 +76,7 @@ progress_run() {
     tput civis
 
     # Trap Ctrl+C
-    # trap 'interrupted=1' INT
+     trap 'interrupted=1' INT
 
     # Start command in background
     (

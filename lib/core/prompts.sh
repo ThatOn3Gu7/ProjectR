@@ -20,7 +20,7 @@ ask() {
     
     local default_upper="$(echo "$default" | tr '[:lower:]' '[:upper:]')"
     local other_option="$( ([ "$default" = "y" ] && echo "n") || echo "y")"
-    local other_upper="$(echo "$other_option" | tr '[:upper:]' '[:upper:]')"
+   # local other_upper="$(echo "$other_option" | tr '[:upper:]' '[:upper:]')"
     
     # Format prompt with default highlighted
     if [ "$default" = "y" ]; then

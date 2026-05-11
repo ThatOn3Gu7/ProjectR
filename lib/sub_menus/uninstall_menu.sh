@@ -63,7 +63,7 @@ echo -e "${RST}"
       fi
 
       # --- Find the tool and uninstall it ---
-      local found=0
+       found=0
       for entry in "${TOOLS[@]}"; do
         IFS="|" read -r num cmd pkg name desc type extra cat <<< "$entry"
 

@@ -1,9 +1,9 @@
 #!/bin/bash
 # --- Semantic aliases (makes scripts readable) ---
-INFO="${BOLD_BRIGHT_YELLOW}"
-OPTION="${BOLD_BRIGHT_GREEN}"
-ERROR="${BOLD_BRIGHT_RED}"
-BARR="${BOLD_BRIGHT_MAGENTA}"
+INFO="${BOLD_YELLOW}"
+OPTION="${BOLD_GREEN}"
+ERROR="${BOLD_RED}"
+BARR="${BRIGHT_MAGENTA}"
 
 # --- Reset ---
 RST="\e[0m"
