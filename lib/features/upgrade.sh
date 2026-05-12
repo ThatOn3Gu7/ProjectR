@@ -9,7 +9,7 @@ pkg_upgrade() {
         yum) sudo yum upgrade -y >/dev/null 2>&1 ;;
         pacman) sudo pacman -Su --noconfirm ;;
         brew) brew upgrade >/dev/null 2>&1 ;;
-        pkg) pkg upgrade -y >/dev/null 2>&1 ;;
+        termux-pkg) pkg upgrade -y >/dev/null 2>&1 ;;
         *)
           echo -e "${ERROR}${BOLD}"
           boxed_text center "[!] System upgrade not supported for: $PM..${RST}"

@@ -3,7 +3,7 @@
 # -- package manager detection --
 detect_pkg_manager() {
   # Android (Termux)
-  [ -n "$PREFIX" ] && [[ "$PREFIX" == *termux* ]] && echo "pkg" && return
+  [ -n "$PREFIX" ] && [[ "$PREFIX" == *termux* ]] && echo "termux-pkg" && return
   # command -v termux-info >/dev/null 2>&1 && [ -d "/data/data/com.termux" ] && echo "pkg" && return
   # Linux
   command -v apt >/dev/null 2>&1 && echo "apt" && return
@@ -27,7 +27,7 @@ detect_pkg_manager() {
   command -v port >/dev/null 2>&1 && echo "macports" && return
   
   # BSD
-  command -v pkg >/dev/null 2>&1 && echo "pkg" && return  # FreeBSD
+  command -v pkg >/dev/null 2>&1 && echo "BSD-pkg" && return  # FreeBSD
   command -v pkg_add >/dev/null 2>&1 && echo "pkg_add" && return  # OpenBSD
   
   # Windows (WSL/Cygwin/Git Bash)
