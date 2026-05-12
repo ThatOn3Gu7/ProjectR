@@ -98,7 +98,7 @@ install_pkg() {
             sudo $PM install -y "$pkg"
             ;;
         pacman)
-            sudo pacman -Sy && pacman -S --noconfirm --needed "$pkg"
+            sudo pacman -Sy && sudo pacman -S --noconfirm --needed "$pkg"
             ;;
         zypper)
             sudo zypper refresh && sudo zypper install -y "$pkg"
@@ -112,7 +112,7 @@ install_pkg() {
         emerge)
             sudo emerge -av "$pkg"
             ;;
-        nix-env)
+        nix)
             nix-env -i "$pkg"
             ;;
         flatpak)
@@ -131,9 +131,7 @@ install_pkg() {
             scoop install "$pkg"
             ;;
         winget)
-            for pkg in "$pkg"; do
                 winget install -e --id "$pkg"
-            done
             ;;
             *) stop_spinner
                echo -e "${ERROR}  [x] Unsupported package manager: $PM${RST}"

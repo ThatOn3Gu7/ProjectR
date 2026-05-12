@@ -101,9 +101,12 @@ check_dependencies_menu() {
             sleep 1
             return 0
             ;;
-        4|*)
+        4)
             graceful_exit
             ;;
+        *)
+          echo -e "${BOLD_RED} [!] Imvalid Input:${RST} '$choice'"
+         sleep 1
     esac
 }
 

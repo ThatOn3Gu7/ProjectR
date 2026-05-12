@@ -8,10 +8,10 @@ check_tool() {
    version=$("$cmd" --version 2>/dev/null | head -n1 | grep -oE '[0-9]+\.[0-9]+[.0-9]*' | head -n1)
 
   if command -v "$cmd" >/dev/null 2>&1; then
-    FOUND_PKGS+=($cmd)
+    FOUND_PKGS+=("$cmd")
      echo -e "${OPTION}     [✓] $name is installed ${DIM}(v${version:--Unknown})${RST}"
    else
-    NOT_FOUND_PKGS+=($cmd)
+    NOT_FOUND_PKGS+=("$cmd")
      echo -e "${ERROR}     [✗] $name is NOT installed${RST}"
   fi
 }

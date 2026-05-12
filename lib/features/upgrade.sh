@@ -7,7 +7,7 @@ pkg_upgrade() {
         apt)  apt upgrade -y >/dev/null 2>&1 ;;
         dnf) sudo dnf upgrade -y >/dev/null 2>&1 ;;
         yum) sudo yum upgrade -y >/dev/null 2>&1 ;;
-        pacman) pacman -Su --noconfirm ;;
+        pacman) sudo pacman -Su --noconfirm ;;
         brew) brew upgrade >/dev/null 2>&1 ;;
         pkg) pkg upgrade -y >/dev/null 2>&1 ;;
         *)

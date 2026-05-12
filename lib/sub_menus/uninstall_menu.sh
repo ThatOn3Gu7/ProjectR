@@ -1,20 +1,6 @@
 #!/bin/bash
 
 
-source lib/core/colours.sh
-source lib/core/logging.sh
-source lib/core/display.sh
-source lib/core/spinner.sh
-source lib/core/prompts.sh
-
-source lib/system/detect.sh
-source lib/system/network.sh
-source lib/system/checker.sh
-
-if [ -f lib/features/uninstaller.sh ]; then
-    source lib/features/uninstaller.sh
-fi
-
 # -- uninstaller menu --
 uninstall_menu() {
   while true; do
