@@ -84,7 +84,7 @@ echo -e "${BARR}    ║${RST}${OPTION} [${ERROR}e${OPTION}] Exits the script${RS
 echo -e "${BARR}    ╚══════════════════╝ ${RST}"
   echo ""
   echo -ne " ${BG_GREEN}[*] Enter the tool numbers ${RST} ${BOLD_BRIGHT_GREEN}(separate by spaces)${RST} : "
-  read -a selections
+  read -ra selections
   echo ""
 }
 

@@ -28,7 +28,7 @@ check_nvim_config() {
    echo -e "${OPTION}   [4] Skip ${RST}"
   echo ""
     echo -ne "${INFO}  [*] Select option (1-4): ${RST}"
-   read confing_choice
+   read -r confing_choice
    case "$confing_choice" in
         1)
            echo -e  "${OPTION}  [*] Cloning NvChad...${RST}"

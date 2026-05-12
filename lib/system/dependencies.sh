@@ -86,7 +86,7 @@ check_dependencies_menu() {
     
     local choice
     echo -ne " ${BOLD_BRIGHT_MAGENTA}[*] Select option [1-4]: ${RST}" 
-    read choice
+    read -r choice
     
     case $choice in
         1)
@@ -235,27 +235,71 @@ get_install_hints() {
         lolcat)
 echo -e "${INFO}[*] Install lolcat on different systems: ${RST}"
 echo -e "${INFO} |"
-echo -e "${INFO} ├─ Debian/Ubuntu: ${OPTION}sudo apt install lolcat ${RST}"
-echo -e "${INFO} ├─ Arch Linux:    ${OPTION}sudo pacman -S lolcat ${RST}"
-echo -e "${INFO} ├─ Termux:        ${OPTION}pkg install ruby && gem install lolcat ${RST}"
-echo -e "${INFO} ├─ macOS:         ${OPTION}brew install lolcat ${RST}"
-echo -e "${INFO} └─ Manual:        ${OPTION}gem install lolcat ${RST}"
+echo -e "${INFO} ├─ Debian/Ubuntu:     ${OPTION}sudo apt install lolcat ${RST}"
+echo -e "${INFO} ├─ Arch Linux:        ${OPTION}sudo pacman -S lolcat ${RST}"
+echo -e "${INFO} ├─ Fedora/RHEL:       ${OPTION}sudo dnf install lolcat ${RST}"
+echo -e "${INFO} ├─ openSUSE:          ${OPTION}sudo zypper install lolcat ${RST}"
+echo -e "${INFO} ├─ Alpine Linux:      ${OPTION}sudo apk add lolcat ${RST}"
+echo -e "${INFO} ├─ Void Linux:        ${OPTION}sudo xbps-install -S lolcat ${RST}"
+echo -e "${INFO} ├─ NixOS:             ${OPTION}nix-shell -p lolcat ${RST}"
+echo -e "${INFO} ├─ Gentoo:            ${OPTION}sudo emerge --ask app-misc/lolcat ${RST}"
+echo -e "${INFO} ├─ FreeBSD:           ${OPTION}sudo pkg install lolcat ${RST}"
+echo -e "${INFO} ├─ NetBSD/pkgsrc:     ${OPTION}sudo pkgin install lolcat ${RST}"
+echo -e "${INFO} ├─ macOS (Homebrew):  ${OPTION}brew install lolcat ${RST}"
+echo -e "${INFO} ├─ macOS (MacPorts):  ${OPTION}sudo port install lolcat ${RST}"
+echo -e "${INFO} ├─ Termux:            ${OPTION}pkg install ruby && gem install lolcat ${RST}"
+echo -e "${INFO} ├─ Windows (Choco):   ${OPTION}choco install lolcat ${RST}"
+echo -e "${INFO} ├─ Windows (Scoop):   ${OPTION}scoop install lolcat ${RST}"
+echo -e "${INFO} ├─ Snap:              ${OPTION}sudo snap install lolcat ${RST}"
+echo -e "${INFO} ├─ Flatpak:           ${OPTION}flatpak install flathub com.github.jaseg.lolcat ${RST}"
+echo -e "${INFO} ├─ Ruby Gem:          ${OPTION}gem install lolcat ${RST}"
+echo -e "${INFO} └─ Source/Git:        ${OPTION}git clone https://github.com/busyloop/lolcat && cd lolcat && gem build lolcat.gemspec && gem install lolcat-*.gem ${RST}"
             ;;
          git)
-echo -e "${INFO} [*] Install git: ${RST}"
-echo -e "${INFO}  |"
-echo -e "${INFO}  ├─ Debian/Ubuntu: ${OPTION}sudo apt install git ${RST}"
-echo -e "${INFO}  ├─ Arch:          ${OPTION}sudo pacman -S git ${RST}"
-echo -e "${INFO}  ├─ Termux:        ${OPTION}pkg install git ${RST}"
-echo -e "${INFO}  └─ macOS:         ${OPTION}brew install git ${RST}"
+echo -e "${INFO}[*] Install Git on different systems: ${RST}"
+echo -e "${INFO} |"
+echo -e "${INFO} ├─ Debian/Ubuntu:     ${OPTION}sudo apt install git ${RST}"
+echo -e "${INFO} ├─ Arch Linux:        ${OPTION}sudo pacman -S git ${RST}"
+echo -e "${INFO} ├─ Fedora/RHEL:       ${OPTION}sudo dnf install git ${RST}"
+echo -e "${INFO} ├─ openSUSE:          ${OPTION}sudo zypper install git ${RST}"
+echo -e "${INFO} ├─ Alpine Linux:      ${OPTION}sudo apk add git ${RST}"
+echo -e "${INFO} ├─ Void Linux:        ${OPTION}sudo xbps-install -S git ${RST}"
+echo -e "${INFO} ├─ NixOS:             ${OPTION}nix-shell -p git ${RST}"
+echo -e "${INFO} ├─ Gentoo:            ${OPTION}sudo emerge --ask dev-vcs/git ${RST}"
+echo -e "${INFO} ├─ FreeBSD:           ${OPTION}sudo pkg install git ${RST}"
+echo -e "${INFO} ├─ NetBSD/pkgsrc:     ${OPTION}sudo pkgin install git ${RST}"
+echo -e "${INFO} ├─ macOS (Homebrew):  ${OPTION}brew install git ${RST}"
+echo -e "${INFO} ├─ macOS (MacPorts):  ${OPTION}sudo port install git ${RST}"
+echo -e "${INFO} ├─ Termux:            ${OPTION}pkg install git ${RST}"
+echo -e "${INFO} ├─ Windows (Choco):   ${OPTION}choco install git ${RST}"
+echo -e "${INFO} ├─ Windows (Scoop):   ${OPTION}scoop install git ${RST}"
+echo -e "${INFO} ├─ Windows (winget):  ${OPTION}winget install Git.Git ${RST}"
+echo -e "${INFO} ├─ Snap:              ${OPTION}sudo snap install git ${RST}"
+echo -e "${INFO} ├─ Flatpak:           ${OPTION}flatpak install flathub org.gnome.gitlab.albfan.GitCola ${RST}"
+echo -e "${INFO} └─ Source:            ${OPTION}git clone https://github.com/git/git.git && cd git && make configure && ./configure --prefix=/usr && make all && sudo make install ${RST}"
            ;;
        curl)
-echo -e "${INFO} [*] Install curl: ${RST}"
-echo -e "${INFO}  |"
-echo -e "${INFO}  ├─ Debian/Ubuntu: ${OPTION}sudo apt install curl ${RST}"
-echo -e "${INFO}  ├─ Arch:          ${OPTION}sudo pacman -S curl ${RST}"
-echo -e "${INFO}  ├─ Termux:        ${OPTION}pkg install curl ${RST}"
-echo -e "${INFO}  └─ macOS:         ${OPTION}brew install curl ${RST}"
+echo -e "${INFO}[*] Install cURL on different systems: ${RST}"
+echo -e "${INFO} |"
+echo -e "${INFO} ├─ Debian/Ubuntu:     ${OPTION}sudo apt install curl ${RST}"
+echo -e "${INFO} ├─ Arch Linux:        ${OPTION}sudo pacman -S curl ${RST}"
+echo -e "${INFO} ├─ Fedora/RHEL:       ${OPTION}sudo dnf install curl ${RST}"
+echo -e "${INFO} ├─ openSUSE:          ${OPTION}sudo zypper install curl ${RST}"
+echo -e "${INFO} ├─ Alpine Linux:      ${OPTION}sudo apk add curl ${RST}"
+echo -e "${INFO} ├─ Void Linux:        ${OPTION}sudo xbps-install -S curl ${RST}"
+echo -e "${INFO} ├─ NixOS:             ${OPTION}nix-shell -p curl ${RST}"
+echo -e "${INFO} ├─ Gentoo:            ${OPTION}sudo emerge --ask net-misc/curl ${RST}"
+echo -e "${INFO} ├─ FreeBSD:           ${OPTION}sudo pkg install curl ${RST}"
+echo -e "${INFO} ├─ NetBSD/pkgsrc:     ${OPTION}sudo pkgin install curl ${RST}"
+echo -e "${INFO} ├─ macOS (Homebrew):  ${OPTION}brew install curl ${RST}"
+echo -e "${INFO} ├─ macOS (MacPorts):  ${OPTION}sudo port install curl ${RST}"
+echo -e "${INFO} ├─ Termux:            ${OPTION}pkg install curl ${RST}"
+echo -e "${INFO} ├─ Windows (Choco):   ${OPTION}choco install curl ${RST}"
+echo -e "${INFO} ├─ Windows (Scoop):   ${OPTION}scoop install curl ${RST}"
+echo -e "${INFO} ├─ Windows (winget):  ${OPTION}winget install curl.curl ${RST}"
+echo -e "${INFO} ├─ Snap:              ${OPTION}sudo snap install curl ${RST}"
+echo -e "${INFO} ├─ Flatpak:           ${OPTION}flatpak install flathub org.curl.curl ${RST}"
+echo -e "${INFO} └─ Source:            ${OPTION}git clone https://github.com/curl/curl.git && cd curl && ./buildconf && ./configure && make && sudo make install ${RST}"
             ;;
         *)
             echo -e "${INFO} [*] No hints for:${OPTION} $cmd ${RST}"
@@ -283,5 +327,7 @@ show_install_commands() {
     done
     
     echo -e "${INFO}💡 Tip: Run the script again after installing dependencies${RST}\n"
+    echo -e "${BOLD_GREEN}"
     read -p " [*] Press ENTER to continue..."
+  exit 0
 }
