@@ -91,7 +91,7 @@ uninstall_pkg() {
    fi 
    case "$PM" in
     # Android/Termux
-    pkg)
+    termux-pkg)
         pkg uninstall "$pkg"
         ;;
     # Linux
@@ -120,7 +120,7 @@ uninstall_pkg() {
         sudo xbps-remove -R "$pkg"
         ;;
     nix)
-        nix remove "$pkg" && nix-collect-garbage -d
+        nix-env remove "$pkg" && nix-collect-garbage -d
         ;;
     guix)
         guix package --remove="$pkg"
@@ -145,7 +145,7 @@ uninstall_pkg() {
         sudo port uninstall "$pkg"
         ;;
     # BSD
-    pkg)
+    BSD-pkg)
         sudo pkg delete -y "$pkg"
         ;;
     pkg_add)

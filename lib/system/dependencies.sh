@@ -40,12 +40,7 @@ check_dependency() {
 check_dependencies_menu() {
     local missing_count=0
     local missing_deps=()
-   clear
-    echo ""
-    echo -e "${OPTION}  [*] Verifying required deps...${RST}"
-     sleep 2
-     echo ""
-    # Define your dependencies here
+    # Define dependencies here
     # Format: "command:Display Name:Install Hint"
     local dependencies=(
         "lolcat:Lolcat (Required)"
@@ -64,10 +59,6 @@ check_dependencies_menu() {
     
     # If nothing missing, return
     if [ $missing_count -eq 0 ]; then
-        # echo ""
-        echo -e "${OPTION}  [✓] All dependencies satisfied ${RST}"
-         sleep 1
-         clear
         return 0
     fi
     
