@@ -1,4 +1,7 @@
 #!/bin/bash
+# -- shows script version - just for fun --
+[[ "${1:-}" == "--version" ]] && echo "ProjectR v1.0" && exit 0
+# -- Catches any bugs and unbound variables --
 set -uo pipefail
 # -- source all the other utilitys --
 source lib/core/colours.sh
@@ -27,16 +30,18 @@ source lib/sub_menus/presets_menu.sh
 source lib/sub_menus/uninstall_menu.sh
 # PM="$(detect_pkg_manager)"
 trap graceful_exit SIGINT
-log START "Script started"
+# -- Separate log by session --
+echo "━━━━━━ Session: $(date '+%Y-%m-%d %H:%M') ━━━━━━" >> "$LOG_FILE"
 # -- dependencies check -- 
 check_dependencies_menu
 # a call for startup internet check
 startup_wifi_check
 # -- main installer menu  --
 show_main_menu() {
- # clear
+ clear
+  rainbow() { command -v lolcat >/dev/null 2>&1 && lolcat || cat; }
   # cool LOGO with colors
-  cat <<"EOF" | lolcat
+  cat <<"EOF" | rainbow
 
     ██▓███   ██▀███   ▒█████   ▄████▄  ▓█████   ██████     ██▀███  
    ▓██░  ██▒▓██ ▒ ██▒▒██▒  ██▒▒██▀ ▀█  ▓█   ▀ ▒██    ▒    ▓██ ▒ ██▒

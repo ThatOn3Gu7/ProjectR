@@ -2,7 +2,7 @@
 
 # Checkes if internet connection is available or not. 
 check_internet() {
-  ping -c 1 8.8.8.8 >/dev/null 2>&1 \
+  ping -c 1 8.8.8.8 >/dev/null 2>&1 
   curl -s --max-time 5 https://8.8.8.8 >/dev/null 2>&1 || \
   wget -q --timeout=5 -O /dev/null https://8.8.8.8 >/dev/null 2>&1
 }
@@ -15,6 +15,7 @@ startup_wifi_check() {
 Please make sure to turn on WI-FI to continue :)"
     echo -e "${OPTION}"
     boxed_text center " [!] Continue Anyways? [y/N]"
+    echo -e "${RST}"
     tput civis        # hide cursor
     read -rsn 1 reply    # read silently, no echo
     tput cnorm        # restore cursor
