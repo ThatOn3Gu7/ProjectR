@@ -30,7 +30,7 @@ FAILED_PKGS=()
   fi
 
  clear
-  tput civis
+  safe_tput civis
   be_patient
    echo -e "${OPTION}"
     boxed_text center "[*] Installing all tools"
@@ -60,7 +60,7 @@ for entry in "${TOOLS[@]}"; do
      boxed_text center "[✓] installation Completed. Press ENTER to continue.."
     echo -e "${RST}"
    read -s
-  tput cnorm
+  safe_tput cnorm
 
 }
 

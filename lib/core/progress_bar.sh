@@ -73,7 +73,7 @@ progress_run() {
     local interrupted=0
 
     # Hide Cursor
-    tput civis
+    safe_tput civis
 
     # Trap Ctrl+C
      trap 'interrupted=1' INT
@@ -107,7 +107,7 @@ progress_run() {
         local time_str=$(printf "%02d:%02d" "$mm" "$ss")
 
         # 4. Bar Rendering
-        local cols=$(tput cols)
+        local cols=$(safe_tput cols)
         # Calculate available width dynamically
         local bar_width=$(( cols - ${#run_msg} - ${#time_str} - 18 ))
         (( bar_width < 20 )) && bar_width=20
@@ -140,7 +140,7 @@ progress_run() {
     local mm=$(( elapsed / 60 ))
     local ss=$(( elapsed % 60 ))
     local time_str=$(printf "%02d:%02d" "$mm" "$ss")
-    local cols=$(tput cols)
+    local cols=$(safe_tput cols)
     local bar_width=$(( cols - ${#run_msg} - ${#time_str} - 18 ))
     (( bar_width < 20 )) && bar_width=20
     local bar="$(printf "%${bar_width}s" | tr ' ' '#')"
@@ -174,7 +174,7 @@ progress_run() {
     fi
 
     # --- Cleanup ---
-    tput cnorm
+    safe_tput cnorm
     rm -f "$tmp_out" "$tmp_exit"
     
     return "$exit_code"

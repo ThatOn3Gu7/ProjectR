@@ -26,7 +26,7 @@ check_tool_main() {
   echo -e "${OPTION}${BOLD}"
   boxed_text left "[*] Checking if any tools are installed:"
   echo -e "${RST}"
-  tput civis
+  safe_tput civis
 
   for entry in "${TOOLS[@]}"; do
     IFS="|" read -r num cmd pkg name desc type extra cat <<< "$entry"
@@ -49,5 +49,5 @@ check_tool_main() {
   echo -e "${RST}"
 
   read -s
-  tput cnorm
+  safe_tput cnorm
 }

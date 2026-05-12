@@ -16,9 +16,9 @@ Please make sure to turn on WI-FI to continue :)"
     echo -e "${OPTION}"
     boxed_text center " [!] Continue Anyways? [y/N]"
     echo -e "${RST}"
-    tput civis        # hide cursor
+    safe_tput civis        # hide cursor
     read -rsn 1 reply    # read silently, no echo
-    tput cnorm        # restore cursor
+    safe_tput cnorm        # restore cursor
   case "$reply" in
     y|Y) log ENTER "User still continued"
       clear ;;

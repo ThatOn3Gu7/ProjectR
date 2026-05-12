@@ -12,7 +12,7 @@ start_spinner() {
      fi
 
     # Hide cursor
-    tput civis 2>/dev/null
+    safe_tput civis 2>/dev/null
 
     # Run spinner in background
     (
@@ -35,7 +35,7 @@ stop_spinner() {
     printf "\r\033[2K"
 
     # Show cursor again
-    tput cnorm 2>/dev/null
+    safe_tput cnorm 2>/dev/null
     unset SPINNER_PID
     echo -e "$1"
 }

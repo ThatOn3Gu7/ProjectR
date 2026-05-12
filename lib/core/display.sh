@@ -1,4 +1,6 @@
 #!/bin/bash
+# -- safety net for tput --
+safe_tput() { command -v tput >/dev/null 2>&1 && tput "$@" 2>/dev/null; }
 # -- Small message for installer --
 be_patient() {
   clear 
@@ -16,7 +18,7 @@ boxed_text() {
 
     # Get terminal width
     local term_width
-    term_width=$(tput cols)
+    term_width=$(safe_tput cols)
 
     # Split text into lines
     IFS=$'\n' read -rd '' -a lines <<< "$text"
@@ -75,7 +77,7 @@ graceful_exit() {
      See you next time "
     echo -e "${RST}"
     stop_spinner
-    tput cnorm
+    safe_tput cnorm
    exit 0
 }
 
@@ -120,7 +122,7 @@ boxed_list() {
     
     # Get terminal width for alignment
     local term_width
-    term_width=$(tput cols 2>/dev/null || echo 80)
+    term_width=$(safe_tput cols 2>/dev/null || echo 80)
     
     local offset=0
     case "$align" in
@@ -198,7 +200,7 @@ boxed_text_full() {
     
     # Get terminal width and calculate offset
     local term_width
-    term_width=$(tput cols 2>/dev/null || echo 80)
+    term_width=$(safe_tput cols 2>/dev/null || echo 80)
     
     local offset=0
     case "$align" in
