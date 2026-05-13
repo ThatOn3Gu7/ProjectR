@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # The follwoing commands are for installing Neovim & NeoVim configs.
-install_neovim_full() {
+install_nvim() {
   install_pkg nvim neovim "Neovim: Best code editor"
  
     # Common Neovim config paths

@@ -16,9 +16,22 @@ boxed_text() {
     local text="$*"
     local margin=2
 
-    # Get terminal width
+    # ---- Robust terminal width detection ----
     local term_width
-    term_width=$(safe_tput cols)
+    if command -v tput >/dev/null 2>&1; then
+        term_width=$(tput cols 2>/dev/null)
+    fi
+    # If tput failed or returned non‑numeric, try COLUMNS
+    if [[ -z "$term_width" || ! "$term_width" =~ ^[0-9]+$ ]]; then
+        term_width="$COLUMNS"
+    fi
+    # Final fallback
+    if [[ -z "$term_width" || ! "$term_width" =~ ^[0-9]+$ ]]; then
+        term_width=80
+    fi
+    # Ensure at least 1 column
+    (( term_width < 1 )) && term_width=80
+    # -----------------------------------------
 
     # Split text into lines
     IFS=$'\n' read -rd '' -a lines <<< "$text"
@@ -67,7 +80,6 @@ boxed_text() {
     # Bottom border
     echo "${indent}└$(printf '─%.0s' $(seq 1 $box_width))┘"
 }
-
 # Prints a message whenever user decides to exit the script.
 graceful_exit() {
   log EXIT "Exited script"

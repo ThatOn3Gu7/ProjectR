@@ -22,7 +22,7 @@ TOOLS=(
   "15|nano|nano|Nano|Text editor|pkg|-|Min"
   "16|sl|sl|Sl|Steam Locomotive|pkg|-|Fun"
   "17|ncdu|ncdu|Ncdu|NCurses disk usage analyzer|pkg|-|Dev"
-  "18|nvim|neovim|Neovim|Best code editor|special|install_neovim_full|Dev"
+  "18|nvim|neovim|Neovim|Best code editor|special|install_nvim|Dev"
   "19|cbonsai|cbonsai|Cbonsai|Japanese bonsai tree|pkg|-|Fun"
   "20|asciinema|asciinema|Asciinema|Terminal recording tool|pkg|-|Fun"
   "21|croc|croc|Croc|File transferring tool|pkg|-|Dev"

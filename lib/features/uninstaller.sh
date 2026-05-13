@@ -92,7 +92,7 @@ uninstall_pkg() {
    case "$PM" in
     # Android/Termux
     termux-pkg)
-        pkg uninstall "$pkg"
+        pkg uninstall -y "$pkg"
         ;;
     # Linux
     apt|apt-get)
@@ -177,7 +177,5 @@ uninstall_pkg() {
        return
        ;;
    esac >/dev/null 2>&1
-  echo -e "${OPTION}"
-  stop_spinner "   [✓] Removed: $name successfully (via $PM).."
-  echo -e "${RST}"
+  stop_spinner "${OPTION}  [✓] Removed: $name successfully (via $PM)..${RST}"
 }
