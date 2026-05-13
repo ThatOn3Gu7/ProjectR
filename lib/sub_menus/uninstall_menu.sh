@@ -1,6 +1,7 @@
 #!/bin/bash
 
-
+# -- source uninstaller --
+source lib/features/uninstaller.sh
 # -- uninstaller menu --
 uninstall_menu() {
   while true; do

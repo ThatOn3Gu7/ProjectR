@@ -85,7 +85,6 @@ check_dependencies_menu() {
             ;;
         2)
             show_install_commands "${missing_deps[@]}"
-            check_dependencies_menu  # Check again after showing commands
             ;;
         3)
             echo -e "${INFO} [*] Continuing with missing dependencies...${RST}"
@@ -302,7 +301,6 @@ show_install_commands() {
     local deps=("$@")
     local pm=$(detect_pkg_manager)
     
-    clear
     echo -e "${BOLD_GREEN}"
     boxed_text center " [*] Installation Instructions "
     echo -e "${RST}"
@@ -319,6 +317,7 @@ show_install_commands() {
     
     echo -e "${INFO}💡 Tip: Run the script again after installing dependencies${RST}\n"
     echo -e "${BOLD_GREEN}"
-    read -p " [*] Press ENTER to continue..."
+    read -p " [*] Press any KEY to exit..."
+    clear
   exit 0
 }
