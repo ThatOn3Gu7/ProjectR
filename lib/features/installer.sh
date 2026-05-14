@@ -18,7 +18,7 @@ FAILED_PKGS=()
                  pkg_update
     sleep 0.1
    echo -e "${INFO}"
-  if ask "  [!] Upgrade the system?"; then
+  if ask "  [!] Upgrade the system?" "n"; then
     echo -e "${RST}"
      progress_run "Upgrading system" \
                   "System upgrade complete" \
@@ -227,7 +227,7 @@ install_lang() {
 #  install_code_server — special installer for code-server
 install_code_server() {
     echo -e "${OPTION}"
-    if ask "[*] tur-repo is required to install code-server, install it?"; then
+    if ask "[*] tur-repo is required to install code-server, install it?" "y"; then
         echo -e "${RST}"
         progress_run "Installing tur-repo" \
                      "Installation successful" \

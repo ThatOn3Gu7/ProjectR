@@ -63,7 +63,7 @@ echo -e "${RST}"
             uninstall_pkg "$cmd" "$pkg" "$name"
             if [ -d "$HOME/.config/nvim/" ]; then
               echo -e "${INFO}"
-              if ask "   [*] Also remove Neovim config files?"; then
+              if ask "   [*] Also remove Neovim config files?" "y"; then
                 echo -e "${BOLD_GREEN}   [*] Removing nvim conf.. ${RST}"
                 rm -rf ~/.config/nvim/ ~/.local/share/nvim/ ~/.cache/nvim/ ~/.local/state/nvim/
                 echo -e "${OPTION}   [✓] Neovim config removed${RST}"

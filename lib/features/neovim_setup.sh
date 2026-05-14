@@ -33,15 +33,29 @@ get_nvim_config() {
         1)
            echo -e  "${OPTION}  [*] Cloning NvChad...${RST}"
            git clone https://github.com/NvChad/starter ~/.config/nvim
+           if ask "  [*] Remove .git folder?" "y"; then
+           rm -rf ~/.config/nvim/.git
+           else
+           echo -e "${BOLD_GREEN}  [*] Skipping...${RST}"
+           fi
            ;;
         2)
            echo -e "${OPTION}  [*] Cloning LazyVim starter template...${RST}"
            git clone https://github.com/LazyVim/starter ~/.config/nvim
+           if ask "  [*] Remove .git folder?" "y"; then
            rm -rf ~/.config/nvim/.git
+           else
+           echo -e "${BOLD_GREEN}  [*] Skipping...${RST}"
+           fi
            ;;
         3)
            echo -e "${OPTION}  [*] Cloning AstroNvim...${RST}"
-           git clone https://github.com/AstroNvim/AstroNvim ~/.config/nvim
+           git clone --depth 1 https://github.com/AstroNvim/template ~/.config/nvim
+           if ask "  [*] Remove .git folder?" "y"; then
+           rm -rf ~/.config/nvim/.git
+           else
+           echo -e "${BOLD_GREEN}  [*] Skipping...${RST}"
+           fi
            ;;
         4)
            echo -e "${INFO}  [*] Skipping Neovim config installation...${RST}"

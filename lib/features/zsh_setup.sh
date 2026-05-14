@@ -5,7 +5,7 @@ install_zsh_full() {
  install_pkg zsh zsh "Zsh: Most awesome shell,"
    sleep 1
     # echo -e "${INFO}${BOLD}"
-    if ask "  [*] Install oh-my-zsh?"; then
+    if ask "  [*] Install oh-my-zsh?" "y"; then
      if [ -d "$HOME/.oh-my-zsh" ]; then
        echo -e "${OPTION}  [✓] Oh-My-Zsh already exists. Skipping...${RST}"
          sleep 2
@@ -22,7 +22,7 @@ install_zsh_full() {
     fi
     sleep 1 
     # echo -e "${INFO}${BOLD}"
-     if ask "  [*] Also clone Powerlevel10k..?" "n" 3; then
+     if ask "  [*] Also clone Powerlevel10k..?" "y"; then
       if [ -d "$HOME/.oh-my-zsh/custom/themes/powerlevel10k" ]; then
        echo -e "${OPTION}  [✓] Powerlevel10k is already configured - Skipping..${RST}"
        sleep 3

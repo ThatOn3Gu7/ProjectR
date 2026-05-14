@@ -11,7 +11,7 @@ uninstall_lang() {
 
   # -- Confirmation --
   # Use if statement directly - NO $(ask ...)
-   if ! ask "  [!] Are you sure? Action cannot be undone!"; then
+   if ask "  [!] Are you sure? Action cannot be undone!" "n"; then
       echo -e "${INFO}  [→] Skipping: $name ${RST}"
       return 
    fi

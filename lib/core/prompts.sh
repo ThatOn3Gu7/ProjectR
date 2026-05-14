@@ -2,7 +2,6 @@
 
 # -- powerful ask funtion 
 ask() {
-    # Ultimate y/n prompt with defaults, silent mode, and timeout
     # Usage: ask "Your question" [default] [timeout] [silent]
     # Examples:
     #   ask "Continue?"                    # [y/N] prompt
