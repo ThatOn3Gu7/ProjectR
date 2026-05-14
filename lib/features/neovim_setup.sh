@@ -32,7 +32,7 @@ get_nvim_config() {
    case "$confing_choice" in
         1)
            echo -e  "${OPTION}  [*] Cloning NvChad...${RST}"
-           git clone https://github.com/NvChad/NvChad ~/.config/nvim
+           git clone https://github.com/NvChad/starter ~/.config/nvim
            ;;
         2)
            echo -e "${OPTION}  [*] Cloning LazyVim starter template...${RST}"
