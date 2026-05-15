@@ -65,7 +65,7 @@ echo -e "${RST}"
               echo -e "${INFO}"
               if ask "   [*] Also remove Neovim config files?" "y"; then
                 echo -e "${BOLD_GREEN}   [*] Removing nvim conf.. ${RST}"
-                rm -rf ~/.config/nvim/ ~/.local/share/nvim/ ~/.cache/nvim/ ~/.local/state/nvim/
+                rm -rf ~/.config/nvim/ 
                 echo -e "${OPTION}   [✓] Neovim config removed${RST}"
               fi
             fi
