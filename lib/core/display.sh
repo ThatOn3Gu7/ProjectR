@@ -16,8 +16,9 @@ boxed_text() {
     local text="$*"
     local margin=2
 
+    local term_width=""
+
     # ---- Robust terminal width detection ----
-    local term_width
     if command -v tput >/dev/null 2>&1; then
         term_width=$(tput cols 2>/dev/null)
     fi
