@@ -58,7 +58,7 @@ EOF
 
   echo -e "${OPTION}${BOLD}"
   boxed_text left "[*] Select the pkg/tool you want to install:" 
-
+  echo -e "${RST}" 
   echo -e "${BARR}   ╔═════════════════╗ ${RST}"
   echo -e "${BARR}   ║ ${RST}Available pkgs: ${BARR}║${RST}"
   echo -e "${BARR}   ╚╔════════════════╝═══════════════════╗ ${RST}"

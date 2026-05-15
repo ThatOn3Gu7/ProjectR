@@ -9,6 +9,90 @@ be_patient() {
    echo -e "${INFO}${BOLD}"
 }
 
+boxed_text_new() {
+    local align="center"
+    if [[ "$1" == "--align" ]]; then
+        align="$2"
+        shift 2
+    fi
+
+    [[ $# -eq 0 ]] && return 1
+
+    local title="$1"
+    shift
+    local content_lines=("$@")
+
+    # Helper: strip ANSI codes for length calculation
+    _strip_ansi() {
+        ESC=$'\033'
+        printf '%s\n' "$1" | sed "s/${ESC}\[[0-9;]*m//g"
+    }
+
+    # Terminal width
+    local term_width
+    term_width=$(safe_tput cols 2>/dev/null || echo 80)
+    (( term_width < 1 )) && term_width=80
+
+    # Visible lengths
+    local stripped_title
+    stripped_title="$(_strip_ansi "$title")"
+    local title_len=${#stripped_title}
+
+    local max_len=0
+    local stripped_line
+    for line in "${content_lines[@]}"; do
+        stripped_line="$(_strip_ansi "$line")"
+        (( ${#stripped_line} > max_len )) && max_len=${#stripped_line}
+    done
+
+    # Box interior width (content area)
+    local interior_width=$(( max_len + 2 ))   # +2 for one space on each side
+    (( title_len + 2 > interior_width )) && interior_width=$(( title_len + 2 ))
+
+    local box_width=$(( interior_width + 2 )) # +2 for left/right borders
+
+    # Alignment offset
+    local margin=2
+    local offset=0
+    case "$align" in
+        center) offset=$(( (term_width - box_width) / 2 )) ;;
+        right)  offset=$(( term_width - box_width - margin )) ;;
+        left|*) offset=$margin ;;
+    esac
+    (( offset < 0 )) && offset=0
+    local indent
+    indent=$(printf '%*s' "$offset")
+
+    # ---- Top border with title ----
+    local left_dashes right_dashes
+    # Calculate dashes to center the title within interior_width
+    left_dashes=$(( (interior_width - title_len) / 2 ))
+    right_dashes=$(( interior_width - title_len - left_dashes ))
+
+    printf "%s" "$indent"
+    printf "╭"
+    printf '─%.0s' $(seq 1 $left_dashes)
+    printf "%s" "$title"
+    printf '─%.0s' $(seq 1 $right_dashes)
+    printf "╮\n"
+
+    # ---- Content lines ----
+    local raw_line stripped_content visible_len pad_right
+    for raw_line in "${content_lines[@]}"; do
+        stripped_content="$(_strip_ansi "$raw_line")"
+        visible_len=${#stripped_content}
+        pad_right=$(( interior_width - 1 - visible_len ))
+        (( pad_right < 0 )) && pad_right=0
+        printf "%s│ %s%*s│\n" "$indent" "$raw_line" "$pad_right" ""
+    done
+
+    # ---- Bottom border ----
+    printf "%s" "$indent"
+    printf "╰"
+    printf '─%.0s' $(seq 1 $interior_width)
+    printf "╯\n"
+}
+
 # Print a boxed message centered in the terminal
 boxed_text() {
     local align="$1"
@@ -108,7 +192,8 @@ boxed_list() {
     
     # Helper to strip color codes for width calculation
     strip_colors() {
-        echo "$1" | sed -E 's/\x1b\[[0-9;]*m//g'
+        ESC=$'\033'
+        printf '%s\n' "$1" | sed "s/${ESC}\[[0-9;]*m//g"
     }
     
     # Find longest item (without color codes)
@@ -176,11 +261,10 @@ boxed_list() {
     
     # Items - left-aligned within box
     for item in "${items[@]}"; do
-        local clean_item=$(strip_colors "$item")
-        printf "%s│ %-*s │\n" \
-            "$indent" \
-            $((box_width - 3)) \
-            "$item"
+        local clean_item; clean_item=$(strip_colors "$item")
+        local pad=$(( box_width - 3 - ${#clean_item} ))
+        printf "%s│ %s%*s │\n" "$indent" "$item" "$pad" ""
+        
     done
     
     # Bottom border
