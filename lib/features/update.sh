@@ -45,7 +45,7 @@ pkg_update() {
             ;;
         *)
           echo -e "${ERROR}${BOLD}"
-          boxed_text center " [!] No supported package manager found, So package list not updated"
+          print_box center " [!] No supported package manager found, So package list not updated"
           echo -e "${RST}"
           stop_spinner
             return 1

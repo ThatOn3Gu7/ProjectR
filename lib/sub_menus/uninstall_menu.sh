@@ -19,7 +19,7 @@ uninstall_menu() {
 
 EOF
 echo -e "${OPTION}"
-boxed_text left "[*] Available tools for deletion:"
+print_box left "[*] Available tools for deletion:"
 echo -e "${RST}"
 
  for entry in "${TOOLS[@]}"; do

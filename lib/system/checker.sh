@@ -24,7 +24,7 @@ check_tool_main() {
 
   clear
   echo -e "${OPTION}${BOLD}"
-  boxed_text left "[*] Checking if any tools are installed:"
+  print_box left "[*] Checking if any tools are installed:"
   echo -e "${RST}"
   safe_tput civis
 
@@ -36,14 +36,14 @@ check_tool_main() {
   echo ""
   local total=$(( ${#FOUND_PKGS[@]} + ${#NOT_FOUND_PKGS[@]} ))
   echo -e "${BLUE}${BOLD}"
-  boxed_text_new --align center " [*] ANALYSIS RESULTS " \
+  print_titled_box --align center " [*] ANALYSIS RESULTS " \
                                 "● Total checked: $total" \
                                 "● Installed:     ${#FOUND_PKGS[@]}" \
                                 "● Not found:     ${#NOT_FOUND_PKGS[@]}"
   echo -e "${RST}"
 
   echo -e "${OPTION}${BOLD}"
-  boxed_text center " [✓] Task complete. Press ENTER to continue"
+  print_box center " [✓] Task complete. Press ENTER to continue"
   echo -e "${RST}"
 
   read -s

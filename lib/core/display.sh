@@ -1,15 +1,24 @@
 #!/bin/bash
-# -- safety net for tput --
-safe_tput() { command -v tput >/dev/null 2>&1 && tput "$@" 2>/dev/null; }
-# -- Small message for installer --
-be_patient() {
-  clear 
-   echo -e "${OPTION}${BOLD}"
-    boxed_text center "[*] Installation may take a while, Please be patient"
-   echo -e "${INFO}${BOLD}"
+
+# Strips ANSI escape codes from a string.
+_strip_ansi() {
+    printf '%s\n' "$1" | sed "s/$(printf '\033')\[[0-9;]*m//g"
 }
 
-boxed_text_new() {
+# Safely calls tput, suppressing errors if unavailable.
+safe_tput() { command -v tput >/dev/null 2>&1 && tput "$@" 2>/dev/null; }
+
+# Shows an installation wait message.
+show_install_wait() {
+    clear
+    echo -e "${OPTION}${BOLD}"
+    print_box center "[*] Installation may take a while, Please be patient"
+    echo -e "${INFO}${BOLD}"
+}
+
+# Draws a rounded box with the title embedded in the top border.
+# Usage: print_titled_box [--align left|center|right] "TITLE" "line1" "line2" ...
+print_titled_box() {
     local align="center"
     if [[ "$1" == "--align" ]]; then
         align="$2"
@@ -22,18 +31,10 @@ boxed_text_new() {
     shift
     local content_lines=("$@")
 
-    # Helper: strip ANSI codes for length calculation
-    _strip_ansi() {
-        ESC=$'\033'
-        printf '%s\n' "$1" | sed "s/${ESC}\[[0-9;]*m//g"
-    }
-
-    # Terminal width
     local term_width
     term_width=$(safe_tput cols 2>/dev/null || echo 80)
     (( term_width < 1 )) && term_width=80
 
-    # Visible lengths
     local stripped_title
     stripped_title="$(_strip_ansi "$title")"
     local title_len=${#stripped_title}
@@ -45,13 +46,11 @@ boxed_text_new() {
         (( ${#stripped_line} > max_len )) && max_len=${#stripped_line}
     done
 
-    # Box interior width (content area)
-    local interior_width=$(( max_len + 2 ))   # +2 for one space on each side
+    local interior_width=$(( max_len + 2 ))
     (( title_len + 2 > interior_width )) && interior_width=$(( title_len + 2 ))
 
-    local box_width=$(( interior_width + 2 )) # +2 for left/right borders
+    local box_width=$(( interior_width + 2 ))
 
-    # Alignment offset
     local margin=2
     local offset=0
     case "$align" in
@@ -63,20 +62,16 @@ boxed_text_new() {
     local indent
     indent=$(printf '%*s' "$offset")
 
-    # ---- Top border with title ----
     local left_dashes right_dashes
-    # Calculate dashes to center the title within interior_width
     left_dashes=$(( (interior_width - title_len) / 2 ))
     right_dashes=$(( interior_width - title_len - left_dashes ))
 
-    printf "%s" "$indent"
-    printf "╭"
+    printf "%s╭" "$indent"
     printf '─%.0s' $(seq 1 $left_dashes)
     printf "%s" "$title"
     printf '─%.0s' $(seq 1 $right_dashes)
     printf "╮\n"
 
-    # ---- Content lines ----
     local raw_line stripped_content visible_len pad_right
     for raw_line in "${content_lines[@]}"; do
         stripped_content="$(_strip_ansi "$raw_line")"
@@ -86,74 +81,49 @@ boxed_text_new() {
         printf "%s│ %s%*s│\n" "$indent" "$raw_line" "$pad_right" ""
     done
 
-    # ---- Bottom border ----
-    printf "%s" "$indent"
-    printf "╰"
+    printf "%s╰" "$indent"
     printf '─%.0s' $(seq 1 $interior_width)
     printf "╯\n"
 }
 
-# Print a boxed message centered in the terminal
-boxed_text() {
+# Draws a simple box with aligned text (supports multi-line strings).
+# Usage: print_box left|center|right "text"
+print_box() {
     local align="$1"
     shift
     local text="$*"
     local margin=2
 
     local term_width=""
-
-    # ---- Robust terminal width detection ----
     if command -v tput >/dev/null 2>&1; then
         term_width=$(tput cols 2>/dev/null)
     fi
-    # If tput failed or returned non‑numeric, try COLUMNS
-    if [[ -z "$term_width" || ! "$term_width" =~ ^[0-9]+$ ]]; then
-        term_width="$COLUMNS"
-    fi
-    # Final fallback
-    if [[ -z "$term_width" || ! "$term_width" =~ ^[0-9]+$ ]]; then
-        term_width=80
-    fi
-    # Ensure at least 1 column
+    [[ -z "$term_width" || ! "$term_width" =~ ^[0-9]+$ ]] && term_width="$COLUMNS"
+    [[ -z "$term_width" || ! "$term_width" =~ ^[0-9]+$ ]] && term_width=80
     (( term_width < 1 )) && term_width=80
-    # -----------------------------------------
 
-    # Split text into lines
     IFS=$'\n' read -rd '' -a lines <<< "$text"
 
-    # Find longest line length
     local max_len=0
     for line in "${lines[@]}"; do
         (( ${#line} > max_len )) && max_len=${#line}
     done
 
-    # Box padding
     local padding=2
     local box_width=$(( max_len + padding * 2 ))
 
-    # Calculate alignment offset
     local offset=0
     case "$align" in
-        center)
-            offset=$(( (term_width - box_width - 2) / 2 ))
-            ;;
-        right)
-            offset=$(( term_width - box_width - 2 - margin ))
-            ;;
-        left|*)
-            offset=$margin
-            ;;
+        center) offset=$(( (term_width - box_width - 2) / 2 )) ;;
+        right)  offset=$(( term_width - box_width - 2 - margin )) ;;
+        left|*) offset=$margin ;;
     esac
-
     (( offset < 0 )) && offset=0
 
     local indent
     indent=$(printf '%*s' "$offset")
 
-    # Top border
     echo "${indent}┌$(printf '─%.0s' $(seq 1 $box_width))┐"
-
-    # Text lines
     for line in "${lines[@]}"; do
         printf "%s│%*s%s%*s│\n" \
             "$indent" \
@@ -161,201 +131,142 @@ boxed_text() {
             "$line" \
             "$(( box_width - ${#line} - padding ))" ""
     done
-
-    # Bottom border
     echo "${indent}└$(printf '─%.0s' $(seq 1 $box_width))┘"
 }
-# Prints a message whenever user decides to exit the script.
+
+# Handles clean exit with a farewell message.
 graceful_exit() {
-  log EXIT "Exited script"
-   echo ""
+    log EXIT "━━━━━━ Exited script at: $(date '+%Y-%m-%d %H:%M') ━━━━━━"
+    echo ""
     echo -e "${INFO}${BOLD}"
-    boxed_text center " Thanks for using the script
+    print_box center " Thanks for using the script
      See you next time "
     echo -e "${RST}"
     stop_spinner
     safe_tput cnorm
-   exit 0
+    exit 0
 }
 
-# Boxed list - Perfect for installation summaries
-boxed_list() {
-    local align="${1:-center}"  # left, center, right
+# Draws a rounded box with a centered title, separator, and left-aligned list items.
+# Usage: print_list_box left|center|right "TITLE" "item1" "item2" ...
+print_list_box() {
+    local align="${1:-center}"
     local title="${2:-}"
     shift 2
     local items=("$@")
-    
+
     local max_width=0
     local padding=2
     local min_box_width=40
-    local margin=2  # Minimum space from terminal edge when left/right aligned
-    
-    # Helper to strip color codes for width calculation
-    strip_colors() {
-        ESC=$'\033'
-        printf '%s\n' "$1" | sed "s/${ESC}\[[0-9;]*m//g"
-    }
-    
-    # Find longest item (without color codes)
+    local margin=2
+
     for item in "${items[@]}"; do
-        local clean_item=$(strip_colors "$item")
-        if [ ${#clean_item} -gt $max_width ]; then
-            max_width=${#clean_item}
-        fi
+        local clean_item; clean_item="$(_strip_ansi "$item")"
+        (( ${#clean_item} > max_width )) && max_width=${#clean_item}
     done
-    
-    # Check title length
-    if [ -n "$title" ]; then
-        local clean_title=$(strip_colors "$title")
-        if [ ${#clean_title} -gt $max_width ]; then
-            max_width=${#clean_title}
-        fi
+
+    local clean_title=""
+    if [[ -n "$title" ]]; then
+        clean_title="$(_strip_ansi "$title")"
+        (( ${#clean_title} > max_width )) && max_width=${#clean_title}
     fi
-    
-    # Calculate box width
-    local box_width=$((max_width + padding * 2))
-    if [ $box_width -lt $min_box_width ]; then
-        box_width=$min_box_width
-    fi
-    
-    # Get terminal width for alignment
+
+    local box_width=$(( max_width + padding * 2 ))
+    (( box_width < min_box_width )) && box_width=$min_box_width
+
     local term_width
     term_width=$(safe_tput cols 2>/dev/null || echo 80)
-    
+
     local offset=0
     case "$align" in
-        center)
-            offset=$(( (term_width - box_width - 2) / 2 ))
-            ;;
-        right)
-            offset=$(( term_width - box_width - 2 - margin ))
-            ;;
-        left|*)
-            offset=$margin  # Add margin for left alignment
-            ;;
+        center) offset=$(( (term_width - box_width - 2) / 2 )) ;;
+        right)  offset=$(( term_width - box_width - 2 - margin )) ;;
+        left|*) offset=$margin ;;
     esac
-    
-    # Ensure offset is not negative
     (( offset < 0 )) && offset=0
-    
+
     local indent=""
-    [ $offset -gt 0 ] && indent=$(printf '%*s' $offset)
-    
-    # Top border
+    (( offset > 0 )) && indent=$(printf '%*s' $offset)
+
     echo "${indent}╭$(printf '─%.0s' $(seq 1 $box_width))╮"
-    
-    # Title line (centered within box)
-    if [ -n "$title" ]; then
-        local title_padding=$(( (box_width - ${#clean_title}) / 2 ))
-        printf "%s│%*s%s%*s│\n" \
-            "$indent" \
-            $title_padding "" \
-            "$title" \
-            $((box_width - ${#clean_title} - title_padding)) ""
-        
-        # Separator line under title if we have items
-        if [ ${#items[@]} -gt 0 ]; then
-            echo "${indent}├$(printf '─%.0s' $(seq 1 $box_width))┤"
-        fi
+
+    if [[ -n "$title" ]]; then
+        local title_pad=$(( (box_width - ${#clean_title}) / 2 ))
+        local title_pad_right=$(( box_width - ${#clean_title} - title_pad ))
+        printf "%s│%*s%s%*s│\n" "$indent" $title_pad "" "$title" $title_pad_right ""
+        (( ${#items[@]} > 0 )) && echo "${indent}├$(printf '─%.0s' $(seq 1 $box_width))┤"
     fi
-    
-    # Items - left-aligned within box
+
     for item in "${items[@]}"; do
-        local clean_item; clean_item=$(strip_colors "$item")
-        local pad=$(( box_width - 3 - ${#clean_item} ))
+        local clean_item; clean_item="$(_strip_ansi "$item")"
+        local pad=$(( box_width - ${#clean_item} - 2 ))
+        (( pad < 0 )) && pad=0
         printf "%s│ %s%*s │\n" "$indent" "$item" "$pad" ""
-        
     done
-    
-    # Bottom border
+
     echo "${indent}╰$(printf '─%.0s' $(seq 1 $box_width))╯"
 }
 
-# Boxed text with optional subtitle
-boxed_text_full() {
-    local align="${1:-center}"  # left, center, right
+# Draws a bold box with optional title, subtitle, and content lines.
+# Usage: print_header_box left|center|right "TITLE" "SUBTITLE" "line1" "line2" ...
+print_header_box() {
+    local align="${1:-center}"
     local title="${2:-}"
     local subtitle="${3:-}"
     shift 3
     local lines=("$@")
-    
+
     local max_width=0
     local padding=2
     local margin=2
-    
-    # Find longest line
+
     for line in "${lines[@]}"; do
-        if [ ${#line} -gt $max_width ]; then
-            max_width=${#line}
-        fi
+        local clean_line; clean_line="$(_strip_ansi "$line")"
+        (( ${#clean_line} > max_width )) && max_width=${#clean_line}
     done
-    [ ${#title} -gt $max_width ] && max_width=${#title}
-    [ ${#subtitle} -gt $max_width ] && max_width=${#subtitle}
-    
-    # Calculate box width
-    local box_width=$((max_width + padding * 2))
-    
-    # Get terminal width and calculate offset
+
+    local clean_title="";    [[ -n "$title" ]]    && clean_title="$(_strip_ansi "$title")"
+    local clean_subtitle=""; [[ -n "$subtitle" ]] && clean_subtitle="$(_strip_ansi "$subtitle")"
+    (( ${#clean_title}    > max_width )) && max_width=${#clean_title}
+    (( ${#clean_subtitle} > max_width )) && max_width=${#clean_subtitle}
+
+    local box_width=$(( max_width + padding * 2 ))
+
     local term_width
     term_width=$(safe_tput cols 2>/dev/null || echo 80)
-    
+
     local offset=0
     case "$align" in
-        center)
-            offset=$(( (term_width - box_width - 2) / 2 ))
-            ;;
-        right)
-            offset=$(( term_width - box_width - 2 - margin ))
-            ;;
-        left|*)
-            offset=$margin
-            ;;
+        center) offset=$(( (term_width - box_width - 2) / 2 )) ;;
+        right)  offset=$(( term_width - box_width - 2 - margin )) ;;
+        left|*) offset=$margin ;;
     esac
     (( offset < 0 )) && offset=0
-    
+
     local indent=""
-    [ $offset -gt 0 ] && indent=$(printf '%*s' $offset)
-    
-    # Top border
+    (( offset > 0 )) && indent=$(printf '%*s' $offset)
+
     echo "${indent}┏$(printf '━%.0s' $(seq 1 $box_width))┓"
-    
-    # Title (if provided)
-    if [ -n "$title" ]; then
-        printf "%s┃%*s%s%*s┃\n" \
-            "$indent" \
-            $padding "" \
-            "${title}" \
-            $((box_width - ${#title} - padding)) ""
-        
-        # Separator if we have subtitle or content
-        if [ -n "$subtitle" ] || [ ${#lines[@]} -gt 0 ]; then
+
+    if [[ -n "$title" ]]; then
+        local pad_right=$(( box_width - ${#clean_title} - padding ))
+        printf "%s┃%*s%s%*s┃\n" "$indent" $padding "" "$title" $pad_right ""
+        if [[ -n "$subtitle" || ${#lines[@]} -gt 0 ]]; then
             echo "${indent}┣$(printf '━%.0s' $(seq 1 $box_width))┫"
         fi
     fi
-    
-    # Subtitle (if provided)
-    if [ -n "$subtitle" ]; then
-        printf "%s┃%*s%s%*s┃\n" \
-            "$indent" \
-            $padding "" \
-            "${subtitle}" \
-            $((box_width - ${#subtitle} - padding)) ""
-        
-        # Separator if we have content
-        if [ ${#lines[@]} -gt 0 ]; then
-            echo "${indent}┣$(printf '━%.0s' $(seq 1 $box_width))┫"
-        fi
+
+    if [[ -n "$subtitle" ]]; then
+        local pad_right=$(( box_width - ${#clean_subtitle} - padding ))
+        printf "%s┃%*s%s%*s┃\n" "$indent" $padding "" "$subtitle" $pad_right ""
+        (( ${#lines[@]} > 0 )) && echo "${indent}┣$(printf '━%.0s' $(seq 1 $box_width))┫"
     fi
-    
-    # Content lines
+
     for line in "${lines[@]}"; do
-        printf "%s┃%*s%s%*s┃\n" \
-            "$indent" \
-            $padding "" \
-            "$line" \
-            $((box_width - ${#line} - padding)) ""
+        local clean_line; clean_line="$(_strip_ansi "$line")"
+        local pad_right=$(( box_width - ${#clean_line} - padding ))
+        printf "%s┃%*s%s%*s┃\n" "$indent" $padding "" "$line" $pad_right ""
     done
-    
-    # Bottom border
+
     echo "${indent}┗$(printf '━%.0s' $(seq 1 $box_width))┛"
 }

@@ -25,15 +25,15 @@ FAILED_PKGS=()
                   pkg_upgrade
     else
      echo ""
-      boxed_text center "  [*] Skipping system upgrade"
+      print_box center "  [*] Skipping system upgrade"
     sleep 2
   fi
 
  clear
   safe_tput civis
-  be_patient
+  show_install_wait
    echo -e "${OPTION}"
-    boxed_text center "[*] Installing all tools"
+    print_box center "[*] Installing all tools"
     echo -e "${RST}"
    
 for entry in "${TOOLS[@]}"; do
@@ -57,7 +57,7 @@ for entry in "${TOOLS[@]}"; do
     echo ""
      post_install_summary
     echo -e "${OPTION}" 
-     boxed_text center "[✓] installation Completed. Press ENTER to continue.."
+     print_box center "[✓] installation Completed. Press ENTER to continue.."
     echo -e "${RST}"
    read -s
   safe_tput cnorm

@@ -302,7 +302,7 @@ show_install_commands() {
     local pm=$(detect_pkg_manager)
     
     echo -e "${BOLD_GREEN}"
-    boxed_text center " [*] Installation Instructions "
+    print_box center " [*] Installation Instructions "
     echo -e "${RST}"
     
     echo -e "${INFO} [*] 📦 Detected package manager: ${OPTION}$pm${RST}\n"

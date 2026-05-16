@@ -12,7 +12,7 @@ pkg_upgrade() {
         termux-pkg) pkg upgrade -y >/dev/null 2>&1 ;;
         *)
           echo -e "${ERROR}${BOLD}"
-          boxed_text center "[!] System upgrade not supported for: $PM..${RST}"
+          print_box center "[!] System upgrade not supported for: $PM..${RST}"
           echo -e "${RST}"
             return 1
             ;;

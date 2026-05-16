@@ -57,7 +57,7 @@ show_main_menu() {
 EOF
 
   echo -e "${OPTION}${BOLD}"
-  boxed_text left "[*] Select the pkg/tool you want to install:" 
+  print_box left "[*] Select the pkg/tool you want to install:" 
   echo -e "${RST}" 
   echo -e "${BARR}   ╔═════════════════╗ ${RST}"
   echo -e "${BARR}   ║ ${RST}Available pkgs: ${BARR}║${RST}"
@@ -119,7 +119,7 @@ handle_selection() {
 
     if [[ "$selected" == "$num" ]]; then
       found=1
-      be_patient
+      show_install_wait
 
       # The TYPE field tells us how to install this tool:
       #   pkg     → normal system package manager install
