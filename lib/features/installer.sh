@@ -55,12 +55,12 @@ for entry in "${TOOLS[@]}"; do
 
     # -- post-install-summary
     echo ""
-     post_install_summary
+    post_install_summary
     echo -e "${OPTION}" 
-     print_box center "[✓] installation Completed. Press ENTER to continue.."
+    print_box center "[✓] installation Completed. Press ENTER to continue.."
     echo -e "${RST}"
-   read -s
-  safe_tput cnorm
+    read -s
+    safe_tput cnorm
 
 }
 
@@ -88,56 +88,70 @@ install_pkg() {
         sleep 1
     else
        start_spinner "  [*] Installing: $name (via $PM).."
-
+    
        # Use the detected package manager to install 
        case $PM in
         apt)
-            apt-get update && apt-get install -y "$pkg"
+            apt-get update && apt-get install -y "$pkg" >/dev/null 2>&1
+
             ;;
         dnf|yum)
-            sudo $PM install -y "$pkg"
+            sudo $PM install -y "$pkg" >/dev/null 2>&1
+
             ;;
         pacman)
-            sudo pacman -Sy && sudo pacman -S --noconfirm --needed "$pkg"
+            sudo pacman -Sy && sudo pacman -S --noconfirm --needed "$pkg" >/dev/null 2>&1
+
             ;;
         zypper)
-            sudo zypper refresh && sudo zypper install -y "$pkg"
+            sudo zypper refresh && sudo zypper install -y "$pkg" >/dev/null 2>&1
+
             ;;
         brew)
-            brew install "$pkg"
+            brew install "$pkg" >/dev/null 2>&1
+
             ;;
         apk)
-            apk add "$pkg"
+            apk add "$pkg" >/dev/null 2>&1
+
             ;;
         emerge)
-            sudo emerge -av "$pkg"
+            sudo emerge -av "$pkg" >/dev/null 2>&1
+
             ;;
         nix)
-            nix-env -i "$pkg"
+            nix-env -i "$pkg" >/dev/null 2>&1
+
             ;;
         flatpak)
-            flatpak install -y flathub "$pkg"
+            flatpak install -y flathub "$pkg" >/dev/null 2>&1
+
             ;;
         snap)
-            sudo snap install "$pkg"
+            sudo snap install "$pkg" >/dev/null 2>&1
+
             ;;
-        pkg)
-            pkg install -y "$pkg"
+        termux-pkg)
+            pkg install -y "$pkg" >/dev/null 2>&1
+
             ;;
         chocolatey)
-            choco install -y "$pkg"
+            choco install -y "$pkg" >/dev/null 2>&1
+
             ;;
         scoop)
-            scoop install "$pkg"
+            scoop install "$pkg" >/dev/null 2>&1
+
             ;;
         winget)
-                winget install -e --id "$pkg"
+                winget install -e --id "$pkg" >/dev/null 2>&1
+
             ;;
             *) stop_spinner
                echo -e "${ERROR}  [x] Unsupported package manager: $PM${RST}"
                 return 1
                 ;;
-        esac >/dev/null 2>&1
+        esac
         # detection for post-install summary
         if [ $? -eq 0 ]; then
           INSTALLED_PKGS+=("$name") 
@@ -150,7 +164,7 @@ install_pkg() {
           log FAIL "$name failed to install (on $PM)"
         fi
         sleep 2
-    fi
+     fi
 }
 # Universal language package installer (replaces install_pip)
 # install_lang "pip" "holehe" "Holehe" "holehe"
@@ -233,6 +247,6 @@ install_code_server() {
                      "Installation successful" \
                      pkg install tur-repo 
         echo ""
-        install_pkg code-server code-server "Code-Server: VSCode on Android"
+        install_pkg "code-server" "code-server" "Code-Server: VSCode on Android"
     fi
 }
