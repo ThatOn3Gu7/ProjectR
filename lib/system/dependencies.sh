@@ -38,6 +38,10 @@ check_dependency() {
 }
 # Check multiple dependencies and show menu if missing
 check_dependencies_menu() {
+   # ONE-TIME: if user already chose to skip dep check, honour it
+    if [ "$(config_get 'skip_dep_check')" = "true" ]; then
+        return 0
+    fi
     local missing_count=0
     local missing_deps=()
     # Define dependencies here
@@ -88,6 +92,7 @@ check_dependencies_menu() {
             ;;
         3)
             echo -e "${INFO} [*] Continuing with missing dependencies...${RST}"
+            config_set "skip_dep_check" "true"
             sleep 1
             return 0
             ;;

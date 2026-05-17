@@ -3,6 +3,8 @@
 [[ "${1:-}" == "--version" ]] && echo "ProjectR v1.0" && exit 0
 # -- Catches any bugs and unbound variables --
 set -uo pipefail
+# -- source conf --
+source lib/data/config.sh
 # -- source all the other utilitys --
 source lib/core/colours.sh
 source lib/core/progress_bar.sh
@@ -80,6 +82,7 @@ echo -e "${BARR}    ║${RST}${OPTION} [${BRIGHT_WHITE}0${OPTION}] Install ALL $
 echo -e "${BARR}    ║${RST}${OPTION} [${BRIGHT_WHITE}p${OPTION}] Install by preset${RST}"
 echo -e "${BARR}    ║${RST}${OPTION} [${BRIGHT_WHITE}i${OPTION}] Inspect installed ${RST}"
 echo -e "${BARR}    ║${RST}${OPTION} [${BRIGHT_WHITE}u${OPTION}] Uninstall tools${RST}"
+echo -e "${BARR}    ║${RST}${OPTION} [${BRIGHT_WHITE}r${OPTION}] Reset saved preferences${RST}"
 echo -e "${BARR}    ║${RST}${OPTION} [${ERROR}e${OPTION}] Exits the script${RST}"
 echo -e "${BARR}    ╚══════════════════╝ ${RST}"
   echo ""
@@ -102,6 +105,7 @@ handle_selection() {
     p|P) preset_menu; return ;;
     i|I) clear; check_tool_main; return ;;
     u|U) clear; uninstall_menu; return ;;
+    r|R) config_reset_all; sleep 1; return ;;
     e|E) graceful_exit ;;
   esac
 

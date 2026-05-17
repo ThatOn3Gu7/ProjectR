@@ -5,38 +5,49 @@ PM="$(detect_pkg_manager)"
 # This function here installs all tools put in it.
 install_all() {
 # For post-install summary detection
-INSTALLED_PKGS=()
-SKIPPED_PKGS=()
-FAILED_PKGS=()
-    log INSTALL "User chose to install all tools"
+  INSTALLED_PKGS=()
+  SKIPPED_PKGS=()
+  FAILED_PKGS=()
+  log INSTALL "User chose to install all tools"
    # Checks for Internet before proceeding
-    is_internet_up 
+   is_internet_up 
    # Update package lists
    echo ""
    progress_run "Syncing repositories" \
                  "Package lists updated" \
                  pkg_update
-    sleep 0.1
+   sleep 0.1
    echo -e "${INFO}"
-  if ask "  [!] Upgrade the system?" "n"; then
-    echo -e "${RST}"
-     progress_run "Upgrading system" \
-                  "System upgrade complete" \
-                  pkg_upgrade
-    else
-     echo ""
-      print_box center "  [*] Skipping system upgrade"
-    sleep 2
-  fi
+   local upgrade_choice
+   upgrade_choice=$(config_get "skip_sys_upgrade")
 
- clear
-  safe_tput civis
-  show_install_wait
+   if [ "$upgrade_choice" = "skip" ]; then
+       print_box center "  [*] Skipping system upgrade (saved preference)"
+       sleep 1
+   elif [ "$upgrade_choice" = "do" ]; then
+       progress_run "Upgrading system" \
+                    "System upgrade complete" \
+                    pkg_upgrade
+   else
+       if ask "  [!] Upgrade the system?" "n"; then
+           config_set "skip_sys_upgrade" "do"
+           progress_run "Upgrading system" \
+                        "System upgrade complete" \
+                        pkg_upgrade
+       else
+           config_set "skip_sys_upgrade" "skip"
+           print_box center "  [*] Skipping system upgrade"
+           sleep 2
+       fi
+   fi
+   clear
+   safe_tput civis
+   show_install_wait
    echo -e "${OPTION}"
-    print_box center "[*] Installing all tools"
-    echo -e "${RST}"
+   print_box center "[*] Installing all tools"
+   echo -e "${RST}"
    
-for entry in "${TOOLS[@]}"; do
+   for entry in "${TOOLS[@]}"; do
         IFS="|" read -r num cmd pkg name desc type extra cat <<< "$entry"
 
         case "$type" in
