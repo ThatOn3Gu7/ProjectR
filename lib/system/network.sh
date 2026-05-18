@@ -9,6 +9,10 @@ check_internet() {
 # startup internet Check
 startup_wifi_check() {
   if ! check_internet; then
+  # ONE-TIME: already said continue without WiFi
+    if [ "$(config_get 'skip_wifi_check')" = "true" ]; then
+        return 0
+    fi
     log ERROR "No internet connection"
     echo -e "${ERROR}"
     print_box center "        It seems that you are not online
@@ -20,8 +24,10 @@ Please make sure to turn on WI-FI to continue :)"
     read -rsn 1 reply    # read silently, no echo
     safe_tput cnorm        # restore cursor
   case "$reply" in
-    y|Y) log ENTER "User still continued"
-      clear ;;
+    y|Y)
+        config_set "skip_wifi_check" "true" 
+        log ENTER "User still continued"
+        clear ;;
     *) exit 0 ;;
   esac
   fi

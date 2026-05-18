@@ -2,21 +2,32 @@
 
 # The follwoing commands are for installing Neovim & NeoVim configs.
 install_nvim() {
-  install_pkg nvim neovim "Neovim: Best code editor"
- 
-    # Common Neovim config paths
-    STANDARD_PATH="$HOME/.config/nvim"
 
-   # Check if any config exists
-   if ask "  [*] Install a config for NeoVim?"; then
-    if [ -d "$STANDARD_PATH" ]; then
-        echo -e "${OPTION}  [✓] A Neovim config is already installed!"
-         sleep 3
-        return 0
-       else
-        get_nvim_config
-    fi
-   fi
+  install_pkg nvim neovim "Neovim: Best code editor"
+  sleep 1
+
+  local saved
+  saved=$(config_get "nvim_config_choice")
+
+  if [ "$saved" = "skip" ]; then
+      return 0
+  fi
+  if [ -z "$saved" ]; then
+      if ! ask "  [*] Install a config for NeoVim?"; then
+          config_set "nvim_config_choice" "skip"
+          return 0
+      fi
+  fi
+
+ # Common Neovim config paths
+ local STANDARD_PATH="$HOME/.config/nvim"
+ if [ -d "$STANDARD_PATH" ]; then
+      echo -e "${OPTION}  [✓] A Neovim config is already installed!"
+      sleep 3
+      return 0
+  else
+      get_nvim_config
+  fi
  }
 # if called chacks if a nvim config is installed and if not, then gives the user choice to clone it
 get_nvim_config() {

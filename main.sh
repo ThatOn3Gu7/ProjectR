@@ -1,31 +1,31 @@
 #!/bin/bash
-# -- shows script version - just for fun --
-[[ "${1:-}" == "--version" ]] && echo "ProjectR v1.0" && exit 0
 # -- Catches any bugs and unbound variables --
 set -uo pipefail
-# -- source all the other utilitys --
+# -- source conf first (flags need colours/display) --
+source lib/data/config.sh
 source lib/core/colours.sh
+source lib/core/display.sh
+source lib/system/detect.sh
+source lib/data/tools.sh
+source lib/features/installer.sh
+source lib/features/uninstaller.sh
+# -- source flags and parse immediately --
+source lib/flags/flags.sh
+parse_flags "$@"
+# -- now source everything else --
 source lib/core/progress_bar.sh
 source lib/core/logging.sh
-source lib/core/display.sh
 source lib/core/spinner.sh
 source lib/core/prompts.sh
-# -- system logics sourced --
-source lib/system/detect.sh 
 source lib/system/network.sh
 source lib/system/checker.sh
 source lib/system/dependencies.sh
-# -- master tools list --
-source lib/data/tools.sh
-# -- function logics sourced --
 source lib/features/presets.sh
-source lib/features/installer.sh
 source lib/features/post_install.sh
 source lib/features/neovim_setup.sh
 source lib/features/zsh_setup.sh
 source lib/features/upgrade.sh
 source lib/features/update.sh
-# -- sub_menus sourced --
 source lib/sub_menus/presets_menu.sh
 source lib/sub_menus/uninstall_menu.sh
 # PM="$(detect_pkg_manager)"
@@ -80,6 +80,7 @@ echo -e "${BARR}    ║${RST}${OPTION} [${BRIGHT_WHITE}0${OPTION}] Install ALL $
 echo -e "${BARR}    ║${RST}${OPTION} [${BRIGHT_WHITE}p${OPTION}] Install by preset${RST}"
 echo -e "${BARR}    ║${RST}${OPTION} [${BRIGHT_WHITE}i${OPTION}] Inspect installed ${RST}"
 echo -e "${BARR}    ║${RST}${OPTION} [${BRIGHT_WHITE}u${OPTION}] Uninstall tools${RST}"
+echo -e "${BARR}    ║${RST}${OPTION} [${BRIGHT_WHITE}r${OPTION}] Reset saved preferences${RST}"
 echo -e "${BARR}    ║${RST}${OPTION} [${ERROR}e${OPTION}] Exits the script${RST}"
 echo -e "${BARR}    ╚══════════════════╝ ${RST}"
   echo ""
@@ -102,6 +103,7 @@ handle_selection() {
     p|P) preset_menu; return ;;
     i|I) clear; check_tool_main; return ;;
     u|U) clear; uninstall_menu; return ;;
+    r|R) config_reset_all; sleep 1; return ;;
     e|E) graceful_exit ;;
   esac
 

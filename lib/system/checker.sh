@@ -36,7 +36,7 @@ check_tool_main() {
   echo ""
   local total=$(( ${#FOUND_PKGS[@]} + ${#NOT_FOUND_PKGS[@]} ))
   echo -e "${BLUE}${BOLD}"
-  print_titled_box --align center " [*] ANALYSIS RESULTS " \
+  print_titled_box --align center " [ ANALYSIS RESULTS ] " \
                                 "● Total checked: $total" \
                                 "● Installed:     ${#FOUND_PKGS[@]}" \
                                 "● Not found:     ${#NOT_FOUND_PKGS[@]}"
