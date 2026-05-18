@@ -4,9 +4,10 @@
 source lib/features/uninstaller.sh
 # -- uninstaller menu --
 uninstall_menu() {
+ rainbow() { command -v lolcat >/dev/null 2>&1 && lolcat || cat; }
   while true; do
-    clear
-  cat <<"EOF" | lolcat
+   clear
+ cat <<"EOF" | rainbow
 
  ██████╗ ██████╗ ███╗   ███╗ ██████╗ ██╗   ██╗███████╗    ██╗████████╗
  ██╔══██╗╚════██╗████╗ ████║██╔═══██╗██║   ██║██╔════╝    ██║╚══██╔══╝

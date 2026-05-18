@@ -110,7 +110,7 @@ _flag_list_tools() {
 
     echo ""
     # ── Header ─────────────────────────────
-    echo -e "${BOLD}${OPTION} [*] Available Tools ${RST}"
+    echo -e "${BOLD}${OPTION} [*] Available Tools for install ${RST}"
     echo ""
     
     # ── Table ─────────────────────────────
@@ -274,7 +274,7 @@ _flag_list_installed() {
     done
 
     if [ ${#found[@]} -eq 0 ]; then
-        echo -e "  ${ERROR}No tools from the list are currently installed.${RST}"
+        echo -e "  ${ERROR}[!] No tools from the list are currently installed.${RST}"
         echo ""
         return
     fi
@@ -291,17 +291,18 @@ _flag_list_installed() {
 
     echo ""
     printf "  ${DIM}%s${RST}\n" "$(printf '─%.0s' $(seq 1 46))"
-    echo -e "  ${OPTION}Installed : ${BOLD_WHITE}${#found[@]}${RST} / ${#TOOLS[@]}${RST}"
-    echo -e "  ${ERROR}Missing   : ${BOLD_WHITE}${#not_found[@]}${RST} / ${#TOOLS[@]}${RST}"
+    echo -e "  ${OPTION}[*] Installed : ${BOLD_WHITE}${#found[@]}${RST} / ${#TOOLS[@]}${RST}"
+    echo -e "  ${ERROR}[*] Missing   : ${BOLD_WHITE}${#not_found[@]}${RST} / ${#TOOLS[@]}${RST}"
     echo ""
 }
 
 # ── --list=categories ─────────────────────────────────────────────────────────
 _flag_list_categories() {
     echo ""
-    echo -e "${BOLD}${OPTION} [*] Tools by Category ${RST}"
+    echo -e "${BOLD}${OPTION} [*] Tools listed by Category ${RST}"
     echo ""
-
+    echo -e "${DIM}  Status:${RST}${GREEN} ✔ ${RST}= installed,${RED} ✘ ${RST}= not found"
+    echo ""
     # Collect unique categories in insertion order
     local cats=()
     for entry in "${TOOLS[@]}"; do

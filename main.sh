@@ -31,7 +31,7 @@ source lib/sub_menus/uninstall_menu.sh
 # PM="$(detect_pkg_manager)"
 trap graceful_exit SIGINT
 # -- Separate log by session --
-echo "━━━━━━ Session: $(date '+%Y-%m-%d %H:%M') ━━━━━━" >> "$LOG_FILE"
+log START "━━━━━━ Session started at: $(date '+%Y-%m-%d %H:%M') ━━━━━━"
 # -- dependencies check -- 
 check_dependencies_menu
 # a call for startup internet check
