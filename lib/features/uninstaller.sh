@@ -8,13 +8,13 @@ uninstall_lang() {
  local pkg=$2 # pkg name to delete
  local name="$3" # pkg name to display
  
-
   # -- Confirmation --
-  # Use if statement directly - NO $(ask ...)
-   if ask "  [!] Are you sure? Action cannot be undone!" "n"; then
-      echo -e "${INFO}  [→] Skipping: $name ${RST}"
-      return 
-   fi
+  if [ "${NON_INTERACTIVE:-0}" != "1" ]; then
+    if ! ask "  [!] Are you sure? Action cannot be undone!"; then
+        echo -e "${INFO}  [→] Skipping: $name${RST}"
+        return 0
+    fi
+  fi
  # -- detection --
   if command -v "$pkg" >/dev/null 2>&1; then
     start_spinner "   [*] Removing pkg: $name (via $pm).."
@@ -77,10 +77,12 @@ uninstall_pkg() {
  local name="$3"
 
   # -- Confirmation --
-   if ! ask "  [!] Are you sure? Action cannot be undone!"; then
-      echo -e "${INFO}  [→] Skipping: $name${RST}"
-      return 0
-   fi
+  if [ "${NON_INTERACTIVE:-0}" != "1" ]; then
+    if ! ask "  [!] Are you sure? Action cannot be undone!"; then
+        echo -e "${INFO}  [→] Skipping: $name${RST}"
+        return 0
+    fi
+  fi
    # -- detection --
    if command -v "$cmd" >/dev/null 2>&1; then
      start_spinner "   [*] Removing pkg: $name (via $PM).."
