@@ -66,7 +66,7 @@ EOF
   # printf formats it so all the columns line up neatly
   for entry in "${TOOLS[@]}"; do
     IFS="|" read -r num cmd pkg name desc type extra cat <<< "$entry"
-    printf "${BARR}    ║${RST}${OPTION} [${BRIGHT_WHITE}%02d${OPTION}] %-14s ${INFO}- %s ${OPTION}(%s)${RST}\n" \
+    printf "${BARR}    ║${RST}${OPTION} [${BRIGHT_WHITE}%02d${OPTION}] %-12s ${INFO}- %s ${OPTION}(%s)${RST}\n" \
       "$num" "$name" "$desc" "$cat"
   done
   echo -e "${BARR}    ╚════════════════════════════════════╝ ${RST}"
