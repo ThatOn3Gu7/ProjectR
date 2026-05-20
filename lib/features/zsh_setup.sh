@@ -2,9 +2,9 @@
 
 # The follwoing commands are for installing zsh & oh my zsh.
 install_zsh_full() {
- install_pkg zsh zsh "Zsh: Most awesome shell,"
+ install_pkg zsh zsh "Zsh: Extended shell with powerful features"
    sleep 1
-    # echo -e "${INFO}${BOLD}"
+   # echo -e "${INFO}"
     if ask "  [*] Install oh-my-zsh?" "y"; then
      if [ -d "$HOME/.oh-my-zsh" ]; then
        echo -e "${OPTION}  [✓] Oh-My-Zsh already exists. Skipping...${RST}"
@@ -13,7 +13,6 @@ install_zsh_full() {
          echo -e "${INFO}  [*] Installing Oh-My-Zsh framework...${RST}"
          echo ""
          echo -e "${ERROR}  [*] The script will auto-exit after this because of Shell change..${RST}"
-         echo ""
          echo -e "${INFO}  [*] Make sure to clone some useful plugins to make full use of ohmyzsh.."
          echo ""
        KEEP_ZSHRC=yes \
@@ -21,7 +20,7 @@ install_zsh_full() {
      fi
     fi
     sleep 1 
-    # echo -e "${INFO}${BOLD}"
+    # echo -e "${INFO}"
      if ask "  [*] Also clone Powerlevel10k..?" "y"; then
       if [ -d "$HOME/.oh-my-zsh/custom/themes/powerlevel10k" ]; then
        echo -e "${OPTION}  [✓] Powerlevel10k is already configured - Skipping..${RST}"

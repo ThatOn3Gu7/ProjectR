@@ -11,9 +11,9 @@ safe_tput() { command -v tput >/dev/null 2>&1 && tput "$@" 2>/dev/null; }
 # Shows an installation wait message.
 show_install_wait() {
     clear
-    echo -e "${OPTION}${BOLD}"
+    echo -e "${OPTION}"
     print_box center "[*] Installation may take a while, Please be patient"
-    echo -e "${INFO}${BOLD}"
+    echo -e "${INFO}"
 }
 
 # Draws a rounded box with the title embedded in the top border.
@@ -138,7 +138,7 @@ print_box() {
 graceful_exit() {
     log EXIT "━━━━━━ Exited script at: $(date '+%Y-%m-%d %H:%M') ━━━━━━"
     echo ""
-    echo -e "${INFO}${BOLD}"
+    echo -e "${INFO}"
     print_box center " Thanks for using the script
      See you next time "
     echo -e "${RST}"

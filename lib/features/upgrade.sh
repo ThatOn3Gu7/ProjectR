@@ -11,7 +11,7 @@ pkg_upgrade() {
         brew) brew upgrade >/dev/null 2>&1 ;;
         termux-pkg) pkg upgrade -y >/dev/null 2>&1 ;;
         *)
-          echo -e "${ERROR}${BOLD}"
+          echo -e "${ERROR}"
           print_box center "[!] System upgrade not supported for: $PM..${RST}"
           echo -e "${RST}"
             return 1

@@ -76,11 +76,11 @@ parse_flags() {
 # ── Built-in helpers (small enough to live here) ─────────────────────────────
 _flag_help() {
     echo ""
-    echo -e "${BOLD}${OPTION} [*] ProjectR — Available Flags ${RST}"
+    echo -e "${OPTION} [*] ProjectR — Available Flags ${RST}"
     echo ""
-    echo -e "${DIM}Usage:${RST} ${BOLD_WHITE}./main.sh${RST} ${DIM}[flag]${RST}"
+    echo -e "${DIM} Usage:${RST} ${BOLD_WHITE}./main.sh${RST} ${DIM}[flag]${RST}"
     echo ""
-    echo -e "  ${BOLD}[*] Flags${RST}"
+    echo -e "   [*] Flags${RST}"
     echo -e "  ${DIM}────────────────────────────────────────────────────${RST}"
     printf "  ${BOLD_WHITE}%-26s${RST}  %s\n" \
         "-v, --version"          "Show script version" \
@@ -95,9 +95,9 @@ _flag_help() {
         "--log=<n>"              "Print last N lines of install.log" \
         "--reset"                "Clear all saved preferences (non-interactive)"
     echo ""
-    echo -e "  ${BOLD}[*] Examples${RST}"
+    echo -e "   [*] Examples${RST}"
     echo -e "  ${DIM}────────────────────────────────────────────────────${RST}"
-    echo -e "  ${DIM}\$${RST} ./main.sh ${DIM}                   -- Interactive mode${RST}"
+    echo -e "  ${DIM}\$${RST} ./main.sh ${DIM}                       -- Interactive mode${RST}"
     echo -e "  ${DIM}\$${RST} ./main.sh ${BOLD_WHITE}--install=git${DIM}         -- Install git silently${RST}"
     echo -e "  ${DIM}\$${RST} ./main.sh ${BOLD_WHITE}--list=installed${DIM}      -- See what's installed${RST}"
     echo -e "  ${DIM}\$${RST} ./main.sh ${BOLD_WHITE}--list=categories${DIM}     -- Browse tools by category${RST}"
@@ -239,7 +239,7 @@ done
     echo ""
     printf "  ${DIM}%s${RST}\n" "$(printf '─%.0s' $(seq 1 $(( max_name + 7 + max_os + 2 ))))"
     echo -e "  ${INFO}Detected OS :${RST}  ${BOLD_WHITE}${detected_os}${RST}"
-    echo -e "  ${INFO}Primary PM  :${RST}  ${OPTION}${BOLD}${detected_pm}${RST}"
+    echo -e "  ${INFO}Primary PM  :${RST}  ${OPTION} ${detected_pm}${RST}"
 
     # Show other available managers (exclude the primary)
     local extra=()
@@ -254,7 +254,7 @@ done
 # ── --list=installed ──────────────────────────────────────────────────────────
 _flag_list_installed() {
     echo ""
-    echo -e "${BOLD}${OPTION} [*] Installed Tools ${RST}"
+    echo -e "${OPTION} [*] Installed Tools ${RST}"
     echo ""
 
     local found=()
@@ -339,7 +339,7 @@ _flag_log() {
     local log_path="log/install.log"
 
     echo ""
-    echo -e "${BOLD}${OPTION} [*] Install Log ${DIM}(last ${lines} lines)${RST}"
+    echo -e "${OPTION} [*] Install Log ${DIM}(last ${lines} lines)${RST}"
     echo ""
 
     if [ ! -f "$log_path" ]; then
@@ -373,7 +373,7 @@ _flag_log() {
 # ── --reset ───────────────────────────────────────────────────────────────────
 _flag_reset() {
     echo ""
-    echo -e "${BOLD}${OPTION} [*] Reset Saved Preferences ${RST}"
+    echo -e "${OPTION} [*] Reset Saved Preferences ${RST}"
     echo ""
 
     local config_path="${HOME}/.config/projectr/session.conf"
@@ -410,7 +410,7 @@ _flag_reset() {
 _flag_install() {
     local target="$1"
     echo ""
-    echo -e "${BOLD}${OPTION} [*] Non-interactive install: ${BOLD_WHITE}${target}${RST}"
+    echo -e "${OPTION} [*] Non-interactive install: ${BOLD_WHITE}${target}${RST}"
     echo ""
 
     # Find the matching tool entry
@@ -472,7 +472,7 @@ _flag_install() {
 _flag_uninstall() {
     local target="$1"
     echo ""
-    echo -e "${BOLD}${OPTION} [*] Non-interactive uninstall: ${BOLD_WHITE}${target}${RST}"
+    echo -e "${OPTION} [*] Non-interactive uninstall: ${BOLD_WHITE}${target}${RST}"
     echo ""
 
     local matched_entry=""

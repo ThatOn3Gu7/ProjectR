@@ -11,7 +11,7 @@ preset_menu() {
                 ░▀░░░▀░▀░▀▀▀░▀▀▀░▀▀▀░░▀░░▀▀▀░▀░░▀▀▀░▀░▀
 EOF
  echo ""
-  echo -e "${OPTION}${BOLD} [*] Choose the preset you want to install!${OPTION}"
+  echo -e "${OPTION} [*] Choose the preset you want to install!${OPTION}"
    echo ""
 echo -e "${BOLD_WHITE}   [1] ${BOLD_GREEN}Minimal tools ${BOLD_YELLOW}-- For beginners ${RST}"
 echo -e "${BOLD_WHITE}   [2] ${BOLD_GREEN}Developer tools ${BOLD_YELLOW}-- For developers ${RST}"

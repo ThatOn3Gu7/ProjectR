@@ -56,7 +56,7 @@ show_main_menu() {
                                            > C0ded by: ThatOn3Gu7
 EOF
 
-  echo -e "${OPTION}${BOLD}"
+  echo -e "${OPTION}"
   print_box left "[*] Select the pkg/tool you want to install:" 
   echo -e "${RST}" 
   echo -e "${BARR}   ╔═════════════════╗ ${RST}"
