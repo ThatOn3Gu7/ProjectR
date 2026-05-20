@@ -90,11 +90,16 @@ check_dependencies_menu() {
         2)
             show_install_commands "${missing_deps[@]}"
             ;;
-        3)
-            echo -e "${INFO} [*] Continuing with missing dependencies...${RST}"
+        3) 
+          if ask " [*] Save as Preferences for next time?" "y"; then
+           echo -e "${INFO} [*] Continuing with missing dependencies (Saved Preferences)...${RST}"
             config_set "skip_dep_check" "true"
             sleep 1
             return 0
+           else
+            echo -e "${INFO} [*] Continuing with missing dependencies (Preferences not saved)...${RST}"
+            return 0
+          fi
             ;;
         4)
             graceful_exit

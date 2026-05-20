@@ -114,24 +114,23 @@ _flag_list_tools() {
     echo ""
     
     # ── Table ─────────────────────────────
-    printf "  ${BOLD_WHITE}%-4s  %-16s  %-40s  %-6s${RST}\n" \
-        "Num" "Name" "Description" "Type"
-
-    # Separator (2 + 4 + 2 + 16 + 2 + 40 + 2 + 6 = 72)
-    printf "  ${DIM}%s${RST}\n" "$(printf '─%.0s' $(seq 1 72))"
+    printf "  ${BOLD_WHITE}%-4s  %-16s  %-40s${RST}\n" \
+        "Num" "Name" "Description"
+    # Separator 
+    printf "  ${DIM}%s${RST}\n" "$(printf '─%.0s' $(seq 1 66))"
 
     # Data
     for entry in "${TOOLS[@]}"; do
        IFS="|" read -r num cmd pkg name desc type extra cat <<< "$entry"
        local disp_desc="$desc"
        (( ${#disp_desc} > 40 )) && disp_desc="${disp_desc:0:37}..."
-       printf "  ${BARR}%-4s${RST}  ${OPTION}%-16s${RST}  ${DIM}%-40s${RST}  ${BOLD_WHITE}%-6s${RST}\n" \
-           "$num" "$name" "$disp_desc" "$type"
+       printf "  ${BARR}%-4s${RST}  ${OPTION}%-16s${RST}  ${DIM}%-40s${RST}\n" \
+           "$num" "$name" "$disp_desc"
     done
     
     # ── Summary ───────────────────────────
     echo ""
-    echo -e "  ${DIM}────────────────────────────────────────────${RST}"
+    echo -e "  ${DIM}────────────────────────────────────────────────────────────────────${RST}"
     echo -e "  ${DIM}Total:${RST}  ${BOLD_WHITE}${#TOOLS[@]}${RST} tools available"
     echo ""
 }
@@ -380,7 +379,7 @@ _flag_reset() {
     local config_path="${HOME}/.config/projectr/session.conf"
 
     if [ ! -f "$config_path" ]; then
-        echo -e "  ${DIM}Nothing to reset — no config file found.${RST}"
+        echo -e "  ${DIM} [*] Nothing to reset — no config file found.${RST}"
         echo ""
         return
     fi

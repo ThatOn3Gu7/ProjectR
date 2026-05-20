@@ -24,10 +24,16 @@ Please make sure to turn on WI-FI to continue :)"
     read -rsn 1 reply    # read silently, no echo
     safe_tput cnorm        # restore cursor
   case "$reply" in
-    y|Y)
-        config_set "skip_wifi_check" "true" 
-        log ENTER "User still continued"
-        clear ;;
+    y|Y) 
+     if ask " [*] Are you sure? Preferences will be saved.." "n"; then
+       config_set "skip_wifi_check" "true"
+        echo -e "${OPTION} [*] You won't be prompted next time when you're offline ${RST}"
+         sleep 3 
+      else
+       log ENTER "User still continued"
+        clear
+      fi 
+      ;;
     *) exit 0 ;;
   esac
   fi
