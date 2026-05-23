@@ -9,7 +9,7 @@ check_dependency() {
         return 0
     else
        echo ""
-        echo -e "${ERROR} [✗] $name is NOT installed${RST}"
+        echo -e "${ERROR} [✗] "$name" is NOT installed${RST}"
         
         # Generate cross-platform hint
         local hint=""
@@ -152,7 +152,7 @@ auto_install_dependencies() {
     for dep in "${deps[@]}"; do
         IFS=":" read -r cmd name hint <<< "$dep"
         
-        echo -e "${INFO} [*] Installing: $name${RST}"
+        echo -e "${INFO} [*] Installing: "$name"${RST}"
         
         case "$cmd" in
             lolcat)
@@ -319,7 +319,7 @@ show_install_commands() {
     
     for dep in "${deps[@]}"; do
         IFS=":" read -r cmd name hint <<< "$dep"
-        echo -e "${BOLD_YELLOW} ▶ $name${RST}"
+        echo -e "${BOLD_YELLOW} ▶ "$name"${RST}"
          echo ""
         get_install_hints "$cmd"
         echo ""
