@@ -11,7 +11,7 @@ parse_flags() {
         case "$arg" in
 
             --version|-v)
-                echo -e "${OPTION}ProjectR ${BOLD_WHITE}v1.0${RST}"
+                echo -e "${OPTION}ProjectR ${BOLD_WHITE}v1.1${RST}"
                 exit 0
                 ;;
 
@@ -19,7 +19,12 @@ parse_flags() {
                 _flag_help
                 exit 0
                 ;;
-
+                
+            --search=*)
+                _flag_search "${arg#--search=}"
+                exit 0
+               ;;
+    
             --list=manager)
                 _flag_list_manager
                 exit 0
@@ -85,6 +90,7 @@ _flag_help() {
     printf "  ${BOLD_WHITE}%-26s${RST}  %s\n" \
         "-v, --version"          "Show script version" \
         "-h, --help"             "Show this help message" \
+        "--search=<name>"       "Search all managers and install by name" \
         "--list=manager"         "All package managers + availability" \
         "--list=tools"           "All tools in the TOOLS array" \
         "--list=installed"       "Only tools that are currently installed" \
@@ -389,12 +395,12 @@ _flag_reset() {
     line_count=$(wc -l < "$config_path")
 
     if [ "$line_count" -eq 0 ]; then
-        echo -e "  ${DIM}Config file is already empty.${RST}"
+        echo -e "${DIM} [*] Config file is already empty.${RST}"
         echo ""
         return
     fi
 
-    echo -e "  ${INFO}Clearing ${BOLD_WHITE}${line_count}${RST}${INFO} saved preference(s):${RST}"
+    echo -e "${INFO} [*] Clearing ${BOLD_WHITE}${line_count}${RST}${INFO} saved preference(s):${RST}"
     echo ""
     while IFS= read -r line; do
         echo -e "    ${DIM}✘  ${line}${RST}"
@@ -402,7 +408,7 @@ _flag_reset() {
     echo ""
 
     > "$config_path"
-    echo -e "  ${OPTION}[✓] All preferences cleared.${RST}"
+    echo -e "${OPTION} [✓] All preferences cleared.${RST}"
     echo ""
 }
 
@@ -509,5 +515,20 @@ _flag_uninstall() {
         pip)         uninstall_lang "pip" "$cmd" "$name" ;;
     esac
     unset NON_INTERACTIVE
+    echo ""
+}
+# Search and install flag
+_flag_search() {
+    local target="$1"
+    echo ""
+    echo -e "${OPTION} [*] Search & install: ${BOLD_WHITE}${target}${RST}"
+    echo ""
+    source lib/features/search_install.sh
+    source lib/core/spinner.sh
+    source lib/core/logging.sh
+    source lib/features/installer.sh
+    source lib/features/post_install.sh
+    INSTALLED_PKGS=(); SKIPPED_PKGS=(); FAILED_PKGS=()
+    search_and_install "$target"
     echo ""
 }

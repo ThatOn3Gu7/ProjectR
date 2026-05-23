@@ -9,7 +9,7 @@ check_dependency() {
         return 0
     else
        echo ""
-        echo -e "${ERROR} [✗] $name is NOT installed${RST}"
+        echo -e "${ERROR} [✗] "$name" is NOT installed${RST}"
         
         # Generate cross-platform hint
         local hint=""
@@ -45,7 +45,7 @@ check_dependencies_menu() {
     local missing_count=0
     local missing_deps=()
     # Define dependencies here
-    # Format: "command:Display Name:Install Hint"
+    # Format: "command:Display Name"
     local dependencies=(
         "lolcat:Lolcat (Required)"
         "git:Git (Required)"
@@ -54,9 +54,9 @@ check_dependencies_menu() {
     
     # Check each dependency
     for dep in "${dependencies[@]}"; do
-        IFS=":" read -r cmd name hint <<< "$dep"
-        if ! check_dependency "$cmd" "$name" "$hint"; then
-            missing_deps+=("$cmd:$name:$hint")
+        IFS=":" read -r cmd name <<< "$dep"
+        if ! check_dependency "$cmd" "$name"; then
+            missing_deps+=("$cmd:$name")
             ((missing_count++))
         fi
     done
@@ -152,7 +152,7 @@ auto_install_dependencies() {
     for dep in "${deps[@]}"; do
         IFS=":" read -r cmd name hint <<< "$dep"
         
-        echo -e "${INFO} [*] Installing: $name${RST}"
+        echo -e "${INFO} [*] Installing: "$name"${RST}"
         
         case "$cmd" in
             lolcat)
@@ -319,7 +319,7 @@ show_install_commands() {
     
     for dep in "${deps[@]}"; do
         IFS=":" read -r cmd name hint <<< "$dep"
-        echo -e "${BOLD_YELLOW} ▶ $name${RST}"
+        echo -e "${BOLD_YELLOW} ▶ "$name"${RST}"
          echo ""
         get_install_hints "$cmd"
         echo ""

@@ -68,7 +68,7 @@ ask() {
                 ;;
             *)
                 # Invalid input, show error and retry
-                echo -e "${ERR}  [!] Invalid choice: '$reply'. Please enter y or n.${RST}"
+                echo -e "${ERROR}  [!] Invalid choice: '$reply'. Please enter y or n.${RST}"
                 # Recursive call with same parameters
                 ask "$prompt" "$default" "$timeout" "$silent"
                 return $?

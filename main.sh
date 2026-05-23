@@ -9,6 +9,7 @@ source lib/system/detect.sh
 source lib/data/tools.sh
 source lib/features/installer.sh
 source lib/features/uninstaller.sh
+source lib/features/search_install.sh
 # -- source flags and parse immediately --
 source lib/flags/flags.sh
 parse_flags "$@"
@@ -77,6 +78,7 @@ echo -e "${BARR}   ╔════════════════╗ ${RST}
 echo -e "${BARR}   ║ ${RST}Other Options: ${BARR}║${RST}"
 echo -e "${BARR}   ╚╔═══════════════╝══╗ ${RST}"
 echo -e "${BARR}    ║${RST}${OPTION} [${BRIGHT_WHITE}0${OPTION}] Install ALL ${RST}"
+echo -e "${BARR}    ║${RST}${OPTION} [${BRIGHT_WHITE}s${OPTION}] Search & install by name${RST}"
 echo -e "${BARR}    ║${RST}${OPTION} [${BRIGHT_WHITE}p${OPTION}] Install by preset${RST}"
 echo -e "${BARR}    ║${RST}${OPTION} [${BRIGHT_WHITE}i${OPTION}] Inspect installed ${RST}"
 echo -e "${BARR}    ║${RST}${OPTION} [${BRIGHT_WHITE}u${OPTION}] Uninstall tools${RST}"
@@ -100,6 +102,7 @@ handle_selection() {
   # Step 1: Handle the special non-number options first
   case "$selected" in
     0)   clear; install_all; return ;;
+    s|S) clear; search_install_menu; return ;;
     p|P) preset_menu; return ;;
     i|I) clear; check_tool_main; return ;;
     u|U) clear; uninstall_menu; return ;;

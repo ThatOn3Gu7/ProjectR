@@ -20,6 +20,15 @@ config_get() {
 # Set a key=value pair. Overwrites if already exists.
 # Usage: config_set "skip_dep_check" "true"
 config_set() {
+    local key="$1" value="$2"
+    config_init
+    local tmp
+    tmp=$(mktemp "${CONFIG_FILE}.XXXXXX") || return 1
+    grep -v "^${key}=" "$CONFIG_FILE" > "$tmp" 2>/dev/null || true
+    echo "${key}=${value}" >> "$tmp"
+    mv "$tmp" "$CONFIG_FILE"
+}
+ config_set() {
     local key="$1"
     local value="$2"
     config_init

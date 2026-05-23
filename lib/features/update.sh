@@ -5,43 +5,69 @@ pkg_update() {
    PM="$(detect_pkg_manager)"
     case "$PM" in
         apt)
-             apt update >/dev/null 2>&1
+          if ! apt-get update >/dev/null 2>&1; then
+            echo -e "${ERROR}  [!] Failed to update package list${RST}"
+          fi
             ;;
         dnf)
-            sudo dnf makecache >/dev/null 2>&1
+           if ! sudo dnf makecache >/dev/null 2>&1; then
+            echo -e "${ERROR}  [!] Failed to update package list${RST}"
+           fi
             ;;
         yum)
-            sudo yum makecache >/dev/null 2>&1
+          if ! sudo yum makecache >/dev/null 2>&1; then
+           echo -e "${ERROR}  [!] Failed to update package list${RST}"
+          fi
             ;;
         pacman)
-            sudo pacman -Sy --noconfirm
+             if ! sudo pacman -Sy --noconfirm; then
+              echo -e "${ERROR}  [!] Failed to update package list${RST}"
+             fi
             ;;
         zypper)
-            sudo zypper refresh >/dev/null 2>&1
+             if ! sudo zypper refresh >/dev/null 2>&1; then
+              echo -e "${ERROR}  [!] Failed to update package list${RST}"
+             fi
             ;;
         apk)
-            sudo apk update >/dev/null 2>&1
+          if ! sudo apk update >/dev/null 2>&1; then
+           echo -e "${ERROR}  [!] Failed to update package list${RST}"
+          fi
             ;;
         brew)
-            brew update >/dev/null 2>&1
+           if ! brew update >/dev/null 2>&1; then
+            echo -e "${ERROR}  [!] Failed to update package list${RST}"
+           fi
             ;;
-        pkg) # Termux
-            pkg update >/dev/null 2>&1
+    termux-pkg) # Termux
+             if ! pkg update >/dev/null 2>&1; then
+              echo -e "${ERROR}  [!] Failed to update package list${RST}"
+             fi
             ;;
         nix)
-            nix-channel --update >/dev/null 2>&1
+          if ! nix-channel --update >/dev/null 2>&1; then
+           echo -e "${ERROR}  [!] Failed to update package list${RST}"
+          fi
             ;;
-        flatpak)
-            flatpak update --appstream >/dev/null 2>&1
+     flatpak)
+           if ! flatpak update --appstream >/dev/null 2>&1; then
+             echo -e "${ERROR}  [!] Failed to update package list${RST}"
+           fi
             ;;
         snap)
-            snap refresh --list >/dev/null 2>&1 || true
+           if ! snap refresh --list >/dev/null 2>&1 || true; then
+            echo -e "${ERROR}  [!] Failed to update package list${RST}"
+           fi
             ;;
         winget)
-            winget source update >/dev/null 2>&1
+            if ! winget source update >/dev/null 2>&1; then
+             echo -e "${ERROR}  [!] Failed to update package list${RST}"
+            fi
             ;;
         scoop)
-            scoop update >/dev/null 2>&1
+            if ! scoop update >/dev/null 2>&11; then
+             echo -e "${ERROR}  [!] Failed to update package list${RST}"
+            fi
             ;;
         *)
           echo -e "${ERROR}"
