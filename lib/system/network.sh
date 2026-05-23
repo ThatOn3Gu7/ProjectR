@@ -2,9 +2,10 @@
 
 # Checkes if internet connection is available or not. 
 check_internet() {
-  ping -c 1 8.8.8.8 >/dev/null 2>&1 
-  curl -s --max-time 5 https://8.8.8.8 >/dev/null 2>&1 || \
-  wget -q --timeout=5 -O /dev/null https://8.8.8.8 >/dev/null 2>&1
+  ping -c 1 -W 3 8.8.8.8 >/dev/null 2>&1 && return 0
+  curl -s --max-time 5 https://8.8.8.8 >/dev/null 2>&1 && return 0
+  wget -q --timeout=5 -O /dev/null https://8.8.8.8 >/dev/null 2>&1 && return 0
+  return 1
 }
 # startup internet Check
 startup_wifi_check() {
