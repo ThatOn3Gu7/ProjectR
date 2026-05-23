@@ -25,17 +25,16 @@ start_spinner() {
 }
 # Stop the spinner
 stop_spinner() {
-
-    [ -z "${SPINNER_PID:-}" ] && { return 0; }
-    # This stops the background spinner
-    kill "$SPINNER_PID" >/dev/null 2>&1
+    [[ -z "${SPINNER_PID:-}" ]] && { printf "\r\033[2K"; echo -e "$1"; return 0; }
+    # Send SIGTERM, then wait with timeout
+    kill "$SPINNER_PID" 2>/dev/null
+    local waited=0
+    while kill -0 "$SPINNER_PID" 2>/dev/null && (( waited < 10 )); do
+        sleep 0.05; (( waited++ ))
+    done
     wait "$SPINNER_PID" 2>/dev/null
-
-    # Clear the entire line
     printf "\r\033[2K"
-
-    # Show cursor again
     safe_tput cnorm 2>/dev/null
     unset SPINNER_PID
-    echo -e "$1"
+    [[ -n "${1:-}" ]] && echo -e "$1"
 }
