@@ -101,9 +101,9 @@ install_pkg() {
        start_spinner "  [*] Installing: $name (via $PM).."
     
        # Use the detected package manager to install 
-       case $PM in
+       case "$PM" in
         apt)
-            apt-get update && apt-get install -y "$pkg" >/dev/null 2>&1
+           sudo apt-get update && sudo apt-get install -y "$pkg" >/dev/null 2>&1
 
             ;;
         dnf|yum)
@@ -123,7 +123,7 @@ install_pkg() {
 
             ;;
         apk)
-            apk add "$pkg" >/dev/null 2>&1
+            sudo apk add "$pkg" >/dev/null 2>&1
 
             ;;
         emerge)
@@ -131,7 +131,7 @@ install_pkg() {
 
             ;;
         nix)
-            nix-env -i "$pkg" >/dev/null 2>&1
+            sudo nix-env -i "$pkg" >/dev/null 2>&1
 
             ;;
         flatpak)
