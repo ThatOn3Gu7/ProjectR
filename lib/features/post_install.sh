@@ -6,7 +6,7 @@ post_install_summary() {
     echo ""
     
     # -- TITLE BOX --
-    print_box_full "center" \
+    print_titled_box --align center \
         "  [*] Post-Installation-Summary" \
         "Installation finished at $(date '+%H:%M:%S')"
     
