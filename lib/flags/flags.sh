@@ -1,8 +1,10 @@
 #!/bin/bash
-# lib/flags/flags.sh
+# -- for safely Sourceimg files --
+_FLAGS_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+_PROJECT_ROOT="$(cd "$_FLAGS_DIR/../.." && pwd)"
+
 # Central flag dispatcher — called before the main interactive loop.
 # Each --flag or --flag=value is handled here and exits immediately.
-
 parse_flags() {
     # Nothing passed — let main.sh continue normally
     [[ $# -eq 0 ]] && return 0
@@ -145,7 +147,7 @@ _flag_list_manager() {
     # ── OS/platform detection ─────────────────
     local detected_os="Unknown"
     local detected_pm
-    detected_pm="$(detect_pkg_manager)"
+    detected_pm="${PRIMARY_PKG_MANAGER:-$(detect_pkg_manager)}"
 
     if [ -n "${PREFIX:-}" ] && [[ "$PREFIX" == *termux* ]]; then
         detected_os="Termux (Android)"
@@ -458,10 +460,10 @@ _flag_install() {
 
     # Source everything needed for actual installation
     # (flags normally run before the full source block)
-    source lib/core/progress_bar.sh
-    source lib/core/spinner.sh
-    source lib/core/logging.sh
-
+    source "$_PROJECT_ROOT/lib/core/progress_bar.sh"
+    source "$_PROJECT_ROOT/lib/core/spinner.sh"
+    source "$_PROJECT_ROOT/lib/core/logging.sh"
+    
     INSTALLED_PKGS=()
     SKIPPED_PKGS=()
     FAILED_PKGS=()
@@ -507,8 +509,8 @@ _flag_uninstall() {
         exit 0
     fi
 
-    source lib/core/spinner.sh
-    source lib/core/logging.sh
+    source "$_PROJECT_ROOT/lib/core/spinner.sh"
+    source "$_PROJECT_ROOT/lib/core/logging.sh"
     export NON_INTERACTIVE=1
     case "$type" in
         pkg|special) uninstall_pkg "$cmd" "$pkg" "$name" ;;

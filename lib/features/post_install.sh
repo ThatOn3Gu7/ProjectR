@@ -54,7 +54,7 @@ post_install_summary() {
     # -- STATISTICS BOX --
     local total=$(( ${#INSTALLED_PKGS[@]} + ${#SKIPPED_PKGS[@]} + ${#FAILED_PKGS[@]} ))
     
-    print_box_full "center" \
+    print_titled_box --align center \
         " [*] Installation Statistics" \
         "" \
         "● Total packages processed: $total" \

@@ -51,9 +51,6 @@ echo -e "${BOLD_WHITE}   [3] ${BOLD_GREEN}Fun tools ${BOLD_YELLOW}-- For fun & g
   esac
  done
 }
-
-#!/bin/bash
-
 # Function to display preset contents beautifully
 show_preset_contents() {
     local preset_name="$1"
