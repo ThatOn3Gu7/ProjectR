@@ -1,7 +1,6 @@
 #!/bin/bash
-source lib/system/detect.sh
 # detect_pkg_manager for install and tool check
-PM="$(detect_pkg_manager)"
+PM="${PRIMARY_PKG_MANAGER:-$(detect_pkg_manager)}"
 # This function here installs all tools put in it.
 install_all() {
 # For post-install summary detection
@@ -142,7 +141,7 @@ install_pkg() {
             sudo snap install "$pkg" >/dev/null 2>&1
 
             ;;
-        termux-pkg)
+        pkg)
             pkg install -y "$pkg" >/dev/null 2>&1
 
             ;;

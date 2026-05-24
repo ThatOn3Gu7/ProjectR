@@ -28,15 +28,6 @@ config_set() {
     echo "${key}=${value}" >> "$tmp"
     mv "$tmp" "$CONFIG_FILE"
 }
- config_set() {
-    local key="$1"
-    local value="$2"
-    config_init
-    # Remove old entry then append new one
-    grep -v "^${key}=" "$CONFIG_FILE" > "${CONFIG_FILE}.tmp" 2>/dev/null
-    mv "${CONFIG_FILE}.tmp" "$CONFIG_FILE"
-    echo "${key}=${value}" >> "$CONFIG_FILE"
-}
 
 # Clear a single key (for resetting a specific choice)
 # Usage: config_clear "skip_dep_check"
