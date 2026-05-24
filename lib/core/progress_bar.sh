@@ -55,39 +55,39 @@ progress_run() {
     local success_msg="$2"
     shift 2
     local cmd=("$@")
-
-    # Temp files to capture output and exit code
-    local tmp_out
-    tmp_out=$(mktemp)
-    local tmp_exit
-    tmp_exit=$(mktemp)
-
-    # Local Colors (Matching your preferred style)
+    # Local Colors
     local C_RESET="\033[0m"
     local C_BLUE="\033[1;34m"
     local C_GREEN="\033[1;32m"
     local C_RED="\033[1;31m"
     
-    local start_time=$(date +%s)
-    local pct=0
-    local interrupted=0
+    local tmp_out tmp_exit
+    tmp_out=$(mktemp) || { echo "Failed to create temp file"; return 1; }
+    tmp_exit=$(mktemp) || { rm -f "$tmp_out"; return 1; }
 
-    # Hide Cursor
+    # ── STEP 1: Save whatever trap was set before we got here ─────────────
+    # trap -p INT prints the current INT handler as a string you can re-eval.
+    # We save it NOW, before we overwrite it.
+    local old_trap
+    old_trap=$(trap -p INT)
+
+    local interrupted=0
+    # ── STEP 2: Set OUR trap, overwriting the previous one ────────────────
+    trap 'interrupted=1' INT
+
+    local pct=0
+    local start_time
+    start_time=$(date +%s)
+
     safe_tput civis
 
-    # Trap Ctrl+C
-     trap 'interrupted=1' INT
-
-    # Start command in background
     (
         "${cmd[@]}" >"$tmp_out" 2>&1
         echo $? >"$tmp_exit"
     ) &
     local pid=$!
 
-    # --- The Visual Loop ---
     while kill -0 "$pid" 2>/dev/null; do
-        # 1. Handle Interruption
         if [ "$interrupted" -eq 1 ]; then
             kill "$pid" 2>/dev/null
             break
@@ -129,11 +129,8 @@ progress_run() {
     # Wait for process to settle
     wait "$pid" 2>/dev/null
     local exit_code
-    if [ -f "$tmp_exit" ]; then
-        exit_code=$(cat "$tmp_exit")
-    else
-        exit_code=1
-    fi
+    exit_code=$(cat "$tmp_exit" 2>/dev/null)
+    [[ "$exit_code" =~ ^[0-9]+$ ]] || exit_code=1
 
     # --- Finalize Bar (100%) ---
     local elapsed=$(( $(date +%s) - start_time ))
@@ -173,10 +170,19 @@ progress_run() {
         echo -e "   └─▶ Reason : $failure_reason"
     fi
 
-    # --- Cleanup ---
     safe_tput cnorm
     rm -f "$tmp_out" "$tmp_exit"
-    
+
+    # ── STEP 3: Restore the trap we saved at the top ──────────────────────
+    # This MUST be the last thing before return so that after progress_run
+    # finishes, Ctrl+C goes back to calling graceful_exit in main.sh.
+    if [[ -n "$old_trap" ]]; then
+        eval "$old_trap"
+    else
+        # If there was no previous trap, just reset INT to default behaviour
+        trap - INT
+    fi
+
     return "$exit_code"
 }
 

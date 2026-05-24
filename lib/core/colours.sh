@@ -83,13 +83,12 @@ REVERSE="\e[7m"        # swap foreground/background
 HIDDEN="\e[8m"
 STRIKETHROUGH="\e[9m"
 
-# If you want BRIGHT_MAGENTA (was missing from your original):
+# BRIGHT_MAGENTA
 BRIGHT_MAGENTA="\e[0;95m"   # purple/bright magenta
-BOLD_BRIGHT_MAGENTA="\e[1;95m"
 
 # --- Semantic aliases (makes scripts readable) ---
 INFO="${BOLD_BRIGHT_YELLOW}"
 OPTION="${BOLD_BRIGHT_GREEN}"
 ERROR="${BOLD_BRIGHT_RED}"
-BARR="${BOLD_BRIGHT_MAGENTA}"
+BARR="${BRIGHT_MAGENTA}"
 
