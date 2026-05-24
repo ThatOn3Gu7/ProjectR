@@ -21,7 +21,7 @@ declare -A SI_BIN_MAP=(
 declare -A SI_TIER=(
     [apt]=1   [apt-get]=1  [pacman]=1 [dnf]=1  [yum]=1    [zypper]=1
     [apk]=1   [emerge]=1   [xbps]=1   [nix]=1  [brew]=1   [port]=1
-    [pkg]=1   [pkg_add]=1  [winget]=1 [choco]=1 [scoop]=1 [termux-pkg]=1
+    [pkg]=1   [pkg_add]=1  [winget]=1 [choco]=1 [scoop]=1 [pkg]=1
     [pipx]=2  [flatpak]=2  [snap]=2
     [cargo]=3 [npm]=3      [yarn]=3   [pip]=3  [pip3]=3   [gem]=3
 )
@@ -44,7 +44,7 @@ _si_check_avail() {
         pacman)        pacman -Ss "^${pkg}$" >/dev/null 2>&1 ;;
         dnf|yum)       $mgr info "$pkg" >/dev/null 2>&1 ;;
         brew)          brew info "$pkg" >/dev/null 2>&1 ;;
-        pkg|termux-pkg) pkg show "$pkg" >/dev/null 2>&1 ;;
+        pkg|pkg) pkg show "$pkg" >/dev/null 2>&1 ;;
         npm)           npm info "$pkg" >/dev/null 2>&1 ;;
         pip|pip3)      $mgr index versions "$pkg" >/dev/null 2>&1 ;;
         gem)           gem list -r "^${pkg}$" >/dev/null 2>&1 ;;
@@ -110,7 +110,7 @@ search_and_install() {
     fi
 
     # Build candidate list: system PM first, then language managers
-    local sys_pm; sys_pm="$(detect_pkg_manager)"
+    local sys_pm; sys_pm="${PRIMARY_PKG_MANAGER:-$(detect_pkg_manager)}"
     local candidates=()
     [ -n "$sys_pm" ] && candidates+=("$sys_pm")
     for lm in cargo npm pip pip3 gem pipx; do

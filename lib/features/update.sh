@@ -2,7 +2,7 @@
 # Updates package list based on detected package manager
 pkg_update() {
   log OK "pkg list updated"
-   PM="$(detect_pkg_manager)"
+   PM="${PRIMARY_PKG_MANAGER:-$(detect_pkg_manager)}"
     case "$PM" in
         apt)
           if ! apt-get update >/dev/null 2>&1; then
@@ -39,7 +39,7 @@ pkg_update() {
             echo -e "${ERROR}  [!] Failed to update package list${RST}"
            fi
             ;;
-    termux-pkg) # Termux
+    pkg) # Termux
              if ! pkg update >/dev/null 2>&1; then
               echo -e "${ERROR}  [!] Failed to update package list${RST}"
              fi
