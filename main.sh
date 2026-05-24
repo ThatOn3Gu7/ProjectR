@@ -1,35 +1,40 @@
 #!/bin/bash
 # -- Catches any bugs and unbound variables --
 set -uo pipefail
+# -- Resolve the project root (works regardless of where you call this from) --
+# BASH_SOURCE[0] is always the path to THIS file (main.sh), even if it's
+# called from another directory or via a symlink.
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# -- Now source everything using $SCRIPT_DIR as the anchor --
 # -- source conf first (flags need colours/display) --
-source lib/data/config.sh
-source lib/core/colours.sh
-source lib/core/display.sh
-source lib/system/detect.sh
-source lib/data/tools.sh
-source lib/features/installer.sh
-source lib/features/uninstaller.sh
-source lib/features/search_install.sh
+source "$SCRIPT_DIR/lib/data/config.sh"
+source "$SCRIPT_DIR/lib/core/colours.sh"
+source "$SCRIPT_DIR/lib/core/display.sh"
+source "$SCRIPT_DIR/lib/system/detect.sh"
+detect_pkg_manager >/dev/null
+source "$SCRIPT_DIR/lib/data/tools.sh"
+source "$SCRIPT_DIR/lib/features/installer.sh"
+source "$SCRIPT_DIR/lib/features/uninstaller.sh"
 # -- source flags and parse immediately --
-source lib/flags/flags.sh
+source "$SCRIPT_DIR/lib/flags/flags.sh"
 parse_flags "$@"
 # -- now source everything else --
-source lib/core/progress_bar.sh
-source lib/core/logging.sh
-source lib/core/spinner.sh
-source lib/core/prompts.sh
-source lib/system/network.sh
-source lib/system/checker.sh
-source lib/system/dependencies.sh
-source lib/features/presets.sh
-source lib/features/post_install.sh
-source lib/features/neovim_setup.sh
-source lib/features/zsh_setup.sh
-source lib/features/upgrade.sh
-source lib/features/update.sh
-source lib/sub_menus/presets_menu.sh
-source lib/sub_menus/uninstall_menu.sh
-# PM="$(detect_pkg_manager)"
+source "$SCRIPT_DIR/lib/core/progress_bar.sh"
+source "$SCRIPT_DIR/lib/core/logging.sh"
+source "$SCRIPT_DIR/lib/core/spinner.sh"
+source "$SCRIPT_DIR/lib/core/prompts.sh"
+source "$SCRIPT_DIR/lib/system/network.sh"
+source "$SCRIPT_DIR/lib/system/checker.sh"
+source "$SCRIPT_DIR/lib/system/dependencies.sh"
+source "$SCRIPT_DIR/lib/features/presets.sh"
+source "$SCRIPT_DIR/lib/features/post_install.sh"
+source "$SCRIPT_DIR/lib/features/search_install.sh"
+source "$SCRIPT_DIR/lib/features/neovim_setup.sh"
+source "$SCRIPT_DIR/lib/features/zsh_setup.sh"
+source "$SCRIPT_DIR/lib/features/upgrade.sh"
+source "$SCRIPT_DIR/lib/features/update.sh"
+source "$SCRIPT_DIR/lib/sub_menus/presets_menu.sh"
+source "$SCRIPT_DIR/lib/sub_menus/uninstall_menu.sh"
 trap graceful_exit SIGINT
 # -- Separate log by session --
 log START "━━━━━━ Session started at: $(date '+%Y-%m-%d %H:%M') ━━━━━━"
@@ -37,10 +42,11 @@ log START "━━━━━━ Session started at: $(date '+%Y-%m-%d %H:%M') ━�
 check_dependencies_menu
 # a call for startup internet check
 startup_wifi_check
+# -- small helper function for when lolcat isn't around --
+rainbow() { command -v lolcat >/dev/null 2>&1 && lolcat || cat; }
 # -- main installer menu  --
 show_main_menu() {
  clear
-  rainbow() { command -v lolcat >/dev/null 2>&1 && lolcat || cat; }
   # cool LOGO with colors
   cat <<"EOF" | rainbow
 
