@@ -1,6 +1,4 @@
 #!/usr/bin/env bash
-# -- detect pkg manager for deletion --
-PM="$(detect_pkg_manager)"
 
 # -- the sec uninstall funtion (for pip/pip3) --
 uninstall_lang() {
@@ -75,6 +73,9 @@ uninstall_pkg() {
  local cmd="$1"
  local pkg="$2"
  local name="$3"
+ # -- detect pkg manager for deletion --
+ local PM
+ PM="${PRIMARY_PKG_MANAGER:-$(detect_pkg_manager)}"
 
   # -- Confirmation --
   if [ "${NON_INTERACTIVE:-0}" != "1" ]; then
@@ -93,7 +94,7 @@ uninstall_pkg() {
    fi 
    case "$PM" in
     # Android/Termux
-    termux-pkg)
+    pkg)
         pkg uninstall -y "$pkg"
         ;;
     # Linux
@@ -122,7 +123,7 @@ uninstall_pkg() {
         sudo xbps-remove -R "$pkg"
         ;;
     nix)
-        nix-env remove "$pkg" && nix-collect-garbage -d
+        nix-env --uninstall "$pkg" && nix-collect-garbage -d >/dev/null 2>&1
         ;;
     guix)
         guix package --remove="$pkg"

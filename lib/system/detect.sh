@@ -1,96 +1,143 @@
 #!/bin/bash
 
-# -- package manager detection --
+# ── Globals set by detect_pkg_manager ────────────────────────────────────────
+# PRIMARY_PKG_MANAGER : the single best system PM to use for installs
+# DETECTED_PKG_MANAGERS : array of ALL system PMs found on this machine
+PRIMARY_PKG_MANAGER=""
+DETECTED_PKG_MANAGERS=()
+
+# ── detect_pkg_manager ────────────────────────────────────────────────────────
+# Finds every system package manager available, stores them all in
+# DETECTED_PKG_MANAGERS, and picks the best one as PRIMARY_PKG_MANAGER.
+# Language-specific managers (pip, npm, gem, cargo…) are intentionally
+# excluded — use detect_pkg_for_tool for those.
 detect_pkg_manager() {
-  # Android (Termux)
-  [ -n "$PREFIX" ] && [[ "$PREFIX" == *termux* ]] && echo "termux-pkg" && return
-  # command -v termux-info >/dev/null 2>&1 && [ -d "/data/data/com.termux" ] && echo "pkg" && return
-  # Linux
-  command -v apt >/dev/null 2>&1 && echo "apt" && return
-  command -v apt-get >/dev/null 2>&1 && echo "apt-get" && return
-  command -v pacman >/dev/null 2>&1 && echo "pacman" && return
-  command -v dnf >/dev/null 2>&1 && echo "dnf" && return
-  command -v yum >/dev/null 2>&1 && echo "yum" && return
-  command -v zypper >/dev/null 2>&1 && echo "zypper" && return
-  command -v apk >/dev/null 2>&1 && echo "apk" && return
-  command -v emerge >/dev/null 2>&1 && echo "emerge" && return
-  command -v xbps-install >/dev/null 2>&1 && echo "xbps" && return
-  command -v nix >/dev/null 2>&1 && echo "nix" && return
-  command -v guix >/dev/null 2>&1 && echo "guix" && return
-  command -v eopkg >/dev/null 2>&1 && echo "eopkg" && return
-  command -v urpmi >/dev/null 2>&1 && echo "urpmi" && return
-  command -v pkgtool >/dev/null 2>&1 && echo "slackpkg" && return
-  command -v portage >/dev/null 2>&1 && echo "portage" && return
-  
-  # macOS
-  command -v brew >/dev/null 2>&1 && echo "brew" && return
-  command -v port >/dev/null 2>&1 && echo "macports" && return
-  
-  # BSD
-  command -v pkg >/dev/null 2>&1 && echo "BSD-pkg" && return  # FreeBSD
-  command -v pkg_add >/dev/null 2>&1 && echo "pkg_add" && return  # OpenBSD
-  
-  # Windows (WSL/Cygwin/Git Bash)
-  command -v winget.exe >/dev/null 2>&1 && echo "winget" && return
-  command -v choco.exe >/dev/null 2>&1 && echo "choco" && return
-  command -v scoop >/dev/null 2>&1 && echo "scoop" && return
-  
-  # Language-specific
-  command -v npm >/dev/null 2>&1 && echo "npm" && return
-  command -v yarn >/dev/null 2>&1 && echo "yarn" && return
-  command -v pnpm >/dev/null 2>&1 && echo "pnpm" && return
-  command -v bun >/dev/null 2>&1 && echo "bun" && return
-  command -v pip >/dev/null 2>&1 && echo "pip" && return
-  command -v pip3 >/dev/null 2>&1 && echo "pip3" && return
-  command -v pipx >/dev/null 2>&1 && echo "pipx" && return
-  command -v gem >/dev/null 2>&1 && echo "gem" && return
-  command -v cargo >/dev/null 2>&1 && echo "cargo" && return
-  command -v go >/dev/null 2>&1 && echo "go" && return
-  command -v composer >/dev/null 2>&1 && echo "composer" && return
-  
-  # Container/App formats
-  command -v flatpak >/dev/null 2>&1 && echo "flatpak" && return
-  command -v snap >/dev/null 2>&1 && echo "snap" && return
-  command -v appimage >/dev/null 2>&1 && echo "appimage" && return
-    echo "unknown"
+    DETECTED_PKG_MANAGERS=()
+
+    # ── Priority-ordered list: id | check-command ────────────────────────
+    # Format: "id|cmd"  — id is what we store, cmd is what we test with
+    # `command -v`.  Listed best-first so the first hit becomes PRIMARY.
+    local candidates=(
+        # Android
+        "pkg|pkg"               # Termux — checked via $PREFIX below too
+        # Debian / Ubuntu family
+        "apt|apt"
+        "apt-get|apt-get"
+        # Arch family
+        "pacman|pacman"
+        # Fedora / RHEL family
+        "dnf|dnf"
+        "yum|yum"
+        # openSUSE
+        "zypper|zypper"
+        # Alpine
+        "apk|apk"
+        # Gentoo
+        "emerge|emerge"
+        # Void Linux
+        "xbps|xbps-install"
+        # NixOS
+        "nix|nix"
+        # GNU Guix
+        "guix|guix"
+        # Solus
+        "eopkg|eopkg"
+        # Mageia
+        "urpmi|urpmi"
+        # Slackware
+        "slackpkg|pkgtool"
+        # macOS
+        "brew|brew"
+        "macports|port"
+        # FreeBSD
+        "bsd-pkg|pkg"
+        # OpenBSD
+        "pkg_add|pkg_add"
+        # Windows (WSL / Git Bash / Cygwin)
+        "winget|winget.exe"
+        "choco|choco.exe"
+        "scoop|scoop"
+        # Universal Linux extras
+        "flatpak|flatpak"
+        "snap|snap"
+    )
+
+    # Special-case Termux first: $PREFIX is the reliable signal.
+    # Without this, FreeBSD's `pkg` and Termux's `pkg` would collide.
+    if [ -n "${PREFIX:-}" ] && [[ "$PREFIX" == *termux* ]]; then
+        DETECTED_PKG_MANAGERS+=("pkg")
+        PRIMARY_PKG_MANAGER="pkg"
+        # Still scan for extras (flatpak etc.) that could co-exist
+    fi
+
+    for entry in "${candidates[@]}"; do
+        local id="${entry%%|*}"
+        local cmd="${entry##*|}"
+
+        # Skip pkg if we already added it for Termux above
+        if [[ "$id" == "pkg" && "$PRIMARY_PKG_MANAGER" == "pkg" ]]; then
+            continue
+        fi
+
+        if command -v "$cmd" >/dev/null 2>&1; then
+            DETECTED_PKG_MANAGERS+=("$id")
+            # First found (highest priority) becomes the primary
+            if [[ -z "$PRIMARY_PKG_MANAGER" ]]; then
+                PRIMARY_PKG_MANAGER="$id"
+            fi
+        fi
+    done
+
+    # If nothing was detected at all
+    if [[ -z "$PRIMARY_PKG_MANAGER" ]]; then
+        PRIMARY_PKG_MANAGER="unknown"
+        DETECTED_PKG_MANAGERS+=("unknown")
+    fi
+
+    # Echo the primary so callers that do PM="${PRIMARY_PKG_MANAGER:-$(detect_pkg_manager)}" still work
+    echo "$PRIMARY_PKG_MANAGER"
 }
-# Detect package manager for a specific tool/context
+
+
+# ── detect_pkg_for_tool ───────────────────────────────────────────────────────
+# Returns the best available manager for a given language ecosystem.
+# Arg $1: "pip" | "npm" | "gem" | "cargo" | "go" | "composer" | "system"
 detect_pkg_for_tool() {
-    local tool_type="$1"  # "pip", "npm", "gem", "cargo", "system"
-    
+    local tool_type="${1:-system}"
+
     case "$tool_type" in
         pip)
-            if command -v pip >/dev/null 2>&1; then
-                echo "pip"
-            elif command -v pip3 >/dev/null 2>&1; then
-                echo "pip3"
-            elif command -v pipx >/dev/null 2>&1; then
-                echo "pipx"
-            else
-                echo "none"
+            if   command -v pipx >/dev/null 2>&1; then echo "pipx"
+            elif command -v pip3 >/dev/null 2>&1; then echo "pip3"
+            elif command -v pip  >/dev/null 2>&1; then echo "pip"
+            else echo "none"
             fi
             ;;
         npm)
-            if command -v npm >/dev/null 2>&1; then
-                echo "npm"
-            elif command -v yarn >/dev/null 2>&1; then
-                echo "yarn"
-            else
-                echo "none"
+            if   command -v npm  >/dev/null 2>&1; then echo "npm"
+            elif command -v yarn >/dev/null 2>&1; then echo "yarn"
+            elif command -v pnpm >/dev/null 2>&1; then echo "pnpm"
+            elif command -v bun  >/dev/null 2>&1; then echo "bun"
+            else echo "none"
             fi
             ;;
         gem)
-            command -v gem >/dev/null 2>&1 && echo "gem" || echo "none"
-            ;;
+            command -v gem   >/dev/null 2>&1 && echo "gem"   || echo "none" ;;
         cargo)
-            command -v cargo >/dev/null 2>&1 && echo "cargo" || echo "none"
-            ;;
+            command -v cargo >/dev/null 2>&1 && echo "cargo" || echo "none" ;;
+        go)
+            command -v go    >/dev/null 2>&1 && echo "go"    || echo "none" ;;
+        composer)
+            command -v composer >/dev/null 2>&1 && echo "composer" || echo "none" ;;
         system)
-            # Your existing detect_pkg_manager for system packages
-            detect_pkg_manager
+            # Caller wants the system PM — run full detection if not done yet
+            [[ -z "$PRIMARY_PKG_MANAGER" ]] && detect_pkg_manager >/dev/null
+            echo "$PRIMARY_PKG_MANAGER"
             ;;
         *)
-            detect_pkg_manager
+            # Unknown type — fall back to system PM
+            [[ -z "$PRIMARY_PKG_MANAGER" ]] && detect_pkg_manager >/dev/null
+            echo "$PRIMARY_PKG_MANAGER"
             ;;
     esac
 }
