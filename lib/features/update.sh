@@ -1,11 +1,11 @@
 #!/bin/bash
 # Updates package list based on detected package manager
 pkg_update() {
-  log OK "pkg list updated"
+  log START "pkg list update"
    PM="${PRIMARY_PKG_MANAGER:-$(detect_pkg_manager)}"
     case "$PM" in
         apt)
-          if ! apt-get update >/dev/null 2>&1; then
+          if ! sudo apt-get update >/dev/null 2>&1; then
             echo -e "${ERROR}  [!] Failed to update package list${RST}"
           fi
             ;;
@@ -65,7 +65,7 @@ pkg_update() {
             fi
             ;;
         scoop)
-            if ! scoop update >/dev/null 2>&11; then
+            if ! scoop update >/dev/null 2>&1; then
              echo -e "${ERROR}  [!] Failed to update package list${RST}"
             fi
             ;;
@@ -73,7 +73,7 @@ pkg_update() {
           echo -e "${ERROR}"
           print_box center " [!] No supported package manager found, So package list not updated"
           echo -e "${RST}"
-          stop_spinner
+          stop_spinner ""
             return 1
             ;;
     esac
