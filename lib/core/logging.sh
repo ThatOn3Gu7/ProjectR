@@ -1,6 +1,6 @@
 #!/bin/bash
 # -- log dir creation if not created already --
-LOG_FILE="log/install.log"
+LOG_FILE="${SCRIPT_DIR:-$(pwd)}/log/install.log"
 mkdir -p "$(dirname "$LOG_FILE")"
 
 # -- log file cleanup: rotate if over 100KB --

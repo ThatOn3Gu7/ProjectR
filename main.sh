@@ -5,6 +5,8 @@ set -uo pipefail
 # BASH_SOURCE[0] is always the path to THIS file (main.sh), even if it's
 # called from another directory or via a symlink.
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# -- export for use outside main.sh --
+export SCRIPT_DIR
 # -- Now source everything using $SCRIPT_DIR as the anchor --
 # -- source conf first (flags need colours/display) --
 source "$SCRIPT_DIR/lib/data/config.sh"
@@ -35,7 +37,7 @@ source "$SCRIPT_DIR/lib/features/upgrade.sh"
 source "$SCRIPT_DIR/lib/features/update.sh"
 source "$SCRIPT_DIR/lib/sub_menus/presets_menu.sh"
 source "$SCRIPT_DIR/lib/sub_menus/uninstall_menu.sh"
-trap graceful_exit SIGINT
+trap 'graceful_exit' SIGINT
 # -- Separate log by session --
 log START "━━━━━━ Session started at: $(date '+%Y-%m-%d %H:%M') ━━━━━━"
 # -- dependencies check -- 

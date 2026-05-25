@@ -2,7 +2,7 @@
 
 # -- checkes if a tools is installed --
 check_tool() {
-   local cmd=$1 # Tool name to check if its installed or not
+   local cmd="$1" # Tool name to check if its installed or not
    local name="$2" # A name to show to user
    local version
    version=$("$cmd" --version 2>/dev/null \

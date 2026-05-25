@@ -18,11 +18,11 @@ declare -A SI_BIN_MAP=(
 
 # Manager priority — lower number = preferred
 declare -A SI_TIER=(
-    [apt]=1   [apt-get]=1  [pacman]=1 [dnf]=1  [yum]=1    [zypper]=1
-    [apk]=1   [emerge]=1   [xbps]=1   [nix]=1  [brew]=1   [port]=1
-    [pkg]=1   [pkg_add]=1  [winget]=1 [choco]=1 [scoop]=1 [pkg]=1
+    [apt]=1   [apt-get]=1  [pacman]=1 [dnf]=1   [yum]=1    [zypper]=1
+    [apk]=1   [emerge]=1   [xbps]=1   [nix]=1   [brew]=1   [port]=1
+    [pkg]=1   [pkg_add]=1  [winget]=1 [choco]=1 [scoop]=1
     [pipx]=2  [flatpak]=2  [snap]=2
-    [cargo]=3 [npm]=3      [yarn]=3   [pip]=3  [pip3]=3   [gem]=3
+    [cargo]=3 [npm]=3      [yarn]=3   [pip]=3   [pip3]=3   [gem]=3
 )
 
 # ── Helpers ───
