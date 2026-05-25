@@ -25,8 +25,7 @@ start_spinner() {
 }
 # Stop the spinner
 stop_spinner() {
-     local mesg="$1"
-    [[ -z "${SPINNER_PID:-}" ]] && { printf "\r\033[2K"; echo -e "$mesg"; return 0; }
+    [[ -z "${SPINNER_PID:-}" ]] && { printf "\r\033[2K"; return 0; }
     # Send SIGTERM, then wait with timeout
     kill "$SPINNER_PID" 2>/dev/null
     local waited=0

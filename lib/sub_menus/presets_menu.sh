@@ -105,7 +105,7 @@ confirm_preset_install() {
     echo -e "${BOLD_RED}   [n] No${RST}  - Cancel and return to menu ${RST}"
     echo ""
     
-    echo -ne "  ${BOLD_BRIGHT_MAGENTA}[?] Your choice: ${RST}"
+    echo -ne "  ${BRIGHT_MAGENTA}[?] Your choice: ${RST}"
     read -n 1 choice
     echo ""
     

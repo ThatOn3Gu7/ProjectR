@@ -3,7 +3,7 @@
 check_dependency() {
     local cmd="$1"
     local name="$2"
-    local pm=$(detect_pkg_manager)
+    local pm="${PRIMARY_PKG_MANAGER:-$(detect_pkg_manager)}"
     
     if command -v "$cmd" >/dev/null 2>&1; then
         return 0
@@ -80,7 +80,7 @@ check_dependencies_menu() {
     echo ""
     
     local choice
-    echo -ne " ${BOLD_BRIGHT_MAGENTA}[*] Select option [1-4]: ${RST}" 
+    echo -ne " ${BRIGHT_MAGENTA}[*] Select option [1-4]: ${RST}" 
     read -r choice
     
     case $choice in
@@ -113,7 +113,7 @@ check_dependencies_menu() {
 # Detect package manager and return appropriate install command
 get_install_cmd() {
     local cmd="$1"
-    local pm=$(detect_pkg_manager)
+    local pm="${PRIMARY_PKG_MANAGER:-$(detect_pkg_manager)}"
     
     case "$pm" in
         apt)
@@ -143,42 +143,47 @@ get_install_cmd() {
 # Improved auto-install with better error handling
 auto_install_dependencies() {
     local deps=("$@")
-    local pm=$(detect_pkg_manager)
+    local pm="${PRIMARY_PKG_MANAGER:-$(detect_pkg_manager)}"
     local failed=()
     
     echo ""
     echo -e "${BOLD_BLUE} [*] Attempting to install missing deps ${RST}"
     
     for dep in "${deps[@]}"; do
-        IFS=":" read -r cmd name hint <<< "$dep"
+        IFS=":" read -r cmd name <<< "$dep"
         
-        echo -e "${INFO} [*] Installing: "$name"${RST}"
+        start_spinner " [*] Installing: "$name".."
         
         case "$cmd" in
             lolcat)
-                if install_lolcat; then
-                    echo -e "${OPTION} [✓] Success${RST}"
+                if install_lolcat >/dev/null 2>&1; then
+                    stop_spinner "${OPTION} [✓] Success${RST}"
                 else
+                    stop_spinner ""
                     failed+=("$name")
                 fi
                 ;;
             git|curl)
                 local install_cmd=$(get_install_cmd "$cmd")
                 if [ -n "$install_cmd" ]; then
-                    start_spinner " [*] Running: $install_cmd"
+                    start_spinner " [*] Running: $install_cmd.."
                     if eval "$install_cmd" >/dev/null 2>&1; then
-                        stop_spinner "  [✓] Installed: $cmd"
+                        stop_spinner "${OPTION}  [✓] Installed: $cmd ${RST}"
+                        sleep 2
                     else
-                        stop_spinner "  [✗] Failed to install: $cmd"
+                        stop_spinner "${ERROR}  [✗] Failed to install: $cmd ${RST}"
+                        sleep 2
                         failed+=("$name")
                     fi
                 else
                     echo -e "${ERROR}  [✗] No auto-install for: $pm${RST}"
+                    sleep 2
                     failed+=("$name")
                 fi
                 ;;
             *)
                 echo -e "${ERROR}  [✗] Unsupported: $cmd${RST}"
+                sleep 2
                 failed+=("$name")
                 ;;
         esac
@@ -197,7 +202,7 @@ auto_install_dependencies() {
 }
 # Special function to install lolcat (tricky on different systems)
 install_lolcat() {
-    local pm=$(detect_pkg_manager)
+    local pm="${PRIMARY_PKG_MANAGER:-$(detect_pkg_manager)}"
     
     # Try system package manager first
     case "$pm" in
@@ -210,6 +215,8 @@ install_lolcat() {
             pacman -S --noconfirm lolcat 2>/dev/null && return 0
             ;;
         pkg)
+            pkg install -y lolcat >/dev/null 2>&1 && return 0
+            # Fallback to gem if pkg fails
             pkg install -y ruby >/dev/null 2>&1 && gem install lolcat 2>/dev/null && return 0
             ;;
         brew)
@@ -309,7 +316,7 @@ echo -e "${INFO} └─ Source:            ${OPTION}git clone https://github.com
 # Improved show_install_commands
 show_install_commands() {
     local deps=("$@")
-    local pm=$(detect_pkg_manager)
+    local pm="${PRIMARY_PKG_MANAGER:-$(detect_pkg_manager)}"
     
     echo -e "${BOLD_GREEN}"
     print_box center " [*] Installation Instructions "

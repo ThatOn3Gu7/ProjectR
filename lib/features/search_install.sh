@@ -1,8 +1,7 @@
 #!/bin/bash
-# lib/features/search_install.sh
 # "Install by name" — checks TOOLS array first, then does smart multi-manager scan
 
-# ── Name normalisation maps ─────────────────────────────────────────────────
+# ── Name normalisation maps ──
 # pkg: what to pass to the package manager
 # bin: what binary to check for after install
 declare -A SI_PKG_MAP=(
@@ -26,7 +25,7 @@ declare -A SI_TIER=(
     [cargo]=3 [npm]=3      [yarn]=3   [pip]=3  [pip3]=3   [gem]=3
 )
 
-# ── Helpers ─────────────────────────────────────────────────────────────────
+# ── Helpers ───
 
 # Resolve user input → pkg name + binary name
 _si_normalize() {
@@ -66,12 +65,12 @@ _si_find_in_tools() {
     return 1
 }
 
-# ── Core: install one tool by name ──────────────────────────────────────────
+# ── Core: install one tool by name ───
 search_and_install() {
     local input="$1"
     echo ""
 
-    # ── Path A: tool is in our TOOLS list ───────────────────────────────────
+    # ── Path A: tool is in our TOOLS list ───
     local matched
     matched=$(_si_find_in_tools "$input")
     if [ -n "$matched" ]; then
@@ -94,7 +93,7 @@ search_and_install() {
         return
     fi
 
-    # ── Path B: unknown tool — smart multi-manager scan ─────────────────────
+    # ── Path B: unknown tool — smart multi-manager scan ───
     local norm; norm=$(_si_normalize "$input")
     local pkg="${norm%|*}"
     local binary="${norm#*|}"
@@ -158,7 +157,7 @@ search_and_install() {
             ((i++))
         done
         echo ""
-        echo -ne "  ${BOLD_BRIGHT_MAGENTA}[*] Choose [1-${#available[@]}]: ${RST}"
+        echo -ne "  ${BRIGHT_MAGENTA}[*] Choose [1-${#available[@]}]: ${RST}"
         read -r pick
         if [[ "$pick" =~ ^[0-9]+$ ]] && (( pick >= 1 && pick <= ${#available[@]} )); then
             chosen="${available[$((pick-1))]}"
@@ -180,7 +179,7 @@ search_and_install() {
     esac
 }
 
-# ── Interactive menu ─────────────────────────────────────────────────────────
+# ── Interactive menu ───
 search_install_menu() {
     while true; do
         clear
