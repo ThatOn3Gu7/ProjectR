@@ -33,10 +33,11 @@ config_set() {
 # Usage: config_clear "skip_dep_check"
 config_clear() {
     local key="$1"
-    grep -v "^${key}=" "$CONFIG_FILE" > "${CONFIG_FILE}.tmp" 2>/dev/null
-    mv "${CONFIG_FILE}.tmp" "$CONFIG_FILE"
+    local tmp
+    tmp=$(mktemp "${CONFIG_FILE}.XXXXXX") || return 1
+    grep -v "^${key}=" "$CONFIG_FILE" > "$tmp" 2>/dev/null || true
+    mv "$tmp" "$CONFIG_FILE"
 }
-
 # Clear ALL saved config (nuclear reset)
 config_reset_all() {
     > "$CONFIG_FILE"
