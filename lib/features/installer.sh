@@ -1,6 +1,4 @@
 #!/bin/bash
-# detect_pkg_manager for install and tool check
-PM="${PRIMARY_PKG_MANAGER:-$(detect_pkg_manager)}"
 # This function here installs all tools put in it.
 install_all() {
 # For post-install summary detection
@@ -89,6 +87,7 @@ install_pkg() {
     local cmd="$1"  # command to check (git, curl, nmap, etc.)
     local pkg="$2"     # package name to install
     local name="$3"    # pretty name for display
+    local PM="${PRIMARY_PKG_MANAGER:-$(detect_pkg_manager)}"
 
     # installing or Skipped massges
     if command -v "$cmd" >/dev/null 2>&1; then
@@ -110,8 +109,7 @@ install_pkg() {
 
             ;;
         pacman)
-            sudo pacman -Sy && sudo pacman -S --noconfirm --needed "$pkg" >/dev/null 2>&1
-
+            sudo pacman -Sy --noconfirm --needed "$pkg" >/dev/null 2>&1
             ;;
         zypper)
             sudo zypper refresh && sudo zypper install -y "$pkg" >/dev/null 2>&1
@@ -163,7 +161,8 @@ install_pkg() {
                 ;;
         esac
         # detection for post-install summary
-        if [ $? -eq 0 ]; then
+        local install_exit=$?
+        if [ $install_exit -eq 0 ]; then
           INSTALLED_PKGS+=("$name") 
           stop_spinner "${OPTION}  [✓] $name has installed successfully (via $PM). ${RST}"
           log INSTALLED "$name installed successfully (via $PM)"
@@ -250,6 +249,10 @@ install_lang() {
 }
 #  install_code_server — special installer for code-server
 install_code_server() {
+    if [[ "${PRIMARY_PKG_MANAGER:-}" != "pkg" ]]; then
+      echo -e "${ERROR}  [!] code-server via tur-repo is only supported on Termux.${RST}"
+      return 1
+    fi
     echo -e "${OPTION}"
     if ask "[*] tur-repo is required to install code-server, install it?" "y"; then
         echo -e "${RST}"
