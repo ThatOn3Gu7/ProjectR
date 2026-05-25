@@ -36,8 +36,8 @@ uninstall_lang() {
     bun)
         bun remove -g "$pkg" >/dev/null 2>&1
         ;;
-    pip)
-        pip uninstall -y "$pkg" >/dev/null 2>&1
+    pip|pip3|pipx)
+        $pm uninstall -y "$pkg" >/dev/null 2>&1
         ;;
     pip3)
         pip3 uninstall -y "$pkg" >/dev/null 2>&1
@@ -49,7 +49,7 @@ uninstall_lang() {
         gem uninstall "$pkg" -x >/dev/null 2>&1
         ;;
     cargo)
-        cargo uninstall "$pkg"
+        cargo uninstall "$pkg" >/dev/null 2>&1
         ;;
     go)
         go clean -i "$pkg" && rm -rf "$(go env GOPATH)/bin/$pkg" >/dev/null 2>&1
@@ -95,81 +95,81 @@ uninstall_pkg() {
    case "$PM" in
     # Android/Termux
     pkg)
-        pkg uninstall -y "$pkg"
+        pkg uninstall -y "$pkg" >/dev/null 2>&1
         ;;
     # Linux
     apt|apt-get)
-        apt purge -y "$pkg" 2>/dev/null || apt-get purge -y "$pkg"
+       sudo apt purge -y "$pkg" 2>/dev/null || sudo apt-get purge -y "$pkg" >/dev/null 2>&1
         ;;
     pacman)
-        sudo pacman -Rns --noconfirm "$pkg"
+        sudo pacman -Rns --noconfirm "$pkg" >/dev/null 2>&1
         ;;
     dnf)
-        sudo dnf remove -y "$pkg"
+        sudo dnf remove -y "$pkg" >/dev/null 2>&1
         ;;
     yum)
-        sudo yum remove -y "$pkg"
+        sudo yum remove -y "$pkg" >/dev/null 2>&1
         ;;
     zypper)
-        sudo zypper remove -y "$pkg"
+        sudo zypper remove -y "$pkg" >/dev/null 2>&1
         ;;
     apk)
-        sudo apk del "$pkg"
+        sudo apk del "$pkg" >/dev/null 2>&1
         ;;
     emerge)
-        sudo emerge --unmerge "$pkg"
+        sudo emerge --unmerge "$pkg" >/dev/null 2>&1
         ;;
     xbps)
-        sudo xbps-remove -R "$pkg"
+        sudo xbps-remove -R "$pkg" >/dev/null 2>&1
         ;;
     nix)
-        nix-env --uninstall "$pkg" && nix-collect-garbage -d >/dev/null 2>&1
+        nix-env --uninstall "$pkg" >/dev/null 2>&1 && nix-collect-garbage -d  >/dev/null 2>&1
         ;;
     guix)
-        guix package --remove="$pkg"
+        guix package --remove="$pkg" >/dev/null 2>&1
         ;;
     eopkg)
-        sudo eopkg remove "$pkg"
+        sudo eopkg remove "$pkg" >/dev/null 2>&1
         ;;
     urpmi)
-        sudo urpme "$pkg"
+        sudo urpme "$pkg" >/dev/null 2>&1
         ;;
     slackpkg)
-        sudo slackpkg remove "$pkg"
+        sudo slackpkg remove "$pkg" >/dev/null 2>&1
         ;;
     portage)
-        sudo emerge --depclean "$pkg"
+        sudo emerge --depclean "$pkg" >/dev/null 2>&1
         ;;
     # macOS
     brew)
-        brew uninstall --force "$pkg"
+        brew uninstall --force "$pkg" >/dev/null 2>&1
         ;;
     macports)
-        sudo port uninstall "$pkg"
+        sudo port uninstall "$pkg" >/dev/null 2>&1
         ;;
     # BSD
     BSD-pkg)
-        sudo pkg delete -y "$pkg"
+        sudo pkg delete -y "$pkg" >/dev/null 2>&1
         ;;
     pkg_add)
-        doas pkg_delete "$pkg"
+        doas pkg_delete "$pkg" >/dev/null 2>&1
         ;;
     # Windows
     winget)
-        winget uninstall --silent --accept-package-agreements "$pkg"
+        winget uninstall --silent --accept-package-agreements "$pkg" >/dev/null 2>&1
         ;;
     choco)
-        choco uninstall -y "$pkg"
+        choco uninstall -y "$pkg" >/dev/null 2>&1
         ;;
     scoop)
-        scoop uninstall "$pkg"
+        scoop uninstall "$pkg" >/dev/null 2>&1
         ;;
     # Container/App formats
     flatpak)
-        flatpak uninstall -y "$pkg"
+        flatpak uninstall -y "$pkg" >/dev/null 2>&1
         ;;
     snap)
-        sudo snap remove "$pkg"
+        sudo snap remove "$pkg" >/dev/null 2>&1
         ;;
     appimage)
         echo -e "${OPTION} [*] AppImages have no package manager. Delete the .AppImage file manually. ${RST}"
@@ -179,6 +179,6 @@ uninstall_pkg() {
        echo -e "${ERROR} [!] Unsupported package manager..$PM ${RST}"
        return
        ;;
-   esac >/dev/null 2>&1
+   esac
   stop_spinner "${OPTION}  [✓] Removed: "$name" successfully (via $PM)..${RST}"
 }
