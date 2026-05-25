@@ -70,7 +70,7 @@ parse_flags() {
               _flag_reset
               exit 0
               ;;
-            # ── Unknown flag ───────────────────────────────────────────
+            # ── Unknown flag ───
             --*|-*)
                 echo -e "${ERROR}[!] Unknown flag: ${BOLD_WHITE}$arg${RST}"
                 echo -e "${INFO}[*] Run ${BOLD_WHITE}./main.sh --help or -h${RST}${INFO} to see available flags.${RST}"
@@ -80,7 +80,7 @@ parse_flags() {
     done
 }
 
-# ── Built-in helpers (small enough to live here) ─────────────────────────────
+# ── Built-in helpers (small enough to live here) ────
 _flag_help() {
     echo ""
     echo -e "${OPTION} [*] ProjectR — Available Flags ${RST}"
@@ -117,11 +117,11 @@ _flag_help() {
 _flag_list_tools() {
 
     echo ""
-    # ── Header ─────────────────────────────
+    # ── Header ──
     echo -e "${BOLD}${OPTION} [*] Available Tools for install ${RST}"
     echo ""
     
-    # ── Table ─────────────────────────────
+    # ── Table ───
     printf "  ${BOLD_WHITE}%-4s  %-16s  %-40s${RST}\n" \
         "Num" "Name" "Description"
     # Separator 
@@ -136,7 +136,7 @@ _flag_list_tools() {
            "$num" "$name" "$disp_desc"
     done
     
-    # ── Summary ───────────────────────────
+    # ── Summary ───
     echo ""
     echo -e "  ${DIM}────────────────────────────────────────────────────────────────────${RST}"
     echo -e "  ${DIM}Total:${RST}  ${BOLD_WHITE}${#TOOLS[@]}${RST} tools available"
@@ -144,7 +144,7 @@ _flag_list_tools() {
 }
 # --list=manager : shows all known package managers, their status and OS support
 _flag_list_manager() {
-    # ── OS/platform detection ─────────────────
+    # ── OS/platform detection ───
     local detected_os="Unknown"
     local detected_pm
     detected_pm="${PRIMARY_PKG_MANAGER:-$(detect_pkg_manager)}"
@@ -161,7 +161,7 @@ _flag_list_manager() {
         detected_os="Linux"
     fi
 
-    # ── Manager registry ──────────────────────
+    # ── Manager registry ───
     # Format: id|display_name|platform|check_cmd
     local managers=(
         "apt|apt|Linux (Debian/Ubuntu)|apt"
@@ -190,7 +190,7 @@ _flag_list_manager() {
         "snap|snap|Linux|snap"
     )
 
-    # ── Header ───────────────────────────────
+    # ── Header ───
     echo ""
     echo -e "${OPTION} [*] ProjectR — Supported Package Managers ${RST}"
     echo ""
@@ -198,7 +198,7 @@ _flag_list_manager() {
     echo -e "  Legend:  ${OPTION}✔${RST} = available, ${ERROR}✘${RST} = not found,  ${OPTION}★${RST} = primary${RST}"
     echo ""
 
-    # ── Dynamic column widths ────────────────
+    # ── Dynamic column widths ───
     local max_name=15   # "Package Manager"
     local max_os=12     # "Platform"
     for entry in "${managers[@]}"; do
@@ -210,12 +210,12 @@ _flag_list_manager() {
     (( max_name < 15 )) && max_name=15
     (( max_os < 12 )) && max_os=12
 
-    # ── Table header ─────────────────────────
+    # ── Table header ───
     printf "  ${BOLD_WHITE}%-${max_name}s  %-6s  %-${max_os}s${RST}\n" \
         "Package Manager" "Avail." "Platform"
     printf "  ${DIM}%s${RST}\n" "$(printf '─%.0s' $(seq 1 $(( max_name + 7 + max_os + 2 ))))"
 
-    # ── Table rows ───────────────────────────
+    # ── Table rows ───
 local available_list=()
 for entry in "${managers[@]}"; do
     IFS="|" read -r id display platform check_cmd <<< "$entry"
@@ -243,7 +243,7 @@ for entry in "${managers[@]}"; do
         "$display" "$icon" "$platform" "$marker"
 done
 
-    # ── Footer ───────────────────────────────
+    # ── Footer ───
     echo ""
     printf "  ${DIM}%s${RST}\n" "$(printf '─%.0s' $(seq 1 $(( max_name + 7 + max_os + 2 ))))"
     echo -e "  ${INFO}Detected OS :${RST}  ${BOLD_WHITE}${detected_os}${RST}"
@@ -259,7 +259,7 @@ done
     fi
     echo ""
 }
-# ── --list=installed ──────────────────────────────────────────────────────────
+# ── --list=installed ───
 _flag_list_installed() {
     echo ""
     echo -e "${OPTION} [*] Installed Tools ${RST}"
@@ -303,7 +303,7 @@ _flag_list_installed() {
     echo ""
 }
 
-# ── --list=categories ─────────────────────────────────────────────────────────
+# ── --list=categories ────
 _flag_list_categories() {
     echo ""
     echo -e "${BOLD}${OPTION} [*] Tools listed by Category ${RST}"
@@ -339,12 +339,12 @@ _flag_list_categories() {
     done
 }
 
-# ── --log / --log=N ───────────────────────────────────────────────────────────
+# ── --log / --log=N ───
 _flag_log() {
     local lines="${1:-20}"
     # LOG_FILE is defined in logging.sh — but flags run before it's sourced,
     # so we hardcode the same path here to stay independent
-    local log_path="log/install.log"
+    local log_path="${SCRIPT_DIR:-$(pwd)}/log/install.log"
 
     echo ""
     echo -e "${OPTION} [*] Install Log ${DIM}(last ${lines} lines)${RST}"
@@ -378,7 +378,7 @@ _flag_log() {
     echo ""
 }
 
-# ── --reset ───────────────────────────────────────────────────────────────────
+# ── --reset ───
 _flag_reset() {
     echo ""
     echo -e "${OPTION} [*] Reset Saved Preferences ${RST}"
@@ -414,7 +414,7 @@ _flag_reset() {
     echo ""
 }
 
-# ── --install=<name> ──────────────────────────────────────────────────────────
+# ── --install=<name> ───
 _flag_install() {
     local target="$1"
     echo ""
@@ -476,7 +476,7 @@ _flag_install() {
     echo ""
 }
 
-# ── --uninstall=<name> ────────────────────────────────────────────────────────
+# ── --uninstall=<name> ────
 _flag_uninstall() {
     local target="$1"
     echo ""
@@ -525,11 +525,11 @@ _flag_search() {
     echo ""
     echo -e "${OPTION} [*] Search & install: ${BOLD_WHITE}${target}${RST}"
     echo ""
-    source lib/features/search_install.sh
-    source lib/core/spinner.sh
-    source lib/core/logging.sh
-    source lib/features/installer.sh
-    source lib/features/post_install.sh
+    source "$_PROJECT_ROOT/lib/features/search_install.sh"
+    source "$_PROJECT_ROOT/lib/core/spinner.sh"
+    source "$_PROJECT_ROOT/lib/core/logging.sh"
+    source "$_PROJECT_ROOT/lib/features/installer.sh"
+    source "$_PROJECT_ROOT/lib/features/post_install.sh"
     INSTALLED_PKGS=(); SKIPPED_PKGS=(); FAILED_PKGS=()
     search_and_install "$target"
     echo ""
