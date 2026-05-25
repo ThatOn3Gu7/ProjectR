@@ -41,9 +41,9 @@ trap 'graceful_exit' SIGINT
 # -- Separate log by session --
 log START "━━━━━━ Session started at: $(date '+%Y-%m-%d %H:%M') ━━━━━━"
 # -- dependencies check -- 
-check_dependencies_menu
+verify_dependencies
 # a call for startup internet check
-startup_wifi_check
+check_startup_connectivity
 # -- small helper function for when lolcat isn't around --
 rainbow() { command -v lolcat >/dev/null 2>&1 && lolcat || cat; }
 # -- main installer menu  --
@@ -110,9 +110,9 @@ handle_selection() {
   # Step 1: Handle the special non-number options first
   case "$selected" in
     0)   clear; install_all; return ;;
-    s|S) clear; search_install_menu; return ;;
+    s|S) clear; install_by_name_menu; return ;;
     p|P) preset_menu; return ;;
-    i|I) clear; check_tool_main; return ;;
+    i|I) clear; check_all_tools; return ;;
     u|U) clear; uninstall_menu; return ;;
     r|R) config_reset_all; sleep 1; return ;;
     e|E) graceful_exit ;;

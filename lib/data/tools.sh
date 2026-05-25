@@ -25,7 +25,7 @@ TOOLS=(
   "21|croc|croc|Croc|Securely send files between machines|pkg|-|Dev"
   "22|fzf|fzf|Fzf|Command-line fuzzy finder|pkg|-|Dev"
   "23|zoxide|zoxide|Zoxide|Smarter cd that learns habits|pkg|-|Dev"
-  "24|zsh|zsh|Zsh|Extended shell with powerful features|special|install_zsh_full|Dev"
+  "24|zsh|zsh|Zsh|Extended shell with powerful features|special|setup_zsh|Dev"
   "25|duf|duf|Duf|Disk usage and free space utility|pkg|-|Min"
   "26|tty-clock|tty-clock|Tty-clock|Digital clock in terminal|pkg|-|Fun"
   "27|pipes.sh|pipes.sh|Pipes.sh|Animated pipe terminal screensaver|pkg|-|Fun"

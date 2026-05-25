@@ -26,11 +26,11 @@ install_nvim() {
       sleep 3
       return 0
   else
-      get_nvim_config
+      prompt_nvim_config
   fi
  }
 # if called chacks if a nvim config is installed and if not, then gives the user choice to clone it
-get_nvim_config() {
+prompt_nvim_config() {
  echo -e "${INFO}  [*] Which config would you like to install? ${RST}"
   echo ""
    echo -e "${OPTION}   [1] NvChad ${RST}"

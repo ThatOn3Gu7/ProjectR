@@ -8,7 +8,7 @@ check_internet() {
   return 1
 }
 # startup internet Check
-startup_wifi_check() {
+check_startup_connectivity() {
   if ! check_internet; then
   # ONE-TIME: already said continue without WiFi
     if [ "$(config_get 'skip_wifi_check')" = "true" ]; then
@@ -40,7 +40,7 @@ Please make sure to turn on WI-FI to continue :)"
   fi
 }
 # internet connection detection
-is_internet_up() {
+require_internet() {
     # Check for internet connection
     if ! check_internet; then
       log ERROR "No internet connection"

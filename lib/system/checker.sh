@@ -19,7 +19,7 @@ check_tool() {
   fi
 }
 # -- loops through ALL tools and checks each one --
-check_tool_main() {
+check_all_tools() {
   # Reset arrays every time this runs so numbers don't stack up
   # when the user hits 'i' multiple times in one session
   FOUND_PKGS=()

@@ -7,7 +7,7 @@ install_all() {
   FAILED_PKGS=()
   log INSTALL "User chose to install all tools"
    # Checks for Internet before proceeding
-   is_internet_up 
+   require_internet 
    # Update package lists
    echo ""
    progress_run "Syncing repositories" \

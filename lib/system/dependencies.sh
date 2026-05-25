@@ -37,7 +37,7 @@ check_dependency() {
     fi
 }
 # Check multiple dependencies and show menu if missing
-check_dependencies_menu() {
+verify_dependencies() {
    # ONE-TIME: if user already chose to skip dep check, honour it
     if [ "$(config_get 'skip_dep_check')" = "true" ]; then
         return 0

@@ -24,19 +24,19 @@ echo -e "${BOLD_WHITE}   [3] ${BOLD_GREEN}Fun tools ${BOLD_YELLOW}-- For fun & g
   echo ""
   case "$profile_choice" in
     1) 
-      if confirm_preset_install "Minimal" "${PRESET_MINIMAL[@]}"; then
+      if prompt_preset_install "Minimal" "${PRESET_MINIMAL[@]}"; then
         log INSTALL "User chose to install 'Minimal tools preset'"
         install_preset "${PRESET_MINIMAL[@]}"
       fi
       ;;
     2)
-      if confirm_preset_install "Developer" "${PRESET_DEV[@]}"; then
+      if prompt_preset_install "Developer" "${PRESET_DEV[@]}"; then
         log INSTALL "User chose to install 'Developer tools preset'"
         install_preset "${PRESET_DEV[@]}"
       fi
       ;;
     3)
-      if confirm_preset_install "Fun" "${PRESET_FUN[@]}"; then
+      if prompt_preset_install "Fun" "${PRESET_FUN[@]}"; then
         log INSTALL "User chose to install 'Fun tools preset'"
         install_preset "${PRESET_FUN[@]}"
       fi
@@ -52,7 +52,7 @@ echo -e "${BOLD_WHITE}   [3] ${BOLD_GREEN}Fun tools ${BOLD_YELLOW}-- For fun & g
  done
 }
 # Function to display preset contents beautifully
-show_preset_contents() {
+preview_preset() {
     local preset_name="$1"
     shift
     local preset_items=("$@")  # Store all remaining args as array
@@ -90,13 +90,13 @@ show_preset_contents() {
 }
 
 # Function to show preset and confirm installation
-confirm_preset_install() {
+prompt_preset_install() {
     local preset_name="$1"
     shift
     local preset_items=("$@")  # Store all remaining args as array
     
     # Show what will be installed
-    show_preset_contents "$preset_name" "${preset_items[@]}"
+    preview_preset "$preset_name" "${preset_items[@]}"
     
     # Ask for confirmation
     echo -e "${BOLD_BLUE}  [?] Do you want to install this preset? ${RST}"

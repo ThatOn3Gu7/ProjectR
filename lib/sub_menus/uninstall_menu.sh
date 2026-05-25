@@ -35,7 +35,7 @@ echo -e "${RST}"
     for choice in "${choices[@]}"; do
       # --- Special menu options ---
       case "$choice" in
-        i|I) clear; check_tool_main; continue ;;
+        i|I) clear; check_all_tools; continue ;;
         b|B) return ;;
         e|E) graceful_exit ;;
       esac

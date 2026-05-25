@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # The follwoing commands are for installing zsh & oh my zsh.
-install_zsh_full() {
+setup_zsh() {
  install_pkg zsh zsh "Zsh: Extended shell with powerful features"
    sleep 1
    # echo -e "${INFO}"

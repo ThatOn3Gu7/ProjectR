@@ -180,7 +180,7 @@ search_and_install() {
 }
 
 # ── Interactive menu ───
-search_install_menu() {
+install_by_name_menu() {
     while true; do
         clear
         log ENTER "User entered sub-menu 'search-install'"
