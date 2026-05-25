@@ -163,21 +163,20 @@ auto_install_dependencies() {
                     failed+=("$name")
                 fi
                 ;;
-            git|curl)
-                local install_cmd=$(get_install_cmd "$cmd")
-                if [ -n "$install_cmd" ]; then
-                    start_spinner " [*] Running: $install_cmd.."
-                    if eval "$install_cmd" >/dev/null 2>&1; then
-                        stop_spinner "${OPTION}  [✓] Installed: $cmd ${RST}"
-                        sleep 2
-                    else
-                        stop_spinner "${ERROR}  [✗] Failed to install: $cmd ${RST}"
-                        sleep 2
-                        failed+=("$name")
-                    fi
+          git|curl)
+               local install_arr=()
+                case "$pm" in
+                    apt)    install_arr=(sudo apt-get install -y "$cmd") ;;
+                    pacman) install_arr=(sudo pacman -S --noconfirm "$cmd") ;;
+                    pkg)    install_arr=(pkg install -y "$cmd") ;;
+                    brew)   install_arr=(brew install "$cmd") ;;
+                    apk)    install_arr=(sudo apk add "$cmd") ;;
+                    *)      echo -e "${ERROR}  [✗] No auto-install for: $pm${RST}"; failed+=("$name"); continue ;;
+                esac
+                if "${install_arr[@]}" >/dev/null 2>&1; then
+                    stop_spinner "${OPTION}  [✓] Installed: $cmd ${RST}"
                 else
-                    echo -e "${ERROR}  [✗] No auto-install for: $pm${RST}"
-                    sleep 2
+                    stop_spinner "${ERROR}  [✗] Failed: $cmd ${RST}"
                     failed+=("$name")
                 fi
                 ;;
