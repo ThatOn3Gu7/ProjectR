@@ -46,9 +46,9 @@ check_all_tools() {
   echo -e "${RST}"
 
   echo -e "${OPTION}"
-  print_box center " [✓] Task complete. Press ENTER to continue"
+  print_box center " [✓] Task complete."
   echo -e "${RST}"
-
-  read -s
+  printf "${DIM}  [press ENTER]${RST}"
+  read -s; echo
   safe_tput cnorm
 }

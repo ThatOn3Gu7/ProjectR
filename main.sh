@@ -38,6 +38,19 @@ source "$SCRIPT_DIR/lib/features/update.sh"
 source "$SCRIPT_DIR/lib/sub_menus/presets_menu.sh"
 source "$SCRIPT_DIR/lib/sub_menus/uninstall_menu.sh"
 trap 'graceful_exit' SIGINT
+# -- lock file location --
+LOCK_FILE="${HOME}/.config/projectr/tmp/project.lock"
+# -- Ensure directory exists --
+mkdir -p "$(dirname "$LOCK_FILE")" || {
+    echo -e "${ERROR}[!] Failed to create lock directory${RST}"
+    exit 1
+}
+# -- Acquire lock (redirect after directory exists) --
+exec 9>"$LOCK_FILE"
+flock -n 9 || {
+    echo -e "${ERROR}WARR:${RST} projectr is already running."
+    exit 1
+}
 # -- Separate log by session --
 log START "━━━━━━ Session started at: $(date '+%Y-%m-%d %H:%M') ━━━━━━"
 # -- dependencies check -- 

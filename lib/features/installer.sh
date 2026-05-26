@@ -65,9 +65,10 @@ install_all() {
     echo ""
     post_install_summary
     echo -e "${OPTION}" 
-    print_box center "[✓] installation Completed. Press ENTER to continue.."
+    print_box center "[✓] installation Completed."
     echo -e "${RST}"
-    read -s
+    printf "${DIM}  [press ENTER]${RST}"
+    read -s; echo
     safe_tput cnorm
 
 }

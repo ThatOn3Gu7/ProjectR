@@ -43,9 +43,9 @@ _si_check_avail() {
         pacman)        pacman -Ss "^${pkg}$" >/dev/null 2>&1 ;;
         dnf|yum)       $mgr info "$pkg" >/dev/null 2>&1 ;;
         brew)          brew info "$pkg" >/dev/null 2>&1 ;;
-        pkg|pkg) pkg show "$pkg" >/dev/null 2>&1 ;;
+        pkg) pkg show "$pkg" >/dev/null 2>&1 ;;
         npm)           npm info "$pkg" >/dev/null 2>&1 ;;
-        pip|pip3)      $mgr index versions "$pkg" >/dev/null 2>&1 ;;
+        pip|pip3|pipx)      $mgr index versions "$pkg" >/dev/null 2>&1 ;;
         gem)           gem list -r "^${pkg}$" >/dev/null 2>&1 ;;
         cargo)         cargo search --limit 1 "$pkg" 2>/dev/null | grep -q "^$pkg " ;;
         *)             return 0 ;;   # unknown → assume available, let install decide

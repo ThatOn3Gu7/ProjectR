@@ -4,7 +4,7 @@ preset_menu() {
  while true; do
   clear
    log ENTER "User entered sub-menu 'install-presets'"
-  cat <<"EOF" | lolcat
+  cat <<"EOF" | rainbow
   
                 ░█▀█░█▀▄░█▀▀░█▀▀░█▀▀░▀█▀░█▀▀░░░░█▀▀░█░█
                 ░█▀▀░█▀▄░█▀▀░▀▀█░█▀▀░░█░░▀▀█░░░░▀▀█░█▀█

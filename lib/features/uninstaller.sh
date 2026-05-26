@@ -5,10 +5,10 @@ uninstall_lang() {
  local pm=$1 # what Lang-specific pkg manager to use
  local pkg=$2 # pkg name to delete
  local name="$3" # pkg name to display
- 
+
   # -- Confirmation --
   if [ "${NON_INTERACTIVE:-0}" != "1" ]; then
-    if ! ask "  [!] Are you sure? Action cannot be undone!"; then
+    if ! ask "  [?] Remove $name? (can be reinstalled later)" "n"; then
         echo -e "${INFO}  [→] Skipping: "$name"${RST}"
         return 0
     fi
@@ -38,12 +38,6 @@ uninstall_lang() {
         ;;
     pip|pip3|pipx)
         $pm uninstall -y "$pkg" >/dev/null 2>&1
-        ;;
-    pip3)
-        pip3 uninstall -y "$pkg" >/dev/null 2>&1
-        ;;
-    pipx)
-        pipx uninstall "$pkg" >/dev/null 2>&1
         ;;
     gem)
         gem uninstall "$pkg" -x >/dev/null 2>&1
@@ -79,7 +73,7 @@ uninstall_pkg() {
 
   # -- Confirmation --
   if [ "${NON_INTERACTIVE:-0}" != "1" ]; then
-    if ! ask "  [!] Are you sure? Action cannot be undone!"; then
+    if ! ask "  [?] Remove $name? (can be reinstalled later)" "n"; then
         echo -e "${INFO}  [→] Skipping: "$name"${RST}"
         return 0
     fi

@@ -1,25 +1,16 @@
 #!/bin/bash
 
-# ── Globals set by detect_pkg_manager ────────────────────────────────────────
-# PRIMARY_PKG_MANAGER : the single best system PM to use for installs
-# DETECTED_PKG_MANAGERS : array of ALL system PMs found on this machine
+# ── Globals set by detect_pkg_manager ──
 PRIMARY_PKG_MANAGER=""
 DETECTED_PKG_MANAGERS=()
 
-# ── detect_pkg_manager ────────────────────────────────────────────────────────
-# Finds every system package manager available, stores them all in
-# DETECTED_PKG_MANAGERS, and picks the best one as PRIMARY_PKG_MANAGER.
-# Language-specific managers (pip, npm, gem, cargo…) are intentionally
-# excluded — use detect_pkg_for_tool for those.
+# ── detect_pkg_manager ───
 detect_pkg_manager() {
     DETECTED_PKG_MANAGERS=()
 
-    # ── Priority-ordered list: id | check-command ────────────────────────
-    # Format: "id|cmd"  — id is what we store, cmd is what we test with
-    # `command -v`.  Listed best-first so the first hit becomes PRIMARY.
     local candidates=(
         # Android
-        "pkg|pkg"               # Termux — checked via $PREFIX below too
+        "pkg|pkg" # Termux — checked via $PREFIX below too
         # Debian / Ubuntu family
         "apt|apt"
         "apt-get|apt-get"
@@ -99,7 +90,7 @@ detect_pkg_manager() {
 }
 
 
-# ── detect_pkg_for_tool ───────────────────────────────────────────────────────
+# ── detect_pkg_for_tool ───
 # Returns the best available manager for a given language ecosystem.
 # Arg $1: "pip" | "npm" | "gem" | "cargo" | "go" | "composer" | "system"
 detect_pkg_for_tool() {

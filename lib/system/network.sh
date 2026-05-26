@@ -55,6 +55,6 @@ require_internet() {
       clear
       echo -e "${OPTION}"
        print_box center "[✓] Internet connection detected. Proceeding."
-      echo -e "${RST}""
+      echo -e "${RST}"
     fi
 }
