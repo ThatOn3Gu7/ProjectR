@@ -1,6 +1,14 @@
 #!/bin/bash
-# -- the presets menu --
+# -- deside which presets menu to use --
 preset_menu() {
+    if command -v whiptail >/dev/null 2>&1; then
+        whiptail_preset_ui
+    else
+        _fallback_text_preset_menu
+    fi
+}
+# -- the text based presets menu --
+_fallback_text_preset_menu() {
  while true; do
   clear
    log ENTER "User entered sub-menu 'install-presets'"
@@ -111,14 +119,42 @@ prompt_preset_install() {
     
     case "$choice" in
         y|Y)
-            echo -e "\n${OPTION}  [✓] Starting installation of $preset_name preset...${RST}"
+            assert_disk_space
+            sleep 1
+            echo -e "${OPTION}  [✓] Starting installation of $preset_name preset...${RST}"
             sleep 1
             return 0
             ;;
         *)
-            echo -e "\n${INFO}  [→] Installation cancelled. Returning to menu...${RST}"
+            echo -e "${INFO}  [→] Installation cancelled. Returning to menu...${RST}"
             sleep 1
             return 1
             ;;
     esac
+}
+# -- whiptail based preset_menu --
+whiptail_preset_ui() {
+    while true; do
+        local choices
+        # Draw the whiptail menu and capture the output
+        choices=$(whiptail --title "ProjectR Presets" \
+            --cancel-button "Back to Main" \
+            --menu "Select a System Configuration Preset:" 15 65 4 \
+            "1" "Minimal Tools System Environment Setup" \
+            "2" "Full Professional Developer Workspace" \
+            "3" "Fun Interactive Entertainment Tools" 3>&1 1>&2 2>&3)
+
+        # Check if user hit the Cancel button (whiptail returns exit code 1)
+        if [[ $? -ne 0 ]]; then
+            log LEFT "User exited whiptail presets menu"
+            return 0
+        fi
+
+        # Process their selection using your existing prompt_preset_install logic
+        case "$choices" in
+            1) prompt_preset_install "Minimal" "${PRESET_MINIMAL[@]}" ;;
+            2) prompt_preset_install "Developer" "${PRESET_DEV[@]}" ;;
+            3) prompt_preset_install "Fun" "${PRESET_FUN[@]}" ;;
+        esac
+    done
 }
