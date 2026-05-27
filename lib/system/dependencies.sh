@@ -47,9 +47,10 @@ verify_dependencies() {
     # Define dependencies here
     # Format: "command:Display Name"
     local dependencies=(
-        "lolcat:Lolcat (Required)"
+        "lolcat:Lolcat (Recommended)"
         "git:Git (Required)"
         "curl:cURL (Required)"
+        "crontab:Crontab (Required)"
     )
     
     # Check each dependency

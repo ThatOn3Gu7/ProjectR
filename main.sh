@@ -59,6 +59,11 @@ verify_dependencies
 check_startup_connectivity
 # -- small helper function for when lolcat isn't around --
 rainbow() { command -v lolcat >/dev/null 2>&1 && lolcat || cat; }
+# -- Check background daemon for software updates silently --
+if [[ -f "$SCRIPT_DIR/lib/system/daemon_checker.sh" ]]; then
+    source "$SCRIPT_DIR/lib/system/daemon_checker.sh"
+    check_daemon_alerts
+fi
 # -- main installer menu  --
 show_main_menu() {
  clear
