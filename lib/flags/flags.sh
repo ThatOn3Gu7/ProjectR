@@ -13,7 +13,7 @@ parse_flags() {
         case "$arg" in
 
             --version|-v)
-                echo -e "${OPTION}ProjectR ${BOLD_WHITE}v1.1${RST}"
+                echo -e "${OPTION}projectr ${BOLD_WHITE}v1.2${RST}"
                 exit 0
                 ;;
 
@@ -70,6 +70,31 @@ parse_flags() {
               _flag_reset
               exit 0
               ;;
+              
+            --dry-run)
+                export DRY_RUN=1
+                echo -e "${OPTION} [!] Dry-Run Mode Active. No changes will be made.${RST}"
+                shift
+                ;;
+
+            --export)
+                source "$_PROJECT_ROOT/lib/features/profile_manager.sh"
+                export_profile
+                exit 0
+                ;;
+
+            --import=*)
+                source "$_PROJECT_ROOT/lib/features/profile_manager.sh"
+                import_profile "${arg#--import=}"
+                exit 0
+                ;;
+
+            --undo)
+                source "$_PROJECT_ROOT/lib/features/undo_engine.sh"
+                rollback_last_session
+                exit 0
+                ;;
+                
             # ── Unknown flag ───
             --*|-*)
                 echo -e "${ERROR}[!] Unknown flag: ${BOLD_WHITE}$arg${RST}"
@@ -101,7 +126,11 @@ _flag_help() {
         "--uninstall=<name>"     "Uninstall a tool non-interactively" \
         "--log"                  "Print last 20 lines of install.log" \
         "--log=<n>"              "Print last N lines of install.log" \
-        "--reset"                "Clear all saved preferences (non-interactive)"
+        "--reset"                "Clear all saved preferences (non-interactive)" \
+        "--export"               "Exports profile into projectr_profile_$(date +%F).txt" \
+        "--import=<file>"        "Import profile from projectr_profile_$(date +%F).txt" \
+        "--dry-run"              "Runs script in a dry-run mode, so changes will be made" \
+        "--undo"                 "Undo last sessions changes"
     echo ""
     echo -e "   [*] Examples${RST}"
     echo -e "  ${DIM}────────────────────────────────────────────────────${RST}"
