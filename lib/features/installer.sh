@@ -289,20 +289,3 @@ install_lang() {
         return 1
     fi
 }
-#  install_code_server — special installer for code-server
-install_code_server() {
-    if [[ "${PRIMARY_PKG_MANAGER:-}" != "pkg" ]]; then
-      echo -e "${ERROR}  [!] code-server via tur-repo is only supported on Termux.${RST}"
-      return 1
-    fi
-    echo -e "${OPTION}"
-    if ask "[*] tur-repo is required to install code-server, install it?" "y"; then
-        echo -e "${RST}"
-        progress_run "Installing tur-repo" \
-                     "Installation successful" \
-                     pkg install tur-repo 
-        echo ""
-        install_pkg "code-server" "code-server" "Code-Server: VSCode on Android"
-    fi
-}
-# File: lib/features/installer.sh

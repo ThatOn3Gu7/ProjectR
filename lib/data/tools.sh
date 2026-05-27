@@ -19,7 +19,7 @@ TOOLS=(
   "15|nano|nano|Nano|Simple terminal-based text editor|pkg|-|Min"
   "16|sl|sl|Sl|Steam locomotive on mistyped ls|pkg|-|Fun"
   "17|ncdu|ncdu|Ncdu|Disk usage with ncurses UI|pkg|-|Dev"
-  "18|nvim|neovim|Neovim|Hyperextensible Vim-based editor|special|install_nvim|Dev"
+  "18|nvim|neovim|Neovim|Hyperextensible Vim-based editor|special|setup_nvim|Dev"
   "19|cbonsai|cbonsai|Cbonsai|Grow bonsai trees in terminal|pkg|-|Fun"
   "20|asciinema|asciinema|Asciinema|Record and share terminal sessions|pkg|-|Fun"
   "21|croc|croc|Croc|Securely send files between machines|pkg|-|Dev"
