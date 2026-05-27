@@ -241,6 +241,7 @@ install_by_name_menu() {
 interactive_fuzzy_search() {
     # check if fzf is imstall 
     if ! command -v fzf >/dev/null 2>&1; then
+        echo ""
         echo -e "${ERROR} [✗] fzf is not installed. Defaulting to manual naming input.${RST}"
         return 1
     fi

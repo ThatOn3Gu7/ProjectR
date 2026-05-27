@@ -5,7 +5,7 @@ pkg_update() {
    PM="${PRIMARY_PKG_MANAGER:-$(detect_pkg_manager)}"
     case "$PM" in
         apt)
-          if ! sudo apt-get update >/dev/null 2>&1; then
+          if ! sudo apt update >/dev/null 2>&1; then
             echo -e "${ERROR}  [!] Failed to update package list${RST}"
           fi
             ;;
@@ -68,6 +68,61 @@ pkg_update() {
             if ! scoop update >/dev/null 2>&1; then
              echo -e "${ERROR}  [!] Failed to update package list${RST}"
             fi
+            ;;
+        apt-get)
+          if ! sudo apt-get update >/dev/null 2>&1; then
+            echo -e "${ERROR}  [!] Failed to update package list${RST}"
+          fi
+            ;;
+        emerge)
+          if ! sudo emerge --sync >/dev/null 2>&1; then
+            echo -e "${ERROR}  [!] Failed to update package list${RST}"
+          fi
+            ;;
+        xbps)
+          if ! sudo xbps-install -S >/dev/null 2>&1; then
+            echo -e "${ERROR}  [!] Failed to update package list${RST}"
+          fi
+            ;;
+        guix)
+          if ! guix pull >/dev/null 2>&1; then
+            echo -e "${ERROR}  [!] Failed to update package list${RST}"
+          fi
+            ;;
+        eopkg)
+          if ! sudo eopkg update-repo >/dev/null 2>&1; then
+            echo -e "${ERROR}  [!] Failed to update package list${RST}"
+          fi
+            ;;
+        urpmi)
+          if ! sudo urpmi.update -a >/dev/null 2>&1; then
+            echo -e "${ERROR}  [!] Failed to update package list${RST}"
+          fi
+            ;;
+        slackpkg)
+          if ! sudo slackpkg update >/dev/null 2>&1; then
+            echo -e "${ERROR}  [!] Failed to update package list${RST}"
+          fi
+            ;;
+        macports)
+          if ! sudo port selfupdate >/dev/null 2>&1; then
+            echo -e "${ERROR}  [!] Failed to update package list${RST}"
+          fi
+            ;;
+        bsd-pkg)
+          if ! sudo pkg update >/dev/null 2>&1; then
+            echo -e "${ERROR}  [!] Failed to update package list${RST}"
+          fi
+            ;;
+        pkg_add)
+          if ! doas pkg_add -u >/dev/null 2>&1; then
+            echo -e "${ERROR}  [!] Failed to update package list${RST}"
+          fi
+            ;;
+        choco)
+          if ! choco outdated >/dev/null 2>&1; then
+            echo -e "${ERROR}  [!] Failed to update package list${RST}"
+          fi
             ;;
         *)
           echo -e "${ERROR}"

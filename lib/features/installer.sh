@@ -129,59 +129,73 @@ install_pkg() {
        # Use the detected package manager to install 
        case "$PM" in
         apt)
-          execute_pkg_command "sudo apt-get update && sudo apt-get install -y "$pkg" >/dev/null 2>&1" "$pkg" "$cmd"
-
+          execute_pkg_command "sudo apt update && sudo apt install -y "$pkg" >/dev/null 2>&1" "$pkg" "$cmd"
             ;;
         dnf|yum)
           execute_pkg_command "sudo $PM install -y "$pkg" >/dev/null 2>&1" "$pkg" "$cmd"
-
             ;;
         pacman)
            execute_pkg_command "sudo pacman -Sy --noconfirm --needed "$pkg" >/dev/null 2>&1" "$pkg" "$cmd"
             ;;
         zypper)
            execute_pkg_command "sudo zypper refresh && sudo zypper install -y "$pkg" >/dev/null 2>&1" "$pkg" "$cmd"
-
             ;;
         brew)
            execute_pkg_command "brew install "$pkg" >/dev/null 2>&1" "$pkg" "$cmd"
-
             ;;
         apk)
            execute_pkg_command "sudo apk add "$pkg" >/dev/null 2>&1" "$pkg" "$cmd"
-
             ;;
         emerge)
           execute_pkg_command "sudo emerge -av "$pkg" >/dev/null 2>&1" "$pkg" "$cmd"
-
             ;;
         nix)
           execute_pkg_command "sudo nix-env -i "$pkg" >/dev/null 2>&1" "$pkg" "$cmd"
-
             ;;
         flatpak)
            execute_pkg_command "flatpak install -y flathub "$pkg" >/dev/null 2>&1" "$pkg" "$cmd"
-
             ;;
         snap)
            execute_pkg_command "sudo snap install "$pkg" >/dev/null 2>&1" "$pkg" "$cmd"
-
             ;;
         pkg)
            execute_pkg_command "pkg install -y "$pkg" >/dev/null 2>&1" "$pkg" "$cmd"
-
             ;;
-        chocolatey)
+        choco)
            execute_pkg_command "choco install -y "$pkg" >/dev/null 2>&1" "$pkg" "$cmd"
-
             ;;
         scoop)
            execute_pkg_command "scoop install "$pkg" >/dev/null 2>&1" "$pkg" "$cmd"
-
             ;;
         winget)
              execute_pkg_command "winget install -e --id "$pkg" >/dev/null 2>&1" "$pkg" "$cmd"
-
+            ;;
+        apt-get)
+          execute_pkg_command "sudo apt-get update && sudo apt-get install -y "$pkg" >/dev/null 2>&1" "$pkg" "$cmd"
+            ;;
+        xbps)
+          execute_pkg_command "sudo xbps-install -Sy "$pkg" >/dev/null 2>&1" "$pkg" "$cmd"
+            ;;
+        guix)
+          execute_pkg_command "guix package -i "$pkg" >/dev/null 2>&1" "$pkg" "$cmd"
+            ;;
+        eopkg)
+          execute_pkg_command "sudo eopkg install -y "$pkg" >/dev/null 2>&1" "$pkg" "$cmd"
+            ;;
+        urpmi)
+          execute_pkg_command "sudo urpmi --auto "$pkg" >/dev/null 2>&1" "$pkg" "$cmd"
+            ;;
+        slackpkg)
+          execute_pkg_command "sudo slackpkg install "$pkg" >/dev/null 2>&1" "$pkg" "$cmd"
+            ;;
+        macports)
+          execute_pkg_command "sudo port install "$pkg" >/dev/null 2>&1" "$pkg" "$cmd"
+            ;;
+        bsd-pkg)
+          execute_pkg_command "sudo pkg install -y "$pkg" >/dev/null 2>&1" "$pkg" "$cmd"
+            ;;
+        pkg_add)
+          execute_pkg_command "doas pkg_add "$pkg" >/dev/null 2>&1" "$pkg" "$cmd"
             ;;
             *) stop_spinner
                echo -e "${ERROR}  [x] Unsupported package manager: $PM${RST}"
