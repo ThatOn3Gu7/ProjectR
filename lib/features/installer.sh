@@ -1,4 +1,31 @@
 #!/bin/bash
+# --- DRY RUN & UNDO WRAPPER ENGINE ---
+# Replaces or intercepts raw execution calls
+execute_pkg_command() {
+    local pm_cmd="$1"
+    local pkg_name="$2"
+    local internal_name="$3"
+    local action="${4:-install}" # install or uninstall
+
+    if [[ "${DRY_RUN:-0}" == "1" ]]; then
+        echo -e "${INFO}   [DRY-RUN] Would execute: $pm_cmd ${RST}"
+        sleep 0.2
+        return 0
+    fi
+
+    # Run the actual command
+    eval "$pm_cmd"
+    local status=$?
+
+    # If it was a successful install, log it for the Undo Engine
+    if [[ $status -eq 0 && "$action" == "install" ]]; then
+        mkdir -p "$SCRIPT_DIR/log/"
+        # Format: TIMESTAMP|COMMAND|PACKAGE_MANAGER_PKG_NAME|DISPLAY_NAME
+        echo "$(date '+%F %T')|$internal_name|$pkg_name" >> "$SCRIPT_DIR/log/session_history.tmp"
+    fi
+
+    return $status
+}
 # This function here installs all tools put in it.
 install_all() {
 # For post-install summary detection
@@ -102,58 +129,58 @@ install_pkg() {
        # Use the detected package manager to install 
        case "$PM" in
         apt)
-           sudo apt-get update && sudo apt-get install -y "$pkg" >/dev/null 2>&1
+          execute_pkg_command "sudo apt-get update && sudo apt-get install -y "$pkg" >/dev/null 2>&1" "$pkg" "$cmd"
 
             ;;
         dnf|yum)
-            sudo $PM install -y "$pkg" >/dev/null 2>&1
+          execute_pkg_command "sudo $PM install -y "$pkg" >/dev/null 2>&1" "$pkg" "$cmd"
 
             ;;
         pacman)
-            sudo pacman -Sy --noconfirm --needed "$pkg" >/dev/null 2>&1
+           execute_pkg_command "sudo pacman -Sy --noconfirm --needed "$pkg" >/dev/null 2>&1" "$pkg" "$cmd"
             ;;
         zypper)
-            sudo zypper refresh && sudo zypper install -y "$pkg" >/dev/null 2>&1
+           execute_pkg_command "sudo zypper refresh && sudo zypper install -y "$pkg" >/dev/null 2>&1" "$pkg" "$cmd"
 
             ;;
         brew)
-            brew install "$pkg" >/dev/null 2>&1
+           execute_pkg_command "brew install "$pkg" >/dev/null 2>&1" "$pkg" "$cmd"
 
             ;;
         apk)
-            sudo apk add "$pkg" >/dev/null 2>&1
+           execute_pkg_command "sudo apk add "$pkg" >/dev/null 2>&1" "$pkg" "$cmd"
 
             ;;
         emerge)
-            sudo emerge -av "$pkg" >/dev/null 2>&1
+          execute_pkg_command "sudo emerge -av "$pkg" >/dev/null 2>&1" "$pkg" "$cmd"
 
             ;;
         nix)
-            sudo nix-env -i "$pkg" >/dev/null 2>&1
+          execute_pkg_command "sudo nix-env -i "$pkg" >/dev/null 2>&1" "$pkg" "$cmd"
 
             ;;
         flatpak)
-            flatpak install -y flathub "$pkg" >/dev/null 2>&1
+           execute_pkg_command "flatpak install -y flathub "$pkg" >/dev/null 2>&1" "$pkg" "$cmd"
 
             ;;
         snap)
-            sudo snap install "$pkg" >/dev/null 2>&1
+           execute_pkg_command "sudo snap install "$pkg" >/dev/null 2>&1" "$pkg" "$cmd"
 
             ;;
         pkg)
-            pkg install -y "$pkg" >/dev/null 2>&1
+           execute_pkg_command "pkg install -y "$pkg" >/dev/null 2>&1" "$pkg" "$cmd"
 
             ;;
         chocolatey)
-            choco install -y "$pkg" >/dev/null 2>&1
+           execute_pkg_command "choco install -y "$pkg" >/dev/null 2>&1" "$pkg" "$cmd"
 
             ;;
         scoop)
-            scoop install "$pkg" >/dev/null 2>&1
+           execute_pkg_command "scoop install "$pkg" >/dev/null 2>&1" "$pkg" "$cmd"
 
             ;;
         winget)
-                winget install -e --id "$pkg" >/dev/null 2>&1
+             execute_pkg_command "winget install -e --id "$pkg" >/dev/null 2>&1" "$pkg" "$cmd"
 
             ;;
             *) stop_spinner
@@ -264,3 +291,4 @@ install_code_server() {
         install_pkg "code-server" "code-server" "Code-Server: VSCode on Android"
     fi
 }
+# File: lib/features/installer.sh
