@@ -189,18 +189,29 @@ install_by_name_menu() {
             " [ Install by Name ] " \
             "● Checks the built-in tool list first" \
             "● Falls back to scanning ALL available package managers" \
-            "● Supports multiple tool names at once (space-separated)"
+            "● Type '/' to open interactive Fuzzy Search"
         echo -e "${RST}"
         echo ""
         echo -e "${INFO}  [*] Examples: ${DIM}git, neovim, ripgrep, holehe, lazygit${RST}"
         echo -e "${ERROR}  [b] Back to main menu${RST}"
         echo ""
-        echo -ne " ${BG_GREEN}[*] Tool name(s): ${RST} "
+        # Updated prompt to remind users about the '/' hotkey
+        echo -ne " ${BG_GREEN}[*] Tool name(s) or '/' to search: ${RST} "
         read -ra inputs
 
         [[ ${#inputs[@]} -eq 0 ]] && continue
         [[ "${inputs[0],,}" == "b" ]] && { log LEFT "User exited sub-menu 'search-install'"; return; }
 
+        # --- IMPLEMENTING YOUR FUZZY SEARCH TRIGGER ---
+        if [[ "${inputs[0]}" == "/" ]]; then
+            interactive_fuzzy_search
+            # Refresh the screen after fzf closes and restart the loop
+            echo -e "${OPTION}"
+            read -p " [*] Press ENTER to continue..."
+            echo -e "${RST}"
+            continue 
+        fi
+        
         # Reset summary arrays
         INSTALLED_PKGS=()
         SKIPPED_PKGS=()
@@ -224,4 +235,28 @@ install_by_name_menu() {
         ask " [*] Install another tool?" "n" && continue || return
         echo -e "${RST}"
     done
+}
+
+# Append to: lib/features/search_install.sh
+interactive_fuzzy_search() {
+    # check if fzf is imstall 
+    if ! command -v fzf >/dev/null 2>&1; then
+        echo -e "${ERROR} [✗] fzf is not installed. Defaulting to manual naming input.${RST}"
+        return 1
+    fi
+
+    # Process names out of TOOLS array payload pipeline structure
+    local selected
+    selected=$(for entry in "${TOOLS[@]}"; do
+        IFS="|" read -r num cmd pkg name desc type extra cat <<< "$entry"
+        printf "%-15s | %-10s | %s\n" "$cmd" "[$cat]" "$desc"
+    done | fzf --prompt="🔍 Select tools to install (Tab to multi-select): " --multi --height=50%)
+
+    if [[ -n "$selected" ]]; then
+        echo "$selected" | while read -r line; do
+            local clean_cmd
+            clean_cmd=$(echo "$line" | cut -d'|' -f1 | tr -d ' ')
+            [[ -n "$clean_cmd" ]] && search_and_install "$clean_cmd"
+        done
+    fi
 }
