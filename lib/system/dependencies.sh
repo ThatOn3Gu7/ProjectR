@@ -341,12 +341,12 @@ install_lolcat() {
     # Try system package manager first
     case "$pm" in
         apt)
-            apt install -y lolcat >/dev/null 2>&1 && return 0
+            suod apt install -y lolcat >/dev/null 2>&1 && return 0
             # Fallback to gem if apt fails
-            apt install -y ruby >/dev/null 2>&1 && gem install lolcat 2>/dev/null && return 0
+            sudo apt install -y ruby >/dev/null 2>&1 && gem install lolcat 2>/dev/null && return 0
             ;;
         pacman)
-            pacman -S --noconfirm lolcat 2>/dev/null && return 0
+            sudo pacman -S --noconfirm lolcat 2>/dev/null && return 0
             ;;
         pkg)
             pkg install -y lolcat >/dev/null 2>&1 && return 0
@@ -357,7 +357,7 @@ install_lolcat() {
             brew install lolcat 2>/dev/null && return 0
             ;;
         apk) 
-            apk add lolcat >/dev/null 2>&1 && return 0
+            sudo apk add lolcat >/dev/null 2>&1 && return 0
             ;;
     esac
     
