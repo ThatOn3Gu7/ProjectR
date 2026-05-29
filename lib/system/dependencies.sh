@@ -177,7 +177,7 @@ verify_dependencies() {
     echo ""
     
     # Tell user what to do
-     echo -e " ${BOLD_YELLOW}[*] Options:${RST}"
+    echo -e " ${BOLD_YELLOW}[*] Options:${RST}"
     echo ""
     echo -e "${OPTION}  [1] Try to auto-install missing dependencies${RST}"
     echo -e "${OPTION}  [2] Show manual installation commands${RST}"
@@ -186,34 +186,38 @@ verify_dependencies() {
     echo ""
     
     local choice
-    echo -ne " ${BRIGHT_MAGENTA}[*] Select option [1-4]: ${RST}" 
-    read -r choice
-    
-    case $choice in
-        1)
-            auto_install_dependencies "${missing_deps[@]}"
-            ;;
-        2)
-            show_install_commands "${missing_deps[@]}"
-            ;;
-        3) 
-          if ask " [*] Save as Preferences for next time?" "y"; then
-           echo -e "${INFO} [*] Continuing with missing dependencies (Saved Preferences)...${RST}"
-            config_set "skip_dep_check" "true"
-            sleep 1
-            return 0
-           else
-            echo -e "${INFO} [*] Continuing with missing dependencies (Preferences not saved)...${RST}"
-            return 0
-          fi
-            ;;
-        4)
-            graceful_exit
-            ;;
-        *)
-          echo -e "${BOLD_RED} [!] Imvalid Input:${RST} '$choice'"
-         sleep 1
-    esac
+    while true; do
+        echo -ne " ${BRIGHT_MAGENTA}[*] Select option [1-4]: ${RST}"
+        read -r choice
+
+        case $choice in
+            1)
+                auto_install_dependencies "${missing_deps[@]}"
+                break
+                ;;
+            2)
+                show_install_commands "${missing_deps[@]}"
+                break
+                ;;
+            3)
+                if ask " [*] Save choice for next time?" "y"; then
+                    echo -e "${INFO} [*] Continuing with missing deps (preference saved)...${RST}"
+                    config_set "skip_dep_check" "true"
+                else
+                    echo -e "${INFO} [*] Continuing with missing deps (not saved)...${RST}"
+                fi
+                sleep 1
+                break
+                ;;
+            4)
+                graceful_exit
+                ;;
+            *)
+                echo -e "${BOLD_RED} [!] Invalid input: '${choice}' — enter 1, 2, 3 or 4.${RST}"
+                sleep 1
+                ;;
+        esac
+    done
 }
 
 # Detect package manager and return appropriate install command
@@ -248,64 +252,86 @@ get_install_cmd() {
             ;;
     esac
 }
-
-# Improved auto-install with better error handling
+# Improved auto-install with privilege check and better error handling
 auto_install_dependencies() {
     local deps=("$@")
     local pm="${PRIMARY_PKG_MANAGER:-$(detect_pkg_manager)}"
     local failed=()
-    
+
+    # Privilege check — most system PMs require root or sudo
+    local needs_sudo=0
+    case "$pm" in apt|pacman|dnf|yum|zypper|apk|emerge|xbps) needs_sudo=1 ;; esac
+
+    if (( needs_sudo )) && [[ $EUID -ne 0 ]]; then
+        if ! command -v sudo >/dev/null 2>&1; then
+            echo -e "${ERROR} [!] This system requires root to install packages and sudo is not available.${RST}"
+            echo -e "${INFO} [*] Re-run the script as root, or install dependencies manually.${RST}"
+            return 1
+        fi
+        # Verify sudo works right now (cached credential or password prompt)
+        if ! sudo -v 2>/dev/null; then
+            echo -e "${ERROR} [!] sudo authentication failed — cannot auto-install.${RST}"
+            return 1
+        fi
+    fi
+
     echo ""
-    echo -e "${BOLD_BLUE} [*] Attempting to install missing deps ${RST}"
-    
+    echo -e "${BOLD_BLUE} [*] Attempting to install missing dependencies...${RST}"
+
     for dep in "${deps[@]}"; do
         IFS=":" read -r cmd name <<< "$dep"
-        
-        start_spinner " [*] Installing: "$name".."
-        
+
+        start_spinner " [*] Installing: $name.."
+
         case "$cmd" in
             lolcat)
                 if install_lolcat >/dev/null 2>&1; then
-                    stop_spinner "${OPTION} [✓] Success${RST}"
+                    stop_spinner "${OPTION} [✓] Installed: $name${RST}"
                 else
-                    stop_spinner ""
+                    stop_spinner "${ERROR} [✗] Failed: $name${RST}"
                     failed+=("$name")
                 fi
                 ;;
-          git|curl)
-               local install_arr=()
+            git|curl|crontab)
+                local install_arr=()
                 case "$pm" in
                     apt)    install_arr=(sudo apt-get install -y "$cmd") ;;
                     pacman) install_arr=(sudo pacman -S --noconfirm "$cmd") ;;
+                    dnf|yum) install_arr=(sudo "$pm" install -y "$cmd") ;;
+                    zypper) install_arr=(sudo zypper install -y "$cmd") ;;
+                    apk)    install_arr=(sudo apk add "$cmd") ;;
                     pkg)    install_arr=(pkg install -y "$cmd") ;;
                     brew)   install_arr=(brew install "$cmd") ;;
-                    apk)    install_arr=(sudo apk add "$cmd") ;;
-                    *)      echo -e "${ERROR}  [✗] No auto-install for: $pm${RST}"; failed+=("$name"); continue ;;
+                    nix)    install_arr=(nix-env -i "$cmd") ;;
+                    *)
+                        stop_spinner "${ERROR} [✗] No auto-install rule for PM: $pm${RST}"
+                        failed+=("$name")
+                        continue
+                        ;;
                 esac
                 if "${install_arr[@]}" >/dev/null 2>&1; then
-                    stop_spinner "${OPTION}  [✓] Installed: $cmd ${RST}"
+                    stop_spinner "${OPTION}  [✓] Installed: $cmd${RST}"
                 else
-                    stop_spinner "${ERROR}  [✗] Failed: $cmd ${RST}"
+                    stop_spinner "${ERROR}  [✗] Failed: $cmd${RST}"
                     failed+=("$name")
                 fi
                 ;;
             *)
-                echo -e "${ERROR}  [✗] Unsupported: $cmd${RST}"
-                sleep 2
+                stop_spinner "${ERROR}  [✗] No install rule for: $cmd${RST}"
                 failed+=("$name")
                 ;;
         esac
         sleep 0.5
     done
-    
-    # Report results
-    if [ ${#failed[@]} -eq 0 ]; then
-        echo -e "${OPTION} [✓] Missing dependencies installed! ${RST}"
+
+    if [[ ${#failed[@]} -eq 0 ]]; then
+        echo -e "${OPTION} [✓] All missing dependencies installed!${RST}"
     else
-        echo -e "${ERROR}  [✗] Failed to install: ${failed[*]} ${RST}"
+        echo -e "${ERROR} [✗] Failed to install: ${failed[*]}${RST}"
+         sleep 2
         show_install_commands "${deps[@]}"
     fi
-    
+
     sleep 2
 }
 # Special function to install lolcat (tricky on different systems)
