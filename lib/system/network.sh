@@ -43,6 +43,7 @@ Please make sure to turn on WI-FI to continue :)"
       fi 
       ;;
     *) exit 0 ;;
+
   esac
   fi
 }
