@@ -38,17 +38,21 @@ _si_normalize() {
 # Check if a package exists in a given manager (fast, no install)
 _si_check_avail() {
     local pkg="$1" mgr="$2"
+    # Wrap every check in an 8-second timeout to prevent hangs on slow mirrors
+    local t=""
+    command -v timeout >/dev/null 2>&1 && t="timeout 8"
+
     case "$mgr" in
-        apt|apt-get)   apt-cache show "$pkg" >/dev/null 2>&1 ;;
-        pacman)        pacman -Ss "^${pkg}$" >/dev/null 2>&1 ;;
-        dnf|yum)       $mgr info "$pkg" >/dev/null 2>&1 ;;
-        brew)          brew info "$pkg" >/dev/null 2>&1 ;;
-        pkg) pkg show "$pkg" >/dev/null 2>&1 ;;
-        npm)           npm info "$pkg" >/dev/null 2>&1 ;;
-        pip|pip3|pipx)      $mgr index versions "$pkg" >/dev/null 2>&1 ;;
-        gem)           gem list -r "^${pkg}$" >/dev/null 2>&1 ;;
-        cargo)         cargo search --limit 1 "$pkg" 2>/dev/null | grep -q "^$pkg " ;;
-        *)             return 0 ;;   # unknown → assume available, let install decide
+        apt|apt-get)   $t apt-cache show "$pkg" >/dev/null 2>&1 ;;
+        pacman)        $t pacman -Ss "^${pkg}$" >/dev/null 2>&1 ;;
+        dnf|yum)       $t $mgr info "$pkg" >/dev/null 2>&1 ;;
+        brew)          $t brew info "$pkg" >/dev/null 2>&1 ;;
+        pkg)           $t pkg show "$pkg" >/dev/null 2>&1 ;;
+        npm)           $t npm info "$pkg" >/dev/null 2>&1 ;;
+        pip|pip3|pipx) $t $mgr index versions "$pkg" >/dev/null 2>&1 ;;
+        gem)           $t gem list -r "^${pkg}$" >/dev/null 2>&1 ;;
+        cargo)         $t cargo search --limit 1 "$pkg" 2>/dev/null | grep -q "^$pkg " ;;
+        *)             return 0 ;;
     esac
 }
 
@@ -121,16 +125,21 @@ search_and_install() {
     for m in "${candidates[@]}"; do
         [[ " ${unique[*]} " == *" $m "* ]] || unique+=("$m")
     done
-
-    # Scan each manager
+    # Scan each manager — _si_check_avail has an 8s timeout per call
     local available=()
+    local total_mgrs=${#unique[@]}
+    local mgr_idx=0
+
     for mgr in "${unique[@]}"; do
+        ((mgr_idx++))
+        printf "    ${DIM}[%d/%d]${RST} Checking ${BOLD_WHITE}%s${RST}..." \
+               "$mgr_idx" "$total_mgrs" "$mgr"
         if _si_check_avail "$pkg" "$mgr"; then
             local tier="${SI_TIER[$mgr]:-3}"
-            echo -e "    ${OPTION}[✓]${RST} ${BOLD_WHITE}$mgr${RST} ${DIM}(tier $tier)${RST}"
+            printf " ${OPTION}[✓]${RST} ${DIM}(tier %d)${RST}\n" "$tier"
             available+=("$mgr")
         else
-            echo -e "    ${ERROR}[✗]${RST} ${DIM}$mgr — not found${RST}"
+            printf " ${ERROR}[✗]${RST}\n"
         fi
     done
 
@@ -239,25 +248,44 @@ install_by_name_menu() {
 
 # Append to: lib/features/search_install.sh
 interactive_fuzzy_search() {
-    # check if fzf is imstall 
     if ! command -v fzf >/dev/null 2>&1; then
         echo ""
-        echo -e "${ERROR} [✗] fzf is not installed. Defaulting to manual naming input.${RST}"
+        echo -e "${ERROR} [✗] fzf is not installed. Install it first (option 22 from the menu).${RST}"
         return 1
     fi
 
-    # Process names out of TOOLS array payload pipeline structure
     local selected
-    selected=$(for entry in "${TOOLS[@]}"; do
-        IFS="|" read -r num cmd pkg name desc type extra cat <<< "$entry"
-        printf "%-15s | %-10s | %s\n" "$cmd" "[$cat]" "$desc"
-    done | fzf --prompt="🔍 Select tools to install (Tab to multi-select): " --multi --height=50%)
+    selected=$(
+        for entry in "${TOOLS[@]}"; do
+            IFS="|" read -r num cmd pkg name desc type extra cat <<< "$entry"
+            # Format: raw_cmd|display line  — delimiter kept clean for parsing
+            printf "%s|[%s] %s\n" "$name" "$cat" "$desc"
+        done | fzf \
+            --prompt="🔍 Search tools (Tab=multi, Enter=confirm): " \
+            --multi \
+            --height=60% \
+            --delimiter="|" \
+            --with-nth=2
+    )
 
-    if [[ -n "$selected" ]]; then
-        echo "$selected" | while read -r line; do
-            local clean_cmd
-            clean_cmd=$(echo "$line" | cut -d'|' -f1 | tr -d ' ')
-            [[ -n "$clean_cmd" ]] && search_and_install "$clean_cmd"
-        done
+    if [[ -z "$selected" ]]; then
+        echo ""
+        echo -e "${INFO}  [*] No tools selected.${RST}"
+        return 0
     fi
+
+    local tools_to_install=()
+    while IFS= read -r line; do
+        # First field before '|' is the raw cmd — no padding since we use printf %s not %-15s
+        local clean_cmd="${line%%|*}"
+        [[ -n "$clean_cmd" ]] && tools_to_install+=("$clean_cmd")
+    done <<< "$selected"
+
+    INSTALLED_PKGS=(); SKIPPED_PKGS=(); FAILED_PKGS=()
+    for tool in "${tools_to_install[@]}"; do
+        search_and_install "$tool"
+        echo ""
+    done
+
+    [[ ${#tools_to_install[@]} -gt 1 ]] && post_install_summary
 }

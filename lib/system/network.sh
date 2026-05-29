@@ -1,11 +1,18 @@
 #!/bin/bash
-
-# Checkes if internet connection is available or not. 
+# Checks if internet connection is available or not.
 check_internet() {
-  ping -c 1 -W 3 8.8.8.8 >/dev/null 2>&1 && return 0
-  curl -s --max-time 5 https://8.8.8.8 >/dev/null 2>&1 && return 0
-  wget -q --timeout=5 -O /dev/null https://8.8.8.8 >/dev/null 2>&1 && return 0
-  return 1
+    if command -v ping >/dev/null 2>&1; then
+        ping -c 1 -W 3 8.8.8.8 >/dev/null 2>&1 && return 0
+    fi
+    if command -v curl >/dev/null 2>&1; then
+        curl -s --max-time 5 https://www.google.com >/dev/null 2>&1 && return 0
+    fi
+    if command -v wget >/dev/null 2>&1; then
+        wget -q --timeout=5 -O /dev/null https://www.google.com >/dev/null 2>&1 && return 0
+    fi
+    # Last resort: bash built-in TCP — works with zero external tools
+    (echo >/dev/tcp/8.8.8.8/53) >/dev/null 2>&1 && return 0
+    return 1
 }
 # startup internet Check
 check_startup_connectivity() {
@@ -41,20 +48,32 @@ Please make sure to turn on WI-FI to continue :)"
 }
 # internet connection detection
 require_internet() {
-    # Check for internet connection
-    if ! check_internet; then
-      log ERROR "No internet connection"
-      echo ""
-      echo -e "${ERROR}"
-      print_box center "[!] No internet connection detected. Did you lose it?"
-      echo -e "${OPTION}"
-      print_box center "[*] Please have stable internet connection to continue ;)"
-      echo -e "${RST}" 
-      exit 0
-    else
-      clear
-      echo -e "${OPTION}"
-       print_box center "[✓] Internet connection detected. Proceeding."
-      echo -e "${RST}"
-    fi
+    local max_attempts=3
+    local attempt=1
+
+    while (( attempt <= max_attempts )); do
+        if check_internet; then
+            clear
+            echo -e "${OPTION}"
+            print_box center "[✓] Internet connection detected. Proceeding."
+            echo -e "${RST}"
+            return 0
+        fi
+
+        log ERROR "No internet connection (attempt $attempt/$max_attempts)"
+        echo -e "${ERROR}"
+        print_box center "[!] No internet — attempt $attempt of $max_attempts"
+        echo -e "${RST}"
+
+        if (( attempt < max_attempts )); then
+            echo -e "${INFO}  [*] Retrying in 5 seconds... (Ctrl+C to abort)${RST}"
+            sleep 5
+        fi
+        ((attempt++))
+    done
+
+    echo -e "${ERROR}"
+    print_box center "[!] No internet after $max_attempts attempts. Cannot continue."
+    echo -e "${RST}"
+    exit 1
 }

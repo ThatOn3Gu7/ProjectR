@@ -133,20 +133,24 @@ print_box() {
     done
     echo "${indent}└$(printf '─%.0s' $(seq 1 $box_width))┘"
 }
-
 # Handles clean exit with a farewell message.
 graceful_exit() {
-    log EXIT "━━━━━━ Exited script at: $(date '+%Y-%m-%d %H:%M') ━━━━━━"
+    # Only call log if it's actually loaded — it's sourced after display.sh
+    if declare -f log >/dev/null 2>&1; then
+        log EXIT "━━━━━━ Exited script at: $(date '+%Y-%m-%d %H:%M') ━━━━━━"
+    fi
     echo ""
     echo -e "${INFO}"
     print_box center " Thanks for using the script
      See you next time "
     echo -e "${RST}"
-    stop_spinner
+    # Only call stop_spinner if loaded — spinner.sh is sourced after display.sh
+    if declare -f stop_spinner >/dev/null 2>&1; then
+        stop_spinner
+    fi
     safe_tput cnorm
     exit 0
 }
-
 # Draws a rounded box with a centered title, separator, and left-aligned list items.
 # Usage: print_list_box left|center|right "TITLE" "item1" "item2" ...
 print_list_box() {

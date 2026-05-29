@@ -371,6 +371,14 @@ _flag_list_categories() {
 # ── --log / --log=N ───
 _flag_log() {
     local lines="${1:-20}"
+
+    # Validate: must be a positive integer
+    if [[ ! "$lines" =~ ^[0-9]+$ ]] || (( lines < 1 )); then
+        echo -e "  ${ERROR}[!] Invalid value for --log: '${lines}' — must be a positive integer.${RST}"
+        echo -e "  ${DIM}Example: ./main.sh --log=50${RST}"
+        return 1
+    fi
+
     # LOG_FILE is defined in logging.sh — but flags run before it's sourced,
     # so we hardcode the same path here to stay independent
     local log_path="${SCRIPT_DIR:-$(pwd)}/log/install.log"
@@ -487,12 +495,21 @@ _flag_install() {
         exit 1
     fi
 
-    # Source everything needed for actual installation
-    # (flags normally run before the full source block)
-    source "$_PROJECT_ROOT/lib/core/progress_bar.sh"
-    source "$_PROJECT_ROOT/lib/core/spinner.sh"
-    source "$_PROJECT_ROOT/lib/core/logging.sh"
-    
+    # Guard: verify every required file exists before sourcing
+    local _required=(
+        "$_PROJECT_ROOT/lib/core/progress_bar.sh"
+        "$_PROJECT_ROOT/lib/core/spinner.sh"
+        "$_PROJECT_ROOT/lib/core/logging.sh"
+    )
+    for _f in "${_required[@]}"; do
+        if [[ ! -f "$_f" ]]; then
+            echo -e "  ${ERROR}[!] Required file missing: $_f${RST}"
+            echo -e "  ${DIM}Check that \$_PROJECT_ROOT is correct: $_PROJECT_ROOT${RST}"
+            exit 1
+        fi
+        source "$_f"
+    done
+
     INSTALLED_PKGS=()
     SKIPPED_PKGS=()
     FAILED_PKGS=()
@@ -538,8 +555,19 @@ _flag_uninstall() {
         exit 0
     fi
 
-    source "$_PROJECT_ROOT/lib/core/spinner.sh"
-    source "$_PROJECT_ROOT/lib/core/logging.sh"
+    local _required=(
+        "$_PROJECT_ROOT/lib/core/spinner.sh"
+        "$_PROJECT_ROOT/lib/core/logging.sh"
+    )
+    for _f in "${_required[@]}"; do
+        if [[ ! -f "$_f" ]]; then
+            echo -e "  ${ERROR}[!] Required file missing: $_f${RST}"
+            echo -e "  ${DIM}Check that \$_PROJECT_ROOT is correct: $_PROJECT_ROOT${RST}"
+            exit 1
+        fi
+        source "$_f"
+    done
+
     export NON_INTERACTIVE=1
     case "$type" in
         pkg|special) uninstall_pkg "$cmd" "$pkg" "$name" ;;
@@ -548,17 +576,30 @@ _flag_uninstall() {
     unset NON_INTERACTIVE
     echo ""
 }
+
 # Search and install flag
 _flag_search() {
     local target="$1"
     echo ""
     echo -e "${OPTION} [*] Search & install: ${BOLD_WHITE}${target}${RST}"
     echo ""
-    source "$_PROJECT_ROOT/lib/features/search_install.sh"
-    source "$_PROJECT_ROOT/lib/core/spinner.sh"
-    source "$_PROJECT_ROOT/lib/core/logging.sh"
-    source "$_PROJECT_ROOT/lib/features/installer.sh"
-    source "$_PROJECT_ROOT/lib/features/post_install.sh"
+
+    local _required=(
+        "$_PROJECT_ROOT/lib/features/search_install.sh"
+        "$_PROJECT_ROOT/lib/core/spinner.sh"
+        "$_PROJECT_ROOT/lib/core/logging.sh"
+        "$_PROJECT_ROOT/lib/features/installer.sh"
+        "$_PROJECT_ROOT/lib/features/post_install.sh"
+    )
+    for _f in "${_required[@]}"; do
+        if [[ ! -f "$_f" ]]; then
+            echo -e "  ${ERROR}[!] Required file missing: $_f${RST}"
+            echo -e "  ${DIM}Check that \$_PROJECT_ROOT is correct: $_PROJECT_ROOT${RST}"
+            exit 1
+        fi
+        source "$_f"
+    done
+
     INSTALLED_PKGS=(); SKIPPED_PKGS=(); FAILED_PKGS=()
     search_and_install "$target"
     echo ""
