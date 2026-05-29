@@ -2,31 +2,31 @@
 # --- DRY RUN & UNDO WRAPPER ENGINE ---
 # Replaces or intercepts raw execution calls
 execute_pkg_command() {
-    local pm_cmd="$1"
-    local pkg_name="$2"
-    local internal_name="$3"
-    local action="${4:-install}" # install or uninstall
+    local pkg_name="$1"
+    local internal_name="$2"
+    local action="${3:-install}"
+    shift 3
+    # Remaining positional args are the command + its arguments — no eval needed
 
     if [[ "${DRY_RUN:-0}" == "1" ]]; then
-        echo -e "${INFO}   [DRY-RUN] Would execute: $pm_cmd ${RST}"
+        echo -e "${INFO}   [DRY-RUN] Would execute: $* ${RST}"
         sleep 0.2
         return 0
     fi
 
-    # Run the actual command
-    eval "$pm_cmd"
+    # Execute safely as an array — no string injection risk
+    "$@"
     local status=$?
 
-    # If it was a successful install, log it for the Undo Engine
     if [[ $status -eq 0 && "$action" == "install" ]]; then
         mkdir -p "$SCRIPT_DIR/log/"
-        # Format: TIMESTAMP|COMMAND|PACKAGE_MANAGER_PKG_NAME|DISPLAY_NAME
-        echo "$(date '+%F %T')|$internal_name|$pkg_name" >> "$SCRIPT_DIR/log/session_history.tmp"
+        echo "$(date '+%F %T')|$internal_name|$pkg_name" \
+            >> "$SCRIPT_DIR/log/session_history.tmp" 2>/dev/null || true
     fi
 
     return $status
 }
-# This function here installs all tools put in it.
+# -- install function --
 install_all() {
 # For post-install summary detection
   INSTALLED_PKGS=()
@@ -82,8 +82,12 @@ install_all() {
                 install_lang "pip" "$pkg" "$name" "$cmd"
                 ;;
             special)
-                # Call the special install function by name
-                "$extra"
+                if declare -f "$extra" >/dev/null 2>&1; then
+                    "$extra"
+                else
+                    echo -e "${ERROR}  [!] Special installer '${extra}' not found — skipping ${name}.${RST}"
+                    FAILED_PKGS+=("$name")
+                fi
                 ;;
         esac
     done
@@ -104,134 +108,140 @@ install_all() {
 install_preset() {
     local preset=("$@")
 
+    if [[ ${#preset[@]} -eq 0 ]]; then
+        echo -e "${ERROR}  [!] No tools provided to install_preset.${RST}"
+        return 1
+    fi
+
+    INSTALLED_PKGS=()
+    SKIPPED_PKGS=()
+    FAILED_PKGS=()
+
     for entry in "${preset[@]}"; do
         IFS="|" read -r cmd pkg name <<< "$entry"
+        if [[ -z "$cmd" || -z "$pkg" || -z "$name" ]]; then
+            echo -e "${ERROR}  [!] Malformed preset entry: '$entry' — skipping.${RST}"
+            continue
+        fi
         install_pkg "$cmd" "$pkg" "$name"
     done
+
+    echo ""
+    post_install_summary
 }
 # -- main installer function --
 # install_pkg "git" "git" "Git: Version control"
 install_pkg() {
-    local cmd="$1"  # command to check (git, curl, nmap, etc.)
-    local pkg="$2"     # package name to install
-    local name="$3"    # pretty name for display
+    local cmd="$1"
+    local pkg="$2"
+    local name="$3"
     local PM="${PRIMARY_PKG_MANAGER:-$(detect_pkg_manager)}"
 
-    # installing or Skipped massges
+    if [[ -z "$cmd" || -z "$pkg" || -z "$name" ]]; then
+        echo -e "${ERROR}  [!] install_pkg: missing argument (cmd='$cmd' pkg='$pkg' name='$name')${RST}"
+        return 1
+    fi
+
     if command -v "$cmd" >/dev/null 2>&1; then
         echo -e "${OPTION}  [✓] $name is already installed - Skipping..${RST}"
         SKIPPED_PKGS+=("$name")
         log SKIPPED "$name was already installed (Skipped)"
         sleep 1
-    else
-       start_spinner "  [*] Installing: $name (via $PM).."
-    
-       # Use the detected package manager to install 
-       case "$PM" in
+        return 0
+    fi
+
+    start_spinner "  [*] Installing: $name (via $PM).."
+
+    case "$PM" in
         apt)
-          execute_pkg_command "sudo apt update && sudo apt install -y "$pkg" >/dev/null 2>&1" "$pkg" "$cmd"
+            execute_pkg_command "$pkg" "$cmd" "install" \
+                sudo apt-get install -y "$pkg" >/dev/null 2>&1
             ;;
         dnf|yum)
-          execute_pkg_command "sudo $PM install -y "$pkg" >/dev/null 2>&1" "$pkg" "$cmd"
+            execute_pkg_command "$pkg" "$cmd" "install" \
+                sudo "$PM" install -y "$pkg" >/dev/null 2>&1
             ;;
         pacman)
-           execute_pkg_command "sudo pacman -Sy --noconfirm --needed "$pkg" >/dev/null 2>&1" "$pkg" "$cmd"
+            execute_pkg_command "$pkg" "$cmd" "install" \
+                sudo pacman -Sy --noconfirm --needed "$pkg" >/dev/null 2>&1
             ;;
         zypper)
-           execute_pkg_command "sudo zypper refresh && sudo zypper install -y "$pkg" >/dev/null 2>&1" "$pkg" "$cmd"
+            execute_pkg_command "$pkg" "$cmd" "install" \
+                sudo zypper install -y "$pkg" >/dev/null 2>&1
             ;;
         brew)
-           execute_pkg_command "brew install "$pkg" >/dev/null 2>&1" "$pkg" "$cmd"
+            execute_pkg_command "$pkg" "$cmd" "install" \
+                brew install "$pkg" >/dev/null 2>&1
             ;;
         apk)
-           execute_pkg_command "sudo apk add "$pkg" >/dev/null 2>&1" "$pkg" "$cmd"
+            execute_pkg_command "$pkg" "$cmd" "install" \
+                sudo apk add "$pkg" >/dev/null 2>&1
             ;;
         emerge)
-          execute_pkg_command "sudo emerge -av "$pkg" >/dev/null 2>&1" "$pkg" "$cmd"
+            execute_pkg_command "$pkg" "$cmd" "install" \
+                sudo emerge -av "$pkg" >/dev/null 2>&1
             ;;
         nix)
-          execute_pkg_command "sudo nix-env -i "$pkg" >/dev/null 2>&1" "$pkg" "$cmd"
+            execute_pkg_command "$pkg" "$cmd" "install" \
+                nix-env -i "$pkg" >/dev/null 2>&1
             ;;
         flatpak)
-           execute_pkg_command "flatpak install -y flathub "$pkg" >/dev/null 2>&1" "$pkg" "$cmd"
+            execute_pkg_command "$pkg" "$cmd" "install" \
+                flatpak install -y flathub "$pkg" >/dev/null 2>&1
             ;;
         snap)
-           execute_pkg_command "sudo snap install "$pkg" >/dev/null 2>&1" "$pkg" "$cmd"
+            execute_pkg_command "$pkg" "$cmd" "install" \
+                sudo snap install "$pkg" >/dev/null 2>&1
             ;;
         pkg)
-           execute_pkg_command "pkg install -y "$pkg" >/dev/null 2>&1" "$pkg" "$cmd"
+            execute_pkg_command "$pkg" "$cmd" "install" \
+                pkg install -y "$pkg" >/dev/null 2>&1
             ;;
-        choco)
-           execute_pkg_command "choco install -y "$pkg" >/dev/null 2>&1" "$pkg" "$cmd"
+        choco|chocolatey)
+            execute_pkg_command "$pkg" "$cmd" "install" \
+                choco install -y "$pkg" >/dev/null 2>&1
+
             ;;
         scoop)
-           execute_pkg_command "scoop install "$pkg" >/dev/null 2>&1" "$pkg" "$cmd"
+            execute_pkg_command "$pkg" "$cmd" "install" \
+                scoop install "$pkg" >/dev/null 2>&1
             ;;
         winget)
-             execute_pkg_command "winget install -e --id "$pkg" >/dev/null 2>&1" "$pkg" "$cmd"
+            execute_pkg_command "$pkg" "$cmd" "install" \
+                winget install -e --id "$pkg" >/dev/null 2>&1
             ;;
-        apt-get)
-          execute_pkg_command "sudo apt-get update && sudo apt-get install -y "$pkg" >/dev/null 2>&1" "$pkg" "$cmd"
+        *)
+            stop_spinner
+            echo -e "${ERROR}  [x] Unsupported package manager: $PM${RST}"
+            FAILED_PKGS+=("$name")
+            log FAIL "$name — unsupported PM: $PM"
+            return 1
             ;;
-        xbps)
-          execute_pkg_command "sudo xbps-install -Sy "$pkg" >/dev/null 2>&1" "$pkg" "$cmd"
-            ;;
-        guix)
-          execute_pkg_command "guix package -i "$pkg" >/dev/null 2>&1" "$pkg" "$cmd"
-            ;;
-        eopkg)
-          execute_pkg_command "sudo eopkg install -y "$pkg" >/dev/null 2>&1" "$pkg" "$cmd"
-            ;;
-        urpmi)
-          execute_pkg_command "sudo urpmi --auto "$pkg" >/dev/null 2>&1" "$pkg" "$cmd"
-            ;;
-        slackpkg)
-          execute_pkg_command "sudo slackpkg install "$pkg" >/dev/null 2>&1" "$pkg" "$cmd"
-            ;;
-        macports)
-          execute_pkg_command "sudo port install "$pkg" >/dev/null 2>&1" "$pkg" "$cmd"
-            ;;
-        bsd-pkg)
-          execute_pkg_command "sudo pkg install -y "$pkg" >/dev/null 2>&1" "$pkg" "$cmd"
-            ;;
-        pkg_add)
-          execute_pkg_command "doas pkg_add "$pkg" >/dev/null 2>&1" "$pkg" "$cmd"
-            ;;
-            *) stop_spinner
-               echo -e "${ERROR}  [x] Unsupported package manager: $PM${RST}"
-                return 1
-                ;;
-        esac
-        # detection for post-install summary
-        local install_exit=$?
-        if [ $install_exit -eq 0 ]; then
-          INSTALLED_PKGS+=("$name") 
-          stop_spinner "${OPTION}  [✓] $name has installed successfully (via $PM). ${RST}"
-          log INSTALLED "$name installed successfully (via $PM)"
-        else
-          FAILED_PKGS+=("$name")
-          echo -e
-          stop_spinner "${ERROR}  [x] Failed to install: $name. ${RST}"
-          log FAIL "$name failed to install (on $PM)"
-        fi
-        sleep 2
-     fi
+    esac
+
+    local install_exit=$?
+    if [[ $install_exit -eq 0 ]]; then
+        INSTALLED_PKGS+=("$name")
+        stop_spinner "${OPTION}  [✓] $name installed successfully (via $PM).${RST}"
+        log INSTALLED "$name installed successfully (via $PM)"
+    else
+        FAILED_PKGS+=("$name")
+        stop_spinner "${ERROR}  [x] Failed to install: $name.${RST}"
+        log FAIL "$name failed to install (on $PM)"
+    fi
+    sleep 2
 }
-# Universal language package installer (replaces install_pip)
+# Universal language package installer
 # install_lang "pip" "holehe" "Holehe" "holehe"
 install_lang() {
-    local tool_type="$1"  # "pip", "npm", "gem", "cargo"
-    local pkg_name="$2"   # package name to install
-    local display_name="${3:-$pkg_name}" # package name to display
-    local cmd="${4:-$pkg_name}"  # command to check (optional)
-    
-    # If cmd not specified, use pkg_name as command
+    local tool_type="$1"
+    local pkg_name="$2"
+    local display_name="${3:-$pkg_name}"
+    local cmd="${4:-$pkg_name}"
     local check_cmd="${cmd:-$pkg_name}"
-    
-    # Detect the right package manager for this tool type
-    local lang_pm=$(detect_pkg_for_tool "$tool_type")
-    
-    # Check if already installed
+    local lang_pm
+    lang_pm=$(detect_pkg_for_tool "$tool_type")
+
     if command -v "$check_cmd" >/dev/null 2>&1; then
         echo -e "${OPTION}  [✓] $display_name is already installed - Skipping..${RST}"
         SKIPPED_PKGS+=("$display_name")
@@ -239,52 +249,59 @@ install_lang() {
         sleep 1
         return 0
     fi
-    
-    # Check if package manager exists
-    if [ "$lang_pm" = "none" ]; then
-        echo -e "${ERROR}  [✗] $tool_type package manager not found - Cannot install $display_name${RST}"
+
+    if [[ "$lang_pm" == "none" ]]; then
+        echo -e "${ERROR}  [✗] No $tool_type package manager found — cannot install $display_name${RST}"
         FAILED_PKGS+=("$display_name")
         return 1
     fi
-    
+
+    local max_attempts=2
+    local attempt=1
+    local err_tmp
+    err_tmp=$(mktemp)
+
     start_spinner "  [*] Installing: $display_name (via $lang_pm).."
-    
-    # Install based on detected language manager
-    case "$lang_pm" in
-        pip|pip3|pipx)
-            $lang_pm install --quiet "$pkg_name" 2>/dev/null
-            ;;
-        npm)
-            npm install -g --quiet "$pkg_name" 2>/dev/null
-            ;;
-        yarn)
-            yarn global add --silent "$pkg_name" 2>/dev/null
-            ;;
-        gem)
-            gem install --silent "$pkg_name" 2>/dev/null
-            ;;
-        cargo)
-            cargo install --quiet "$pkg_name" 2>/dev/null
-            ;;
-        *)
+
+    while (( attempt <= max_attempts )); do
+        if (( attempt > 1 )); then
             stop_spinner
-            echo -e "${ERROR}  [✗] Unknown language manager: $lang_pm${RST}"
-            FAILED_PKGS+=("$display_name")
-            return 1
-            ;;
-    esac
-    
-    # Verify installation
+            echo -e "${BOLD_YELLOW}  [!] Retry $attempt/$max_attempts for $display_name...${RST}"
+            sleep 3
+            start_spinner "  [*] Retrying: $display_name (via $lang_pm).."
+        fi
+
+        case "$lang_pm" in
+            pip|pip3|pipx) $lang_pm install --quiet "$pkg_name" >"$err_tmp" 2>&1 && break ;;
+            npm)           npm install -g --quiet "$pkg_name" >"$err_tmp" 2>&1 && break ;;
+            yarn)          yarn global add --silent "$pkg_name" >"$err_tmp" 2>&1 && break ;;
+            gem)           gem install --silent "$pkg_name" >"$err_tmp" 2>&1 && break ;;
+            cargo)         cargo install --quiet "$pkg_name" >"$err_tmp" 2>&1 && break ;;
+            *)
+                stop_spinner
+                echo -e "${ERROR}  [✗] Unknown language manager: $lang_pm${RST}"
+                FAILED_PKGS+=("$display_name")
+                rm -f "$err_tmp"
+                return 1
+                ;;
+        esac
+        ((attempt++))
+    done
+
     if command -v "$check_cmd" >/dev/null 2>&1; then
         INSTALLED_PKGS+=("$display_name")
         stop_spinner "${OPTION}  [✓] $display_name installed successfully (via $lang_pm)${RST}"
         log INSTALLED "$display_name installed via $lang_pm"
+        rm -f "$err_tmp"
         sleep 1
         return 0
     else
+        local err_msg
+        err_msg=$(grep -v '^\s*$' "$err_tmp" 2>/dev/null | tail -n1 | tr -cd '[:print:]')
         FAILED_PKGS+=("$display_name")
-        stop_spinner "${ERROR}  [✗] Failed to install: $display_name${RST}"
-        log FAIL "$display_name installation failed"
+        stop_spinner "${ERROR}  [✗] Failed: $display_name${err_msg:+ — ${err_msg}}${RST}"
+        log FAIL "$display_name install failed${err_msg:+: $err_msg}"
+        rm -f "$err_tmp"
         sleep 2
         return 1
     fi
