@@ -136,7 +136,6 @@ prompt_preset_install() {
 whiptail_preset_ui() {
     while true; do
         local choices
-        # Draw the whiptail menu and capture the output
         choices=$(whiptail --title "ProjectR Presets" \
             --cancel-button "Back to Main" \
             --menu "Select a System Configuration Preset:" 15 65 4 \
@@ -144,17 +143,30 @@ whiptail_preset_ui() {
             "2" "Full Professional Developer Workspace" \
             "3" "Fun Interactive Entertainment Tools" 3>&1 1>&2 2>&3)
 
-        # Check if user hit the Cancel button (whiptail returns exit code 1)
         if [[ $? -ne 0 ]]; then
             log LEFT "User exited whiptail presets menu"
             return 0
         fi
 
-        # Process their selection using your existing prompt_preset_install logic
         case "$choices" in
-            1) prompt_preset_install "Minimal" "${PRESET_MINIMAL[@]}" ;;
-            2) prompt_preset_install "Developer" "${PRESET_DEV[@]}" ;;
-            3) prompt_preset_install "Fun" "${PRESET_FUN[@]}" ;;
+            1)
+                if prompt_preset_install "Minimal" "${PRESET_MINIMAL[@]}"; then
+                    log INSTALL "User chose Minimal preset (whiptail)"
+                    install_preset "${PRESET_MINIMAL[@]}"
+                fi
+                ;;
+            2)
+                if prompt_preset_install "Developer" "${PRESET_DEV[@]}"; then
+                    log INSTALL "User chose Developer preset (whiptail)"
+                    install_preset "${PRESET_DEV[@]}"
+                fi
+                ;;
+            3)
+                if prompt_preset_install "Fun" "${PRESET_FUN[@]}"; then
+                    log INSTALL "User chose Fun preset (whiptail)"
+                    install_preset "${PRESET_FUN[@]}"
+                fi
+                ;;
         esac
     done
 }
