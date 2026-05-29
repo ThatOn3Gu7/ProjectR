@@ -5,29 +5,37 @@ setup_nvim() {
 
   install_pkg nvim neovim "Neovim: Best code editor"
   sleep 1
+  
+    local saved
+    saved=$(config_get "nvim_config_choice")
 
-  local saved
-  saved=$(config_get "nvim_config_choice")
+    # User already said skip — respect it
+    if [[ "$saved" == "skip" ]]; then
+        return 0
+    fi
 
-  if [ "$saved" = "skip" ]; then
-      return 0
-  fi
-  if [ -z "$saved" ]; then
-      if ! ask "  [*] Install a config for NeoVim?"; then
-          config_set "nvim_config_choice" "skip"
-          return 0
-      fi
-  fi
+    # User already installed a config in a previous run — don't ask again
+    if [[ "$saved" == "done" ]]; then
+        return 0
+    fi
 
- # Common Neovim config paths
- local STANDARD_PATH="$HOME/.config/nvim"
- if [ -d "$STANDARD_PATH" ]; then
-      echo -e "${OPTION}  [✓] A Neovim config is already installed!"
-      sleep 3
-      return 0
-  else
-      prompt_nvim_config
-  fi
+    # Config dir already exists — something is there, move on
+    local STANDARD_PATH="$HOME/.config/nvim"
+    if [[ -d "$STANDARD_PATH" ]]; then
+        echo -e "${OPTION}  [✓] A Neovim config is already installed!${RST}"
+        sleep 2
+        return 0
+    fi
+
+    if ! ask "  [*] Install a config for NeoVim?"; then
+        config_set "nvim_config_choice" "skip"
+        return 0
+    fi
+
+    if prompt_nvim_config; then
+        # Only mark done if the clone actually succeeded
+        config_set "nvim_config_choice" "done"
+    fi
  }
 # Checks for a nvim config and gives the user the choice to clone one
 prompt_nvim_config() {
