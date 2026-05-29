@@ -74,27 +74,41 @@ parse_flags() {
             --dry-run)
                 export DRY_RUN=1
                 echo -e "${OPTION} [!] Dry-Run Mode Active. No changes will be made.${RST}"
-                shift
                 ;;
 
             --export)
-                source "$_PROJECT_ROOT/lib/features/profile_manager.sh"
+                local _f="$_PROJECT_ROOT/lib/features/profile_manager.sh"
+                if [[ ! -f "$_f" ]]; then
+                    echo -e "  ${ERROR}[!] Required file missing: $_f${RST}"
+                    exit 1
+                fi
+                source "$_f"
                 export_profile
                 exit 0
                 ;;
 
             --import=*)
-                source "$_PROJECT_ROOT/lib/features/profile_manager.sh"
+                local _f="$_PROJECT_ROOT/lib/features/profile_manager.sh"
+                if [[ ! -f "$_f" ]]; then
+                    echo -e "  ${ERROR}[!] Required file missing: $_f${RST}"
+                    exit 1
+                fi
+                source "$_f"
                 import_profile "${arg#--import=}"
                 exit 0
                 ;;
 
             --undo)
-                source "$_PROJECT_ROOT/lib/features/undo_engine.sh"
+                local _f="$_PROJECT_ROOT/lib/features/undo_engine.sh"
+                if [[ ! -f "$_f" ]]; then
+                    echo -e "  ${ERROR}[!] Required file missing: $_f${RST}"
+                    exit 1
+                fi
+                source "$_f"
                 rollback_last_session
                 exit 0
                 ;;
-                
+
             # ── Unknown flag ───
             --*|-*)
                 echo -e "${ERROR}[!] Unknown flag: ${BOLD_WHITE}$arg${RST}"
