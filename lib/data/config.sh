@@ -26,7 +26,7 @@ config_set() {
     tmp=$(mktemp "${CONFIG_FILE}.XXXXXX") || return 1
     grep -v "^${key}=" "$CONFIG_FILE" > "$tmp" 2>/dev/null || true
     echo "${key}=${value}" >> "$tmp"
-    mv "$tmp" "$CONFIG_FILE"
+    mv "$tmp" "$CONFIG_FILE" || { rm -f "$tmp"; echo -e "${ERROR} [✗] Failed to save config key '${key}'.${RST}" >&2; return 1; }
 }
 
 # Clear a single key (for resetting a specific choice)
@@ -36,12 +36,22 @@ config_clear() {
     local tmp
     tmp=$(mktemp "${CONFIG_FILE}.XXXXXX") || return 1
     grep -v "^${key}=" "$CONFIG_FILE" > "$tmp" 2>/dev/null || true
-    mv "$tmp" "$CONFIG_FILE"
+    mv "$tmp" "$CONFIG_FILE" || { rm -f "$tmp"; echo -e "${ERROR} [✗] Failed to clear config key '${key}'.${RST}" >&2; return 1; }
 }
 # Clear ALL saved config (nuclear reset)
 config_reset_all() {
-    > "$CONFIG_FILE"
+    if [[ ! -f "$CONFIG_FILE" ]]; then
+        echo -e "${DIM} [*] Nothing to reset — config file does not exist yet.${RST}"
+        return 0
+    fi
+    if [[ ! -w "$CONFIG_FILE" ]]; then
+        echo -e "${ERROR} [✗] Cannot reset — config file is not writable: $CONFIG_FILE${RST}"
+        return 1
+    fi
+    > "$CONFIG_FILE" || {
+        echo -e "${ERROR} [✗] Failed to clear config file.${RST}"
+        return 1
+    }
     echo -e "${OPTION} [✓] All saved preferences cleared.${RST}"
 }
-
 config_init
