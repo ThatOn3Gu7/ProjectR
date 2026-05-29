@@ -15,7 +15,7 @@ execute_pkg_command() {
     fi
 
     # Execute safely as an array — no string injection risk
-    "$@"
+    "$@" >/dev/null 2>&1
     local status=$?
 
     if [[ $status -eq 0 && "$action" == "install" ]]; then
@@ -155,60 +155,60 @@ install_pkg() {
     case "$PM" in
         apt)
             execute_pkg_command "$pkg" "$cmd" "install" \
-                sudo apt-get install -y "$pkg" >/dev/null 2>&1
+                sudo apt-get install -y "$pkg"
             ;;
         dnf|yum)
             execute_pkg_command "$pkg" "$cmd" "install" \
-                sudo "$PM" install -y "$pkg" >/dev/null 2>&1
+                sudo "$PM" install -y "$pkg"
             ;;
         pacman)
             execute_pkg_command "$pkg" "$cmd" "install" \
-                sudo pacman -Sy --noconfirm --needed "$pkg" >/dev/null 2>&1
+                sudo pacman -Sy --noconfirm --needed "$pkg"
             ;;
         zypper)
             execute_pkg_command "$pkg" "$cmd" "install" \
-                sudo zypper install -y "$pkg" >/dev/null 2>&1
+                sudo zypper install -y "$pkg"
             ;;
         brew)
             execute_pkg_command "$pkg" "$cmd" "install" \
-                brew install "$pkg" >/dev/null 2>&1
+                brew install "$pkg"
             ;;
         apk)
             execute_pkg_command "$pkg" "$cmd" "install" \
-                sudo apk add "$pkg" >/dev/null 2>&1
+                sudo apk add "$pkg"
             ;;
         emerge)
             execute_pkg_command "$pkg" "$cmd" "install" \
-                sudo emerge -av "$pkg" >/dev/null 2>&1
+                sudo emerge -av "$pkg"
             ;;
         nix)
             execute_pkg_command "$pkg" "$cmd" "install" \
-                nix-env -i "$pkg" >/dev/null 2>&1
+                nix-env -i "$pkg"
             ;;
         flatpak)
             execute_pkg_command "$pkg" "$cmd" "install" \
-                flatpak install -y flathub "$pkg" >/dev/null 2>&1
+                flatpak install -y flathub "$pkg"
             ;;
         snap)
             execute_pkg_command "$pkg" "$cmd" "install" \
-                sudo snap install "$pkg" >/dev/null 2>&1
+                sudo snap install "$pkg"
             ;;
         pkg)
             execute_pkg_command "$pkg" "$cmd" "install" \
-                pkg install -y "$pkg" >/dev/null 2>&1
+                pkg install -y "$pkg"
             ;;
         choco|chocolatey)
             execute_pkg_command "$pkg" "$cmd" "install" \
-                choco install -y "$pkg" >/dev/null 2>&1
+                choco install -y "$pkg"
 
             ;;
         scoop)
             execute_pkg_command "$pkg" "$cmd" "install" \
-                scoop install "$pkg" >/dev/null 2>&1
+                scoop install "$pkg"
             ;;
         winget)
             execute_pkg_command "$pkg" "$cmd" "install" \
-                winget install -e --id "$pkg" >/dev/null 2>&1
+                winget install -e --id "$pkg"
             ;;
         *)
             stop_spinner
