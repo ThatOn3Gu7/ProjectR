@@ -67,10 +67,9 @@ echo -e "${RST}"
                 echo -e "${OPTION}   [✓] Neovim config removed${RST}"
               fi
             fi
-
           # pip tools use uninstall_pip instead of uninstall_pkg
           elif [[ "$type" == "pip" ]]; then
-            uninstall_lang $type "$cmd" "$name"
+            uninstall_lang "$type" "$pkg" "$name"
 
           # everything else uses uninstall_pkg
           else
