@@ -158,9 +158,9 @@ handle_selection() {
         pkg)
           install_pkg "$cmd" "$pkg" "$name"
           ;;
-        pip)
+        lang)
           # install_lang args: tool_type  pkg_name  display_name  cmd_to_check
-          install_lang "pip" "$pkg" "$name" "$cmd"
+          install_lang "$type" "$pkg" "$name" "$cmd"
           ;;
         special)
           # 'extra' holds the function name e.g. install_neovim_full
