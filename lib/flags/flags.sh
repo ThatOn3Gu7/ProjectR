@@ -146,6 +146,11 @@ _flag_help() {
         "--import=<file>"        "Import profile from projectr_profile_$(date +%F).txt" \
         "--dry-run"              "Runs script in a dry-run mode, so changes will be made" \
         "--undo"                 "Undo last sessions changes"
+    if [[ -n "${PROJECTR_LAUNCHER_NAME:-}" ]]; then
+        printf "  ${BOLD_WHITE}%-26s${RST}  %s\n" \
+            "--self-update"          "Refresh installed app files from the original checkout" \
+            "--setup-info"           "Show launcher, source, and install paths"
+    fi
     echo ""
     echo -e "   [*] Examples${RST}"
     echo -e "  ${DIM}────────────────────────────────────────────────────${RST}"
