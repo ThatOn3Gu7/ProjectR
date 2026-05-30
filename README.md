@@ -165,7 +165,75 @@ PROJECTR_INSTALL_DIR="$HOME/.projectr" PROJECTR_BIN_DIR="$HOME/bin" bash setup.s
 
 ## Command-line flags
 
-These flags are available through either `bash main.sh ...` or the installed `project ...` launcher.
+ProjectR now supports both professional subcommands and the original flags. These commands are available through either `bash main.sh ...` or the installed `project ...` launcher.
+
+```bash
+project install git
+project install --profile=projectr.yml
+project install git --dry-run --json
+project list tools
+project list state
+project upgrade
+project update
+project doctor
+project verify
+project repair
+project completions bash
+```
+
+### Configuration as code
+
+Commit a `projectr.yml` with your dotfiles or team bootstrap repo:
+
+```yaml
+tools:
+  - git
+  - curl
+  - tmux
+```
+
+TOML is also supported:
+
+```toml
+tools = ["git", "curl", "tmux"]
+```
+
+Install the profile with:
+
+```bash
+project install --profile=projectr.yml
+```
+
+### Dry-run simulation
+
+Use `project dry-run install <tool>` (or `project install <tool> --dry-run`) to get a planned change table without installing anything. Add `--json` for CI systems:
+
+```bash
+project dry-run install git --json
+```
+
+### Local state, verify, and repair
+
+Successful installs are recorded in `~/.local/state/projectr/state.db` when `sqlite3` is available, with a TSV fallback otherwise. Use `project list state` to inspect the database, `project verify` to check managed tools on `PATH`, and `project repair` to reinstall missing non-special tools.
+
+### Plugin tool definitions
+
+Drop TOML files into `tools.d/*.toml` to extend ProjectR without editing `lib/data/tools.sh`:
+
+```toml
+cmd = "ripgrep"
+pkg = "ripgrep"
+name = "Ripgrep"
+desc = "Fast recursive search"
+type = "pkg"
+extra = "-"
+category = "Dev"
+```
+
+### Doctor and update
+
+`project doctor` checks PATH, core dependencies, package manager detection, state database support, and log writability. `project update` runs a fast-forward git update and prints a clean git-log summary of any commits that were applied; if nothing changed, it explains that the checkout was already current.
+
 
 | Flag | What it does |
 | --- | --- |

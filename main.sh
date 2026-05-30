@@ -15,12 +15,11 @@ source "$SCRIPT_DIR/lib/core/display.sh"
 source "$SCRIPT_DIR/lib/system/detect.sh"
 detect_pkg_manager >/dev/null
 source "$SCRIPT_DIR/lib/data/tools.sh"
+source "$SCRIPT_DIR/lib/features/plugin_loader.sh"
+projectr_load_tool_plugins
 source "$SCRIPT_DIR/lib/features/installer.sh"
 source "$SCRIPT_DIR/lib/features/uninstaller.sh"
-# -- source flags and parse immediately --
-source "$SCRIPT_DIR/lib/flags/flags.sh"
-parse_flags "$@"
-# -- now source everything else --
+# -- source support libraries before dispatching non-interactive commands --
 source "$SCRIPT_DIR/lib/core/progress_bar.sh"
 source "$SCRIPT_DIR/lib/core/logging.sh"
 source "$SCRIPT_DIR/lib/core/spinner.sh"
@@ -33,8 +32,16 @@ source "$SCRIPT_DIR/lib/features/post_install.sh"
 source "$SCRIPT_DIR/lib/features/search_install.sh"
 source "$SCRIPT_DIR/lib/features/spacial_setup.sh"
 source "$SCRIPT_DIR/lib/features/sync.sh"
+source "$SCRIPT_DIR/lib/features/state.sh"
+source "$SCRIPT_DIR/lib/features/dry_run.sh"
+source "$SCRIPT_DIR/lib/features/doctor.sh"
+source "$SCRIPT_DIR/lib/features/profile_code.sh"
 source "$SCRIPT_DIR/lib/sub_menus/presets_menu.sh"
 source "$SCRIPT_DIR/lib/sub_menus/uninstall_menu.sh"
+# -- source flags after helpers, then try the professional subcommand dispatcher --
+source "$SCRIPT_DIR/lib/flags/flags.sh"
+source "$SCRIPT_DIR/lib/core/cli.sh"
+projectr_cli_dispatch "$@" || parse_flags "$@"
 trap 'graceful_exit' SIGINT
 # -- lock file location --
 LOCK_FILE="${HOME}/.config/projectr/tmp/project.lock"

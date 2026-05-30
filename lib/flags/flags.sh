@@ -72,8 +72,19 @@ parse_flags() {
               ;;
               
             --dry-run)
-                export DRY_RUN=1
-                echo -e "${OPTION} [*] Runs script in dry-run mode, so no changes will be made"
+                projectr_dry_run_install all
+                exit $?
+                ;;
+
+            --update)
+                projectr_run_update
+                exit $?
+                ;;
+
+            --doctor)
+                projectr_doctor
+                exit $?
+                ;;
 
             --export)
                 local _f="$_PROJECT_ROOT/lib/features/profile_manager.sh"
@@ -143,8 +154,10 @@ _flag_help() {
         "--reset"                "Clear all saved preferences (non-interactive)" \
         "--export"               "Exports profile into projectr_profile_$(date +%F).txt" \
         "--import=<file>"        "Import profile from projectr_profile_$(date +%F).txt" \
-        "--dry-run"              "Runs script in a dry-run mode, so changes will be made" \
-        "--undo"                 "Undo last sessions changes"
+        "--dry-run"              "Simulate changes without installing packages" \
+        "--undo"                 "Undo last sessions changes" \
+        "--update"               "Pull the latest ProjectR git checkout and show applied commits" \
+        "--doctor"               "Check PATH, dependencies, package manager, and logs"
     if [[ -n "${PROJECTR_LAUNCHER_NAME:-}" ]]; then
         printf "  ${BOLD_WHITE}%-26s${RST}  %s\n" \
             "--self-update"          "Refresh installed app files from the original checkout" \
