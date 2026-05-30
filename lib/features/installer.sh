@@ -129,6 +129,7 @@ install_preset() {
     echo ""
     post_install_summary
 }
+
 # -- main installer function --
 # install_pkg "git" "git" "Git: Version control"
 install_pkg() {
@@ -155,7 +156,16 @@ install_pkg() {
     case "$PM" in
         apt)
             execute_pkg_command "$pkg" "$cmd" "install" \
-                sudo apt-get install -y "$pkg" >/dev/null 2>&1
+                env DEBIAN_FRONTEND=noninteractive \
+                sudo apt-get install -y --no-install-recommends "$pkg" >/dev/null 2>&1
+            if [[ $? -ne 0 ]]; then
+                stop_spinner "${BOLD_YELLOW}  [!] apt install failed — refreshing package lists and retrying...${RST}"
+                start_spinner "  [*] Installing: $name (retry after apt-get update).."
+                sudo apt-get update >/dev/null 2>&1
+                execute_pkg_command "$pkg" "$cmd" "install" \
+                    env DEBIAN_FRONTEND=noninteractive \
+                    sudo apt-get install -y --no-install-recommends "$pkg" >/dev/null 2>&1
+            fi
             ;;
         dnf|yum)
             execute_pkg_command "$pkg" "$cmd" "install" \
@@ -167,7 +177,7 @@ install_pkg() {
             ;;
         zypper)
             execute_pkg_command "$pkg" "$cmd" "install" \
-                sudo zypper install -y "$pkg" >/dev/null 2>&1
+                sudo zypper --non-interactive install "$pkg" >/dev/null 2>&1
             ;;
         brew)
             execute_pkg_command "$pkg" "$cmd" "install" \
@@ -175,7 +185,7 @@ install_pkg() {
             ;;
         apk)
             execute_pkg_command "$pkg" "$cmd" "install" \
-                sudo apk add "$pkg" >/dev/null 2>&1
+                sudo apk add --no-cache "$pkg" >/dev/null 2>&1
             ;;
         emerge)
             execute_pkg_command "$pkg" "$cmd" "install" \

@@ -8,6 +8,52 @@ DETECTED_PKG_MANAGERS=()
 detect_pkg_manager() {
     DETECTED_PKG_MANAGERS=()
 
+    # PATCH 2: Parse /etc/os-release for ID_LIKE before scanning commands.
+    # This means on distros like Pop!_OS (ID_LIKE="ubuntu debian"), Mint, or
+    # Raspbian we correctly prioritise apt even if multiple managers are present.
+    # Behaviour lifted from universal-environment-detection.sh (_ud_parse_os_release_file
+    # + _ud_add_native_priority_for_family). We only read ID and ID_LIKE here —
+    # no extra deps, no eval, no subshell needed.
+    local os_id="" os_like=""
+    if [[ -r /etc/os-release ]]; then
+        while IFS='=' read -r key val || [[ -n "$key" ]]; do
+            # strip quotes the shell way — no eval
+            val="${val#\"}"; val="${val%\"}"
+            val="${val#\'}"; val="${val%\'}"
+            case "$key" in
+                ID)      os_id="${val,,}"   ;;   # lowercase
+                ID_LIKE) os_like="${val,,}" ;;
+            esac
+        done < /etc/os-release
+    fi
+
+    # Derive a priority manager from the OS family so the right tool comes first
+    # even when multiple package managers happen to be installed on the same box.
+    local family_pm=""
+    local _id
+    for _id in $os_id $os_like; do
+        case "$_id" in
+            debian|ubuntu|linuxmint|raspbian|pop|pop_os|elementary|kali|parrot|zorin|mx|devuan|neon)
+                family_pm="apt"; break ;;
+            fedora|rhel|centos|rocky|almalinux|ol|oracle|amzn|amazon)
+                family_pm="dnf"; break ;;
+            arch|manjaro|endeavouros|artix|garuda)
+                family_pm="pacman"; break ;;
+            opensuse*|sles|suse)
+                family_pm="zypper"; break ;;
+            alpine)
+                family_pm="apk"; break ;;
+            void)
+                family_pm="xbps"; break ;;
+            gentoo|funtoo)
+                family_pm="emerge"; break ;;
+            nixos)
+                family_pm="nix"; break ;;
+            darwin|macos)
+                family_pm="brew"; break ;;
+        esac
+    done
+
     local candidates=(
         # Android
         "pkg|pkg" # Termux — checked via $PREFIX below too
@@ -72,20 +118,35 @@ detect_pkg_manager() {
 
         if command -v "$cmd" >/dev/null 2>&1; then
             DETECTED_PKG_MANAGERS+=("$id")
-            # First found (highest priority) becomes the primary
-            if [[ -z "$PRIMARY_PKG_MANAGER" ]]; then
-                PRIMARY_PKG_MANAGER="$id"
-            fi
         fi
     done
 
     # If nothing was detected at all
-    if [[ -z "$PRIMARY_PKG_MANAGER" ]]; then
+    if [[ ${#DETECTED_PKG_MANAGERS[@]} -eq 0 ]]; then
         PRIMARY_PKG_MANAGER="unknown"
         DETECTED_PKG_MANAGERS+=("unknown")
+        echo "$PRIMARY_PKG_MANAGER"
+        return
     fi
 
-    # Echo the primary so callers that do PM="${PRIMARY_PKG_MANAGER:-$(detect_pkg_manager)}" still work
+    # Set PRIMARY_PKG_MANAGER: prefer the family-derived one if it was detected,
+    # otherwise fall back to the first one found by the command scan.
+    # This is the core of PATCH 2 — without it, a Debian box with both apt and
+    # snap installed could end up with snap as primary just because of scan order.
+    if [[ -n "$family_pm" ]]; then
+        local m
+        for m in "${DETECTED_PKG_MANAGERS[@]}"; do
+            if [[ "$m" == "$family_pm" ]]; then
+                PRIMARY_PKG_MANAGER="$family_pm"
+                break
+            fi
+        done
+    fi
+    # Fallback: if family match wasn't in detected list, use first detected
+    if [[ -z "$PRIMARY_PKG_MANAGER" ]]; then
+        PRIMARY_PKG_MANAGER="${DETECTED_PKG_MANAGERS[0]}"
+    fi
+
     echo "$PRIMARY_PKG_MANAGER"
 }
 
