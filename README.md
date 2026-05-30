@@ -51,11 +51,51 @@ Built with readability, user experience, and future extensibility in mind.
 
 ## 🚀 Usage
 
-Clone the repository and run the script:
+Clone the repository and run the script directly:
 
 ```bash
 git clone https://github.com/ThatOn3Gu7/ProjectR.git
 cd ProjectR
 bash main.sh
+```
+
+### Optional: install the `project` command
+
+If you want ProjectR to behave like a regular terminal command, run the setup script once:
+
+```bash
+git clone https://github.com/ThatOn3Gu7/ProjectR.git
+cd ProjectR
+bash setup.sh
+```
+
+The setup script copies ProjectR into a hidden user app directory (`~/.local/share/projectr` by default) and creates a launcher at `~/.local/bin/project`. After that, you can run ProjectR from any directory:
+
+```bash
+project
+project --help
+project --install=git
+project --list=tools
+```
+
+If `~/.local/bin` is not already in your `PATH`, either run:
+
+```bash
+export PATH="$HOME/.local/bin:$PATH"
+```
+
+or rerun setup with:
+
+```bash
+bash setup.sh --add-path
+```
+
+Useful setup overrides:
+
+```bash
+bash setup.sh --command=projectr
+bash setup.sh --install-dir="$HOME/.projectr"
+bash setup.sh --bin-dir="$HOME/bin"
+```
 
 

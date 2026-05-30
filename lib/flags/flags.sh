@@ -112,7 +112,7 @@ parse_flags() {
             # ── Unknown flag ───
             --*|-*)
                 echo -e "${ERROR}[!] Unknown flag: ${BOLD_WHITE}$arg${RST}"
-                echo -e "${INFO}[*] Run ${BOLD_WHITE}./main.sh --help or -h${RST}${INFO} to see available flags.${RST}"
+                echo -e "${INFO}[*] Run ${BOLD_WHITE}${PROJECTR_LAUNCHER_NAME:-./main.sh} --help or -h${RST}${INFO} to see available flags.${RST}"
                 exit 1
                 ;;
         esac
@@ -121,10 +121,11 @@ parse_flags() {
 
 # ── Built-in helpers (small enough to live here) ────
 _flag_help() {
+    local usage_cmd="${PROJECTR_LAUNCHER_NAME:-./main.sh}"
     echo ""
     echo -e "${OPTION} [*] ProjectR — Available Flags ${RST}"
     echo ""
-    echo -e "${DIM} Usage:${RST} ${BOLD_WHITE}./main.sh${RST} ${DIM}[flag]${RST}"
+    echo -e "${DIM} Usage:${RST} ${BOLD_WHITE}${usage_cmd}${RST} ${DIM}[flag]${RST}"
     echo ""
     echo -e "   [*] Flags${RST}"
     echo -e "  ${DIM}────────────────────────────────────────────────────${RST}"
@@ -148,12 +149,12 @@ _flag_help() {
     echo ""
     echo -e "   [*] Examples${RST}"
     echo -e "  ${DIM}────────────────────────────────────────────────────${RST}"
-    echo -e "  ${DIM}\$${RST} ./main.sh ${DIM}                       -- Interactive mode${RST}"
-    echo -e "  ${DIM}\$${RST} ./main.sh ${BOLD_WHITE}--install=git${DIM}         -- Install git silently${RST}"
-    echo -e "  ${DIM}\$${RST} ./main.sh ${BOLD_WHITE}--list=installed${DIM}      -- See what's installed${RST}"
-    echo -e "  ${DIM}\$${RST} ./main.sh ${BOLD_WHITE}--list=categories${DIM}     -- Browse tools by category${RST}"
-    echo -e "  ${DIM}\$${RST} ./main.sh ${BOLD_WHITE}--log=50${DIM}              -- Last 50 log lines${RST}"
-    echo -e "  ${DIM}\$${RST} ./main.sh ${BOLD_WHITE}--reset${DIM}               -- Wipe saved preferences${RST}"
+    echo -e "  ${DIM}\$${RST} ${usage_cmd} ${DIM}                       -- Interactive mode${RST}"
+    echo -e "  ${DIM}\$${RST} ${usage_cmd} ${BOLD_WHITE}--install=git${DIM}         -- Install git silently${RST}"
+    echo -e "  ${DIM}\$${RST} ${usage_cmd} ${BOLD_WHITE}--list=installed${DIM}      -- See what's installed${RST}"
+    echo -e "  ${DIM}\$${RST} ${usage_cmd} ${BOLD_WHITE}--list=categories${DIM}     -- Browse tools by category${RST}"
+    echo -e "  ${DIM}\$${RST} ${usage_cmd} ${BOLD_WHITE}--log=50${DIM}              -- Last 50 log lines${RST}"
+    echo -e "  ${DIM}\$${RST} ${usage_cmd} ${BOLD_WHITE}--reset${DIM}               -- Wipe saved preferences${RST}"
     echo ""
 }
 
