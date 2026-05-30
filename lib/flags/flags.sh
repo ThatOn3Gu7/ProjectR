@@ -73,8 +73,7 @@ parse_flags() {
               
             --dry-run)
                 export DRY_RUN=1
-                echo -e "${OPTION} [!] Dry-Run Mode Active. No changes will be made.${RST}"
-                ;;
+                echo -e "${OPTION} [*] Runs script in dry-run mode, so no changes will be made"
 
             --export)
                 local _f="$_PROJECT_ROOT/lib/features/profile_manager.sh"

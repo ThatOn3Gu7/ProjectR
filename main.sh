@@ -46,7 +46,7 @@ mkdir -p "$(dirname "$LOCK_FILE")" || {
 # -- Acquire lock (redirect after directory exists) --
 exec 9>"$LOCK_FILE"
 flock -n 9 || {
-    echo -e "${ERROR}WARR:${RST} projectr is already running."
+    echo -e "${ERROR}WARRN:${RST} projectr is already running."
     exit 1
 }
 # -- Separate log by session --

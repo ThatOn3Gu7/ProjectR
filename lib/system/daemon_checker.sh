@@ -30,10 +30,8 @@ check_daemon_alerts() {
         if [[ ! -f "$detect_script" || ! -f "$update_script" ]]; then
             exit 1
         fi
-
-        source "$detect_script"
-        source "$update_script"
-
+        source "$detect_script" || exit 1
+        source "$update_script" || exit 1
         mkdir -p "$(dirname "$cache_alert")"
 
         # Only write the alert if pkg_update actually succeeds

@@ -20,8 +20,11 @@ start_spinner() {
             printf "\r%s %s" "$message" "${spin_chars:i++%${#spin_chars}:1}"
             sleep 0.1
         done
+    # after
     ) &
-     SPINNER_PID=$!
+    SPINNER_PID=$!
+    # Brief yield so the subshell reaches its loop before any immediate stop_spinner call
+    sleep 0.05 2>/dev/null || true
 }
 # Stop the spinner
 stop_spinner() {
