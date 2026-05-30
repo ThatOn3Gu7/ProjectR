@@ -13,12 +13,16 @@ parse_flags() {
         case "$arg" in
 
             --version|-v)
-                echo -e "${OPTION}projectr ${BOLD_WHITE}v1.2${RST}"
+                echo -e "${OPTION}projectr ${BOLD_WHITE}v1.3${RST}"
                 exit 0
                 ;;
 
             --help|-h)
-                _flag_help
+                if declare -f projectr_cli_help >/dev/null 2>&1; then
+                    projectr_cli_help
+                else
+                    _flag_help
+                fi
                 exit 0
                 ;;
                 
@@ -131,6 +135,11 @@ parse_flags() {
 
 # ── Built-in helpers (small enough to live here) ────
 _flag_help() {
+    if declare -f projectr_cli_help >/dev/null 2>&1; then
+        projectr_cli_help
+        return
+    fi
+
     local usage_cmd="${PROJECTR_LAUNCHER_NAME:-./main.sh}"
     echo ""
     echo -e "${OPTION} [*] ProjectR — Available Flags ${RST}"

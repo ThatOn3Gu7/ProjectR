@@ -36,6 +36,8 @@ source "$SCRIPT_DIR/lib/features/state.sh"
 source "$SCRIPT_DIR/lib/features/dry_run.sh"
 source "$SCRIPT_DIR/lib/features/doctor.sh"
 source "$SCRIPT_DIR/lib/features/profile_code.sh"
+source "$SCRIPT_DIR/lib/features/profile_manager.sh"
+source "$SCRIPT_DIR/lib/features/undo_engine.sh"
 source "$SCRIPT_DIR/lib/sub_menus/presets_menu.sh"
 source "$SCRIPT_DIR/lib/sub_menus/uninstall_menu.sh"
 # -- source flags after helpers, then try the professional subcommand dispatcher --
