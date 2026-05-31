@@ -22,6 +22,9 @@ execute_pkg_command() {
         mkdir -p "$SCRIPT_DIR/log/"
         echo "$(date '+%F %T')|$internal_name|$pkg_name" \
             >> "$SCRIPT_DIR/log/session_history.tmp" 2>/dev/null || true
+        if declare -f projectr_state_record_install >/dev/null 2>&1; then
+            projectr_state_record_install "$internal_name" "$pkg_name" "${PRIMARY_PKG_MANAGER:-$(detect_pkg_manager)}" "$internal_name" || true
+        fi
     fi
 
     return $status

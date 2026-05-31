@@ -165,25 +165,93 @@ PROJECTR_INSTALL_DIR="$HOME/.projectr" PROJECTR_BIN_DIR="$HOME/bin" bash setup.s
 
 ## Command-line flags
 
-These flags are available through either `bash main.sh ...` or the installed `project ...` launcher.
+ProjectR supports both professional subcommands and the original flags. These commands are available through either `bash main.sh ...` or the installed `project ...` launcher, and the same actions can be called with space-separated or equals-style flags.
+
+```bash
+# Command style
+project install git
+project install --profile projectr.yml
+project install git --dry-run --json
+project list tools
+project doctor
+
+# Equivalent flag style
+project --install git
+project --install=git
+project --profile projectr.yml
+project --list tools
+project --list=tools
+project --dry-run git --json
+project --doctor
+```
+
+### Configuration as code
+
+Commit a `projectr.yml` with your dotfiles or team bootstrap repo:
+
+```yaml
+tools:
+  - git
+  - curl
+  - tmux
+```
+
+TOML is also supported:
+
+```toml
+tools = ["git", "curl", "tmux"]
+```
+
+Install the profile with:
+
+```bash
+project install --profile=projectr.yml
+```
+
+### Dry-run simulation
+
+Use `project dry-run install <tool>` (or `project install <tool> --dry-run`) to get a planned change table without installing anything. Add `--json` for CI systems:
+
+```bash
+project dry-run install git --json
+```
+
+### Local state, verify, and repair
+
+Successful installs are recorded in `~/.local/state/projectr/state.db` when `sqlite3` is available, with a TSV fallback otherwise. Use `project list state` to inspect the database, `project verify` to check managed tools on `PATH`, and `project repair` to reinstall missing non-special tools.
+
+### Plugin tool definitions
+
+Drop TOML files into `tools.d/*.toml` to extend ProjectR without editing `lib/data/tools.sh`:
+
+```toml
+cmd = "ripgrep"
+pkg = "ripgrep"
+name = "Ripgrep"
+desc = "Fast recursive search"
+type = "pkg"
+extra = "-"
+category = "Dev"
+```
+
+### Doctor and update
+
+`project doctor` checks PATH, core dependencies, package manager detection, state database support, and log writability. `project update` runs a fast-forward git update and prints a clean git-log summary of any commits that were applied; if nothing changed, it explains that the checkout was already current.
+
 
 | Flag | What it does |
 | --- | --- |
 | `-h`, `--help` | Show available flags and examples. |
 | `-v`, `--version` | Print the ProjectR version. |
-| `--list=tools` | Show every tool in the ProjectR tool registry. |
-| `--list=installed` | Show ProjectR-managed tools already present on your system. |
-| `--list=categories` | Group tools by category. |
-| `--list=manager` | Show known package managers and current availability. |
-| `--search=<name>` | Search ProjectR and supported package managers for a package name. |
-| `--install=<name>` | Install a tool non-interactively. |
-| `--uninstall=<name>` | Uninstall a tool non-interactively. |
-| `--log` | Print the last 20 install log lines. |
-| `--log=<n>` | Print the last `n` install log lines. |
+| `--list <target>`, `--list=<target>` | Show `tools`, `installed`, `categories`, `manager`, or `state`. |
+| `--search <name>`, `--search=<name>` | Search ProjectR and supported package managers for a package name. |
+| `--install <name>`, `--install=<name>` | Install a tool non-interactively. |
+| `--uninstall <name>`, `--uninstall=<name>` | Uninstall a tool non-interactively. |
+| `--log`, `--log <n>`, `--log=<n>` | Print recent install log lines. |
 | `--reset` | Clear saved ProjectR preferences. |
 | `--export` | Export a profile of currently installed ProjectR tools. |
-| `--import=<file>` | Install tools listed in an exported profile. |
-| `--dry-run` | Run install paths without making package-manager changes. |
+| `--import <file>`, `--import=<file>` | Install tools listed in an exported profile. |
+| `--dry-run [tool\|all] [--json]` | Simulate package changes without installing anything. |
 | `--undo` | Undo the last recorded ProjectR install session. |
 
 Launcher-only helper flags:
@@ -196,10 +264,12 @@ Launcher-only helper flags:
 Examples:
 
 ```bash
+project --list tools
 project --list=tools
-project --list=manager
+project --list manager
+project --install tmux
 project --install=tmux
-project --uninstall=tmux
+project --uninstall tmux
 project --search=rg
 project --export
 project --import=projectr_profile_2026-05-30.txt

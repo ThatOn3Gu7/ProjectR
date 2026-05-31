@@ -6,120 +6,199 @@ _PROJECT_ROOT="$(cd "$_FLAGS_DIR/../.." && pwd)"
 # Central flag dispatcher — called before the main interactive loop.
 # Each --flag or --flag=value is handled here and exits immediately.
 parse_flags() {
-    # Nothing passed — let main.sh continue normally
+    # flags.sh is the one dispatcher for both modern commands and legacy flags.
+    # Feature-specific implementation still lives in lib/core or lib/features,
+    # but every CLI argument is routed from this function.
     [[ $# -eq 0 ]] && return 0
 
+    local args=() arg
     for arg in "$@"; do
         case "$arg" in
-
-            --version|-v)
-                echo -e "${OPTION}projectr ${BOLD_WHITE}v1.2${RST}"
-                exit 0
-                ;;
-
-            --help|-h)
-                _flag_help
-                exit 0
-                ;;
-                
-            --search=*)
-                _flag_search "${arg#--search=}"
-                exit 0
-               ;;
-    
-            --list=manager)
-                _flag_list_manager
-                exit 0
-                ;;
-
-            --list=tools)
-                _flag_list_tools
-                exit 0
-                ;;
-            --install=*)
-                _flag_install "${arg#--install=}"
-                exit 0
-                ;;
-
-            --uninstall=*)
-                _flag_uninstall "${arg#--uninstall=}"
-                exit 0
-                ;;
-
-            --list=installed)
-               _flag_list_installed
-               exit 0
-               ;;
-
-            --list=categories)
-              _flag_list_categories
-              exit 0
-              ;;
-
-            --log)
-              _flag_log 20
-              exit 0
-              ;;
-
-            --log=*)
-              _flag_log "${arg#--log=}"
-              exit 0
-              ;;
-
-            --reset)
-              _flag_reset
-              exit 0
-              ;;
-              
-            --dry-run)
-                export DRY_RUN=1
-                echo -e "${OPTION} [*] Runs script in dry-run mode, so no changes will be made"
-
-            --export)
-                local _f="$_PROJECT_ROOT/lib/features/profile_manager.sh"
-                if [[ ! -f "$_f" ]]; then
-                    echo -e "  ${ERROR}[!] Required file missing: $_f${RST}"
-                    exit 1
+            --no-color)
+                export PROJECTR_NO_COLOR=1
+                if declare -f projectr_disable_color >/dev/null 2>&1; then
+                    projectr_disable_color
                 fi
-                source "$_f"
-                export_profile
-                exit 0
                 ;;
-
-            --import=*)
-                local _f="$_PROJECT_ROOT/lib/features/profile_manager.sh"
-                if [[ ! -f "$_f" ]]; then
-                    echo -e "  ${ERROR}[!] Required file missing: $_f${RST}"
-                    exit 1
-                fi
-                source "$_f"
-                import_profile "${arg#--import=}"
-                exit 0
+            --quiet)
+                export PROJECTR_QUIET=1
                 ;;
-
-            --undo)
-                local _f="$_PROJECT_ROOT/lib/features/undo_engine.sh"
-                if [[ ! -f "$_f" ]]; then
-                    echo -e "  ${ERROR}[!] Required file missing: $_f${RST}"
-                    exit 1
-                fi
-                source "$_f"
-                rollback_last_session
-                exit 0
-                ;;
-
-            # ── Unknown flag ───
-            --*|-*)
-                echo -e "${ERROR}[!] Unknown flag: ${BOLD_WHITE}$arg${RST}"
-                echo -e "${INFO}[*] Run ${BOLD_WHITE}${PROJECTR_LAUNCHER_NAME:-./main.sh} --help or -h${RST}${INFO} to see available flags.${RST}"
-                exit 1
-                ;;
+            *) args+=("$arg") ;;
         esac
     done
+
+    # If only global display flags were provided, continue into interactive mode.
+    [[ ${#args[@]} -eq 0 ]] && return 0
+    set -- "${args[@]}"
+
+    case "$1" in
+        --version|-v|version)
+            echo -e "${OPTION}projectr ${BOLD_WHITE}v1.3${RST}"
+            exit 0
+            ;;
+
+        --help|-h|help)
+            _flag_help
+            exit 0
+            ;;
+
+        install|--install)
+            shift
+            projectr_cli_install_args "$@"
+            exit $?
+            ;;
+
+        --install=*)
+            local first_target="${1#--install=}"
+            shift
+            projectr_cli_install_args "$first_target" "$@"
+            exit $?
+            ;;
+
+        uninstall|--uninstall)
+            shift
+            projectr_cli_uninstall_args "$@"
+            exit $?
+            ;;
+
+        --uninstall=*)
+            local first_target="${1#--uninstall=}"
+            shift
+            projectr_cli_uninstall_args "$first_target" "$@"
+            exit $?
+            ;;
+
+        search|--search)
+            shift
+            [[ -n "${1:-}" ]] || { echo -e "${ERROR}[!] search requires a name.${RST}"; exit 1; }
+            _flag_search "$1"
+            exit $?
+            ;;
+
+        --search=*)
+            _flag_search "${1#--search=}"
+            exit $?
+            ;;
+
+        list|--list)
+            shift
+            projectr_cli_list_arg "${1:-tools}"
+            exit $?
+            ;;
+
+        --list=*)
+            projectr_cli_list_arg "${1#--list=}"
+            exit $?
+            ;;
+
+        dry-run|--dry-run)
+            shift
+            [[ "${1:-}" == "install" ]] && shift
+            projectr_dry_run_install "$@"
+            exit $?
+            ;;
+
+        --profile)
+            shift
+            projectr_cli_install_args --profile "$@"
+            exit $?
+            ;;
+
+        --profile=*)
+            projectr_install_profile "${1#--profile=}"
+            exit $?
+            ;;
+
+        log|--log)
+            shift
+            _flag_log "${1:-20}"
+            exit $?
+            ;;
+
+        --log=*)
+            _flag_log "${1#--log=}"
+            exit $?
+            ;;
+
+        reset|--reset)
+            _flag_reset
+            exit $?
+            ;;
+
+        export|--export)
+            export_profile
+            exit $?
+            ;;
+
+        import|--import)
+            shift
+            [[ -n "${1:-}" ]] || { echo -e "${ERROR}[!] import requires a file path.${RST}"; exit 1; }
+            import_profile "$1"
+            exit $?
+            ;;
+
+        --import=*)
+            import_profile "${1#--import=}"
+            exit $?
+            ;;
+
+        undo|--undo)
+            rollback_last_session
+            exit $?
+            ;;
+
+        upgrade|--upgrade)
+            pkg_upgrade
+            exit $?
+            ;;
+
+        update|--update|self-update|--self-update|projectr-update|--projectr-update)
+            projectr_run_update
+            exit $?
+            ;;
+
+        doctor|--doctor)
+            projectr_doctor
+            exit $?
+            ;;
+
+        verify|--verify)
+            projectr_verify_state
+            exit $?
+            ;;
+
+        repair|--repair)
+            projectr_repair_state
+            exit $?
+            ;;
+
+        completions|--completions)
+            [[ "${2:-}" == "bash" ]] || { echo "Only bash completions are currently supported."; exit 1; }
+            projectr_completions_bash
+            exit 0
+            ;;
+
+        --*|-*)
+            echo -e "${ERROR}[!] Unknown flag: ${BOLD_WHITE}$1${RST}"
+            echo -e "${INFO}[*] Run ${BOLD_WHITE}${PROJECTR_LAUNCHER_NAME:-./main.sh} --help or -h${RST}${INFO} to see available flags.${RST}"
+            exit 1
+            ;;
+
+        *)
+            echo -e "${ERROR}[!] Unknown command: ${BOLD_WHITE}$1${RST}"
+            echo -e "${INFO}[*] Run ${BOLD_WHITE}${PROJECTR_LAUNCHER_NAME:-./main.sh} --help or -h${RST}${INFO} to see available commands.${RST}"
+            exit 1
+            ;;
+    esac
 }
 
 # ── Built-in helpers (small enough to live here) ────
 _flag_help() {
+    if declare -f projectr_cli_help >/dev/null 2>&1; then
+        projectr_cli_help
+        return
+    fi
+
     local usage_cmd="${PROJECTR_LAUNCHER_NAME:-./main.sh}"
     echo ""
     echo -e "${OPTION} [*] ProjectR — Available Flags ${RST}"
@@ -143,8 +222,10 @@ _flag_help() {
         "--reset"                "Clear all saved preferences (non-interactive)" \
         "--export"               "Exports profile into projectr_profile_$(date +%F).txt" \
         "--import=<file>"        "Import profile from projectr_profile_$(date +%F).txt" \
-        "--dry-run"              "Runs script in a dry-run mode, so changes will be made" \
-        "--undo"                 "Undo last sessions changes"
+        "--dry-run"              "Simulate changes without installing packages" \
+        "--undo"                 "Undo last sessions changes" \
+        "--update"               "Pull the latest ProjectR git checkout and show applied commits" \
+        "--doctor"               "Check PATH, dependencies, package manager, and logs"
     if [[ -n "${PROJECTR_LAUNCHER_NAME:-}" ]]; then
         printf "  ${BOLD_WHITE}%-26s${RST}  %s\n" \
             "--self-update"          "Refresh installed app files from the original checkout" \
