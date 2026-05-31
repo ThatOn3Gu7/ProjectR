@@ -291,7 +291,6 @@ _flag_list_manager() {
     fi
 
     # ── Manager registry ───
-    # Format: id|display_name|platform|check_cmd
     local managers=(
         "apt|apt|Linux (Debian/Ubuntu)|apt"
         "apt-get|apt-get|Linux (Debian/Ubuntu)|apt-get"
@@ -319,7 +318,7 @@ _flag_list_manager() {
         "snap|snap|Linux|snap"
     )
 
-    # ── Header ───
+    # ── Header (using echo -e, already safe) ───
     echo ""
     echo -e "${OPTION} [*] ProjectR — Supported Package Managers ${RST}"
     echo ""
@@ -335,50 +334,63 @@ _flag_list_manager() {
         (( ${#display} > max_name )) && max_name=${#display}
         (( ${#platform} > max_os )) && max_os=${#platform}
     done
-    # Minimum widths
     (( max_name < 15 )) && max_name=15
     (( max_os < 12 )) && max_os=12
 
-    # ── Table header ───
-    printf "  ${BOLD_WHITE}%-${max_name}s  %-6s  %-${max_os}s${RST}\n" \
-        "Package Manager" "Avail." "Platform"
-    printf "  ${DIM}%s${RST}\n" "$(printf '─%.0s' $(seq 1 $(( max_name + 7 + max_os + 2 ))))"
+    # ── Table header (FIXED: colors as %b arguments) ───
+    printf "  %b%-${max_name}s  %-6s  %-${max_os}s%b\n" \
+        "$BOLD_WHITE" "Package Manager" "Avail" "Platform" "$RST"
+
+    # Separator (FIXED)
+    printf "  %b%s%b\n" \
+        "$DIM" \
+        "$(printf '─%.0s' $(seq 1 $(( max_name + 7 + max_os + 2 ))))" \
+        "$RST"
 
     # ── Table rows ───
-local available_list=()
-for entry in "${managers[@]}"; do
-    IFS="|" read -r id display platform check_cmd <<< "$entry"
+    local available_list=()
+    for entry in "${managers[@]}"; do
+        IFS="|" read -r id display platform check_cmd <<< "$entry"
 
-    # Force FreeBSD pkg to be unavailable on Termux (Termux has its own `pkg`)
-    local force_unavailable=0
-    [[ "$detected_os" == "Termux (Android)" && "$id" == "BSD-pkg" ]] && force_unavailable=1
+        # Force FreeBSD pkg to be unavailable on Termux
+        local force_unavailable=0
+        [[ "$detected_os" == "Termux (Android)" && "$id" == "BSD-pkg" ]] && force_unavailable=1
 
-    local icon icon_color marker=""
-    if (( force_unavailable )); then
-        icon="✘"
-        icon_color="${ERROR}"
-    elif command -v "$check_cmd" >/dev/null 2>&1; then
-        icon="✔"
-        icon_color="${OPTION}"
-        available_list+=("$display")
-        # Mark the primary (active) one
-        [[ "$id" == "$detected_pm" ]] && marker=" ${OPTION}★${RST}"
-    else
-        icon="✘"
-        icon_color="${ERROR}"
-    fi
+        local icon icon_color marker=""
+        if (( force_unavailable )); then
+            icon="✘"
+            icon_color="${ERROR}"
+        elif command -v "$check_cmd" >/dev/null 2>&1; then
+            icon="✔"
+            icon_color="${OPTION}"
+            available_list+=("$display")
+            # Mark the primary (active) one
+            [[ "$id" == "$detected_pm" ]] && marker=" ${OPTION}★${RST}"
+        else
+            icon="✘"
+            icon_color="${ERROR}"
+        fi
 
-    printf "  ${BOLD_WHITE}%-${max_name}s${RST}  ${icon_color}%-6s${RST}  ${DIM}%-${max_os}s${RST}%s\n" \
-        "$display" "$icon" "$platform" "$marker"
-done
+        # FIXED: all colour variables moved to %b arguments
+        printf "  %b%-${max_name}s%b  %b%-6s%b  %b%-${max_os}s%b%b\n" \
+            "$BOLD_WHITE" "$display" "$RST" \
+            "$icon_color" "$icon" "$RST" \
+            "$DIM" "$platform" "$RST" \
+            "$marker"
+    done
 
     # ── Footer ───
     echo ""
-    printf "  ${DIM}%s${RST}\n" "$(printf '─%.0s' $(seq 1 $(( max_name + 7 + max_os + 2 ))))"
-    echo -e "  ${INFO}Detected OS :${RST}  ${BOLD_WHITE}${detected_os}${RST}"
-    echo -e "  ${INFO}Primary PM  :${RST}  ${OPTION} ${detected_pm}${RST}"
+    # Separator again (FIXED)
+    printf "  %b%s%b\n" \
+        "$DIM" \
+        "$(printf '─%.0s' $(seq 1 $(( max_name + 7 + max_os + 2 ))))" \
+        "$RST"
 
-    # Show other available managers (exclude the primary)
+    # Footer lines (echo -e already safe)
+    echo -e "  ${INFO}Detected OS :${RST}  ${BOLD_WHITE}${detected_os}${RST}"
+    echo -e "  ${INFO}Primary PM  :${RST} ${OPTION} ${detected_pm}${RST}"
+
     local extra=()
     for m in "${available_list[@]}"; do
         [[ "$m" != "$detected_pm" ]] && extra+=("$m")
