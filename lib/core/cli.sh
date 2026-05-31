@@ -1,5 +1,5 @@
 #!/bin/bash
-# Professional subcommand dispatcher for ProjectR.
+# Shared CLI helpers for ProjectR; dispatch lives in lib/flags/flags.sh.
 
 projectr_disable_color() {
     RST="" BLACK="" RED="" GREEN="" YELLOW="" BLUE="" PURPLE="" CYAN="" WHITE=""
@@ -200,101 +200,5 @@ projectr_cli_list_arg() {
         manager|managers) _flag_list_manager ;;
         state) projectr_state_list ;;
         *) echo -e "${ERROR}[!] Unknown list target: $target${RST}"; return 1 ;;
-    esac
-}
-
-projectr_cli_dispatch() {
-    [[ $# -eq 0 ]] && return 1
-
-    local args=() arg
-    for arg in "$@"; do
-        case "$arg" in
-            --no-color) export PROJECTR_NO_COLOR=1; projectr_disable_color ;;
-            --quiet) export PROJECTR_QUIET=1 ;;
-            *) args+=("$arg") ;;
-        esac
-    done
-    set -- "${args[@]}"
-    [[ $# -eq 0 ]] && return 1
-
-    case "$1" in
-        help|-h|--help) projectr_cli_help; exit 0 ;;
-        --version|-v|version) echo "projectr v1.3"; exit 0 ;;
-        install|--install)
-            shift
-            projectr_cli_install_args "$@"
-            exit $?
-            ;;
-        --install=*)
-            local first_target="${1#--install=}"
-            shift
-            projectr_cli_install_args "$first_target" "$@"
-            exit $?
-            ;;
-        uninstall|--uninstall)
-            shift
-            projectr_cli_uninstall_args "$@"
-            exit $?
-            ;;
-        --uninstall=*)
-            local first_target="${1#--uninstall=}"
-            shift
-            projectr_cli_uninstall_args "$first_target" "$@"
-            exit $?
-            ;;
-        search|--search)
-            shift
-            [[ -n "${1:-}" ]] || { echo -e "${ERROR}[!] search requires a name.${RST}"; exit 1; }
-            _flag_search "$1"
-            exit $?
-            ;;
-        --search=*) _flag_search "${1#--search=}"; exit $? ;;
-        dry-run|--dry-run)
-            shift
-            [[ "${1:-}" == "install" ]] && shift
-            projectr_dry_run_install "$@"
-            exit $?
-            ;;
-        list|--list)
-            shift
-            projectr_cli_list_arg "${1:-tools}"
-            exit $?
-            ;;
-        --list=*) projectr_cli_list_arg "${1#--list=}"; exit $? ;;
-        --profile)
-            shift
-            projectr_cli_install_args --profile "$@"
-            exit $?
-            ;;
-        --profile=*) projectr_install_profile "${1#--profile=}"; exit $? ;;
-        log|--log)
-            shift
-            _flag_log "${1:-20}"
-            exit $?
-            ;;
-        --log=*) _flag_log "${1#--log=}"; exit $? ;;
-        reset|--reset) _flag_reset; exit $? ;;
-        export|--export)
-            export_profile
-            exit $?
-            ;;
-        import|--import)
-            shift
-            [[ -n "${1:-}" ]] || { echo -e "${ERROR}[!] import requires a file path.${RST}"; exit 1; }
-            import_profile "$1"
-            exit $?
-            ;;
-        --import=*) import_profile "${1#--import=}"; exit $? ;;
-        undo|--undo) rollback_last_session; exit $? ;;
-        upgrade|--upgrade) pkg_upgrade; exit $? ;;
-        update|--update|self-update|--self-update|projectr-update|--projectr-update) projectr_run_update; exit $? ;;
-        doctor|--doctor) projectr_doctor; exit $? ;;
-        verify|--verify) projectr_verify_state; exit $? ;;
-        repair|--repair) projectr_repair_state; exit $? ;;
-        completions|--completions)
-            [[ "${2:-}" == "bash" ]] || { echo "Only bash completions are currently supported."; exit 1; }
-            projectr_completions_bash; exit 0
-            ;;
-        *) return 1 ;;
     esac
 }

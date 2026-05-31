@@ -40,10 +40,10 @@ source "$SCRIPT_DIR/lib/features/profile_manager.sh"
 source "$SCRIPT_DIR/lib/features/undo_engine.sh"
 source "$SCRIPT_DIR/lib/sub_menus/presets_menu.sh"
 source "$SCRIPT_DIR/lib/sub_menus/uninstall_menu.sh"
-# -- source flags after helpers, then try the professional subcommand dispatcher --
-source "$SCRIPT_DIR/lib/flags/flags.sh"
+# -- source CLI helpers, then use flags.sh as the single command/flag dispatcher --
 source "$SCRIPT_DIR/lib/core/cli.sh"
-projectr_cli_dispatch "$@" || parse_flags "$@"
+source "$SCRIPT_DIR/lib/flags/flags.sh"
+parse_flags "$@"
 trap 'graceful_exit' SIGINT
 # -- lock file location --
 LOCK_FILE="${HOME}/.config/projectr/tmp/project.lock"
