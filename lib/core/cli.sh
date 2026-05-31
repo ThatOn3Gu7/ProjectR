@@ -23,7 +23,7 @@ projectr_disable_color() {
 }
 
 projectr_cli_help() {
-    local usage_cmd="${PROJECTR_LAUNCHER_NAME:-projectr}"
+    local usage_cmd="${PROJECTR_LAUNCHER_NAME:-project}"
     cat <<EOF_HELP
 ProjectR v1.3
 
