@@ -85,7 +85,7 @@ Flags:
 EOF_HELP
     if [[ -n "${PROJECTR_LAUNCHER_NAME:-}" ]]; then
         cat <<EOF_LAUNCHER
-  --setup-info, --projectr-info               Show launcher, source, and install paths
+  --setup-info, --project-info               Show launcher, source, and install paths
 EOF_LAUNCHER
     fi
     cat <<EOF_EXAMPLES
@@ -209,7 +209,7 @@ projectr_cli_list_arg() {
     case "$target" in
         tools) _flag_list_tools ;;
         installed) _flag_list_installed ;;
-        categories) _flag_list_categories ;;
+        categories|cat) _flag_list_categories ;;
         manager|managers) _flag_list_manager ;;
         state) projectr_state_list ;;
         *) echo -e "${ERROR}[!] Unknown list target: $target${RST}"; return 1 ;;

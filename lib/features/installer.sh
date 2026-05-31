@@ -81,8 +81,8 @@ install_all() {
             pkg)
                 install_pkg "$cmd" "$pkg" "$name"
                 ;;
-            pip)
-                install_lang "pip" "$pkg" "$name" "$cmd"
+            pip|pip3|pipx|cargo|gem|npm|yarn)
+                install_lang "$type" "$pkg" "$name" "$cmd"
                 ;;
             special)
                 if declare -f "$extra" >/dev/null 2>&1; then

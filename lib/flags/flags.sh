@@ -628,7 +628,7 @@ _flag_install() {
 
     case "$type" in
         pkg) install_pkg "$cmd" "$pkg" "$name" ;;
-        pip) install_lang "pip" "$pkg" "$name" "$cmd" ;;
+        pip|pip3|pipx|cargo|gem|npm|yarn) install_lang "$type" "$pkg" "$name" "$cmd" ;;
     esac
 
     echo ""

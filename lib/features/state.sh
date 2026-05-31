@@ -84,7 +84,7 @@ projectr_repair_state() {
         command -v "$cmd" >/dev/null 2>&1 && continue
         case "$type" in
             pkg) install_pkg "$cmd" "$pkg" "$name" && repaired=$((repaired + 1)) ;;
-            pip) install_lang pip "$pkg" "$name" "$cmd" && repaired=$((repaired + 1)) ;;
+            pip|pip3|pipx|cargo|gem|npm|yarn) install_lang "$type" "$pkg" "$name" "$cmd" && repaired=$((repaired + 1)) ;;
             *) echo -e "${BOLD_YELLOW}[!] $name needs a special installer; open the interactive menu.${RST}" ;;
         esac
     done
