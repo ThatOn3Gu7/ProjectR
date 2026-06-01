@@ -56,7 +56,7 @@ import_profile() {
         [[ -z "$target_cmd" || "$target_cmd" =~ ^# ]] && continue
 
         # Reject anything with spaces or shell-unsafe characters
-        if [[ "$target_cmd" =~ [[:space:]] || "$target_cmd" =~ [^a-zA-Z0-9_./-] ]]; then
+        if [[ "$target_cmd" =~ [[:space:]] || "$target_cmd" =~ [^a-zA-Z0-9_.-] ]]; then
             echo -e "${BOLD_YELLOW} [!] Line $line_num: invalid entry '$target_cmd' — skipping.${RST}"
             ((skipped++)); continue
         fi

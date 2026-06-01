@@ -32,21 +32,21 @@ echo -e "${BOLD_WHITE}   [3] ${BOLD_GREEN}Fun tools ${BOLD_YELLOW}-- For fun & g
   echo ""
   case "$profile_choice" in
     1) 
-      if prompt_preset_install "Minimal" "${PRESET_MINIMAL[@]}"; then
+      if prompt_preset_install "Minimal" "${PRESET_MINIMAL_CMDS[@]}"; then
         log INSTALL "User chose to install 'Minimal tools preset'"
-        install_preset "${PRESET_MINIMAL[@]}"
+        install_preset_by_names "${PRESET_MINIMAL_CMDS[@]}"
       fi
       ;;
     2)
-      if prompt_preset_install "Developer" "${PRESET_DEV[@]}"; then
+      if prompt_preset_install "Developer" "${PRESET_DEV_CMDS[@]}"; then
         log INSTALL "User chose to install 'Developer tools preset'"
-        install_preset "${PRESET_DEV[@]}"
+        install_preset_by_names "${PRESET_DEV_CMDS[@]}"
       fi
       ;;
     3)
-      if prompt_preset_install "Fun" "${PRESET_FUN[@]}"; then
+      if prompt_preset_install "Fun" "${PRESET_FUN_CMDS[@]}"; then
         log INSTALL "User chose to install 'Fun tools preset'"
-        install_preset "${PRESET_FUN[@]}"
+        install_preset_by_names "${PRESET_FUN_CMDS[@]}"
       fi
       ;;
     b|B) 
@@ -150,21 +150,21 @@ whiptail_preset_ui() {
 
         case "$choices" in
             1)
-                if prompt_preset_install "Minimal" "${PRESET_MINIMAL[@]}"; then
+                if prompt_preset_install "Minimal" "${PRESET_MINIMAL_CMDS[@]}"; then
                     log INSTALL "User chose Minimal preset (whiptail)"
-                    install_preset "${PRESET_MINIMAL[@]}"
+                    install_preset_by_names "${PRESET_MINIMAL_CMDS[@]}"
                 fi
                 ;;
             2)
-                if prompt_preset_install "Developer" "${PRESET_DEV[@]}"; then
+                if prompt_preset_install "Developer" "${PRESET_DEV_CMDS[@]}"; then
                     log INSTALL "User chose Developer preset (whiptail)"
-                    install_preset "${PRESET_DEV[@]}"
+                    install_preset_by_names "${PRESET_DEV_CMDS[@]}"
                 fi
                 ;;
             3)
-                if prompt_preset_install "Fun" "${PRESET_FUN[@]}"; then
+                if prompt_preset_install "Fun" "${PRESET_FUN_CMDS[@]}"; then
                     log INSTALL "User chose Fun preset (whiptail)"
-                    install_preset "${PRESET_FUN[@]}"
+                    install_preset_by_names "${PRESET_FUN_CMDS[@]}"
                 fi
                 ;;
         esac

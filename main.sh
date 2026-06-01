@@ -43,8 +43,8 @@ source "$SCRIPT_DIR/lib/sub_menus/uninstall_menu.sh"
 # -- source CLI helpers, then use flags.sh as the single command/flag dispatcher --
 source "$SCRIPT_DIR/lib/core/cli.sh"
 source "$SCRIPT_DIR/lib/flags/flags.sh"
+trap 'graceful_exit' SIGINT SIGTERM SIGHUP
 parse_flags "$@"
-trap 'graceful_exit' SIGINT
 # -- lock file location --
 LOCK_FILE="${HOME}/.config/projectr/tmp/project.lock"
 # -- Ensure directory exists --
