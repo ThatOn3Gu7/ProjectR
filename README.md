@@ -15,10 +15,11 @@ ProjectR helps turn a fresh terminal into a usable workspace by combining:
 - **Non-interactive flags** for automation and quick installs.
 - **Package manager detection** for Debian/Ubuntu, Termux, Arch, Fedora/RHEL, openSUSE, Alpine, Void, Gentoo, Nix, Guix, macOS/Homebrew, BSD-style systems, Windows package managers, Flatpak, and Snap.
 - **Tool registry** with developer tools, minimal essentials, fun terminal apps, and OSINT utilities.
+- **Registry audit checks** for validating tool IDs, install types, duplicates, and special installer references.
 - **Presets** for installing curated groups of tools.
 - **Install-by-name search** that can look in ProjectR's registry first and then search supported managers.
 - **Uninstall workflows** for system packages and language ecosystem packages.
-- **Dry-run and undo support** for safer testing and rollback.
+- **Dry-run, registry audit, and undo support** for safer testing, review, and rollback.
 - **Profile export/import** to recreate installed ProjectR-managed tools later.
 - **Logging and session history** for troubleshooting.
 - **Connectivity, dependency, and disk checks** before heavier install operations.
@@ -183,7 +184,19 @@ project --list tools
 project --list=tools
 project --dry-run git --json
 project --doctor
+project audit --strict
 ```
+
+### Tool database audit
+
+ProjectR's built-in tool database can be checked without installing anything:
+
+```bash
+project audit
+project audit --strict
+```
+
+The audit validates required fields, duplicate IDs or names, supported install types, and special installer functions. Use `--strict` in CI to fail on warnings as well as errors.
 
 ### Configuration as code
 

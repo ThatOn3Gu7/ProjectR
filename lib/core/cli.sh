@@ -60,6 +60,7 @@ Commands:
   repair                                      Reinstall missing non-special managed tools
   dry-run install <tool|all> [--json]         Detailed dry-run plan for CI or review
   completions bash                            Print bash completion script
+  audit [--strict]                            Validate registry IDs, types, and special installers
 
 Flags:
   -h, --help                                  Show this combined help message
@@ -75,6 +76,7 @@ Flags:
   --repair                                    Reinstall missing non-special managed tools
   --update, --self-update                     Fast-forward this checkout and show git-log summary
   --completions bash                          Print bash completion script
+  --audit [--strict]                          Validate registry IDs, types, and special installers
   --log [n], --log=<n>                        Print recent install.log lines (default: 20)
   --reset                                     Clear saved preferences
   --export                                    Export profile to projectr_profile_<date>.txt
@@ -101,6 +103,7 @@ Examples:
   ${usage_cmd} --list state
   ${usage_cmd} doctor
   ${usage_cmd} --doctor
+  ${usage_cmd} audit --strict
 EOF_EXAMPLES
 }
 
@@ -144,7 +147,7 @@ _projectr_complete() {
   COMPREPLY=()
   cur="${COMP_WORDS[COMP_CWORD]}"
   prev="${COMP_WORDS[COMP_CWORD-1]}"
-  commands="install list upgrade update doctor verify repair dry-run completions self-update help"
+  commands="install list upgrade update doctor verify repair dry-run completions self-update audit help"
   lists="tools installed categories manager state"
   case "$prev" in
     projectr|project|main.sh) COMPREPLY=( $(compgen -W "$commands" -- "$cur") ) ;;

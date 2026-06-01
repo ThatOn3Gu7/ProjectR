@@ -1,10 +1,29 @@
 #!/usr/bin/env bash
 
+
+projectr_uninstall_tool_by_fields() {
+    local cmd="$1" pkg="$2" name="$3" type="$4"
+
+    case "$type" in
+        pkg|special)
+            uninstall_pkg "$cmd" "$pkg" "$name"
+            ;;
+        pip|pip3|pipx|cargo|gem|npm|yarn)
+            uninstall_lang "$type" "$pkg" "$name" "$cmd"
+            ;;
+        *)
+            echo -e "${ERROR} [!] Unsupported tool type for uninstall: ${type}${RST}"
+            return 1
+            ;;
+    esac
+}
+
 # -- the uninstall function (for pip/npm/gem/etc) --
 uninstall_lang() {
     local pm="$1"
     local pkg="$2"
     local name="$3"
+    local cmd="${4:-$pkg}"
 
     if [[ -z "$pm" || -z "$pkg" || -z "$name" ]]; then
         echo -e "${ERROR}  [!] uninstall_lang: missing arguments.${RST}"
@@ -18,7 +37,7 @@ uninstall_lang() {
         fi
     fi
 
-    if ! command -v "$pkg" >/dev/null 2>&1; then
+    if ! command -v "$cmd" >/dev/null 2>&1; then
         echo -e "${ERROR}  [!] Package: $name not found (via $pm)${RST}"
         sleep 2
         return 1
@@ -46,7 +65,7 @@ uninstall_lang() {
     local exit_code=$?
 
     # Post-removal verification
-    if command -v "$pkg" >/dev/null 2>&1; then
+    if command -v "$cmd" >/dev/null 2>&1; then
         stop_spinner "${ERROR}  [!] $name still found after removal — may need manual cleanup.${RST}"
         log FAIL "$name (lang): binary still present after $pm removal"
         return 1
@@ -106,7 +125,7 @@ uninstall_pkg() {
         portage)     sudo emerge --depclean "$pkg" >/dev/null 2>&1 ;;
         brew)        brew uninstall --force "$pkg" >/dev/null 2>&1 ;;
         macports)    sudo port uninstall "$pkg" >/dev/null 2>&1 ;;
-        BSD-pkg)     sudo pkg delete -y "$pkg" >/dev/null 2>&1 ;;
+        bsd-pkg)     sudo pkg delete -y "$pkg" >/dev/null 2>&1 ;;
         pkg_add)     doas pkg_delete "$pkg" >/dev/null 2>&1 ;;
         winget)      winget uninstall --silent --accept-package-agreements "$pkg" >/dev/null 2>&1 ;;
         choco)       choco uninstall -y "$pkg" >/dev/null 2>&1 ;;

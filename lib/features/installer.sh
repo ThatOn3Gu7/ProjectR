@@ -34,6 +34,34 @@ execute_pkg_command() {
 
     return $status
 }
+
+projectr_install_tool_by_fields() {
+    local cmd="$1" pkg="$2" name="$3" type="$4" extra="${5:--}"
+
+    case "$type" in
+        pkg)
+            install_pkg "$cmd" "$pkg" "$name"
+            ;;
+        pip|pip3|pipx|cargo|gem|npm|yarn)
+            install_lang "$type" "$pkg" "$name" "$cmd"
+            ;;
+        special)
+            if declare -f "$extra" >/dev/null 2>&1; then
+                "$extra"
+            else
+                echo -e "${ERROR}  [!] Special installer '${extra}' not found — skipping ${name}.${RST}"
+                FAILED_PKGS+=("$name")
+                return 1
+            fi
+            ;;
+        *)
+            echo -e "${ERROR}  [!] Unsupported tool type '${type}' for ${name}.${RST}"
+            FAILED_PKGS+=("$name")
+            return 1
+            ;;
+    esac
+}
+
 # -- install function --
 install_all() {
 # For post-install summary detection
@@ -82,22 +110,7 @@ install_all() {
    for entry in "${TOOLS[@]}"; do
         IFS="|" read -r num cmd pkg name desc type extra cat <<< "$entry"
 
-        case "$type" in
-            pkg)
-                install_pkg "$cmd" "$pkg" "$name"
-                ;;
-            pip|pip3|pipx|cargo|gem|npm|yarn)
-                install_lang "$type" "$pkg" "$name" "$cmd"
-                ;;
-            special)
-                if declare -f "$extra" >/dev/null 2>&1; then
-                    "$extra"
-                else
-                    echo -e "${ERROR}  [!] Special installer '${extra}' not found — skipping ${name}.${RST}"
-                    FAILED_PKGS+=("$name")
-                fi
-                ;;
-        esac
+        projectr_install_tool_by_fields "$cmd" "$pkg" "$name" "$type" "$extra"
     done
 
     # -- post-install-summary
@@ -131,18 +144,7 @@ install_preset_by_names() {
             IFS="|" read -r num cmd pkg display desc type extra cat <<< "$entry"
             if [[ "$cmd" == "$name" ]]; then
                 matched=1
-                case "$type" in
-                    pkg)     install_pkg "$cmd" "$pkg" "$display" ;;
-                    pip|pip3|pipx|cargo|gem|npm|yarn) install_lang "$type" "$pkg" "$display" "$cmd" ;;
-                    special)
-                        if declare -f "$extra" >/dev/null 2>&1; then
-                            "$extra"
-                        else
-                            echo -e "${ERROR}  [!] Special installer '${extra}' not found — skipping ${display}.${RST}"
-                            FAILED_PKGS+=("$display")
-                        fi
-                        ;;
-                esac
+                projectr_install_tool_by_fields "$cmd" "$pkg" "$display" "$type" "$extra"
                 break
             fi
         done
@@ -215,9 +217,41 @@ install_pkg() {
             execute_pkg_command "$pkg" "$cmd" "install" \
                 sudo emerge -av "$pkg"
             ;;
+        xbps)
+            execute_pkg_command "$pkg" "$cmd" "install" \
+                sudo xbps-install -Sy "$pkg"
+            ;;
         nix)
             execute_pkg_command "$pkg" "$cmd" "install" \
                 nix-env -i "$pkg"
+            ;;
+        guix)
+            execute_pkg_command "$pkg" "$cmd" "install" \
+                guix package --install "$pkg"
+            ;;
+        eopkg)
+            execute_pkg_command "$pkg" "$cmd" "install" \
+                sudo eopkg install -y "$pkg"
+            ;;
+        urpmi)
+            execute_pkg_command "$pkg" "$cmd" "install" \
+                sudo urpmi --auto "$pkg"
+            ;;
+        slackpkg)
+            execute_pkg_command "$pkg" "$cmd" "install" \
+                sudo slackpkg install "$pkg"
+            ;;
+        macports)
+            execute_pkg_command "$pkg" "$cmd" "install" \
+                sudo port install "$pkg"
+            ;;
+        bsd-pkg)
+            execute_pkg_command "$pkg" "$cmd" "install" \
+                sudo pkg install -y "$pkg"
+            ;;
+        pkg_add)
+            execute_pkg_command "$pkg" "$cmd" "install" \
+                doas pkg_add "$pkg"
             ;;
         flatpak)
             execute_pkg_command "$pkg" "$cmd" "install" \

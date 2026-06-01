@@ -94,11 +94,7 @@ search_and_install() {
             sleep 2; return 0
         fi
 
-        case "$type" in
-            pkg)     install_pkg "$cmd" "$pkg" "$name" ;;
-            pip)     install_lang "pip" "$pkg" "$name" "$cmd" ;;
-            special) "$extra" ;;
-        esac
+        projectr_install_tool_by_fields "$cmd" "$pkg" "$name" "$type" "$extra"
         return
     fi
 

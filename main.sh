@@ -36,6 +36,7 @@ source "$SCRIPT_DIR/lib/features/state.sh"
 source "$SCRIPT_DIR/lib/features/dry_run.sh"
 source "$SCRIPT_DIR/lib/features/doctor.sh"
 source "$SCRIPT_DIR/lib/features/profile_code.sh"
+source "$SCRIPT_DIR/lib/features/tool_audit.sh"
 source "$SCRIPT_DIR/lib/features/profile_manager.sh"
 source "$SCRIPT_DIR/lib/features/undo_engine.sh"
 source "$SCRIPT_DIR/lib/sub_menus/presets_menu.sh"
@@ -159,23 +160,7 @@ handle_selection() {
       found=1
       show_install_wait
 
-      # The TYPE field tells us how to install this tool:
-      #   pkg     → normal system package manager install
-      #   pip     → python language package (uses install_lang)
-      #   special → has its own custom function (name stored in 'extra')
-      case "$type" in
-        pkg)
-          install_pkg "$cmd" "$pkg" "$name"
-          ;;
-        pip|pip3|pipx|cargo|gem|npm|yarn)
-          # install_lang args: tool_type  pkg_name  display_name  cmd_to_check
-          install_lang "$type" "$pkg" "$name" "$cmd"
-          ;;
-        special)
-          # 'extra' holds the function name e.g. install_neovim_full
-          "$extra"
-          ;;
-      esac
+      projectr_install_tool_by_fields "$cmd" "$pkg" "$name" "$type" "$extra"
       break
     fi
   done

@@ -162,6 +162,12 @@ parse_flags() {
             exit $?
             ;;
 
+        audit|--audit)
+            shift
+            projectr_audit_tools "$@"
+            exit $?
+            ;;
+
         verify|--verify)
             projectr_verify_state
             exit $?
@@ -225,7 +231,8 @@ _flag_help() {
         "--dry-run"              "Simulate changes without installing packages" \
         "--undo"                 "Undo last sessions changes" \
         "--update"               "Pull the latest ProjectR git checkout and show applied commits" \
-        "--doctor"               "Check PATH, dependencies, package manager, and logs"
+        "--doctor"               "Check PATH, dependencies, package manager, and logs" \
+        "--audit"                "Validate registry IDs, types, and special installers"
     if [[ -n "${PROJECTR_LAUNCHER_NAME:-}" ]]; then
         printf "  ${BOLD_WHITE}%-26s${RST}  %s\n" \
             "--self-update"          "Refresh installed app files from the original checkout" \
@@ -309,7 +316,7 @@ _flag_list_manager() {
         "pkg|pkg (Termux)|Termux (Android)|pkg"
         "brew|brew|macOS / Linux|brew"
         "macports|port|macOS|port"
-        "BSD-pkg|pkg (FreeBSD)|FreeBSD|pkg"
+        "bsd-pkg|pkg (FreeBSD)|FreeBSD|pkg"
         "pkg_add|pkg_add|OpenBSD|pkg_add"
         "winget|winget|Windows|winget.exe"
         "choco|choco|Windows|choco.exe"
@@ -354,7 +361,7 @@ _flag_list_manager() {
 
         # Force FreeBSD pkg to be unavailable on Termux
         local force_unavailable=0
-        [[ "$detected_os" == "Termux (Android)" && "$id" == "BSD-pkg" ]] && force_unavailable=1
+        [[ "$detected_os" == "Termux (Android)" && "$id" == "bsd-pkg" ]] && force_unavailable=1
 
         local icon icon_color marker=""
         if (( force_unavailable )); then
@@ -626,10 +633,7 @@ _flag_install() {
     SKIPPED_PKGS=()
     FAILED_PKGS=()
 
-    case "$type" in
-        pkg) install_pkg "$cmd" "$pkg" "$name" ;;
-        pip|pip3|pipx|cargo|gem|npm|yarn) install_lang "$type" "$pkg" "$name" "$cmd" ;;
-    esac
+    projectr_install_tool_by_fields "$cmd" "$pkg" "$name" "$type" "$extra"
 
     echo ""
 }
@@ -681,10 +685,7 @@ _flag_uninstall() {
     done
 
     export NON_INTERACTIVE=1
-    case "$type" in
-        pkg|special) uninstall_pkg "$cmd" "$pkg" "$name" ;;
-        pip)         uninstall_lang "pip" "$cmd" "$name" ;;
-    esac
+    projectr_uninstall_tool_by_fields "$cmd" "$pkg" "$name" "$type"
     unset NON_INTERACTIVE
     echo ""
 }
