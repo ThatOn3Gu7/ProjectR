@@ -62,7 +62,8 @@ progress_run() {
     local C_RED="\033[1;31m"
     
     local tmp_out tmp_exit
-    tmp_out=$(mktemp) || { echo "Failed to create temp file"; return 1; }
+    tmp_out=$(mktemp) || { echo "ERROR
+    : Failed to create temp file"; return 1; }
     tmp_exit=$(mktemp) || { rm -f "$tmp_out"; return 1; }
 
     # ── STEP 1: Save whatever trap was set before we got here ─────────────
@@ -126,11 +127,16 @@ progress_run() {
         sleep 0.2
     done
 
+
     # Wait for process to settle
     wait "$pid" 2>/dev/null
     local exit_code
-    exit_code=$(cat "$tmp_exit" 2>/dev/null)
-    [[ "$exit_code" =~ ^[0-9]+$ ]] || exit_code=1
+    if [[ "$interrupted" -eq 1 ]]; then
+        exit_code=130
+     else
+        exit_code=$(cat "$tmp_exit" 2>/dev/null)
+        [[ "$exit_code" =~ ^[0-9]+$ ]] || exit_code=1
+    fi
 
     # --- Finalize Bar (100%) ---
     local elapsed=$(( $(date +%s) - start_time ))

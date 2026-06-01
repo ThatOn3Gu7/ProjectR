@@ -68,7 +68,7 @@ echo -e "${RST}"
               fi
             fi
           # pip tools use uninstall_pip instead of uninstall_pkg
-          elif [[ "$type" == "pip" ]]; then
+          elif [[ "$type" =~ ^(pip|pip3|pipx|cargo|gem|npm|yarn)$ ]]; then
             uninstall_lang "$type" "$pkg" "$name"
 
           # everything else uses uninstall_pkg

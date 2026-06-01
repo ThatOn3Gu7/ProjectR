@@ -48,5 +48,11 @@ projectr_load_tool_plugin() {
     extra=${extra:--}
     cat=${cat:-Plugin}
     num=$(( ${#TOOLS[@]} + 1 ))
+    # Disallow special type in plugins — too dangerous
+    if [[ "$type" == "special" ]]; then
+       echo -e "${BOLD_YELLOW:-}[!] Plugin '$file': type 'special' not allowed in plugins — defaulting to 'pkg'.${RST:-}" >&2
+       type="pkg"
+       extra="-"
+    fi
     TOOLS+=("$num|$cmd|$pkg|$name|$desc|$type|$extra|$cat")
 }

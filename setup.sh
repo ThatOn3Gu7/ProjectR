@@ -38,11 +38,11 @@ Environment overrides:
   PROJECTR_BIN_DIR       Same as --bin-dir
 
 Examples:
-  bash setup.sh
-  project
-  project --help
-  project --install=git
-  project --self-update
+  bash setup.sh         - To setup launcher in default mode
+  project               - To run interactiv mode vis launcher name
+  project --help        - To see this help menu
+  project --install=git - Installs git none-interactively
+  project --self-update - Updates ProjectR via github
 USAGE
 }
 
@@ -244,7 +244,7 @@ Run:
     $COMMAND_NAME --help
     $COMMAND_NAME --install=git
     $COMMAND_NAME --self-update    # refresh hidden app files from the original checkout
-    $COMMAND_NAME --setup-info      # show install/source paths
+    $COMMAND_NAME --setup-info     # show install/source paths
 DONE
 
 if [[ ":$PATH:" != *":$BIN_DIR:"* ]]; then

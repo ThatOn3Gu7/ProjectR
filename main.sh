@@ -167,7 +167,7 @@ handle_selection() {
         pkg)
           install_pkg "$cmd" "$pkg" "$name"
           ;;
-        lang)
+        pip|pip3|pipx|cargo|gem|npm|yarn)
           # install_lang args: tool_type  pkg_name  display_name  cmd_to_check
           install_lang "$type" "$pkg" "$name" "$cmd"
           ;;

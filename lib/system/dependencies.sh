@@ -341,7 +341,7 @@ install_lolcat() {
     # Try system package manager first
     case "$pm" in
         apt)
-            suod apt install -y lolcat >/dev/null 2>&1 && return 0
+            sudo apt install -y lolcat >/dev/null 2>&1 && return 0
             # Fallback to gem if apt fails
             sudo apt install -y ruby >/dev/null 2>&1 && gem install lolcat 2>/dev/null && return 0
             ;;
