@@ -25,7 +25,7 @@ pkg_update() {
             flatpak) flatpak update --appstream >/dev/null 2>&1    && success=1 ;;
             snap)    snap refresh --list >/dev/null 2>&1           && success=1 ;;
             winget)  winget source update >/dev/null 2>&1          && success=1 ;;
-            scoop)   scoop update >/dev/null 2>&1                  && success=1 ;;
+            scoop)   scoop update '*' >/dev/null 2>&1                  && success=1 ;;
             *)
                 echo -e "${ERROR}"
                 print_box center " [!] No supported package manager found — skipping update"

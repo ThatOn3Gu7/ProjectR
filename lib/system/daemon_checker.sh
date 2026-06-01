@@ -15,11 +15,12 @@ check_daemon_alerts() {
 
     # Only register the cron job if crontab is actually available
     if command -v crontab >/dev/null 2>&1; then
-        if ! crontab -l 2>/dev/null | grep -q "daemon_checker.sh"; then
-            local cron_line="0 0 * * 0 /bin/bash $SCRIPT_DIR/lib/system/daemon_checker.sh --run-silent"
-            ( crontab -l 2>/dev/null; echo "$cron_line" ) | crontab - 2>/dev/null || \
-                echo -e "${BOLD_YELLOW} [!] Could not register background update cron job.${RST}"
-        fi
+      local cron_line="0 0 * * 0 /bin/bash $SCRIPT_DIR/lib/system/daemon_checker.sh --run-silent"
+      (
+           crontab -l 2>/dev/null | grep -v "daemon_checker.sh"
+           echo "$cron_line"
+       ) | crontab - 2>/dev/null || \
+           echo -e "${BOLD_YELLOW} [!] Could not register background update cron job.${RST}"
     fi
 
     # Cron-triggered silent run
