@@ -12,13 +12,29 @@ projectr_profile_tools() {
                 in_tools && /^[[:space:]]*-[[:space:]]*/ { sub(/^[[:space:]]*-[[:space:]]*/, ""); gsub(/["'"'"']/, ""); print }
             ' "$file"
             ;;
-        *.toml)
-            awk -F '=' '
-                $1 ~ /^[[:space:]]*tools[[:space:]]*$/ {
-                    value=$2; gsub(/[][]/, "", value); print value
-                }
-            ' "$file" | tr ',' '\n' | sed 's/["[:space:]]//g; /^$/d'
-            ;;
+            *.toml)
+               awk '
+                   /^[[:space:]]*tools[[:space:]]*=/ {
+                       if (/\[.*\]/) {
+                           sub(/.*\[/, ""); sub(/\].*/, "")
+                           n = split($0, arr, /,/)
+                           for (i=1; i<=n; i++) {
+                               gsub(/["'"'"'[:space:]]/, "", arr[i])
+                               if (arr[i] != "") print arr[i]
+                           }
+                           in_list = 0
+                       } else {
+                           in_list = 1
+                       }
+                       next
+                   }
+                   in_list {
+                       if (/\]/) { in_list = 0; next }
+                       gsub(/["'"'"',[:space:]]/, "")
+                       if ($0 != "") print $0
+                   }
+               ' "$file"
+               ;;
         *) echo -e "${ERROR}[!] Unsupported profile format: $file${RST}" >&2; return 1 ;;
     esac
 }

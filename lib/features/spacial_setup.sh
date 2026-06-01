@@ -104,12 +104,17 @@ setup_zsh() {
             return 1
         fi
 
-        echo -e "${INFO}  [*] Installing Oh-My-Zsh framework...${RST}"
-        echo -e "${ERROR}  [*] The shell will change after this — the script will exit.${RST}"
+        echo -e "${ERROR}  [!] IMPORTANT: The oh-my-zsh installer will REPLACE this shell session.${RST}"
+        echo -e "${ERROR}  [!] ProjectR will exit when the new shell starts. This is expected.${RST}"
+        echo -e "${INFO}  [*] Re-run ProjectR after zsh finishes setting up.${RST}"
         echo -e "${INFO}  [*] Clone plugins manually afterwards for full ohmyzsh features.${RST}"
         echo ""
+        sleep 2
 
-        # Download to a temp file first — never pipe curl directly into sh
+        log EXIT "oh-my-zsh installer launched — shell will be replaced by zsh"
+        stop_spinner 2>/dev/null
+        safe_tput cnorm
+
         local omz_installer
         omz_installer=$(mktemp)
         if ! curl -fsSL \
