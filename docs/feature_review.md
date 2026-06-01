@@ -36,6 +36,7 @@ This review focuses on ProjectR's tool database (`lib/data/tools.sh`) and the in
 - Fixed the invalid Asciiquarium registry type.
 - Improved language manager detection for exact tool types such as `pipx`, `pip3`, and `yarn`.
 - Added `projectr audit [--strict]` to validate IDs, required fields, supported types, duplicates, and special installer references.
+- Upgraded logging so ProjectR records structured session context, CLI dispatches, command starts, successes, failures, exit codes, durations, and diagnostic output tails.
 
 ## References used for feature inspiration
 

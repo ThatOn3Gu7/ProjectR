@@ -30,6 +30,7 @@ parse_flags() {
     # If only global display flags were provided, continue into interactive mode.
     [[ ${#args[@]} -eq 0 ]] && return 0
     set -- "${args[@]}"
+    log INFO "CLI dispatch: $*" "cli"
 
     case "$1" in
         --version|-v|version)
@@ -70,7 +71,7 @@ parse_flags() {
 
         search|--search)
             shift
-            [[ -n "${1:-}" ]] || { echo -e "${ERROR}[!] search requires a name.${RST}"; exit 1; }
+            [[ -n "${1:-}" ]] || { echo -e "${ERROR}[!] search requires a name.${RST}"; log_error "search command missing required name" "cli"; exit 1; }
             _flag_search "$1"
             exit $?
             ;;
@@ -132,7 +133,7 @@ parse_flags() {
 
         import|--import)
             shift
-            [[ -n "${1:-}" ]] || { echo -e "${ERROR}[!] import requires a file path.${RST}"; exit 1; }
+            [[ -n "${1:-}" ]] || { echo -e "${ERROR}[!] import requires a file path.${RST}"; log_error "import command missing file path" "cli"; exit 1; }
             import_profile "$1"
             exit $?
             ;;
@@ -186,12 +187,14 @@ parse_flags() {
 
         --*|-*)
             echo -e "${ERROR}[!] Unknown flag: ${BOLD_WHITE}$1${RST}"
+            log_error "Unknown flag: $1" "cli"
             echo -e "${INFO}[*] Run ${BOLD_WHITE}${PROJECTR_LAUNCHER_NAME:-./main.sh} --help or -h${RST}${INFO} to see available flags.${RST}"
             exit 1
             ;;
 
         *)
             echo -e "${ERROR}[!] Unknown command: ${BOLD_WHITE}$1${RST}"
+            log_error "Unknown command: $1" "cli"
             echo -e "${INFO}[*] Run ${BOLD_WHITE}${PROJECTR_LAUNCHER_NAME:-./main.sh} --help or -h${RST}${INFO} to see available commands.${RST}"
             exit 1
             ;;

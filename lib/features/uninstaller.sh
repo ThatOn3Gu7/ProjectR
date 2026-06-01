@@ -13,9 +13,20 @@ projectr_uninstall_tool_by_fields() {
             ;;
         *)
             echo -e "${ERROR} [!] Unsupported tool type for uninstall: ${type}${RST}"
+            log_fail "Unsupported tool type '$type' for uninstall of $name" "uninstall"
             return 1
             ;;
     esac
+}
+
+projectr_run_uninstall_command() {
+    local component="$1" action="$2"
+    shift 2
+    if declare -f projectr_run_logged >/dev/null 2>&1; then
+        projectr_run_logged "$component" "$action" "$@"
+    else
+        "$@" >/dev/null 2>&1
+    fi
 }
 
 # -- the uninstall function (for pip/npm/gem/etc) --
@@ -27,18 +38,21 @@ uninstall_lang() {
 
     if [[ -z "$pm" || -z "$pkg" || -z "$name" ]]; then
         echo -e "${ERROR}  [!] uninstall_lang: missing arguments.${RST}"
+        log_error "uninstall_lang missing arguments pm='$pm' pkg='$pkg' name='$name'" "uninstall-lang"
         return 1
     fi
 
     if [ "${NON_INTERACTIVE:-0}" != "1" ]; then
       if ! ask_confirm "Remove "$name"? (can be reinstalled later)" "n" "Remove" "Keep" "danger" "20" "center"; then
             echo -e "${INFO}  [→] Skipping: $name${RST}"
+            log_info "User skipped uninstall for $name" "uninstall"
             return 0
         fi
     fi
 
     if ! command -v "$cmd" >/dev/null 2>&1; then
         echo -e "${ERROR}  [!] Package: $name not found (via $pm)${RST}"
+        log_warn "$name not found on PATH before language uninstall (cmd=$cmd pm=$pm pkg=$pkg)" "uninstall-lang"
         sleep 2
         return 1
     fi
@@ -46,18 +60,19 @@ uninstall_lang() {
     start_spinner "   [*] Removing: $name (via $pm).."
 
     case "$pm" in
-        npm)           npm uninstall -g "$pkg" >/dev/null 2>&1 ;;
-        yarn)          yarn global remove "$pkg" >/dev/null 2>&1 ;;
-        pnpm)          pnpm remove -g "$pkg" >/dev/null 2>&1 ;;
-        bun)           bun remove -g "$pkg" >/dev/null 2>&1 ;;
-        pip|pip3|pipx) $pm uninstall -y "$pkg" >/dev/null 2>&1 ;;
-        gem)           gem uninstall "$pkg" -x >/dev/null 2>&1 ;;
-        cargo)         cargo uninstall "$pkg" >/dev/null 2>&1 ;;
-        go)            go clean -i "$pkg" >/dev/null 2>&1 && rm -rf "$(go env GOPATH)/bin/$pkg" 2>/dev/null ;;
-        composer)      composer global remove "$pkg" >/dev/null 2>&1 ;;
+        npm)           projectr_run_uninstall_command "uninstall-lang" "remove $name via npm" npm uninstall -g "$pkg" ;;
+        yarn)          projectr_run_uninstall_command "uninstall-lang" "remove $name via yarn" yarn global remove "$pkg" ;;
+        pnpm)          projectr_run_uninstall_command "uninstall-lang" "remove $name via pnpm" pnpm remove -g "$pkg" ;;
+        bun)           projectr_run_uninstall_command "uninstall-lang" "remove $name via bun" bun remove -g "$pkg" ;;
+        pip|pip3|pipx) projectr_run_uninstall_command "uninstall-lang" "remove $name via $pm" "$pm" uninstall -y "$pkg" ;;
+        gem)           projectr_run_uninstall_command "uninstall-lang" "remove $name via gem" gem uninstall "$pkg" -x ;;
+        cargo)         projectr_run_uninstall_command "uninstall-lang" "remove $name via cargo" cargo uninstall "$pkg" ;;
+        go)            projectr_run_uninstall_command "uninstall-lang" "remove $name via go" go clean -i "$pkg" && rm -rf "$(go env GOPATH)/bin/$pkg" 2>/dev/null ;;
+        composer)      projectr_run_uninstall_command "uninstall-lang" "remove $name via composer" composer global remove "$pkg" ;;
         *)
             stop_spinner
             echo -e "${ERROR} [!] Unsupported language package manager: $pm${RST}"
+            log_fail "Unsupported language package manager '$pm' while removing $name" "uninstall-lang"
             return 1
             ;;
     esac
@@ -90,17 +105,20 @@ uninstall_pkg() {
 
     if [[ -z "$cmd" || -z "$pkg" || -z "$name" ]]; then
         echo -e "${ERROR}  [!] uninstall_pkg: missing arguments.${RST}"
+        log_error "uninstall_pkg missing arguments cmd='$cmd' pkg='$pkg' name='$name'" "uninstall-pkg"
         return 1
     fi
     if [ "${NON_INTERACTIVE:-0}" != "1" ]; then
       if ! ask_confirm "Remove "$name"? (can be reinstalled later)" "n" "Remove" "Keep" "danger" "20" "center"; then
             echo -e "${INFO}  [→] Skipping: $name${RST}"
+            log_info "User skipped uninstall for $name" "uninstall"
             return 0
         fi
     fi
 
     if ! command -v "$cmd" >/dev/null 2>&1; then
         echo -e "${ERROR}  [!] Package: $name not found (on $PM)..${RST}"
+        log_warn "$name not found on PATH before package uninstall (cmd=$cmd pm=$PM pkg=$pkg)" "uninstall-pkg"
         sleep 2
         return 1
     fi
@@ -108,30 +126,30 @@ uninstall_pkg() {
     start_spinner "   [*] Removing pkg: $name (via $PM).."
 
     case "$PM" in
-        pkg)         pkg uninstall -y "$pkg" >/dev/null 2>&1 ;;
-        apt|apt-get) sudo apt purge -y "$pkg" >/dev/null 2>&1 || sudo apt-get purge -y "$pkg" >/dev/null 2>&1 ;;
-        pacman)      sudo pacman -Rns --noconfirm "$pkg" >/dev/null 2>&1 ;;
-        dnf)         sudo dnf remove -y "$pkg" >/dev/null 2>&1 ;;
-        yum)         sudo yum remove -y "$pkg" >/dev/null 2>&1 ;;
-        zypper)      sudo zypper remove -y "$pkg" >/dev/null 2>&1 ;;
-        apk)         sudo apk del "$pkg" >/dev/null 2>&1 ;;
-        emerge)      sudo emerge --unmerge "$pkg" >/dev/null 2>&1 ;;
-        xbps)        sudo xbps-remove -R "$pkg" >/dev/null 2>&1 ;;
-        nix)         nix-env --uninstall "$pkg" >/dev/null 2>&1 && nix-collect-garbage -d >/dev/null 2>&1 ;;
-        guix)        guix package --remove="$pkg" >/dev/null 2>&1 ;;
-        eopkg)       sudo eopkg remove "$pkg" >/dev/null 2>&1 ;;
-        urpmi)       sudo urpme "$pkg" >/dev/null 2>&1 ;;
-        slackpkg)    sudo slackpkg remove "$pkg" >/dev/null 2>&1 ;;
-        portage)     sudo emerge --depclean "$pkg" >/dev/null 2>&1 ;;
-        brew)        brew uninstall --force "$pkg" >/dev/null 2>&1 ;;
-        macports)    sudo port uninstall "$pkg" >/dev/null 2>&1 ;;
-        bsd-pkg)     sudo pkg delete -y "$pkg" >/dev/null 2>&1 ;;
-        pkg_add)     doas pkg_delete "$pkg" >/dev/null 2>&1 ;;
-        winget)      winget uninstall --silent --accept-package-agreements "$pkg" >/dev/null 2>&1 ;;
-        choco)       choco uninstall -y "$pkg" >/dev/null 2>&1 ;;
-        scoop)       scoop uninstall "$pkg" >/dev/null 2>&1 ;;
-        flatpak)     flatpak uninstall -y "$pkg" >/dev/null 2>&1 ;;
-        snap)        sudo snap remove "$pkg" >/dev/null 2>&1 ;;
+        pkg)         projectr_run_uninstall_command "uninstall-pkg" "remove $name via pkg" pkg uninstall -y "$pkg" ;;
+        apt|apt-get) projectr_run_uninstall_command "uninstall-pkg" "purge $name via apt" sudo apt purge -y "$pkg" || projectr_run_uninstall_command "uninstall-pkg" "purge $name via apt-get fallback" sudo apt-get purge -y "$pkg" ;;
+        pacman)      projectr_run_uninstall_command "uninstall-pkg" "remove $name via pacman" sudo pacman -Rns --noconfirm "$pkg" ;;
+        dnf)         projectr_run_uninstall_command "uninstall-pkg" "remove $name via dnf" sudo dnf remove -y "$pkg" ;;
+        yum)         projectr_run_uninstall_command "uninstall-pkg" "remove $name via yum" sudo yum remove -y "$pkg" ;;
+        zypper)      projectr_run_uninstall_command "uninstall-pkg" "remove $name via zypper" sudo zypper remove -y "$pkg" ;;
+        apk)         projectr_run_uninstall_command "uninstall-pkg" "remove $name via apk" sudo apk del "$pkg" ;;
+        emerge)      projectr_run_uninstall_command "uninstall-pkg" "remove $name via emerge" sudo emerge --unmerge "$pkg" ;;
+        xbps)        projectr_run_uninstall_command "uninstall-pkg" "remove $name via xbps" sudo xbps-remove -R "$pkg" ;;
+        nix)         projectr_run_uninstall_command "uninstall-pkg" "remove $name via nix" nix-env --uninstall "$pkg" && projectr_run_uninstall_command "uninstall-pkg" "collect nix garbage after $name" nix-collect-garbage -d ;;
+        guix)        projectr_run_uninstall_command "uninstall-pkg" "remove $name via guix" guix package --remove="$pkg" ;;
+        eopkg)       projectr_run_uninstall_command "uninstall-pkg" "remove $name via eopkg" sudo eopkg remove "$pkg" ;;
+        urpmi)       projectr_run_uninstall_command "uninstall-pkg" "remove $name via urpmi" sudo urpme "$pkg" ;;
+        slackpkg)    projectr_run_uninstall_command "uninstall-pkg" "remove $name via slackpkg" sudo slackpkg remove "$pkg" ;;
+        portage)     projectr_run_uninstall_command "uninstall-pkg" "depclean $name via emerge" sudo emerge --depclean "$pkg" ;;
+        brew)        projectr_run_uninstall_command "uninstall-pkg" "remove $name via brew" brew uninstall --force "$pkg" ;;
+        macports)    projectr_run_uninstall_command "uninstall-pkg" "remove $name via macports" sudo port uninstall "$pkg" ;;
+        bsd-pkg)     projectr_run_uninstall_command "uninstall-pkg" "remove $name via FreeBSD pkg" sudo pkg delete -y "$pkg" ;;
+        pkg_add)     projectr_run_uninstall_command "uninstall-pkg" "remove $name via pkg_delete" doas pkg_delete "$pkg" ;;
+        winget)      projectr_run_uninstall_command "uninstall-pkg" "remove $name via winget" winget uninstall --silent --accept-package-agreements "$pkg" ;;
+        choco)       projectr_run_uninstall_command "uninstall-pkg" "remove $name via choco" choco uninstall -y "$pkg" ;;
+        scoop)       projectr_run_uninstall_command "uninstall-pkg" "remove $name via scoop" scoop uninstall "$pkg" ;;
+        flatpak)     projectr_run_uninstall_command "uninstall-pkg" "remove $name via flatpak" flatpak uninstall -y "$pkg" ;;
+        snap)        projectr_run_uninstall_command "uninstall-pkg" "remove $name via snap" sudo snap remove "$pkg" ;;
         appimage)
             stop_spinner
             echo -e "${OPTION} [*] AppImages must be deleted manually.${RST}"
@@ -141,6 +159,7 @@ uninstall_pkg() {
         *)
             stop_spinner
             echo -e "${ERROR} [!] Unsupported package manager: $PM${RST}"
+            log_fail "Unsupported package manager '$PM' while removing $name" "uninstall-pkg"
             return 1
             ;;
     esac

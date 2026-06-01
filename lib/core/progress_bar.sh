@@ -55,6 +55,9 @@ progress_run() {
     local success_msg="$2"
     shift 2
     local cmd=("$@")
+    if declare -f log >/dev/null 2>&1; then
+        log INFO "START progress: $run_msg :: $(projectr_command_string "${cmd[@]}" 2>/dev/null || printf '%s' "${cmd[*]}")" "progress"
+    fi
     # Local Colors
     local C_RESET="\033[0m"
     local C_BLUE="\033[1;34m"
@@ -162,18 +165,22 @@ progress_run() {
     if [ "$interrupted" -eq 1 ]; then
         echo -e "${C_RED}  [x] Interrupted while${C_RESET} : $run_msg"
         echo -e "   └─▶ Reason : User Cancelled (Ctrl+C)"
+        log_warn "Interrupted progress: $run_msg" "progress"
         exit_code=130
     elif [ "$exit_code" -eq 0 ]; then
         echo -e "${C_GREEN}  [✓] Success at${C_RESET} : $run_msg"
         if [ -n "$success_msg" ]; then
             echo -e "   └─▶ Result : $success_msg"
         fi
+        log_ok "Progress succeeded: $run_msg${success_msg:+ :: $success_msg}" "progress"
     else
         # HERE IS THE MAGIC: We call the error analyzer
         local failure_reason=$(analyze_error "$tmp_out")
         
         echo -e "${C_RED}  [x] Failed to${C_RESET} : $run_msg"
         echo -e "   └─▶ Reason : $failure_reason"
+        log_fail "Progress failed: $run_msg :: $failure_reason" "progress"
+        projectr_log_file_excerpt FAIL "$tmp_out" "progress" 20
     fi
 
     safe_tput cnorm

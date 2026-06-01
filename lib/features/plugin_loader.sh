@@ -40,6 +40,7 @@ projectr_load_tool_plugin() {
 
     [[ -n "$cmd" && -n "$pkg" && -n "$name" ]] || {
         echo -e "${BOLD_YELLOW:-}[!] Skipping malformed plugin: $file${RST:-}" >&2
+        log_warn "Skipping malformed plugin: $file" "plugin"
         return 0
     }
 
@@ -51,8 +52,10 @@ projectr_load_tool_plugin() {
     # Disallow special type in plugins — too dangerous
     if [[ "$type" == "special" ]]; then
        echo -e "${BOLD_YELLOW:-}[!] Plugin '$file': type 'special' not allowed in plugins — defaulting to 'pkg'.${RST:-}" >&2
+       log_warn "Plugin '$file' requested forbidden type special; defaulted to pkg" "plugin"
        type="pkg"
        extra="-"
     fi
     TOOLS+=("$num|$cmd|$pkg|$name|$desc|$type|$extra|$cat")
+    log_info "Loaded tool plugin '$name' from $file as #$num type=$type" "plugin"
 }

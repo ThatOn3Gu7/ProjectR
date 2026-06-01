@@ -3,7 +3,7 @@
 
 projectr_profile_tools() {
     local file="$1"
-    [[ -f "$file" ]] || { echo -e "${ERROR}[!] Profile not found: $file${RST}" >&2; return 1; }
+    [[ -f "$file" ]] || { echo -e "${ERROR}[!] Profile not found: $file${RST}" >&2; log_error "Profile not found: $file" "profile"; return 1; }
     case "$file" in
         *.yml|*.yaml)
             awk '
@@ -35,14 +35,15 @@ projectr_profile_tools() {
                    }
                ' "$file"
                ;;
-        *) echo -e "${ERROR}[!] Unsupported profile format: $file${RST}" >&2; return 1 ;;
+        *) echo -e "${ERROR}[!] Unsupported profile format: $file${RST}" >&2; log_error "Unsupported profile format: $file" "profile"; return 1 ;;
     esac
 }
 
 projectr_install_profile() {
     local file="$1" tool
     mapfile -t _projectr_profile_tools < <(projectr_profile_tools "$file")
-    [[ ${#_projectr_profile_tools[@]} -gt 0 ]] || { echo -e "${ERROR}[!] No tools found in $file${RST}"; return 1; }
+    [[ ${#_projectr_profile_tools[@]} -gt 0 ]] || { echo -e "${ERROR}[!] No tools found in $file${RST}"; log_warn "No tools found in profile: $file" "profile"; return 1; }
+    log_info "Installing profile $file with ${#_projectr_profile_tools[@]} tool(s)" "profile"
     for tool in "${_projectr_profile_tools[@]}"; do
         _flag_install "$tool"
     done

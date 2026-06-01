@@ -21,7 +21,7 @@ ProjectR helps turn a fresh terminal into a usable workspace by combining:
 - **Uninstall workflows** for system packages and language ecosystem packages.
 - **Dry-run, registry audit, and undo support** for safer testing, review, and rollback.
 - **Profile export/import** to recreate installed ProjectR-managed tools later.
-- **Logging and session history** for troubleshooting.
+- **Structured logging and session history** for troubleshooting, including command starts, successes, failures, exit codes, and diagnostic output tails.
 - **Connectivity, dependency, and disk checks** before heavier install operations.
 - **Special setup helpers** for tools that need more than a package install, such as Neovim, Zsh/Oh My Zsh, and code-server.
 
@@ -186,6 +186,17 @@ project --dry-run git --json
 project --doctor
 project audit --strict
 ```
+
+### Logging and troubleshooting
+
+ProjectR writes a structured troubleshooting log to `log/install.log` in the project directory. The log records CLI dispatches, startup context, install/uninstall command starts, successes, failures, exit codes, durations, doctor/audit results, dry-run plans, and the tail of command output when failures happen.
+
+```bash
+project --log
+project --log=100
+```
+
+Logs rotate automatically when they grow large, keeping recent rotated files beside `install.log`.
 
 ### Tool database audit
 

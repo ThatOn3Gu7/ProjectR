@@ -7,11 +7,14 @@ set -uo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 # -- export for use outside main.sh --
 export SCRIPT_DIR
+printf -v PROJECTR_ORIGINAL_ARGS '%q ' "$@"
+export PROJECTR_ORIGINAL_ARGS="${PROJECTR_ORIGINAL_ARGS% }"
 # -- Now source everything using $SCRIPT_DIR as the anchor --
 # -- source conf first (flags need colours/display) --
 source "$SCRIPT_DIR/lib/data/config.sh"
 source "$SCRIPT_DIR/lib/core/colours.sh"
 source "$SCRIPT_DIR/lib/core/display.sh"
+source "$SCRIPT_DIR/lib/core/logging.sh"
 source "$SCRIPT_DIR/lib/system/detect.sh"
 detect_pkg_manager >/dev/null
 source "$SCRIPT_DIR/lib/data/tools.sh"
@@ -21,7 +24,6 @@ source "$SCRIPT_DIR/lib/features/installer.sh"
 source "$SCRIPT_DIR/lib/features/uninstaller.sh"
 # -- source support libraries before dispatching non-interactive commands --
 source "$SCRIPT_DIR/lib/core/progress_bar.sh"
-source "$SCRIPT_DIR/lib/core/logging.sh"
 source "$SCRIPT_DIR/lib/core/spinner.sh"
 source "$SCRIPT_DIR/lib/core/prompts.sh"
 source "$SCRIPT_DIR/lib/system/network.sh"
@@ -51,16 +53,19 @@ LOCK_FILE="${HOME}/.config/projectr/tmp/project.lock"
 # -- Ensure directory exists --
 mkdir -p "$(dirname "$LOCK_FILE")" || {
     echo -e "${ERROR}[!] Failed to create lock directory${RST}"
+    log_error "Failed to create lock directory: $(dirname "$LOCK_FILE")" "startup"
     exit 1
 }
 # -- Acquire lock (redirect after directory exists) --
 exec 9>"$LOCK_FILE"
 flock -n 9 || {
     echo -e "${ERROR}WARRN:${RST} projectr is already running."
+    log_warn "Lock acquisition failed; another ProjectR process is running (lock=$LOCK_FILE)" "startup"
     exit 1
 }
 # -- Separate log by session --
-log START "━━━━━━ Session started at: $(date '+%Y-%m-%d %H:%M') ━━━━━━"
+log START "━━━━━━ Session started at: $(date '+%Y-%m-%d %H:%M') ━━━━━━" "startup"
+projectr_log_environment
 # -- dependencies check -- 
 verify_dependencies
 # a call for startup internet check
@@ -147,6 +152,7 @@ handle_selection() {
   # Step 2: If it's not a number, reject it
   if ! [[ "$selected" =~ ^[0-9]+$ ]]; then
     echo -e " ${BG_BRIGHT_RED}[!] Invalid option:${BG_BRIGHT_YELLOW}${BOLD_BRIGHT_BLACK} $selected ${RST}${OPTION} Please select a valid option${RST}"
+    log_warn "Invalid interactive selection: $selected" "menu"
     sleep 2
     return
   fi
@@ -168,6 +174,7 @@ handle_selection() {
   # If the number wasn't found in TOOLS at all
   if [[ "$found" -eq 0 ]]; then
     echo -e " ${BG_BRIGHT_RED}[!] Invalid option:${BG_BRIGHT_YELLOW}${BOLD_BRIGHT_BLACK} $selected ${RST}${OPTION} Please select the right option${RST}"
+    log_warn "Interactive numeric selection not found in tool registry: $selected" "menu"
     sleep 2
   fi
 }
