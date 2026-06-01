@@ -44,5 +44,5 @@ TOOLS=(
   "40|lazygit|lazygit|Lazygit|Terminal UI for git commands|pkg|-|Dev"
   "41|ani-cli|ani-cli|Ani-cli|Browse and stream anime in terminal|pkg|-|Fun"
   "42|code-server|code-server|Code-Server|Run VS Code in the browser|special|install_code_server|Dev"
-  "43|pipx|pipx|Pipx|Install Python CLI tools isolated|pip3|-|Dev"
+  "43|pipx|pipx|Pipx|Install Python CLI tools isolated|pip|-|Dev"
 )

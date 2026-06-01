@@ -12,7 +12,7 @@ uninstall_lang() {
     fi
 
     if [ "${NON_INTERACTIVE:-0}" != "1" ]; then
-        if ! ask "  [?] Remove $name? (can be reinstalled later)" "n"; then
+      if ! ask_confirm "Remove "$name"? (can be reinstalled later)" "n" "Remove" "Keep" "danger" "20" "center"; then
             echo -e "${INFO}  [→] Skipping: $name${RST}"
             return 0
         fi
@@ -73,9 +73,8 @@ uninstall_pkg() {
         echo -e "${ERROR}  [!] uninstall_pkg: missing arguments.${RST}"
         return 1
     fi
-
     if [ "${NON_INTERACTIVE:-0}" != "1" ]; then
-        if ! ask "  [?] Remove $name? (can be reinstalled later)" "n"; then
+      if ! ask_confirm "Remove "$name"? (can be reinstalled later)" "n" "Remove" "Keep" "danger" "20" "center"; then
             echo -e "${INFO}  [→] Skipping: $name${RST}"
             return 0
         fi
