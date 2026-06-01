@@ -20,8 +20,13 @@ execute_pkg_command() {
 
     if [[ $status -eq 0 && "$action" == "install" ]]; then
         mkdir -p "$SCRIPT_DIR/log/"
-        echo "$(date '+%F %T')|$internal_name|$pkg_name" \
-            >> "$SCRIPT_DIR/log/session_history.tmp" 2>/dev/null || true
+        chmod 700 "$SCRIPT_DIR/log" 2>/dev/null || true
+        local hist_file="$SCRIPT_DIR/log/session_history.tmp"
+        touch "$hist_file" 2>/dev/null || true
+        chmod 600 "$hist_file" 2>/dev/null || true
+        local _method="${install_method:-pkg}"
+        echo "$(date '+%F %T')|$internal_name|$pkg_name|${_method}" \
+            >> "$hist_file" 2>/dev/null || true
         if declare -f projectr_state_record_install >/dev/null 2>&1; then
             projectr_state_record_install "$internal_name" "$pkg_name" "${PRIMARY_PKG_MANAGER:-$(detect_pkg_manager)}" "$internal_name" || true
         fi
@@ -108,11 +113,11 @@ install_all() {
 }
 
 # For profile preset installation
-install_preset() {
-    local preset=("$@")
+install_preset_by_names() {
+    local names=("$@")
 
-    if [[ ${#preset[@]} -eq 0 ]]; then
-        echo -e "${ERROR}  [!] No tools provided to install_preset.${RST}"
+    if [[ ${#names[@]} -eq 0 ]]; then
+        echo -e "${ERROR}  [!] No tools provided to install_preset_by_names.${RST}"
         return 1
     fi
 
@@ -120,19 +125,35 @@ install_preset() {
     SKIPPED_PKGS=()
     FAILED_PKGS=()
 
-    for entry in "${preset[@]}"; do
-        IFS="|" read -r cmd pkg name <<< "$entry"
-        if [[ -z "$cmd" || -z "$pkg" || -z "$name" ]]; then
-            echo -e "${ERROR}  [!] Malformed preset entry: '$entry' — skipping.${RST}"
-            continue
+    for name in "${names[@]}"; do
+        local matched=0
+        for entry in "${TOOLS[@]}"; do
+            IFS="|" read -r num cmd pkg display desc type extra cat <<< "$entry"
+            if [[ "$cmd" == "$name" ]]; then
+                matched=1
+                case "$type" in
+                    pkg)     install_pkg "$cmd" "$pkg" "$display" ;;
+                    pip|pip3|pipx|cargo|gem|npm|yarn) install_lang "$type" "$pkg" "$display" "$cmd" ;;
+                    special)
+                        if declare -f "$extra" >/dev/null 2>&1; then
+                            "$extra"
+                        else
+                            echo -e "${ERROR}  [!] Special installer '${extra}' not found — skipping ${display}.${RST}"
+                            FAILED_PKGS+=("$display")
+                        fi
+                        ;;
+                esac
+                break
+            fi
+        done
+        if [[ $matched -eq 0 ]]; then
+            echo -e "${BOLD_YELLOW}  [!] '$name' not found in tool list — skipping.${RST}"
         fi
-        install_pkg "$cmd" "$pkg" "$name"
     done
 
     echo ""
     post_install_summary
 }
-
 # -- main installer function --
 # install_pkg "git" "git" "Git: Version control"
 install_pkg() {
@@ -273,6 +294,7 @@ install_lang() {
     local attempt=1
     local err_tmp
     err_tmp=$(mktemp)
+    export install_method="$lang_pm"
 
     start_spinner "  [*] Installing: $display_name (via $lang_pm).."
 
@@ -291,9 +313,10 @@ install_lang() {
             gem)           gem install --silent "$pkg_name" >"$err_tmp" 2>&1 && break ;;
             cargo)         cargo install --quiet "$pkg_name" >"$err_tmp" 2>&1 && break ;;
             *)
-                stop_spinner
+                stop_spinner ""
                 echo -e "${ERROR}  [✗] Unknown language manager: $lang_pm${RST}"
                 FAILED_PKGS+=("$display_name")
+                unset install_method
                 rm -f "$err_tmp"
                 return 1
                 ;;
@@ -305,6 +328,7 @@ install_lang() {
         INSTALLED_PKGS+=("$display_name")
         stop_spinner "${OPTION}  [✓] $display_name installed successfully (via $lang_pm)${RST}"
         log INSTALLED "$display_name installed via $lang_pm"
+        unset install_method
         rm -f "$err_tmp"
         sleep 1
         return 0
@@ -314,6 +338,7 @@ install_lang() {
         FAILED_PKGS+=("$display_name")
         stop_spinner "${ERROR}  [✗] Failed: $display_name${err_msg:+ — ${err_msg}}${RST}"
         log FAIL "$display_name install failed${err_msg:+: $err_msg}"
+        unset install_method
         rm -f "$err_tmp"
         sleep 2
         return 1

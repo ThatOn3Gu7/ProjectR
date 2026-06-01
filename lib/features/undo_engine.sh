@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 # -- rollback last session function --
 rollback_last_session() {
-    # Guard: SCRIPT_DIR must be set
     if [[ -z "${SCRIPT_DIR:-}" ]]; then
         echo -e "${ERROR} [✗] SCRIPT_DIR is not set — cannot locate session history.${RST}"
         return 1
@@ -14,41 +13,55 @@ rollback_last_session() {
         return 0
     fi
 
-    # Guard: uninstall_pkg must be loaded
     if ! declare -f uninstall_pkg >/dev/null 2>&1; then
         echo -e "${ERROR} [✗] uninstall_pkg is not loaded — source uninstaller.sh first.${RST}"
+        return 1
+    fi
+    if ! declare -f uninstall_lang >/dev/null 2>&1; then
+        echo -e "${ERROR} [✗] uninstall_lang is not loaded — source uninstaller.sh first.${RST}"
         return 1
     fi
 
     echo -e "${ERROR} [!] WARNING: Reversing last session's installations...${RST}"
     echo ""
 
-    # Three-tier fallback for reversing line order
-    local reverse_cmd
+    # Safe reverse — no eval
+    local reversed
     if command -v tac >/dev/null 2>&1; then
-        reverse_cmd="tac"
-    elif tail -r /dev/null >/dev/null 2>&1; then
-        reverse_cmd="tail -r"
+        reversed=$(tac "$history_file")
     else
-        reverse_cmd="awk '{lines[NR]=\$0} END{for(i=NR;i>=1;i--) print lines[i]}'"
+        reversed=$(awk '{lines[NR]=$0} END{for(i=NR;i>=1;i--) print lines[i]}' "$history_file")
     fi
 
     local rolled=0 failed=0
-    while IFS="|" read -r timestamp cmd pkg; do
+    while IFS="|" read -r timestamp cmd pkg method; do
         if [[ -z "$cmd" || -z "$pkg" ]]; then
             echo -e "${BOLD_YELLOW} [!] Skipping malformed history entry.${RST}"
             continue
         fi
-        echo -e "${INFO} [*] Rolling back: $cmd ($pkg)...${RST}"
+
+        method="${method:-pkg}"
+        echo -e "${INFO} [*] Rolling back: $cmd ($pkg) installed via $method...${RST}"
+
         export NON_INTERACTIVE=1
-        if uninstall_pkg "$cmd" "$pkg" "$cmd"; then
+        local ok=0
+        case "$method" in
+            pip|pip3|pipx|npm|yarn|gem|cargo)
+                uninstall_lang "$method" "$pkg" "$cmd" && ok=1
+                ;;
+            *)
+                uninstall_pkg "$cmd" "$pkg" "$cmd" && ok=1
+                ;;
+        esac
+        unset NON_INTERACTIVE
+
+        if [[ $ok -eq 1 ]]; then
             ((rolled++))
         else
             ((failed++))
             echo -e "${ERROR} [!] Failed to roll back: $cmd${RST}"
         fi
-        unset NON_INTERACTIVE
-    done < <(eval "$reverse_cmd \"$history_file\"")
+    done <<< "$reversed"
 
     > "$history_file"
     echo ""
