@@ -18,6 +18,16 @@ projectr_doctor() {
         fi
     done
 
+    if command -v sudo >/dev/null 2>&1; then
+      if sudo -n true 2>/dev/null; then
+         printf '  %-22s %s\n' sudo "available (passwordless)"
+       else
+         printf '  %-22s %s\n' sudo "available (password required)"
+      fi
+     else
+         printf '  %-22s %s\n' sudo "MISSING — installs requiring root will fail"
+         failures=$((failures+1))
+    fi
     local pm="${PRIMARY_PKG_MANAGER:-$(detect_pkg_manager)}"
     if [[ -n "$pm" && "$pm" != "unknown" ]]; then
         printf '  %-22s %s\n' package-manager "$pm"

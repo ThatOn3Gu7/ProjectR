@@ -49,7 +49,12 @@ _si_check_avail() {
         brew)          $t brew info "$pkg" >/dev/null 2>&1 ;;
         pkg)           $t pkg show "$pkg" >/dev/null 2>&1 ;;
         npm)           $t npm info "$pkg" >/dev/null 2>&1 ;;
-        pip|pip3|pipx) $t $mgr index versions "$pkg" >/dev/null 2>&1 ;;
+        pip|pip3)
+                $t $mgr index versions "$pkg" >/dev/null 2>&1 \
+          || $t $mgr install --dry-run "$pkg" >/dev/null 2>&1 ;;
+        pipx)
+                 $t pip index versions "$pkg" >/dev/null 2>&1 \
+           || $t pip install --dry-run "$pkg" >/dev/null 2>&1 ;;
         gem)           $t gem list -r "^${pkg}$" >/dev/null 2>&1 ;;
         cargo)         $t cargo search --limit 1 "$pkg" 2>/dev/null | grep -q "^$pkg " ;;
         *)             return 0 ;;

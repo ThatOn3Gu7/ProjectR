@@ -4,11 +4,11 @@
 check_tool() {
    local cmd="$1" # Tool name to check if its installed or not
    local name="$2" # A name to show to user
-   local version
-   version=$("$cmd" --version 2>/dev/null \
-   | head -n1 \
-   | grep -oE '[0-9]+\.[0-9]+(\.[0-9]+)*' \
-   | head -n1)
+   local version=""
+   for _flag in --version -V --Version version; do
+       version=$("$cmd" "$_flag" 2>&1 | head -n1 | grep -oE '[0-9]+\.[0-9]+[.0-9]*' | head -n1)
+       [[ -n "$version" ]] && break
+   done
 
   if command -v "$cmd" >/dev/null 2>&1; then
     FOUND_PKGS+=("$cmd")

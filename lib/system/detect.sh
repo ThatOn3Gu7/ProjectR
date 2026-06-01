@@ -6,6 +6,12 @@ DETECTED_PKG_MANAGERS=()
 
 # ── detect_pkg_manager ───
 detect_pkg_manager() {
+   # Return cached result if already detected
+    if [[ -n "${PRIMARY_PKG_MANAGER:-}" && "${PRIMARY_PKG_MANAGER}" != "unknown" ]]; then
+        echo "$PRIMARY_PKG_MANAGER"
+        return 0
+    fi
+
     DETECTED_PKG_MANAGERS=()
 
     # PATCH 2: Parse /etc/os-release for ID_LIKE before scanning commands.
