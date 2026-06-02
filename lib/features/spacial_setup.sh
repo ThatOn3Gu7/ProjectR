@@ -180,3 +180,100 @@ install_code_server() {
         echo -e "${INFO}  [→] Skipping code-server installation.${RST}"
     fi
 }
+
+# -- special installers for tools that usually need extra context or optional hints --
+setup_golang() {
+    install_pkg go golang "Go: Programming language and toolchain"
+    if command -v go >/dev/null 2>&1; then
+        echo -e "${INFO}  [*] Tip: add \"$(go env GOPATH 2>/dev/null)/bin\" to PATH for Go-installed CLIs.${RST}"
+    fi
+}
+
+setup_rustup() {
+    install_pkg rustup rustup "Rustup: Rust toolchain manager"
+    if command -v rustup >/dev/null 2>&1; then
+        echo -e "${INFO}  [*] Run 'rustup default stable' if no Rust toolchain is active yet.${RST}"
+    fi
+}
+
+setup_docker() {
+    local docker_pkg="docker"
+    case "${PRIMARY_PKG_MANAGER:-$(detect_pkg_manager)}" in
+        apt|apt-get) docker_pkg="docker.io" ;;
+        dnf|yum|zypper) docker_pkg="docker" ;;
+        pkg) docker_pkg="docker" ;;
+    esac
+
+    install_pkg docker "$docker_pkg" "Docker: Container engine and CLI"
+    if command -v docker >/dev/null 2>&1; then
+        echo -e "${INFO}  [*] If Docker needs rootless access, add your user to the docker group and re-login.${RST}"
+    fi
+}
+
+setup_kubectl() {
+    install_pkg kubectl kubectl "Kubectl: Kubernetes command-line tool"
+    if command -v kubectl >/dev/null 2>&1; then
+        echo -e "${INFO}  [*] Configure clusters with kubeconfig before running kubectl commands.${RST}"
+    fi
+}
+
+setup_postgres() {
+    install_pkg postgres postgresql "PostgreSQL: Advanced relational database"
+    if command -v postgres >/dev/null 2>&1 || command -v psql >/dev/null 2>&1; then
+        echo -e "${INFO}  [*] Start or initialize PostgreSQL using your distro's service instructions.${RST}"
+    fi
+}
+
+setup_mysql() {
+    install_pkg mysql mysql "MySQL: Database server and client"
+    if command -v mysql >/dev/null 2>&1; then
+        echo -e "${INFO}  [*] Run your distro's secure-installation flow before exposing MySQL services.${RST}"
+    fi
+}
+
+setup_android_tools() {
+    install_pkg adb android-tools "Android tools: adb and fastboot utilities"
+    if command -v adb >/dev/null 2>&1; then
+        echo -e "${INFO}  [*] Enable USB debugging on your Android device before using adb.${RST}"
+    fi
+}
+
+# Optional special uninstall hooks. projectr_uninstall_tool_by_fields falls back
+# to normal package removal when a hook is not listed here.
+declare -gA PROJECTR_SPECIAL_UNINSTALLERS=(
+    [setup_nvim]=uninstall_nvim_special
+    [setup_zsh]=uninstall_zsh_special
+    [install_code_server]=uninstall_code_server_special
+    [setup_golang]=uninstall_golang_special
+    [setup_rustup]=uninstall_rustup_special
+    [setup_docker]=uninstall_docker_special
+    [setup_kubectl]=uninstall_kubectl_special
+    [setup_postgres]=uninstall_postgres_special
+    [setup_mysql]=uninstall_mysql_special
+    [setup_android_tools]=uninstall_android_tools_special
+)
+
+uninstall_nvim_special() {
+    uninstall_pkg nvim neovim "Neovim"
+    if [[ -d "$HOME/.config/nvim" ]] && ask "   [*] Also remove Neovim config files?" "y"; then
+        rm -rf "$HOME/.config/nvim"
+        echo -e "${OPTION}   [✓] Neovim config removed${RST}"
+    fi
+}
+
+uninstall_zsh_special() {
+    uninstall_pkg zsh zsh "Zsh"
+    if [[ -d "$HOME/.oh-my-zsh" ]] && ask "   [*] Also remove Oh-My-Zsh files?" "n"; then
+        rm -rf "$HOME/.oh-my-zsh"
+        echo -e "${OPTION}   [✓] Oh-My-Zsh files removed${RST}"
+    fi
+}
+
+uninstall_code_server_special() { uninstall_pkg code-server code-server "Code-Server"; }
+uninstall_golang_special() { uninstall_pkg go golang "Go"; }
+uninstall_rustup_special() { uninstall_pkg rustup rustup "Rustup"; }
+uninstall_docker_special() { uninstall_pkg docker docker "Docker"; }
+uninstall_kubectl_special() { uninstall_pkg kubectl kubectl "Kubectl"; }
+uninstall_postgres_special() { uninstall_pkg postgres postgresql "PostgreSQL"; }
+uninstall_mysql_special() { uninstall_pkg mysql mysql "MySQL"; }
+uninstall_android_tools_special() { uninstall_pkg adb android-tools "Android tools"; }

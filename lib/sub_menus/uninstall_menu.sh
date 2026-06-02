@@ -1,9 +1,11 @@
 #!/bin/bash
 # -- uninstaller menu --
 uninstall_menu() {
+  PROJECTR_UNINSTALL_VISIBLE_TOOL_COUNT=${PROJECTR_UNINSTALL_VISIBLE_TOOL_COUNT:-${PROJECTR_TOOL_PAGE_SIZE_DEFAULT:-50}}
+
   while true; do
    clear
- cat <<"EOF" | rainbow
+ cat <<"BANNER" | rainbow
 
  ██████╗ ██████╗ ███╗   ███╗ ██████╗ ██╗   ██╗███████╗    ██╗████████╗
  ██╔══██╗╚════██╗████╗ ████║██╔═══██╗██║   ██║██╔════╝    ██║╚══██╔══╝
@@ -14,17 +16,28 @@ uninstall_menu() {
  
                                               > C0ded by: ThatOn3Gu7
 
-EOF
+BANNER
 echo -e "${OPTION}"
 print_box left "[*] Available tools for deletion:"
 echo -e "${RST}"
 
- for entry in "${TOOLS[@]}"; do
+    local total_tools=${#TOOLS[@]}
+    local visible_count=${PROJECTR_UNINSTALL_VISIBLE_TOOL_COUNT:-${PROJECTR_TOOL_PAGE_SIZE_DEFAULT:-50}}
+    (( visible_count > total_tools )) && visible_count=$total_tools
+    PROJECTR_UNINSTALL_VISIBLE_TOOL_COUNT=$visible_count
+
+    local idx entry
+    for ((idx=0; idx<visible_count; idx++)); do
+      entry="${TOOLS[$idx]}"
       IFS="|" read -r num cmd pkg name desc type extra cat <<< "$entry"
-      printf "   [%02d]${OPTION} %-14s ${INFO}- %s${RST}\n" "$num" "$name" "$desc"
+      printf "   [%03d]${OPTION} %-18s ${INFO}- %s ${OPTION}(%s)${RST}\n" "$num" "$name" "$desc" "$cat"
     done
+    echo -e "${INFO}  Showing ${BOLD_WHITE}${visible_count}${INFO}/${BOLD_WHITE}${total_tools}${INFO} tools${RST}"
     
  echo ""
+ if (( PROJECTR_UNINSTALL_VISIBLE_TOOL_COUNT < ${#TOOLS[@]} )); then
+   echo -e "${OPTION}  [l] Load ${PROJECTR_TOOL_PAGE_STEP:-50} more tools ${RST}"
+ fi
  echo -e "${OPTION}  [i] Inspect installed ${RST}"
  echo -e "${INFO}  [b] Back to main-menu ${RST}"
  echo -e "${ERROR}  [e] Exit Script${RST}"
@@ -34,6 +47,12 @@ echo -e "${RST}"
     for choice in "${choices[@]}"; do
       # --- Special menu options ---
       case "$choice" in
+        l|L)
+          PROJECTR_UNINSTALL_VISIBLE_TOOL_COUNT=$(( ${PROJECTR_UNINSTALL_VISIBLE_TOOL_COUNT:-${PROJECTR_TOOL_PAGE_SIZE_DEFAULT:-50}} + ${PROJECTR_TOOL_PAGE_STEP:-50} ))
+          (( PROJECTR_UNINSTALL_VISIBLE_TOOL_COUNT > ${#TOOLS[@]} )) && PROJECTR_UNINSTALL_VISIBLE_TOOL_COUNT=${#TOOLS[@]}
+          log_info "Loaded more tools in uninstall menu: visible=$PROJECTR_UNINSTALL_VISIBLE_TOOL_COUNT" "uninstall"
+          continue
+          ;;
         i|I) clear; check_all_tools; continue ;;
         b|B) return ;;
         e|E) graceful_exit ;;
@@ -54,22 +73,7 @@ echo -e "${RST}"
         if [[ "$choice" == "$num" ]]; then
           found=1
           echo -e "${ERROR}"
-
-          # Neovim gets special treatment — offer to remove config too
-          if [[ "$num" == "18" ]]; then
-            projectr_uninstall_tool_by_fields "$cmd" "$pkg" "$name" "$type"
-            if [ -d "$HOME/.config/nvim/" ]; then
-              echo -e "${INFO}"
-              if ask "   [*] Also remove Neovim config files?" "y"; then
-                echo -e "${BOLD_GREEN}   [*] Removing nvim conf.. ${RST}"
-                rm -rf ~/.config/nvim/ 
-                echo -e "${OPTION}   [✓] Neovim config removed${RST}"
-              fi
-            fi
-          else
-            projectr_uninstall_tool_by_fields "$cmd" "$pkg" "$name" "$type"
-          fi
-
+          projectr_uninstall_tool_by_fields "$cmd" "$pkg" "$name" "$type" "$extra"
           break
         fi
       done
