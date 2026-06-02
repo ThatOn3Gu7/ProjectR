@@ -14,9 +14,16 @@ execute_pkg_command() {
         return 0
     fi
 
-    # Execute safely as an array — no string injection risk
-    "$@" >/dev/null 2>&1
-    local status=$?
+    # Execute safely as an array — no string injection risk. Capture output into
+    # install.log so failures explain themselves instead of disappearing.
+    local status
+    if declare -f projectr_run_logged >/dev/null 2>&1; then
+        projectr_run_logged "pkg:$action" "$action $internal_name ($pkg_name)" "$@"
+        status=$?
+    else
+        "$@" >/dev/null 2>&1
+        status=$?
+    fi
 
     if [[ $status -eq 0 && "$action" == "install" ]]; then
         mkdir -p "$SCRIPT_DIR/log/"
@@ -34,6 +41,36 @@ execute_pkg_command() {
 
     return $status
 }
+
+projectr_install_tool_by_fields() {
+    local cmd="$1" pkg="$2" name="$3" type="$4" extra="${5:--}"
+
+    case "$type" in
+        pkg)
+            install_pkg "$cmd" "$pkg" "$name"
+            ;;
+        pip|pip3|pipx|cargo|gem|npm|yarn)
+            install_lang "$type" "$pkg" "$name" "$cmd"
+            ;;
+        special)
+            if declare -f "$extra" >/dev/null 2>&1; then
+                "$extra"
+            else
+                echo -e "${ERROR}  [!] Special installer '${extra}' not found — skipping ${name}.${RST}"
+                log_fail "Special installer '${extra}' not found for $name" "install"
+                FAILED_PKGS+=("$name")
+                return 1
+            fi
+            ;;
+        *)
+            echo -e "${ERROR}  [!] Unsupported tool type '${type}' for ${name}.${RST}"
+            log_fail "Unsupported tool type '${type}' for $name" "install"
+            FAILED_PKGS+=("$name")
+            return 1
+            ;;
+    esac
+}
+
 # -- install function --
 install_all() {
 # For post-install summary detection
@@ -82,22 +119,7 @@ install_all() {
    for entry in "${TOOLS[@]}"; do
         IFS="|" read -r num cmd pkg name desc type extra cat <<< "$entry"
 
-        case "$type" in
-            pkg)
-                install_pkg "$cmd" "$pkg" "$name"
-                ;;
-            pip|pip3|pipx|cargo|gem|npm|yarn)
-                install_lang "$type" "$pkg" "$name" "$cmd"
-                ;;
-            special)
-                if declare -f "$extra" >/dev/null 2>&1; then
-                    "$extra"
-                else
-                    echo -e "${ERROR}  [!] Special installer '${extra}' not found — skipping ${name}.${RST}"
-                    FAILED_PKGS+=("$name")
-                fi
-                ;;
-        esac
+        projectr_install_tool_by_fields "$cmd" "$pkg" "$name" "$type" "$extra"
     done
 
     # -- post-install-summary
@@ -118,6 +140,7 @@ install_preset_by_names() {
 
     if [[ ${#names[@]} -eq 0 ]]; then
         echo -e "${ERROR}  [!] No tools provided to install_preset_by_names.${RST}"
+        log_warn "install_preset_by_names called without tools" "preset"
         return 1
     fi
 
@@ -131,23 +154,13 @@ install_preset_by_names() {
             IFS="|" read -r num cmd pkg display desc type extra cat <<< "$entry"
             if [[ "$cmd" == "$name" ]]; then
                 matched=1
-                case "$type" in
-                    pkg)     install_pkg "$cmd" "$pkg" "$display" ;;
-                    pip|pip3|pipx|cargo|gem|npm|yarn) install_lang "$type" "$pkg" "$display" "$cmd" ;;
-                    special)
-                        if declare -f "$extra" >/dev/null 2>&1; then
-                            "$extra"
-                        else
-                            echo -e "${ERROR}  [!] Special installer '${extra}' not found — skipping ${display}.${RST}"
-                            FAILED_PKGS+=("$display")
-                        fi
-                        ;;
-                esac
+                projectr_install_tool_by_fields "$cmd" "$pkg" "$display" "$type" "$extra"
                 break
             fi
         done
         if [[ $matched -eq 0 ]]; then
             echo -e "${BOLD_YELLOW}  [!] '$name' not found in tool list — skipping.${RST}"
+            log_warn "Preset requested unknown tool '$name'" "preset"
         fi
     done
 
@@ -164,6 +177,7 @@ install_pkg() {
 
     if [[ -z "$cmd" || -z "$pkg" || -z "$name" ]]; then
         echo -e "${ERROR}  [!] install_pkg: missing argument (cmd='$cmd' pkg='$pkg' name='$name')${RST}"
+        log_error "install_pkg missing argument cmd='$cmd' pkg='$pkg' name='$name'" "install"
         return 1
     fi
 
@@ -215,9 +229,41 @@ install_pkg() {
             execute_pkg_command "$pkg" "$cmd" "install" \
                 sudo emerge -av "$pkg"
             ;;
+        xbps)
+            execute_pkg_command "$pkg" "$cmd" "install" \
+                sudo xbps-install -Sy "$pkg"
+            ;;
         nix)
             execute_pkg_command "$pkg" "$cmd" "install" \
                 nix-env -i "$pkg"
+            ;;
+        guix)
+            execute_pkg_command "$pkg" "$cmd" "install" \
+                guix package --install "$pkg"
+            ;;
+        eopkg)
+            execute_pkg_command "$pkg" "$cmd" "install" \
+                sudo eopkg install -y "$pkg"
+            ;;
+        urpmi)
+            execute_pkg_command "$pkg" "$cmd" "install" \
+                sudo urpmi --auto "$pkg"
+            ;;
+        slackpkg)
+            execute_pkg_command "$pkg" "$cmd" "install" \
+                sudo slackpkg install "$pkg"
+            ;;
+        macports)
+            execute_pkg_command "$pkg" "$cmd" "install" \
+                sudo port install "$pkg"
+            ;;
+        bsd-pkg)
+            execute_pkg_command "$pkg" "$cmd" "install" \
+                sudo pkg install -y "$pkg"
+            ;;
+        pkg_add)
+            execute_pkg_command "$pkg" "$cmd" "install" \
+                doas pkg_add "$pkg"
             ;;
         flatpak)
             execute_pkg_command "$pkg" "$cmd" "install" \
@@ -286,6 +332,7 @@ install_lang() {
 
     if [[ "$lang_pm" == "none" ]]; then
         echo -e "${ERROR}  [✗] No $tool_type package manager found — cannot install $display_name${RST}"
+        log_fail "No $tool_type package manager found for $display_name" "install-lang"
         FAILED_PKGS+=("$display_name")
         return 1
     fi
@@ -306,21 +353,33 @@ install_lang() {
             start_spinner "  [*] Retrying: $display_name (via $lang_pm).."
         fi
 
+        local install_cmd=()
         case "$lang_pm" in
-            pip|pip3|pipx) $lang_pm install --quiet "$pkg_name" >"$err_tmp" 2>&1 && break ;;
-            npm)           npm install -g --quiet "$pkg_name" >"$err_tmp" 2>&1 && break ;;
-            yarn)          yarn global add --silent "$pkg_name" >"$err_tmp" 2>&1 && break ;;
-            gem)           gem install --silent "$pkg_name" >"$err_tmp" 2>&1 && break ;;
-            cargo)         cargo install --quiet "$pkg_name" >"$err_tmp" 2>&1 && break ;;
+            pip|pip3|pipx) install_cmd=("$lang_pm" install --quiet "$pkg_name") ;;
+            npm)           install_cmd=(npm install -g --quiet "$pkg_name") ;;
+            yarn)          install_cmd=(yarn global add --silent "$pkg_name") ;;
+            gem)           install_cmd=(gem install --silent "$pkg_name") ;;
+            cargo)         install_cmd=(cargo install --quiet "$pkg_name") ;;
             *)
                 stop_spinner ""
                 echo -e "${ERROR}  [✗] Unknown language manager: $lang_pm${RST}"
+                log_fail "Unknown language manager '$lang_pm' for $display_name" "install-lang"
                 FAILED_PKGS+=("$display_name")
                 unset install_method
                 rm -f "$err_tmp"
                 return 1
                 ;;
         esac
+
+        log INFO "START install $display_name package=$pkg_name via $lang_pm attempt=$attempt/$max_attempts" "install-lang"
+        "${install_cmd[@]}" >"$err_tmp" 2>&1
+        local lang_status=$?
+        if [[ $lang_status -eq 0 ]]; then
+            log OK "Command completed for $display_name via $lang_pm on attempt $attempt" "install-lang"
+            break
+        fi
+        log FAIL "Command failed for $display_name via $lang_pm on attempt $attempt (exit=$lang_status)" "install-lang"
+        projectr_log_file_excerpt FAIL "$err_tmp" "install-lang" 20
         ((attempt++))
     done
 

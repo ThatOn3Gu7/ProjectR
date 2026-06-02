@@ -164,15 +164,20 @@ detect_pkg_for_tool() {
     local tool_type="${1:-system}"
 
     case "$tool_type" in
-        pip)
-            if   command -v pipx >/dev/null 2>&1; then echo "pipx"
+        pipx)
+            if command -v pipx >/dev/null 2>&1; then echo "pipx"; else echo "none"; fi
+            ;;
+        pip|pip3)
+            if   command -v "$tool_type" >/dev/null 2>&1; then echo "$tool_type"
+            elif command -v pipx >/dev/null 2>&1; then echo "pipx"
             elif command -v pip3 >/dev/null 2>&1; then echo "pip3"
             elif command -v pip  >/dev/null 2>&1; then echo "pip"
             else echo "none"
             fi
             ;;
-        npm)
-            if   command -v npm  >/dev/null 2>&1; then echo "npm"
+        npm|yarn|pnpm|bun)
+            if   command -v "$tool_type" >/dev/null 2>&1; then echo "$tool_type"
+            elif command -v npm  >/dev/null 2>&1; then echo "npm"
             elif command -v yarn >/dev/null 2>&1; then echo "yarn"
             elif command -v pnpm >/dev/null 2>&1; then echo "pnpm"
             elif command -v bun  >/dev/null 2>&1; then echo "bun"

@@ -57,7 +57,7 @@ echo -e "${RST}"
 
           # Neovim gets special treatment — offer to remove config too
           if [[ "$num" == "18" ]]; then
-            uninstall_pkg "$cmd" "$pkg" "$name"
+            projectr_uninstall_tool_by_fields "$cmd" "$pkg" "$name" "$type"
             if [ -d "$HOME/.config/nvim/" ]; then
               echo -e "${INFO}"
               if ask "   [*] Also remove Neovim config files?" "y"; then
@@ -66,13 +66,8 @@ echo -e "${RST}"
                 echo -e "${OPTION}   [✓] Neovim config removed${RST}"
               fi
             fi
-          # pip tools use uninstall_pip instead of uninstall_pkg
-          elif [[ "$type" =~ ^(pip|pip3|pipx|cargo|gem|npm|yarn)$ ]]; then
-            uninstall_lang "$type" "$pkg" "$name"
-
-          # everything else uses uninstall_pkg
           else
-            uninstall_pkg "$cmd" "$pkg" "$name"
+            projectr_uninstall_tool_by_fields "$cmd" "$pkg" "$name" "$type"
           fi
 
           break

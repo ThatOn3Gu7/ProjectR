@@ -2,6 +2,7 @@
 projectr_doctor() {
     local failures=0
     echo -e "${OPTION}[*] ProjectR doctor${RST}"
+    log_info "Starting doctor checks" "doctor"
     echo ""
     printf '  %-22s %s\n' Check Result
     printf '  %s\n' '────────────────────────────────────────'
@@ -52,8 +53,10 @@ projectr_doctor() {
     echo ""
     if [[ $failures -eq 0 ]]; then
         echo -e "${OPTION}[✓] Doctor found no blocking issues.${RST}"
+        log_ok "Doctor completed with no blocking issues" "doctor"
     else
         echo -e "${ERROR}[!] Doctor found $failures issue(s).${RST}"
+        log_fail "Doctor found $failures issue(s)" "doctor"
         return 1
     fi
 }

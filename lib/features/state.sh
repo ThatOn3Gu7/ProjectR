@@ -82,11 +82,9 @@ projectr_repair_state() {
     for entry in "${TOOLS[@]}"; do
         IFS='|' read -r _ cmd pkg name _ type extra _ <<< "$entry"
         command -v "$cmd" >/dev/null 2>&1 && continue
-        case "$type" in
-            pkg) install_pkg "$cmd" "$pkg" "$name" && repaired=$((repaired + 1)) ;;
-            pip|pip3|pipx|cargo|gem|npm|yarn) install_lang "$type" "$pkg" "$name" "$cmd" && repaired=$((repaired + 1)) ;;
-            *) echo -e "${BOLD_YELLOW}[!] $name needs a special installer; open the interactive menu.${RST}" ;;
-        esac
+        if projectr_install_tool_by_fields "$cmd" "$pkg" "$name" "$type" "$extra"; then
+            repaired=$((repaired + 1))
+        fi
     done
     echo -e "${OPTION}[✓] Repair attempted for $repaired tool(s).${RST}"
 }

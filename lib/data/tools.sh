@@ -38,7 +38,7 @@ TOOLS=(
   "34|npm|nodejs|Node.js|JavaScript runtime on V8 engine|pkg|-|Dev"
   "35|gh|gh|Gh|Official GitHub CLI tool|pkg|-|Dev"
   "36|holehe|holehe|Holehe|Check email across websites|pipx|-|OSINT"
-  "37|asciiquarium|asciiquarium|Asciiquarium|Aquarium animation in terminal|lang|-|Fun"
+  "37|asciiquarium|asciiquarium|Asciiquarium|Aquarium animation in terminal|pkg|-|Fun"
   "38|wttr|wttr|Wttr|Weather forecast in terminal|pip3|-|Fun"
   "39|tmux|tmux|Tmux|Terminal multiplexer for split panes|pkg|-|Dev"
   "40|lazygit|lazygit|Lazygit|Terminal UI for git commands|pkg|-|Dev"

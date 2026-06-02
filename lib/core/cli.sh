@@ -60,6 +60,7 @@ Commands:
   repair                                      Reinstall missing non-special managed tools
   dry-run install <tool|all> [--json]         Detailed dry-run plan for CI or review
   completions bash                            Print bash completion script
+  audit [--strict]                            Validate registry IDs, types, and special installers
 
 Flags:
   -h, --help                                  Show this combined help message
@@ -75,6 +76,7 @@ Flags:
   --repair                                    Reinstall missing non-special managed tools
   --update, --self-update                     Fast-forward this checkout and show git-log summary
   --completions bash                          Print bash completion script
+  --audit [--strict]                          Validate registry IDs, types, and special installers
   --log [n], --log=<n>                        Print recent install.log lines (default: 20)
   --reset                                     Clear saved preferences
   --export                                    Export profile to projectr_profile_<date>.txt
@@ -101,22 +103,26 @@ Examples:
   ${usage_cmd} --list state
   ${usage_cmd} doctor
   ${usage_cmd} --doctor
+  ${usage_cmd} audit --strict
 EOF_EXAMPLES
 }
 
 projectr_run_update() {
     if ! command -v git >/dev/null 2>&1; then
         echo -e "${ERROR}[!] git is required for projectr update.${RST}"
+        log_error "projectr update failed: git command not found" "update"
         return 1
     fi
     if ! git -C "$SCRIPT_DIR" rev-parse --is-inside-work-tree >/dev/null 2>&1; then
         echo -e "${ERROR}[!] $SCRIPT_DIR is not a git checkout; cannot update.${RST}"
+        log_error "projectr update failed: not a git checkout ($SCRIPT_DIR)" "update"
         return 1
     fi
 
     local before after output status
     before=$(git -C "$SCRIPT_DIR" rev-parse HEAD)
     echo -e "${OPTION}[*] Updating ProjectR database and code from git...${RST}"
+    log_info "Starting ProjectR update from git (before=$before)" "update"
     output=$(git -C "$SCRIPT_DIR" pull --ff-only --stat 2>&1)
     status=$?
     after=$(git -C "$SCRIPT_DIR" rev-parse HEAD 2>/dev/null || printf '%s' "$before")
@@ -124,16 +130,19 @@ projectr_run_update() {
     if [[ $status -ne 0 ]]; then
         echo -e "${ERROR}[!] Update failed.${RST}"
         echo "$output"
+        log_fail "ProjectR update failed: $output" "update"
         return $status
     fi
 
     if [[ "$before" == "$after" ]]; then
         echo -e "${DIM}[*] Already up to date; no commits were applied.${RST}"
         echo "$output"
+        log_ok "ProjectR update already up to date at $after" "update"
         return 0
     fi
 
     echo -e "${OPTION}[✓] Updated ProjectR:${RST}"
+    log_ok "ProjectR updated from $before to $after" "update"
     git -C "$SCRIPT_DIR" --no-pager log --oneline --decorate --stat "${before}..${after}"
 }
 
@@ -144,7 +153,7 @@ _projectr_complete() {
   COMPREPLY=()
   cur="${COMP_WORDS[COMP_CWORD]}"
   prev="${COMP_WORDS[COMP_CWORD-1]}"
-  commands="install list upgrade update doctor verify repair dry-run completions self-update help"
+  commands="install list upgrade update doctor verify repair dry-run completions self-update audit help"
   lists="tools installed categories manager state"
   case "$prev" in
     projectr|project|main.sh) COMPREPLY=( $(compgen -W "$commands" -- "$cur") ) ;;
@@ -180,6 +189,7 @@ projectr_cli_install_args() {
         return $?
     elif [[ "$profile" == "__NEXT__" ]]; then
         echo -e "${ERROR}[!] --profile requires a file path.${RST}"
+        log_error "install --profile missing path" "cli"
         return 1
     fi
 
@@ -200,7 +210,7 @@ projectr_cli_uninstall_args() {
     for arg in "$@"; do
         case "$arg" in --*) ;; *) targets+=("$arg") ;; esac
     done
-    [[ ${#targets[@]} -gt 0 ]] || { echo -e "${ERROR}[!] uninstall requires a tool name.${RST}"; return 1; }
+    [[ ${#targets[@]} -gt 0 ]] || { echo -e "${ERROR}[!] uninstall requires a tool name.${RST}"; log_error "uninstall command missing target" "cli"; return 1; }
     for arg in "${targets[@]}"; do _flag_uninstall "$arg"; done
 }
 
@@ -212,6 +222,6 @@ projectr_cli_list_arg() {
         categories|cat) _flag_list_categories ;;
         manager|managers) _flag_list_manager ;;
         state) projectr_state_list ;;
-        *) echo -e "${ERROR}[!] Unknown list target: $target${RST}"; return 1 ;;
+        *) echo -e "${ERROR}[!] Unknown list target: $target${RST}"; log_error "Unknown list target: $target" "cli"; return 1 ;;
     esac
 }

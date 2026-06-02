@@ -39,6 +39,7 @@ projectr_dry_run_install() {
         esac
     done
     [[ ${#targets[@]} -gt 0 ]] || targets=("all")
+    log_info "Starting dry-run install targets=${targets[*]} json=$json" "dry-run"
 
     local PM="${PRIMARY_PKG_MANAGER:-$(detect_pkg_manager)}"
     local tmp plan_count=0
@@ -51,6 +52,7 @@ projectr_dry_run_install() {
         for target in "${targets[@]}"; do
             entry=$(projectr_find_tool "$target") || {
                 echo -e "${ERROR}[!] Unknown tool: $target${RST}" >&2
+                log_error "Dry-run requested unknown tool: $target" "dry-run"
                 rm -f "$tmp"
                 return 1
             }
@@ -97,6 +99,7 @@ projectr_dry_run_install() {
         done < "$tmp"
         echo -e "${DIM}[*] No changes were made. Use --json for CI output.${RST}"
     fi
+    log_ok "Dry-run generated $plan_count plan item(s) for manager $PM" "dry-run"
     rm -f "$tmp"
     [[ $plan_count -gt 0 ]]
 }
