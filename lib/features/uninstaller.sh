@@ -2,11 +2,23 @@
 
 
 projectr_uninstall_tool_by_fields() {
-    local cmd="$1" pkg="$2" name="$3" type="$4"
+    local cmd="$1" pkg="$2" name="$3" type="$4" extra="${5:--}"
 
     case "$type" in
-        pkg|special)
+        pkg)
             uninstall_pkg "$cmd" "$pkg" "$name"
+            ;;
+        special)
+            local special_uninstaller=""
+            if declare -p PROJECTR_SPECIAL_UNINSTALLERS >/dev/null 2>&1; then
+                special_uninstaller="${PROJECTR_SPECIAL_UNINSTALLERS[$extra]:-}"
+            fi
+
+            if [[ -n "$special_uninstaller" ]] && declare -f "$special_uninstaller" >/dev/null 2>&1; then
+                "$special_uninstaller" "$cmd" "$pkg" "$name"
+            else
+                uninstall_pkg "$cmd" "$pkg" "$name"
+            fi
             ;;
         pip|pip3|pipx|cargo|gem|npm|yarn)
             uninstall_lang "$type" "$pkg" "$name" "$cmd"
