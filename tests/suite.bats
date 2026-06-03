@@ -125,3 +125,36 @@ TOML
   [[ "$output" == *"Batch installed 2 package(s) via apt"* ]]
   [[ "$output" == *"installed:Foo Bar"* ]]
 }
+
+@test "dry-run install JSON plans language tools with their language manager" {
+  TOOLS=("1|demo-cli|demo-pkg|Demo CLI|desc|npm|-|Test")
+  source "$SCRIPT_DIR/lib/system/detect.sh"
+  source "$SCRIPT_DIR/lib/features/dry_run.sh"
+  detect_pkg_for_tool() { echo npm; }
+  npm() { return 1; }
+
+  run projectr_dry_run_install demo-cli --json
+  [ "$status" -eq 0 ]
+  [[ "$output" == *'"dry_run":true'* ]]
+  [[ "$output" == *'"manager":"npm"'* ]]
+  [[ "$output" == *'"package":"demo-pkg"'* ]]
+}
+
+@test "CLI uninstall dry-run is rejected before mutating commands" {
+  TOOLS=("1|demo-tool|demo-pkg|Demo Tool|desc|pkg|-|Test")
+  source "$SCRIPT_DIR/lib/core/cli.sh"
+  run projectr_cli_uninstall_args demo-tool --dry-run
+  [ "$status" -eq 2 ]
+  [[ "$output" == *"no changes were made"* ]]
+}
+
+@test "reset dry-run leaves saved preferences intact" {
+  source "$SCRIPT_DIR/lib/flags/flags.sh"
+  mkdir -p "$HOME/.config/projectr"
+  printf 'skip_sys_upgrade=do\n' > "$HOME/.config/projectr/session.conf"
+
+  run _flag_reset --dry-run
+  [ "$status" -eq 0 ]
+  grep -q 'skip_sys_upgrade=do' "$HOME/.config/projectr/session.conf"
+  [[ "$output" == *"no preferences were changed"* ]]
+}

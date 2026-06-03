@@ -44,7 +44,11 @@ projectr_install_profile() {
     mapfile -t _projectr_profile_tools < <(projectr_profile_tools "$file")
     [[ ${#_projectr_profile_tools[@]} -gt 0 ]] || { echo -e "${ERROR}[!] No tools found in $file${RST}"; log_warn "No tools found in profile: $file" "profile"; return 1; }
     log_info "Installing profile $file with ${#_projectr_profile_tools[@]} tool(s)" "profile"
+    local status=0 rc
     for tool in "${_projectr_profile_tools[@]}"; do
         _flag_install "$tool"
+        rc=$?
+        [[ $rc -ne 0 ]] && status=$rc
     done
+    return "$status"
 }

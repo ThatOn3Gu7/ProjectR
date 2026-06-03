@@ -107,6 +107,28 @@ Examples:
 EOF_EXAMPLES
 }
 
+
+projectr_cli_find_tool_entry() {
+    local target="${1:-}" entry cmd pkg name desc type extra cat
+    [[ -n "$target" ]] || return 1
+    for entry in "${TOOLS[@]}"; do
+        IFS="|" read -r _ cmd pkg name desc type extra cat <<< "$entry"
+        if [[ "${cmd,,}" == "${target,,}" || "${pkg,,}" == "${target,,}" || "${name,,}" == "${target,,}" ]]; then
+            printf '%s\n' "$entry"
+            return 0
+        fi
+    done
+    return 1
+}
+
+projectr_cli_entries_for_targets() {
+    local target entry
+    for target in "$@"; do
+        entry=$(projectr_cli_find_tool_entry "$target") || return 1
+        printf '%s\n' "$entry"
+    done
+}
+
 projectr_run_update() {
     if ! command -v git >/dev/null 2>&1; then
         echo -e "${ERROR}[!] git is required for projectr update.${RST}"
@@ -166,14 +188,47 @@ EOF_COMP
 }
 
 
-projectr_cli_install_args() {
-    local dry=0 json=0 profile="" targets=() arg
+
+projectr_cli_upgrade_args() {
+    local dry=0 json=0 arg manager
     for arg in "$@"; do
         case "$arg" in
             --dry-run) dry=1 ;;
             --json) json=1 ;;
+            --*) echo -e "${ERROR}[!] Unknown upgrade option: $arg${RST}"; log_error "Unknown upgrade option: $arg" "cli"; return 2 ;;
+        esac
+    done
+    manager="${PRIMARY_PKG_MANAGER:-$(detect_pkg_manager)}"
+    if [[ $dry -eq 1 ]]; then
+        if [[ $json -eq 1 ]]; then
+            printf '{"dry_run":true,"action":"upgrade","manager":"%s","changes":"%s"}\n' \
+                "$(projectr_escape_json "$manager")" "$(projectr_escape_json "native upgrade simulation only; no changes made")"
+        else
+            echo -e "${OPTION}[*] ProjectR dry-run upgrade plan (${manager})${RST}"
+            case "$manager" in
+                apt|apt-get) apt-get -s upgrade 2>/dev/null | awk '/^Inst /{print "  upgrade " $2} /^Remv /{print "  remove " $2} /^Conf /{print "  configure " $2}' ;;
+                pacman) pacman -Qu 2>/dev/null | sed 's/^/  upgrade /' ;;
+                dnf|yum) "$manager" check-update 2>/dev/null | sed 's/^/  candidate /' || true ;;
+                brew) brew outdated 2>/dev/null | sed 's/^/  upgrade /' ;;
+                *) echo "  Native upgrade simulation is not available for $manager; would run pkg_upgrade." ;;
+            esac
+            echo -e "${DIM}[*] No changes were made.${RST}"
+        fi
+        return 0
+    fi
+    pkg_upgrade
+}
+
+projectr_cli_install_args() {
+    local dry="${PROJECTR_CLI_DRY_RUN:-0}" json=0 batch=0 profile="" targets=() arg status=0 rc
+    for arg in "$@"; do
+        case "$arg" in
+            --dry-run) dry=1 ;;
+            --json) json=1 ;;
+            --batch) batch=1 ;;
             --profile=*) profile="${arg#--profile=}" ;;
             --profile) profile="__NEXT__" ;;
+            --*) echo -e "${ERROR}[!] Unknown install option: $arg${RST}"; log_error "Unknown install option: $arg" "cli"; return 2 ;;
             *)
                 if [[ "$profile" == "__NEXT__" ]]; then
                     profile="$arg"
@@ -185,7 +240,11 @@ projectr_cli_install_args() {
     done
 
     if [[ -n "$profile" && "$profile" != "__NEXT__" ]]; then
-        projectr_install_profile "$profile"
+        if [[ $dry -eq 1 ]]; then
+            projectr_dry_run_profile "$profile" $([[ $json -eq 1 ]] && printf -- '--json')
+        else
+            projectr_install_profile "$profile"
+        fi
         return $?
     elif [[ "$profile" == "__NEXT__" ]]; then
         echo -e "${ERROR}[!] --profile requires a file path.${RST}"
@@ -195,23 +254,52 @@ projectr_cli_install_args() {
 
     [[ ${#targets[@]} -gt 0 ]] || targets=(all)
     if [[ $dry -eq 1 ]]; then
+        export DRY_RUN=1
         [[ $json -eq 1 ]] && projectr_dry_run_install "${targets[@]}" --json || projectr_dry_run_install "${targets[@]}"
         return $?
     fi
     if [[ "${targets[0]}" == "all" ]]; then
-        install_all
+        if [[ $batch -eq 1 ]]; then
+            projectr_install_batch_by_entries "${TOOLS[@]}"
+        else
+            install_all
+        fi
         return $?
     fi
-    for arg in "${targets[@]}"; do _flag_install "$arg"; done
+    if [[ $batch -eq 1 ]]; then
+        local -a entries=()
+        for arg in "${targets[@]}"; do
+            local entry
+            entry=$(projectr_cli_find_tool_entry "$arg") || { echo -e "${ERROR}[!] No tool named '$arg' found in the list.${RST}"; return 1; }
+            entries+=("$entry")
+        done
+        projectr_install_batch_by_entries "${entries[@]}"
+        return $?
+    fi
+    for arg in "${targets[@]}"; do
+        _flag_install "$arg"
+        rc=$?
+        [[ $rc -ne 0 ]] && status=$rc
+    done
+    return "$status"
 }
 
 projectr_cli_uninstall_args() {
-    local targets=() arg
+    local targets=() arg status=0 rc
     for arg in "$@"; do
-        case "$arg" in --*) ;; *) targets+=("$arg") ;; esac
+        case "$arg" in
+            --dry-run) echo -e "${ERROR}[!] Dry-run uninstall is not implemented; no changes were made.${RST}"; return 2 ;;
+            --*) echo -e "${ERROR}[!] Unknown uninstall option: $arg${RST}"; log_error "Unknown uninstall option: $arg" "cli"; return 2 ;;
+            *) targets+=("$arg") ;;
+        esac
     done
     [[ ${#targets[@]} -gt 0 ]] || { echo -e "${ERROR}[!] uninstall requires a tool name.${RST}"; log_error "uninstall command missing target" "cli"; return 1; }
-    for arg in "${targets[@]}"; do _flag_uninstall "$arg"; done
+    for arg in "${targets[@]}"; do
+        _flag_uninstall "$arg"
+        rc=$?
+        [[ $rc -ne 0 ]] && status=$rc
+    done
+    return "$status"
 }
 
 projectr_cli_list_arg() {

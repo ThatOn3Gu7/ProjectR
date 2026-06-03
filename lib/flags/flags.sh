@@ -94,8 +94,39 @@ parse_flags() {
 
         dry-run|--dry-run)
             shift
-            [[ "${1:-}" == "install" ]] && shift
-            projectr_dry_run_install "$@"
+            case "${1:-}" in
+                "")
+                    projectr_dry_run_install
+                    ;;
+                install)
+                    shift
+                    projectr_dry_run_install "$@"
+                    ;;
+                reset|--reset)
+                    shift
+                    _flag_reset --dry-run "$@"
+                    ;;
+                upgrade|--upgrade)
+                    shift
+                    projectr_cli_upgrade_args --dry-run "$@"
+                    ;;
+                repair|--repair)
+                    shift
+                    projectr_dry_run_repair "$@"
+                    ;;
+                --profile)
+                    shift
+                    projectr_dry_run_profile "$@"
+                    ;;
+                --profile=*)
+                    local profile_path="${1#--profile=}"
+                    shift
+                    projectr_dry_run_profile "$profile_path" "$@"
+                    ;;
+                *)
+                    projectr_dry_run_install "$@"
+                    ;;
+            esac
             exit $?
             ;;
 
@@ -122,7 +153,8 @@ parse_flags() {
             ;;
 
         reset|--reset)
-            _flag_reset
+            shift
+            _flag_reset "$@"
             exit $?
             ;;
 
@@ -149,7 +181,8 @@ parse_flags() {
             ;;
 
         upgrade|--upgrade)
-            pkg_upgrade
+            shift
+            projectr_cli_upgrade_args "$@"
             exit $?
             ;;
 
@@ -175,12 +208,19 @@ parse_flags() {
             ;;
 
         repair|--repair)
-            projectr_repair_state
+            shift
+            if [[ "${1:-}" == "--dry-run" ]]; then
+                shift
+                projectr_dry_run_repair "$@"
+            else
+                projectr_repair_state
+            fi
             exit $?
             ;;
 
         completions|--completions)
-            [[ "${2:-}" == "bash" ]] || { echo "Only bash completions are currently supported."; exit 1; }
+            shift
+            [[ "${1:-}" == "bash" ]] || { echo "Only bash completions are currently supported."; exit 1; }
             projectr_completions_bash
             exit 0
             ;;
@@ -539,6 +579,13 @@ _flag_log() {
 
 # ── --reset ───
 _flag_reset() {
+    local dry=0 arg
+    for arg in "$@"; do
+        case "$arg" in
+            --dry-run) dry=1 ;;
+            *) echo -e "${ERROR}[!] Unknown reset option: $arg${RST}"; return 2 ;;
+        esac
+    done
     echo ""
     echo -e "${OPTION} [*] Reset Saved Preferences ${RST}"
     echo ""
@@ -568,8 +615,12 @@ _flag_reset() {
     done < "$config_path"
     echo ""
 
-    > "$config_path"
-    echo -e "${OPTION} [✓] All preferences cleared.${RST}"
+    if [[ $dry -eq 1 ]]; then
+        echo -e "${DIM} [DRY-RUN] Would clear ${config_path}; no preferences were changed.${RST}"
+    else
+        > "$config_path"
+        echo -e "${OPTION} [✓] All preferences cleared.${RST}"
+    fi
     echo ""
 }
 
@@ -597,7 +648,7 @@ _flag_install() {
         echo -e "  ${ERROR}[!] No tool named '${target}' found in the list.${RST}"
         echo -e "  ${DIM}Run ${BOLD_WHITE}./main.sh --list=tools${RST}${DIM} to see valid names.${RST}"
         echo ""
-        exit 1
+        return 1
     fi
 
     IFS="|" read -r num cmd pkg name desc type extra cat <<< "$matched_entry"
@@ -606,7 +657,7 @@ _flag_install() {
     if command -v "$cmd" >/dev/null 2>&1; then
         echo -e "  ${OPTION}[✓] ${name} is already installed — nothing to do.${RST}"
         echo ""
-        exit 0
+        return 0
     fi
 
     # special type tools can't run non-interactively (they prompt the user)
@@ -614,7 +665,7 @@ _flag_install() {
         echo -e "  ${ERROR}[!] '${name}' uses an interactive installer and can't be run via flag.${RST}"
         echo -e "  ${DIM}Launch the script normally and select [${num}] from the menu.${RST}"
         echo ""
-        exit 1
+        return 1
     fi
 
     # Guard: verify every required file exists before sourcing
@@ -627,18 +678,20 @@ _flag_install() {
         if [[ ! -f "$_f" ]]; then
             echo -e "  ${ERROR}[!] Required file missing: $_f${RST}"
             echo -e "  ${DIM}Check that \$_PROJECT_ROOT is correct: $_PROJECT_ROOT${RST}"
-            exit 1
+            return 1
         fi
         source "$_f"
     done
 
-    INSTALLED_PKGS=()
-    SKIPPED_PKGS=()
-    FAILED_PKGS=()
+    local -a INSTALLED_PKGS=()
+    local -a SKIPPED_PKGS=()
+    local -a FAILED_PKGS=()
 
     projectr_install_tool_by_fields "$cmd" "$pkg" "$name" "$type" "$extra"
+    local status=$?
 
     echo ""
+    return "$status"
 }
 
 # ── --uninstall=<name> ────
@@ -663,7 +716,7 @@ _flag_uninstall() {
         echo -e "  ${ERROR}[!] No tool named '${target}' found in the list.${RST}"
         echo -e "  ${DIM}Run ${BOLD_WHITE}./main.sh --list=tools${RST}${DIM} to see valid names.${RST}"
         echo ""
-        exit 1
+        return 1
     fi
 
     IFS="|" read -r num cmd pkg name desc type extra cat <<< "$matched_entry"
@@ -671,7 +724,7 @@ _flag_uninstall() {
     if ! command -v "$cmd" >/dev/null 2>&1; then
         echo -e "  ${DIM}[*] ${name} is not installed — nothing to do.${RST}"
         echo ""
-        exit 0
+        return 0
     fi
 
     local _required=(
@@ -682,15 +735,17 @@ _flag_uninstall() {
         if [[ ! -f "$_f" ]]; then
             echo -e "  ${ERROR}[!] Required file missing: $_f${RST}"
             echo -e "  ${DIM}Check that \$_PROJECT_ROOT is correct: $_PROJECT_ROOT${RST}"
-            exit 1
+            return 1
         fi
         source "$_f"
     done
 
     export NON_INTERACTIVE=1
     projectr_uninstall_tool_by_fields "$cmd" "$pkg" "$name" "$type"
+    local status=$?
     unset NON_INTERACTIVE
     echo ""
+    return "$status"
 }
 
 # Search and install flag
@@ -711,12 +766,14 @@ _flag_search() {
         if [[ ! -f "$_f" ]]; then
             echo -e "  ${ERROR}[!] Required file missing: $_f${RST}"
             echo -e "  ${DIM}Check that \$_PROJECT_ROOT is correct: $_PROJECT_ROOT${RST}"
-            exit 1
+            return 1
         fi
         source "$_f"
     done
 
-    INSTALLED_PKGS=(); SKIPPED_PKGS=(); FAILED_PKGS=()
+    local -a INSTALLED_PKGS=() SKIPPED_PKGS=() FAILED_PKGS=()
     search_and_install "$target"
+    local status=$?
     echo ""
+    return "$status"
 }

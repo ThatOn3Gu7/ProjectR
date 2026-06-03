@@ -34,6 +34,10 @@ projectr_uninstall_tool_by_fields() {
 projectr_run_uninstall_command() {
     local component="$1" action="$2"
     shift 2
+    if [[ "${DRY_RUN:-0}" == "1" ]]; then
+        echo -e "${INFO:-}   [DRY-RUN] Would execute: $* ${RST:-}"
+        return 0
+    fi
     if declare -f projectr_run_logged >/dev/null 2>&1; then
         projectr_run_logged "$component" "$action" "$@"
     else
