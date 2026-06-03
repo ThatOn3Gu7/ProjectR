@@ -15,11 +15,14 @@ source "$SCRIPT_DIR/lib/data/config.sh"
 source "$SCRIPT_DIR/lib/core/colours.sh"
 source "$SCRIPT_DIR/lib/core/display.sh"
 source "$SCRIPT_DIR/lib/core/logging.sh"
+source "$SCRIPT_DIR/lib/core/array_context.sh"
+source "$SCRIPT_DIR/lib/core/strict_mode.sh"
 source "$SCRIPT_DIR/lib/system/detect.sh"
 detect_pkg_manager >/dev/null
 source "$SCRIPT_DIR/lib/data/tools.sh"
 source "$SCRIPT_DIR/lib/features/plugin_loader.sh"
 projectr_load_tool_plugins
+source "$SCRIPT_DIR/lib/features/snapshot.sh"
 source "$SCRIPT_DIR/lib/features/installer.sh"
 source "$SCRIPT_DIR/lib/features/uninstaller.sh"
 # -- source support libraries before dispatching non-interactive commands --
@@ -82,7 +85,7 @@ PROJECTR_VISIBLE_TOOL_COUNT=${PROJECTR_VISIBLE_TOOL_COUNT:-${PROJECTR_TOOL_PAGE_
 show_main_menu() {
  clear
   # cool LOGO with colors
-  cat <<"EOF" | rainbow
+  rainbow <<"EOF"
 
     ██▓███   ██▀███   ▒█████   ▄████▄  ▓█████   ██████     ██▀███  
    ▓██░  ██▒▓██ ▒ ██▒▒██▒  ██▒▒██▀ ▀█  ▓█   ▀ ▒██    ▒    ▓██ ▒ ██▒

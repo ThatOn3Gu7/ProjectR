@@ -58,14 +58,14 @@ projectr_install_tool_by_fields() {
             else
                 echo -e "${ERROR}  [!] Special installer '${extra}' not found — skipping ${name}.${RST}"
                 log_fail "Special installer '${extra}' not found for $name" "install"
-                FAILED_PKGS+=("$name")
+                projectr_install_result_push failed "$name"
                 return 1
             fi
             ;;
         *)
             echo -e "${ERROR}  [!] Unsupported tool type '${type}' for ${name}.${RST}"
             log_fail "Unsupported tool type '${type}' for $name" "install"
-            FAILED_PKGS+=("$name")
+            projectr_install_result_push failed "$name"
             return 1
             ;;
     esac
@@ -74,9 +74,9 @@ projectr_install_tool_by_fields() {
 # -- install function --
 install_all() {
 # For post-install summary detection
-  INSTALLED_PKGS=()
-  SKIPPED_PKGS=()
-  FAILED_PKGS=()
+  local -a INSTALLED_PKGS=()
+  local -a SKIPPED_PKGS=()
+  local -a FAILED_PKGS=()
   log INSTALL "User chose to install all tools"
    # Checks for Internet before proceeding
    require_internet 
@@ -109,6 +109,7 @@ install_all() {
            sleep 2
        fi
    fi
+   declare -f projectr_snapshot_pre_install >/dev/null 2>&1 && projectr_snapshot_pre_install "install_all"
    clear
    safe_tput civis
    show_install_wait
@@ -144,9 +145,11 @@ install_preset_by_names() {
         return 1
     fi
 
-    INSTALLED_PKGS=()
-    SKIPPED_PKGS=()
-    FAILED_PKGS=()
+    local -a INSTALLED_PKGS=()
+    local -a SKIPPED_PKGS=()
+    local -a FAILED_PKGS=()
+
+    declare -f projectr_snapshot_pre_install >/dev/null 2>&1 && projectr_snapshot_pre_install "install_preset"
 
     for name in "${names[@]}"; do
         local matched=0
@@ -183,7 +186,7 @@ install_pkg() {
 
     if command -v "$cmd" >/dev/null 2>&1; then
         echo -e "${OPTION}  [✓] $name is already installed - Skipping..${RST}"
-        SKIPPED_PKGS+=("$name")
+        projectr_install_result_push skipped "$name"
         log SKIPPED "$name was already installed (Skipped)"
         sleep 1
         return 0
@@ -293,7 +296,7 @@ install_pkg() {
         *)
             stop_spinner
             echo -e "${ERROR}  [x] Unsupported package manager: $PM${RST}"
-            FAILED_PKGS+=("$name")
+            projectr_install_result_push failed "$name"
             log FAIL "$name — unsupported PM: $PM"
             return 1
             ;;
@@ -301,11 +304,11 @@ install_pkg() {
 
     local install_exit=$?
     if [[ $install_exit -eq 0 ]]; then
-        INSTALLED_PKGS+=("$name")
+        projectr_install_result_push installed "$name"
         stop_spinner "${OPTION}  [✓] $name installed successfully (via $PM).${RST}"
         log INSTALLED "$name installed successfully (via $PM)"
     else
-        FAILED_PKGS+=("$name")
+        projectr_install_result_push failed "$name"
         stop_spinner "${ERROR}  [x] Failed to install: $name.${RST}"
         log FAIL "$name failed to install (on $PM)"
     fi
@@ -324,7 +327,7 @@ install_lang() {
 
     if command -v "$check_cmd" >/dev/null 2>&1; then
         echo -e "${OPTION}  [✓] $display_name is already installed - Skipping..${RST}"
-        SKIPPED_PKGS+=("$display_name")
+        projectr_install_result_push skipped "$display_name"
         log SKIPPED "$display_name was already installed"
         sleep 1
         return 0
@@ -333,7 +336,7 @@ install_lang() {
     if [[ "$lang_pm" == "none" ]]; then
         echo -e "${ERROR}  [✗] No $tool_type package manager found — cannot install $display_name${RST}"
         log_fail "No $tool_type package manager found for $display_name" "install-lang"
-        FAILED_PKGS+=("$display_name")
+        projectr_install_result_push failed "$display_name"
         return 1
     fi
 
@@ -364,7 +367,7 @@ install_lang() {
                 stop_spinner ""
                 echo -e "${ERROR}  [✗] Unknown language manager: $lang_pm${RST}"
                 log_fail "Unknown language manager '$lang_pm' for $display_name" "install-lang"
-                FAILED_PKGS+=("$display_name")
+                projectr_install_result_push failed "$display_name"
                 unset install_method
                 rm -f "$err_tmp"
                 return 1
@@ -384,7 +387,7 @@ install_lang() {
     done
 
     if command -v "$check_cmd" >/dev/null 2>&1; then
-        INSTALLED_PKGS+=("$display_name")
+        projectr_install_result_push installed "$display_name"
         stop_spinner "${OPTION}  [✓] $display_name installed successfully (via $lang_pm)${RST}"
         log INSTALLED "$display_name installed via $lang_pm"
         unset install_method
@@ -394,7 +397,7 @@ install_lang() {
     else
         local err_msg
         err_msg=$(grep -v '^\s*$' "$err_tmp" 2>/dev/null | tail -n1 | tr -cd '[:print:]')
-        FAILED_PKGS+=("$display_name")
+        projectr_install_result_push failed "$display_name"
         stop_spinner "${ERROR}  [✗] Failed: $display_name${err_msg:+ — ${err_msg}}${RST}"
         log FAIL "$display_name install failed${err_msg:+: $err_msg}"
         unset install_method
@@ -402,4 +405,89 @@ install_lang() {
         sleep 2
         return 1
     fi
+}
+
+projectr_batch_command_for_group() {
+    local manager="$1"
+    shift
+    case "$manager" in
+        apt)    env DEBIAN_FRONTEND=noninteractive sudo apt-get install -y --no-install-recommends "$@" ;;
+        pacman) sudo pacman -Sy --noconfirm --needed "$@" ;;
+        dnf|yum) sudo "$manager" install -y "$@" ;;
+        zypper) sudo zypper --non-interactive install "$@" ;;
+        brew)   brew install "$@" ;;
+        apk)    sudo apk add --no-cache "$@" ;;
+        pkg)    pkg install -y "$@" ;;
+        pip|pip3|pipx) "$manager" install --quiet "$@" ;;
+        npm)    npm install -g --quiet "$@" ;;
+        yarn)   yarn global add --silent "$@" ;;
+        gem)    gem install --silent "$@" ;;
+        cargo)  cargo install --quiet "$@" ;;
+        *) return 2 ;;
+    esac
+}
+
+projectr_install_batch_by_entries() {
+    local -a entries=("$@")
+    local -a INSTALLED_PKGS=()
+    local -a SKIPPED_PKGS=()
+    local -a FAILED_PKGS=()
+    local PM="${PRIMARY_PKG_MANAGER:-$(detect_pkg_manager)}"
+    local entry num cmd pkg name desc type extra cat key
+    local -a group_keys=()
+
+    declare -f projectr_snapshot_pre_install >/dev/null 2>&1 && projectr_snapshot_pre_install "batch_install"
+
+    for entry in "${entries[@]}"; do
+        IFS="|" read -r num cmd pkg name desc type extra cat <<< "$entry"
+        if command -v "$cmd" >/dev/null 2>&1; then
+            projectr_install_result_push skipped "$name"
+            continue
+        fi
+        case "$type" in
+            pkg) key="$PM" ;;
+            pip|pip3|pipx|cargo|gem|npm|yarn) key="$(detect_pkg_for_tool "$type")" ;;
+            *) projectr_install_tool_by_fields "$cmd" "$pkg" "$name" "$type" "$extra"; continue ;;
+        esac
+        [[ "$key" != "none" && -n "$key" ]] || { projectr_install_result_push failed "$name"; continue; }
+        eval "projectr_batch_pkgs_${key//[^A-Za-z0-9_]/_}+=(\"\$pkg\")"
+        eval "projectr_batch_names_${key//[^A-Za-z0-9_]/_}+=(\"\$name\")"
+        case " ${group_keys[*]} " in *" $key "*) ;; *) group_keys+=("$key") ;; esac
+    done
+
+    local group safe status tmp
+    for group in "${group_keys[@]}"; do
+        safe=${group//[^A-Za-z0-9_]/_}
+        eval 'local -a pkgs=("${projectr_batch_pkgs_'"$safe"'[@]}")'
+        eval 'local -a names=("${projectr_batch_names_'"$safe"'[@]}")'
+        [[ ${#pkgs[@]} -gt 0 ]] || continue
+
+        tmp=$(mktemp)
+        start_spinner "  [*] Batch installing ${#pkgs[@]} package(s) via $group.."
+        if [[ "${DRY_RUN:-0}" == "1" ]]; then
+            printf '[DRY-RUN] %s install payload: %s\n' "$group" "${pkgs[*]}" >"$tmp"
+            status=0
+        else
+            projectr_batch_command_for_group "$group" "${pkgs[@]}" >"$tmp" 2>&1
+            status=$?
+        fi
+        if [[ $status -eq 0 ]]; then
+            stop_spinner "${OPTION}  [✓] Batch installed ${#pkgs[@]} package(s) via $group.${RST}"
+            local n
+            for n in "${names[@]}"; do projectr_install_result_push installed "$n"; done
+        else
+            stop_spinner "${ERROR}  [x] Batch install failed via $group; falling back to per-tool installs.${RST}"
+            projectr_log_file_excerpt FAIL "$tmp" "batch-install" 30
+            for entry in "${entries[@]}"; do
+                IFS="|" read -r num cmd pkg name desc type extra cat <<< "$entry"
+                case "$type" in
+                    pkg) [[ "$group" == "$PM" ]] && projectr_install_tool_by_fields "$cmd" "$pkg" "$name" "$type" "$extra" ;;
+                    pip|pip3|pipx|cargo|gem|npm|yarn) [[ "$group" == "$(detect_pkg_for_tool "$type")" ]] && projectr_install_tool_by_fields "$cmd" "$pkg" "$name" "$type" "$extra" ;;
+                esac
+            done
+        fi
+        rm -f "$tmp"
+    done
+
+    post_install_summary
 }
