@@ -25,7 +25,8 @@ projectr_disable_color() {
 projectr_cli_help() {
     local usage_cmd="${PROJECTR_LAUNCHER_NAME:-project}"
     cat <<EOF_HELP
-ProjectR v1.3
+    
+ProjectR v1.4
 
 Usage:
   ${usage_cmd} <command> [options]
@@ -35,7 +36,7 @@ Usage:
 ProjectR accepts BOTH styles. Use whichever you prefer:
 
   Command style                         Equivalent flag style
-  -----------------------------------------------------------------------------
+  ---------------------------------------------------------------------
   ${usage_cmd} install git                  ${usage_cmd} --install git
   ${usage_cmd} install git                  ${usage_cmd} --install=git
   ${usage_cmd} uninstall tmux               ${usage_cmd} --uninstall tmux
@@ -104,6 +105,7 @@ Examples:
   ${usage_cmd} doctor
   ${usage_cmd} --doctor
   ${usage_cmd} audit --strict
+  
 EOF_EXAMPLES
 }
 

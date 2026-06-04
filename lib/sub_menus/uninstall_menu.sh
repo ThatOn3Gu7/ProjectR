@@ -32,7 +32,8 @@ echo -e "${RST}"
       IFS="|" read -r num cmd pkg name desc type extra cat <<< "$entry"
       printf "   [%03d]${OPTION} %-18s ${INFO}- %s ${OPTION}(%s)${RST}\n" "$num" "$name" "$desc" "$cat"
     done
-    echo -e "${INFO}  Showing ${BOLD_WHITE}${visible_count}${INFO}/${BOLD_WHITE}${total_tools}${INFO} tools${RST}"
+    echo ""
+    echo -e "${INFO} [*] Showing ${BOLD_WHITE}${visible_count}${INFO}/${BOLD_WHITE}${total_tools}${INFO} tools${RST}"
     
  echo ""
  if (( PROJECTR_UNINSTALL_VISIBLE_TOOL_COUNT < ${#TOOLS[@]} )); then

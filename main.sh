@@ -117,24 +117,23 @@ EOF
   for ((idx=0; idx<visible_count; idx++)); do
     entry="${TOOLS[$idx]}"
     IFS="|" read -r num cmd pkg name desc type extra cat <<< "$entry"
-    printf "${BARR}    ║${RST}${OPTION} [${BRIGHT_WHITE}%03d${OPTION}] %-18s ${INFO}- %s ${OPTION}(%s)${RST}\n" \
+    printf "${BARR}    ║${RST}${OPTION} [${BRIGHT_WHITE}%03d${OPTION}] %-13s ${INFO}- %s ${OPTION}(%s)${RST}\n" \
       "$num" "$name" "$desc" "$cat"
   done
-  echo -e "${BARR}    ╠════════════════════════════════════╣ ${RST}"
-  echo -e "${BARR}    ║${RST}${INFO} Showing ${BOLD_WHITE}${visible_count}${INFO}/${BOLD_WHITE}${total_tools}${INFO} tools${RST}"
-  echo -e "${BARR}    ╚════════════════════════════════════╝ ${RST}"
-
+  echo -e "${BARR}    ╚════════════════════════════════════╝${RST}"
+if (( PROJECTR_VISIBLE_TOOL_COUNT < ${#TOOLS[@]} )); then
+  echo -e "${INFO}    [*] Showing ${BOLD_WHITE}${visible_count}${INFO}/${BOLD_WHITE}${total_tools}${INFO} tools - type 'l' to load more tools${RST}"
+fi
 echo ""
 
 echo -e "${BARR}   ╔════════════════╗ ${RST}"
 echo -e "${BARR}   ║ ${RST}Other Options: ${BARR}║${RST}"
 echo -e "${BARR}   ╚╔═══════════════╝══╗ ${RST}"
-echo -e "${BARR}    ║${RST}${OPTION} [${BRIGHT_WHITE}0${OPTION}] Install ALL ${RST}"
 echo -e "${BARR}    ║${RST}${OPTION} [${BRIGHT_WHITE}s${OPTION}] Search & install by name${RST}"
 echo -e "${BARR}    ║${RST}${OPTION} [${BRIGHT_WHITE}p${OPTION}] Install by preset${RST}"
-if (( PROJECTR_VISIBLE_TOOL_COUNT < ${#TOOLS[@]} )); then
-  echo -e "${BARR}    ║${RST}${OPTION} [${BRIGHT_WHITE}l${OPTION}] Load ${PROJECTR_TOOL_PAGE_STEP:-50} more tools${RST}"
-fi
+# if (( PROJECTR_VISIBLE_TOOL_COUNT < ${#TOOLS[@]} )); then
+#   echo -e "${BARR}    ║${RST}${OPTION} [${BRIGHT_WHITE}l${OPTION}] Load ${PROJECTR_TOOL_PAGE_STEP:-50} more tools${RST}"
+# fi
 echo -e "${BARR}    ║${RST}${OPTION} [${BRIGHT_WHITE}i${OPTION}] Inspect installed ${RST}"
 echo -e "${BARR}    ║${RST}${OPTION} [${BRIGHT_WHITE}u${OPTION}] Uninstall tools${RST}"
 echo -e "${BARR}    ║${RST}${OPTION} [${BRIGHT_WHITE}r${OPTION}] Reset saved preferences${RST}"
@@ -156,7 +155,6 @@ handle_selection() {
 
   # Step 1: Handle the special non-number options first
   case "$selected" in
-    0)   clear; install_all; return ;;
     s|S) clear; install_by_name_menu; return ;;
     p|P) preset_menu; return ;;
     l|L)

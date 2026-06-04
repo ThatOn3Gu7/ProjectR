@@ -39,8 +39,10 @@ parse_flags() {
             ;;
 
         --help|-h|help)
-            _flag_help
-            exit 0
+            if declare -f projectr_cli_help >/dev/null 2>&1; then
+               projectr_cli_help
+               exit 0
+            fi
             ;;
 
         install|--install)
@@ -239,58 +241,6 @@ parse_flags() {
             exit 1
             ;;
     esac
-}
-
-# ── Built-in helpers (small enough to live here) ────
-_flag_help() {
-    if declare -f projectr_cli_help >/dev/null 2>&1; then
-        projectr_cli_help
-        return
-    fi
-
-    local usage_cmd="${PROJECTR_LAUNCHER_NAME:-./main.sh}"
-    echo ""
-    echo -e "${OPTION} [*] ProjectR — Available Flags ${RST}"
-    echo ""
-    echo -e "${DIM} Usage:${RST} ${BOLD_WHITE}${usage_cmd}${RST} ${DIM}[flag]${RST}"
-    echo ""
-    echo -e "   [*] Flags${RST}"
-    echo -e "  ${DIM}────────────────────────────────────────────────────${RST}"
-    printf "  ${BOLD_WHITE}%-26s${RST}  %s\n" \
-        "-v, --version"          "Show script version" \
-        "-h, --help"             "Show this help message" \
-        "--search=<name>"       "Search all managers and install by name" \
-        "--list=manager"         "All package managers + availability" \
-        "--list=tools"           "All tools in the TOOLS array" \
-        "--list=installed"       "Only tools that are currently installed" \
-        "--list=categories"      "Tools grouped by category (Dev/Fun/Min…)" \
-        "--install=<name>"       "Install a tool non-interactively (e.g. git)" \
-        "--uninstall=<name>"     "Uninstall a tool non-interactively" \
-        "--log"                  "Print last 20 lines of install.log" \
-        "--log=<n>"              "Print last N lines of install.log" \
-        "--reset"                "Clear all saved preferences (non-interactive)" \
-        "--export"               "Exports profile into projectr_profile_$(date +%F).txt" \
-        "--import=<file>"        "Import profile from projectr_profile_$(date +%F).txt" \
-        "--dry-run"              "Simulate changes without installing packages" \
-        "--undo"                 "Undo last sessions changes" \
-        "--update"               "Pull the latest ProjectR git checkout and show applied commits" \
-        "--doctor"               "Check PATH, dependencies, package manager, and logs" \
-        "--audit"                "Validate registry IDs, types, and special installers"
-    if [[ -n "${PROJECTR_LAUNCHER_NAME:-}" ]]; then
-        printf "  ${BOLD_WHITE}%-26s${RST}  %s\n" \
-            "--self-update"          "Refresh installed app files from the original checkout" \
-            "--setup-info"           "Show launcher, source, and install paths"
-    fi
-    echo ""
-    echo -e "   [*] Examples${RST}"
-    echo -e "  ${DIM}────────────────────────────────────────────────────${RST}"
-    echo -e "  ${DIM}\$${RST} ${usage_cmd} ${DIM}                       -- Interactive mode${RST}"
-    echo -e "  ${DIM}\$${RST} ${usage_cmd} ${BOLD_WHITE}--install=git${DIM}         -- Install git silently${RST}"
-    echo -e "  ${DIM}\$${RST} ${usage_cmd} ${BOLD_WHITE}--list=installed${DIM}      -- See what's installed${RST}"
-    echo -e "  ${DIM}\$${RST} ${usage_cmd} ${BOLD_WHITE}--list=categories${DIM}     -- Browse tools by category${RST}"
-    echo -e "  ${DIM}\$${RST} ${usage_cmd} ${BOLD_WHITE}--log=50${DIM}              -- Last 50 log lines${RST}"
-    echo -e "  ${DIM}\$${RST} ${usage_cmd} ${BOLD_WHITE}--reset${DIM}               -- Wipe saved preferences${RST}"
-    echo ""
 }
 
 _flag_list_tools() {

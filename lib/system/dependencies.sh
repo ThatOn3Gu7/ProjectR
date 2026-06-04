@@ -219,39 +219,6 @@ verify_dependencies() {
         esac
     done
 }
-
-# Detect package manager and return appropriate install command
-get_install_cmd() {
-    local cmd="$1"
-    local pm="${PRIMARY_PKG_MANAGER:-$(detect_pkg_manager)}"
-    
-    case "$pm" in
-        apt)       echo "apt install -y $cmd" ;;
-        pacman)    echo "pacman -S --noconfirm $cmd" ;;
-        dnf|yum)   echo "$pm install -y $cmd" ;;
-        pkg)       echo "pkg install -y $cmd" ;;
-        brew)      echo "brew install $cmd" ;;
-        apk)       echo "apk add $cmd" ;;
-        apt-get)   echo "apt-get install -y $cmd" ;;
-        zypper)    echo "zypper install -y $cmd" ;;
-        emerge)    echo "emerge -av $cmd" ;;
-        xbps)      echo "xbps-install -Sy $cmd" ;;
-        nix)       echo "nix-env -i $cmd" ;;
-        guix)      echo "guix package -i $cmd" ;;
-        eopkg)     echo "eopkg install $cmd" ;;
-        urpmi)     echo "urpmi $cmd" ;;
-        slackpkg)  echo "slackpkg install $cmd" ;;
-        macports)  echo "port install $cmd" ;;
-        bsd-pkg)   echo "pkg install -y $cmd" ;;
-        pkg_add)   echo "pkg_add $cmd" ;;
-        winget)    echo "winget install -e --id $cmd" ;;
-        choco)     echo "choco install -y $cmd" ;;
-        scoop)     echo "scoop install $cmd" ;;
-        *)
-            echo ""
-            ;;
-    esac
-}
 # Improved auto-install with privilege check and better error handling
 auto_install_dependencies() {
     local deps=("$@")

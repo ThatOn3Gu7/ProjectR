@@ -1,11 +1,12 @@
 #!/bin/bash
 projectr_doctor() {
     local failures=0
+    echo ""
     echo -e "${OPTION}[*] ProjectR doctor${RST}"
     log_info "Starting doctor checks" "doctor"
     echo ""
     printf '  %-22s %s\n' Check Result
-    printf '  %s\n' '────────────────────────────────────────'
+    printf '  %s\n' '─────────────────────────────'
 
     if [[ -n "${PATH:-}" ]]; then printf '  %-22s %s\n' PATH ok; else printf '  %-22s %s\n' PATH missing; failures=$((failures+1)); fi
 
@@ -49,13 +50,15 @@ projectr_doctor() {
         printf '  %-22s %s\n' logs not-writable
         failures=$((failures+1))
     fi
-
+    printf '  %s\n' '─────────────────────────────'
     echo ""
     if [[ $failures -eq 0 ]]; then
         echo -e "${OPTION}[✓] Doctor found no blocking issues.${RST}"
+        echo ""
         log_ok "Doctor completed with no blocking issues" "doctor"
     else
         echo -e "${ERROR}[!] Doctor found $failures issue(s).${RST}"
+        echo ""
         log_fail "Doctor found $failures issue(s)" "doctor"
         return 1
     fi

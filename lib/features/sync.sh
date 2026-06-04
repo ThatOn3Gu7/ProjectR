@@ -78,7 +78,9 @@ pkg_upgrade() {
         echo -e "${ERROR}  [!] Upgrade failed for: $PM (exit: $exit_code)${RST}"
         log FAIL "pkg_upgrade failed on $PM with exit code $exit_code"
         return 1
+     else
+        echo -e "${BOLD_GREEN}  [*] System upgraded successfully via: $PM (exit: $exit_code) ${RST}"
     fi
 
-    log OK "pkg/system upgraded successfully via $PM"
+    log OK "pkg/system upgraded successfully via $PM (exit: $exit_code)"
 }

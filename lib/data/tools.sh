@@ -52,7 +52,7 @@ TOOLS=(
   "43|pipx|pipx|Pipx|Install Python CLI tools isolated|pip|-|Dev"
   "44|jq|jq|Jq|Command-line JSON processor|pkg|-|Data"
   "45|yq|yq|Yq|YAML and XML processor|pkg|-|Data"
-  "46|ripgrep|ripgrep|Ripgrep|Fast recursive text search|pkg|-|Dev"
+  "46|rg|ripgrep|Ripgrep|Fast recursive text search|pkg|-|Dev"
   "47|fd|fd-find|Fd|Simple fast alternative to find|pkg|-|Dev"
   "48|sd|sd|Sd|Intuitive find and replace CLI|pkg|-|Dev"
   "49|hyperfine|hyperfine|Hyperfine|Command-line benchmarking tool|pkg|-|Dev"

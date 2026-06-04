@@ -13,10 +13,9 @@ projectr_audit_tools() {
 
     local errors=0 warnings=0 total=0
     local nums=" " cmds=" " names=" "
-
+    echo ""
     echo -e "${OPTION}[*] Auditing ProjectR tool database${RST}"
     log_info "Starting tool database audit strict=$strict" "audit"
-    echo ""
 
     for entry in "${TOOLS[@]}"; do
         total=$((total + 1))
@@ -89,7 +88,6 @@ projectr_audit_tools() {
         fi
     done
 
-    echo ""
     echo -e "${INFO}[*] Checked ${BOLD_WHITE}$total${RST}${INFO} tool entries.${RST}"
     echo -e "${INFO}[*] Errors: ${BOLD_WHITE}$errors${RST}${INFO}; warnings: ${BOLD_WHITE}$warnings${RST}${INFO}.${RST}"
 

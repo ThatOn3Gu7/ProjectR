@@ -1,46 +1,4 @@
 #!/bin/bash
-# --- DRY RUN & UNDO WRAPPER ENGINE ---
-# Replaces or intercepts raw execution calls
-execute_pkg_command() {
-    local pkg_name="$1"
-    local internal_name="$2"
-    local action="${3:-install}"
-    shift 3
-    # Remaining positional args are the command + its arguments — no eval needed
-
-    if [[ "${DRY_RUN:-0}" == "1" ]]; then
-        echo -e "${INFO}   [DRY-RUN] Would execute: $* ${RST}"
-        sleep 0.2
-        return 0
-    fi
-
-    # Execute safely as an array — no string injection risk. Capture output into
-    # install.log so failures explain themselves instead of disappearing.
-    local status
-    if declare -f projectr_run_logged >/dev/null 2>&1; then
-        projectr_run_logged "pkg:$action" "$action $internal_name ($pkg_name)" "$@"
-        status=$?
-    else
-        "$@" >/dev/null 2>&1
-        status=$?
-    fi
-
-    if [[ $status -eq 0 && "$action" == "install" ]]; then
-        mkdir -p "$SCRIPT_DIR/log/"
-        chmod 700 "$SCRIPT_DIR/log" 2>/dev/null || true
-        local hist_file="$SCRIPT_DIR/log/session_history.tmp"
-        touch "$hist_file" 2>/dev/null || true
-        chmod 600 "$hist_file" 2>/dev/null || true
-        local _method="${install_method:-pkg}"
-        echo "$(date '+%F %T')|$internal_name|$pkg_name|${_method}" \
-            >> "$hist_file" 2>/dev/null || true
-        if declare -f projectr_state_record_install >/dev/null 2>&1; then
-            projectr_state_record_install "$internal_name" "$pkg_name" "${PRIMARY_PKG_MANAGER:-$(detect_pkg_manager)}" "$internal_name" || true
-        fi
-    fi
-
-    return $status
-}
 
 projectr_install_tool_by_fields() {
     local cmd="$1" pkg="$2" name="$3" type="$4" extra="${5:--}"
@@ -73,65 +31,72 @@ projectr_install_tool_by_fields() {
 
 # -- install function --
 install_all() {
-# For post-install summary detection
-  local -a INSTALLED_PKGS=()
-  local -a SKIPPED_PKGS=()
-  local -a FAILED_PKGS=()
-  log INSTALL "User chose to install all tools"
-   # Checks for Internet before proceeding
-   require_internet 
-   # Update package lists
-   echo ""
-   progress_run "Syncing repositories" \
-                 "Package lists updated" \
-                 pkg_update
-   sleep 0.1
-   echo -e "${INFO}"
-   local upgrade_choice
-   upgrade_choice=$(config_get "skip_sys_upgrade")
-
-   if [ "$upgrade_choice" = "skip" ]; then
-       print_box center "  [*] Skipping system upgrade (saved preference)"
-       sleep 1
-   elif [ "$upgrade_choice" = "do" ]; then
-       progress_run "Upgrading system" \
-                    "System upgrade complete" \
-                    pkg_upgrade
-   else
-       if ask "  [!] Upgrade the system?" "n"; then
-           config_set "skip_sys_upgrade" "do"
-           progress_run "Upgrading system" \
-                        "System upgrade complete" \
-                        pkg_upgrade
-       else
-           config_set "skip_sys_upgrade" "skip"
-           print_box center "  [*] Skipping system upgrade"
-           sleep 2
-       fi
-   fi
-   declare -f projectr_snapshot_pre_install >/dev/null 2>&1 && projectr_snapshot_pre_install "install_all"
-   clear
-   safe_tput civis
-   show_install_wait
-   echo -e "${OPTION}"
-   print_box center "[*] Installing all tools"
-   echo -e "${RST}"
-   
-   for entry in "${TOOLS[@]}"; do
-        IFS="|" read -r num cmd pkg name desc type extra cat <<< "$entry"
-
-        projectr_install_tool_by_fields "$cmd" "$pkg" "$name" "$type" "$extra"
-    done
-
-    # -- post-install-summary
     echo ""
-    post_install_summary
-    echo -e "${OPTION}" 
-    print_box center "[✓] installation Completed."
-    echo -e "${RST}"
+    echo -e "${ERROR}  [!] Bulk install of all tools is disabled.${RST}"
+    echo -e "${INFO}  [*] Use presets instead: ${BOLD_WHITE}project install --profile <file>.yml${RST}"
+    echo -e "${OPTION}  [*] If you still wnat to go with it, then open 'installer.sh' in your preferred editor and uncomment everything in the function ${RST}"
     printf "${DIM}  [press ENTER]${RST}"
     read -s; echo
-    safe_tput cnorm
+    return 1
+ # # For post-install summary detection
+ #  local -a INSTALLED_PKGS=()
+ #  local -a SKIPPED_PKGS=()
+ #  local -a FAILED_PKGS=()
+ #  log INSTALL "User chose to install all tools"
+ #   # Checks for Internet before proceeding
+ #   require_internet 
+ #   # Update package lists
+ #   echo ""
+ #   progress_run "Syncing repositories" \
+ #                 "Package lists updated" \
+ #                 pkg_update
+ #   sleep 0.1
+ #   echo -e "${INFO}"
+ #   local upgrade_choice
+ #   upgrade_choice=$(config_get "skip_sys_upgrade")
+ #
+ #   if [ "$upgrade_choice" = "skip" ]; then
+ #       print_box center "  [*] Skipping system upgrade (saved preference)"
+ #       sleep 1
+ #   elif [ "$upgrade_choice" = "do" ]; then
+ #       progress_run "Upgrading system" \
+ #                    "System upgrade complete" \
+ #                    pkg_upgrade
+ #   else
+ #       if ask "  [!] Upgrade the system?" "n"; then
+ #           config_set "skip_sys_upgrade" "do"
+ #           progress_run "Upgrading system" \
+ #                        "System upgrade complete" \
+ #                        pkg_upgrade
+ #       else
+ #           config_set "skip_sys_upgrade" "skip"
+ #           print_box center "  [*] Skipping system upgrade"
+ #           sleep 2
+ #       fi
+ #   fi
+ #   declare -f projectr_snapshot_pre_install >/dev/null 2>&1 && projectr_snapshot_pre_install "install_all"
+ #   clear
+ #   safe_tput civis
+ #   show_install_wait
+ #   echo -e "${OPTION}"
+ #   print_box center "[*] Installing all tools"
+ #   echo -e "${RST}"
+ #
+ #   for entry in "${TOOLS[@]}"; do
+ #        IFS="|" read -r num cmd pkg name desc type extra cat <<< "$entry"
+ #
+ #        projectr_install_tool_by_fields "$cmd" "$pkg" "$name" "$type" "$extra"
+ #    done
+ #
+ #    # -- post-install-summary
+ #    echo ""
+ #    post_install_summary
+ #    echo -e "${OPTION}" 
+ #    print_box center "[✓] installation Completed."
+ #    echo -e "${RST}"
+ #    printf "${DIM}  [press ENTER]${RST}"
+ #    read -s; echo
+ #    safe_tput cnorm
 
 }
 
@@ -196,102 +161,78 @@ install_pkg() {
 
     case "$PM" in
         apt)
-            execute_pkg_command "$pkg" "$cmd" "install" \
-                env DEBIAN_FRONTEND=noninteractive \
-                sudo apt-get install -y --no-install-recommends "$pkg" >/dev/null 2>&1
-            if [[ $? -ne 0 ]]; then
-                stop_spinner "${BOLD_YELLOW}  [!] apt install failed — refreshing package lists and retrying...${RST}"
-                start_spinner "  [*] Installing: $name (retry after apt-get update).."
-                sudo apt-get update >/dev/null 2>&1
-                execute_pkg_command "$pkg" "$cmd" "install" \
-                    env DEBIAN_FRONTEND=noninteractive \
-                    sudo apt-get install -y --no-install-recommends "$pkg" >/dev/null 2>&1
-            fi
+            env DEBIAN_FRONTEND=noninteractive \
+            sudo apt-get install -y --no-install-recommends "$pkg" >/dev/null 2>&1
+         if [[ $? -ne 0 ]]; then
+            stop_spinner "${BOLD_YELLOW}  [!] apt install failed — refreshing package lists and retrying...${RST}"
+            start_spinner "  [*] Installing: $name (retry after apt-get update).."
+            sudo apt-get update >/dev/null 2>&1
+            env DEBIAN_FRONTEND=noninteractive \
+            sudo apt-get install -y --no-install-recommends "$pkg" >/dev/null 2>&1
+         fi
             ;;
         dnf|yum)
-            execute_pkg_command "$pkg" "$cmd" "install" \
-                sudo "$PM" install -y "$pkg"
+             sudo "$PM" install -y "$pkg" >/dev/null 2>&1
             ;;
         pacman)
-            execute_pkg_command "$pkg" "$cmd" "install" \
-                sudo pacman -Sy --noconfirm --needed "$pkg"
+             sudo pacman -Sy --noconfirm --needed "$pkg" >/dev/null 2>&1
             ;;
         zypper)
-            execute_pkg_command "$pkg" "$cmd" "install" \
-                sudo zypper --non-interactive install "$pkg" >/dev/null 2>&1
+             sudo zypper --non-interactive install "$pkg" >/dev/null 2>&1
             ;;
         brew)
-            execute_pkg_command "$pkg" "$cmd" "install" \
-                brew install "$pkg"
+             brew install "$pkg" >/dev/null 2>&1
             ;;
         apk)
-            execute_pkg_command "$pkg" "$cmd" "install" \
-                sudo apk add --no-cache "$pkg" >/dev/null 2>&1
+             sudo apk add --no-cache "$pkg" >/dev/null 2>&1
             ;;
         emerge)
-            execute_pkg_command "$pkg" "$cmd" "install" \
-                sudo emerge -av "$pkg"
+             sudo emerge -av "$pkg" >/dev/null 2>&1
             ;;
         xbps)
-            execute_pkg_command "$pkg" "$cmd" "install" \
-                sudo xbps-install -Sy "$pkg"
+             sudo xbps-install -Sy "$pkg" >/dev/null 2>&1
             ;;
         nix)
-            execute_pkg_command "$pkg" "$cmd" "install" \
-                nix-env -i "$pkg"
+             nix-env -i "$pkg" >/dev/null 2>&1
             ;;
         guix)
-            execute_pkg_command "$pkg" "$cmd" "install" \
-                guix package --install "$pkg"
+             guix package --install "$pkg" >/dev/null 2>&1
             ;;
         eopkg)
-            execute_pkg_command "$pkg" "$cmd" "install" \
-                sudo eopkg install -y "$pkg"
+             sudo eopkg install -y "$pkg" >/dev/null 2>&1
             ;;
         urpmi)
-            execute_pkg_command "$pkg" "$cmd" "install" \
-                sudo urpmi --auto "$pkg"
+             sudo urpmi --auto "$pkg" >/dev/null 2>&1
             ;;
         slackpkg)
-            execute_pkg_command "$pkg" "$cmd" "install" \
-                sudo slackpkg install "$pkg"
+             sudo slackpkg install "$pkg" >/dev/null 2>&1
             ;;
         macports)
-            execute_pkg_command "$pkg" "$cmd" "install" \
-                sudo port install "$pkg"
+             sudo port install "$pkg" >/dev/null 2>&1
             ;;
         bsd-pkg)
-            execute_pkg_command "$pkg" "$cmd" "install" \
-                sudo pkg install -y "$pkg"
+             sudo pkg install -y "$pkg" >/dev/null 2>&1
             ;;
         pkg_add)
-            execute_pkg_command "$pkg" "$cmd" "install" \
-                doas pkg_add "$pkg"
+             doas pkg_add "$pkg" >/dev/null 2>&1
             ;;
         flatpak)
-            execute_pkg_command "$pkg" "$cmd" "install" \
-                flatpak install -y flathub "$pkg"
+             flatpak install -y flathub "$pkg" >/dev/null 2>&1
             ;;
         snap)
-            execute_pkg_command "$pkg" "$cmd" "install" \
-                sudo snap install "$pkg"
+             sudo snap install "$pkg" >/dev/null 2>&1
             ;;
         pkg)
-            execute_pkg_command "$pkg" "$cmd" "install" \
-                pkg install -y "$pkg"
+             pkg install -y "$pkg" >/dev/null 2>&1
             ;;
         choco|chocolatey)
-            execute_pkg_command "$pkg" "$cmd" "install" \
-                choco install -y "$pkg"
-
+             choco install -y "$pkg" >/dev/null 2>&1
             ;;
         scoop)
-            execute_pkg_command "$pkg" "$cmd" "install" \
-                scoop install "$pkg"
+             scoop install "$pkg" >/dev/null 2>&1
             ;;
         winget)
-            execute_pkg_command "$pkg" "$cmd" "install" \
-                winget install -e --id "$pkg"
+             winget install -e --id "$pkg" >/dev/null 2>&1
             ;;
         *)
             stop_spinner
@@ -304,6 +245,11 @@ install_pkg() {
 
     local install_exit=$?
     if [[ $install_exit -eq 0 ]]; then
+         # bookkeeping (was inside execute_pkg_command)
+        mkdir -p "$SCRIPT_DIR/log/"
+        echo "$(date '+%F %T')|$cmd|$pkg" >> "$SCRIPT_DIR/log/session_history.tmp" 2>/dev/null || true
+        declare -f projectr_state_record_install >/dev/null 2>&1 && \
+        projectr_state_record_install "$name" "$pkg" "${PRIMARY_PKG_MANAGER:-$(detect_pkg_manager)}" "$cmd" || true
         projectr_install_result_push installed "$name"
         stop_spinner "${OPTION}  [✓] $name installed successfully (via $PM).${RST}"
         log INSTALLED "$name installed successfully (via $PM)"
@@ -387,6 +333,11 @@ install_lang() {
     done
 
     if command -v "$check_cmd" >/dev/null 2>&1; then
+        # bookkeeping
+        mkdir -p "$SCRIPT_DIR/log/"
+        echo "$(date '+%F %T')|$cmd|$pkg_name" >> "$SCRIPT_DIR/log/session_history.tmp" 2>/dev/null || true
+        declare -f projectr_state_record_install >/dev/null 2>&1 && \
+        projectr_state_record_install "$display_name" "$pkg_name" "$lang_pm" "$check_cmd" || true
         projectr_install_result_push installed "$display_name"
         stop_spinner "${OPTION}  [✓] $display_name installed successfully (via $lang_pm)${RST}"
         log INSTALLED "$display_name installed via $lang_pm"

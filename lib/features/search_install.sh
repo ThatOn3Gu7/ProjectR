@@ -206,7 +206,7 @@ install_by_name_menu() {
         echo -e "${ERROR}  [b] Back to main menu${RST}"
         echo ""
         # Updated prompt to remind users about the '/' hotkey
-        echo -ne " ${BG_GREEN}[*] Tool name(s) or '/' to search: ${RST} "
+        echo -ne " ${DIM} [*] Tool name(s) or '/' to search:${RST} "
         read -ra inputs
 
         [[ ${#inputs[@]} -eq 0 ]] && continue
