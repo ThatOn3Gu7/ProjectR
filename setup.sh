@@ -4,26 +4,65 @@ set -euo pipefail
 # ProjectR command installer
 # Copies the repo to a hidden user-level app directory and creates a `project`
 # launcher so ProjectR can be run from any working directory.
+#
+# Supports two modes:
+#   1. LOCAL  — run from a cloned ProjectR checkout (original behaviour).
+#   2. REMOTE — piped through curl/wget with no prior clone required:
+#        curl -fsSL https://raw.githubusercontent.com/Thaton3gu7/ProjectR/master/setup.sh | sh
+#        wget -qO- https://raw.githubusercontent.com/Thaton3gu7/ProjectR/master/setup.sh | sh
+#
+# In remote mode, setup clones ProjectR into $XDG_DATA_HOME/projectr (or
+# ~/.local/share/projectr) and then runs the normal local setup against that
+# fresh clone.
 
+PROJECTR_REPO_URL="${PROJECTR_REPO_URL:-https://github.com/Thaton3gu7/ProjectR.git}"
 PROJECT_NAME="ProjectR"
 COMMAND_NAME="${PROJECTR_COMMAND_NAME:-project}"
 DEFAULT_INSTALL_DIR="${XDG_DATA_HOME:-$HOME/.local/share}/projectr"
 DEFAULT_BIN_DIR="${XDG_BIN_HOME:-$HOME/.local/bin}"
 INSTALL_DIR="${PROJECTR_INSTALL_DIR:-$DEFAULT_INSTALL_DIR}"
 BIN_DIR="${PROJECTR_BIN_DIR:-$DEFAULT_BIN_DIR}"
-SOURCE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
 ADD_PATH=0
+REMOTE_MODE=0
 
-info() { printf '[*] %s\n' "$*"; }
+# ---------------------------------------------------------------------------
+# Detect remote (piped) mode
+# ---------------------------------------------------------------------------
+# When the script is piped through curl/wget, BASH_SOURCE[0] is either empty,
+# unset, or points to a path that doesn't actually contain ProjectR files.
+# We use that to decide whether we need to clone the repo first.
+# ---------------------------------------------------------------------------
+_detect_source_dir() {
+    local candidate="${BASH_SOURCE[0]:-}"
+    if [[ -n "$candidate" ]]; then
+        candidate="$(cd "$(dirname "$candidate")" 2>/dev/null && pwd -P)" || candidate=""
+    fi
+
+    if [[ -n "$candidate" && -f "$candidate/main.sh" && -d "$candidate/lib" ]]; then
+        SOURCE_DIR="$candidate"
+        REMOTE_MODE=0
+    else
+        REMOTE_MODE=1
+        SOURCE_DIR=""
+    fi
+}
+
+_detect_source_dir
+
+info()    { printf '[*] %s\n' "$*"; }
 success() { printf '[✓] %s\n' "$*"; }
-warn() { printf '[!] %s\n' "$*" >&2; }
-fail() { printf '[✗] %s\n' "$*" >&2; exit 1; }
+warn()    { printf '[!] %s\n' "$*" >&2; }
+fail()    { printf '[✗] %s\n' "$*" >&2; exit 1; }
 
 usage() {
     cat <<USAGE
 $PROJECT_NAME setup
 
 Usage: bash setup.sh [options]
+
+  One-shot remote install (no prior clone needed):
+    curl -fsSL https://raw.githubusercontent.com/Thaton3gu7/ProjectR/master/setup.sh | sh
+    wget -qO- https://raw.githubusercontent.com/Thaton3gu7/ProjectR/master/setup.sh | sh
 
 Options:
   --command=<name>       Launcher command name (default: project)
@@ -36,12 +75,13 @@ Environment overrides:
   PROJECTR_COMMAND_NAME  Same as --command
   PROJECTR_INSTALL_DIR   Same as --install-dir
   PROJECTR_BIN_DIR       Same as --bin-dir
+  PROJECTR_REPO_URL      Git remote to clone (default: $PROJECTR_REPO_URL)
 
 Examples:
   bash setup.sh         - To setup launcher in default mode
-  project               - To run interactiv mode vis launcher name
+  project               - To run interactive mode via launcher name
   project --help        - To see this help menu
-  project --install=git - Installs git none-interactively
+  project --install=git - Installs git non-interactively
   project --self-update - Updates ProjectR via github
 USAGE
 }
@@ -88,6 +128,93 @@ ensure_dir_with_fallback() {
     fail "Could not create $label directory at either '$requested' or '$fallback'."
 }
 
+# ---------------------------------------------------------------------------
+# Remote-mode: clone ProjectR into the install directory
+# ---------------------------------------------------------------------------
+clone_project_remote() {
+    info "Remote mode detected — no local checkout found."
+    info "Cloning $PROJECT_NAME from $PROJECTR_REPO_URL ..."
+
+    # We need git or curl+tar for this
+    if command -v git >/dev/null 2>&1; then
+        _clone_with_git
+    elif command -v curl >/dev/null 2>&1 || command -v wget >/dev/null 2>&1; then
+        _clone_with_archive
+    else
+        fail "Neither git nor curl/wget are available. Install git and retry."
+    fi
+}
+
+_clone_with_git() {
+    local clone_target="$INSTALL_DIR"
+
+    # If there is already a clone there, try to update it
+    if [[ -d "$clone_target/.git" ]]; then
+        info "Existing clone found at $clone_target — pulling latest changes ..."
+        git -C "$clone_target" pull --ff-only 2>/dev/null \
+            || warn "Fast-forward pull failed; continuing with existing checkout."
+    else
+        # Remove any non-git remnants so the clone succeeds
+        if [[ -d "$clone_target" ]]; then
+            local backup="${clone_target}.bak.$$"
+            mv "$clone_target" "$backup" || fail "Could not move old install directory."
+            trap "rm -rf '$backup'" EXIT
+        fi
+
+        mkdir -p "$(dirname "$clone_target")" 2>/dev/null || true
+        git clone --depth 1 "$PROJECTR_REPO_URL" "$clone_target" \
+            || fail "git clone failed. Check your network and the repo URL."
+
+        if [[ -n "${backup:-}" ]]; then
+            rm -rf "$backup"
+            trap - EXIT
+        fi
+    fi
+
+    SOURCE_DIR="$clone_target"
+}
+
+_clone_with_archive() {
+    # Derive a tarball URL from the git URL
+    local archive_url="${PROJECTR_REPO_URL%.git}"
+    archive_url="${archive_url}/archive/refs/heads/master.tar.gz"
+    local tmp_archive tmp_extract
+
+    tmp_archive="$(mktemp "${TMPDIR:-/tmp}/projectr-archive.XXXXXX.tar.gz")"
+    tmp_extract="$(mktemp -d "${TMPDIR:-/tmp}/projectr-extract.XXXXXX")"
+    trap "rm -rf '$tmp_archive' '$tmp_extract'" EXIT
+
+    info "Downloading $PROJECT_NAME archive ..."
+    if command -v curl >/dev/null 2>&1; then
+        curl -fsSL -o "$tmp_archive" "$archive_url" \
+            || fail "Failed to download archive from $archive_url"
+    else
+        wget -qO "$tmp_archive" "$archive_url" \
+            || fail "Failed to download archive from $archive_url"
+    fi
+
+    tar -xzf "$tmp_archive" -C "$tmp_extract" --strip-components=1 \
+        || fail "Failed to extract archive."
+
+    # Move extracted files into install dir
+    if [[ -d "$INSTALL_DIR" ]]; then
+        local backup="${INSTALL_DIR}.bak.$$"
+        mv "$INSTALL_DIR" "$backup" || fail "Could not move old install directory."
+    fi
+
+    mkdir -p "$(dirname "$INSTALL_DIR")" 2>/dev/null || true
+    mv "$tmp_extract" "$INSTALL_DIR" || fail "Could not move extracted files into $INSTALL_DIR"
+
+    if [[ -n "${backup:-}" ]]; then
+        rm -rf "$backup"
+    fi
+
+    rm -f "$tmp_archive"
+    trap - EXIT
+
+    SOURCE_DIR="$INSTALL_DIR"
+}
+
 write_metadata() {
     local metadata_file="$INSTALL_DIR/.projectr-install"
     {
@@ -96,6 +223,7 @@ write_metadata() {
         printf 'PROJECTR_BIN_DIR=%q\n' "$BIN_DIR"
         printf 'PROJECTR_COMMAND_NAME=%q\n' "$COMMAND_NAME"
         printf 'PROJECTR_INSTALLED_AT=%q\n' "$(date '+%Y-%m-%d %H:%M:%S %z')"
+        printf 'PROJECTR_REMOTE_MODE=%q\n' "$REMOTE_MODE"
     } > "$metadata_file"
 }
 
@@ -157,6 +285,10 @@ write_launcher() {
         echo ''
         echo 'case "${1:-}" in'
         echo '  --self-update|--projectr-update)'
+        echo '    if [[ -d "$PROJECTR_SOURCE_DIR/.git" ]]; then'
+        echo '      echo "[*] Pulling latest changes ..."'
+        echo '      git -C "$PROJECTR_SOURCE_DIR" pull --ff-only || { echo "[!] Pull failed." >&2; exit 1; }'
+        echo '    fi'
         echo '    if [[ -f "$PROJECTR_SOURCE_DIR/setup.sh" ]]; then'
         echo '      exec bash "$PROJECTR_SOURCE_DIR/setup.sh" --command="$PROJECTR_COMMAND_NAME" --install-dir="$PROJECTR_HOME" --bin-dir="$PROJECTR_BIN_DIR"'
         echo '    fi'
@@ -180,13 +312,20 @@ write_launcher() {
 }
 
 maybe_add_path() {
-    if (( ! ADD_PATH )) || [[ ":$PATH:" == *":$BIN_DIR:"* ]]; then
+    local do_add="$ADD_PATH"
+
+    # In remote mode, always try to add PATH (the user expects a turnkey install)
+    if (( REMOTE_MODE )); then
+        do_add=1
+    fi
+
+    if (( ! do_add )) || [[ ":$PATH:" == *":$BIN_DIR:"* ]]; then
         return 0
     fi
 
     local rc marker
     marker="export PATH=\"$BIN_DIR:\$PATH\""
-    for rc in "$HOME/.bashrc" "$HOME/.zshrc"; do
+    for rc in "$HOME/.bashrc" "$HOME/.zshrc" "$HOME/.profile"; do
         [[ -e "$rc" || "$rc" == "$HOME/.bashrc" ]] || continue
         touch "$rc" || { warn "Could not update shell rc file: $rc"; continue; }
         if ! grep -F "$marker" "$rc" >/dev/null 2>&1; then
@@ -195,6 +334,9 @@ maybe_add_path() {
     done
 }
 
+# ---------------------------------------------------------------------------
+# Parse CLI arguments
+# ---------------------------------------------------------------------------
 for arg in "$@"; do
     case "$arg" in
         --command=*) COMMAND_NAME="${arg#--command=}" ;;
@@ -214,11 +356,73 @@ if [[ ! "$COMMAND_NAME" =~ ^[A-Za-z0-9._-]+$ ]]; then
     fail "Invalid command name: $COMMAND_NAME"
 fi
 
+require_commands
+
+# ---------------------------------------------------------------------------
+# Remote mode: clone first, then proceed like a local setup
+# ---------------------------------------------------------------------------
+if (( REMOTE_MODE )); then
+    info ""
+    info "╔══════════════════════════════════════════════════╗"
+    info "║   ProjectR — One-Shot Remote Installer          ║"
+    info "╚══════════════════════════════════════════════════╝"
+    info ""
+
+    INSTALL_PARENT="$(dirname "$INSTALL_DIR")"
+    INSTALL_PARENT="$(ensure_dir_with_fallback "$INSTALL_PARENT" "$HOME/.projectr-app" "install parent")"
+    if [[ "$INSTALL_PARENT" != "$(dirname "$INSTALL_DIR")" ]]; then
+        INSTALL_DIR="$INSTALL_PARENT/projectr"
+    fi
+
+    BIN_DIR="$(ensure_dir_with_fallback "$BIN_DIR" "$HOME/bin" "launcher bin")"
+
+    clone_project_remote
+
+    # After cloning, SOURCE_DIR is now set — verify it looks right
+    if [[ ! -f "$SOURCE_DIR/main.sh" || ! -d "$SOURCE_DIR/lib" ]]; then
+        fail "Clone succeeded but the repository doesn't look like a valid ProjectR checkout."
+    fi
+
+    chmod +x "$SOURCE_DIR/main.sh" 2>/dev/null || true
+    write_metadata
+    write_launcher
+    maybe_add_path
+
+    success "$PROJECT_NAME installed via remote one-shot setup."
+    printf '    App files: %s\n' "$INSTALL_DIR"
+    printf '    Launcher:  %s\n' "$BIN_DIR/$COMMAND_NAME"
+    printf '    Source:    %s\n\n' "$SOURCE_DIR"
+    cat <<DONE
+Run:
+    $COMMAND_NAME
+    $COMMAND_NAME --help
+    $COMMAND_NAME --install=git
+    $COMMAND_NAME --self-update    # pull latest changes and refresh
+    $COMMAND_NAME --setup-info     # show install/source paths
+DONE
+
+    if [[ ":$PATH:" != *":$BIN_DIR:"* ]]; then
+        cat <<PATH_NOTE
+
+[!] $BIN_DIR is not currently in PATH for this shell.
+    Run this once now:
+        export PATH="$BIN_DIR:\$PATH"
+
+    Or open a new terminal — your shell rc file has been updated.
+
+    Then use: $COMMAND_NAME
+PATH_NOTE
+    fi
+
+    exit 0
+fi
+
+# ---------------------------------------------------------------------------
+# Local mode: original behaviour (run from a cloned checkout)
+# ---------------------------------------------------------------------------
 if [[ ! -f "$SOURCE_DIR/main.sh" || ! -d "$SOURCE_DIR/lib" ]]; then
     fail "setup.sh must be run from a valid ProjectR checkout."
 fi
-
-require_commands
 
 INSTALL_PARENT="$(dirname "$INSTALL_DIR")"
 INSTALL_PARENT="$(ensure_dir_with_fallback "$INSTALL_PARENT" "$HOME/.projectr-app" "install parent")"
