@@ -8,12 +8,15 @@ set -euo pipefail
 # Supports two modes:
 #   1. LOCAL  — run from a cloned ProjectR checkout (original behaviour).
 #   2. REMOTE — piped through curl/wget with no prior clone required:
-#        curl -fsSL https://raw.githubusercontent.com/Thaton3gu7/ProjectR/master/setup.sh | sh
-#        wget -qO- https://raw.githubusercontent.com/Thaton3gu7/ProjectR/master/setup.sh | sh
+#        curl -fsSL https://raw.githubusercontent.com/Thaton3gu7/ProjectR/master/setup.sh | bash
+#        wget -qO- https://raw.githubusercontent.com/Thaton3gu7/ProjectR/master/setup.sh | bash
 #
 # In remote mode, setup clones ProjectR into $XDG_DATA_HOME/projectr (or
 # ~/.local/share/projectr) and then runs the normal local setup against that
 # fresh clone.
+#
+# An interactive setup menu is shown by default. Pass --no-menu to skip it
+# and use the defaults or flag/env overrides directly.
 
 PROJECTR_REPO_URL="${PROJECTR_REPO_URL:-https://github.com/Thaton3gu7/ProjectR.git}"
 PROJECT_NAME="ProjectR"
@@ -24,14 +27,50 @@ INSTALL_DIR="${PROJECTR_INSTALL_DIR:-$DEFAULT_INSTALL_DIR}"
 BIN_DIR="${PROJECTR_BIN_DIR:-$DEFAULT_BIN_DIR}"
 ADD_PATH=0
 REMOTE_MODE=0
+SHOW_MENU=1
 
-# ---------------------------------------------------------------------------
-# Detect remote (piped) mode
-# ---------------------------------------------------------------------------
-# When the script is piped through curl/wget, BASH_SOURCE[0] is either empty,
-# unset, or points to a path that doesn't actually contain ProjectR files.
-# We use that to decide whether we need to clone the repo first.
-# ---------------------------------------------------------------------------
+# ======================= Colours (self-contained) ==========================
+RST='\e[0m'
+BOLD='\e[1m'
+DIM='\e[2m'
+RED='\e[0;31m'
+GREEN='\e[0;32m'
+YELLOW='\e[0;33m'
+BLUE='\e[0;34m'
+CYAN='\e[0;36m'
+MAGENTA='\e[0;35m'
+WHITE='\e[0;37m'
+BOLD_RED='\e[1;31m'
+BOLD_GREEN='\e[1;32m'
+BOLD_YELLOW='\e[1;33m'
+BOLD_BLUE='\e[1;34m'
+BOLD_CYAN='\e[1;36m'
+BOLD_MAGENTA='\e[1;35m'
+BOLD_WHITE='\e[1;37m'
+BRIGHT_BLACK='\e[0;90m'
+BRIGHT_GREEN='\e[0;92m'
+BRIGHT_YELLOW='\e[0;93m'
+BRIGHT_CYAN='\e[0;96m'
+BRIGHT_MAGENTA='\e[0;95m'
+BRIGHT_WHITE='\e[0;97m'
+BOLD_BRIGHT_GREEN='\e[1;92m'
+BOLD_BRIGHT_YELLOW='\e[1;93m'
+BOLD_BRIGHT_RED='\e[1;91m'
+BOLD_BRIGHT_CYAN='\e[1;96m'
+BOLD_BRIGHT_MAGENTA='\e[1;95m'
+BOLD_BRIGHT_WHITE='\e[1;97m'
+BG_GREEN='\e[42m'
+BG_CYAN='\e[46m'
+BG_RED='\e[41m'
+
+# Semantic aliases matching ProjectR's theme
+INFO="${BOLD_BRIGHT_YELLOW}"
+OPTION="${BOLD_BRIGHT_GREEN}"
+ERROR="${BOLD_BRIGHT_RED}"
+BARR="${BRIGHT_MAGENTA}"
+ACCENT="${BOLD_BRIGHT_CYAN}"
+
+# ======================= Detect remote (piped) mode ========================
 _detect_source_dir() {
     local candidate="${BASH_SOURCE[0]:-}"
     if [[ -n "$candidate" ]]; then
@@ -49,10 +88,62 @@ _detect_source_dir() {
 
 _detect_source_dir
 
-info()    { printf '[*] %s\n' "$*"; }
-success() { printf '[✓] %s\n' "$*"; }
-warn()    { printf '[!] %s\n' "$*" >&2; }
-fail()    { printf '[✗] %s\n' "$*" >&2; exit 1; }
+# ======================= Helpers ===========================================
+info()    { printf "${ACCENT}[*]${RST} %s\n" "$*"; }
+success() { printf "${OPTION}[✓]${RST} %s\n" "$*"; }
+warn()    { printf "${INFO}[!]${RST} %s\n" "$*" >&2; }
+fail()    { printf "${ERROR}[✗]${RST} %s\n" "$*" >&2; exit 1; }
+
+# Read a line from the user. When stdin is a pipe (curl | sh), we must read
+# from /dev/tty directly so user keyboard input actually reaches us.
+_read_input() {
+    local prompt_text="$1" var_name="$2"
+    if [[ -t 0 ]]; then
+        # stdin is a terminal — normal read
+        printf "%b" "$prompt_text"
+        read -r "$var_name"
+    else
+        # stdin is a pipe — read from /dev/tty
+        printf "%b" "$prompt_text" >/dev/tty
+        read -r "$var_name" </dev/tty
+    fi
+}
+
+# Read a single character (for menu navigation)
+_read_char() {
+    local var_name="$1"
+    if [[ -t 0 ]]; then
+        read -r -n 1 "$var_name"
+    else
+        read -r -n 1 "$var_name" </dev/tty
+    fi
+}
+
+# Safe tput
+safe_tput() { command -v tput >/dev/null 2>&1 && tput "$@" 2>/dev/null || true; }
+
+_term_cols() {
+    local cols
+    cols=$(safe_tput cols)
+    [[ -z "$cols" || ! "$cols" =~ ^[0-9]+$ ]] && cols="${COLUMNS:-80}"
+    [[ -z "$cols" || ! "$cols" =~ ^[0-9]+$ ]] && cols=80
+    (( cols < 1 )) && cols=80
+    printf '%s' "$cols"
+}
+
+_center_pad() {
+    local text_len="$1"
+    local cols
+    cols=$(_term_cols)
+    local pad=$(( (cols - text_len) / 2 ))
+    (( pad < 0 )) && pad=0
+    printf '%*s' "$pad" ""
+}
+
+_draw_line() {
+    local char="${1:-─}" width="${2:-60}"
+    printf '%0.s'"$char" $(seq 1 "$width")
+}
 
 usage() {
     cat <<USAGE
@@ -61,14 +152,15 @@ $PROJECT_NAME setup
 Usage: bash setup.sh [options]
 
   One-shot remote install (no prior clone needed):
-    curl -fsSL https://raw.githubusercontent.com/Thaton3gu7/ProjectR/master/setup.sh | sh
-    wget -qO- https://raw.githubusercontent.com/Thaton3gu7/ProjectR/master/setup.sh | sh
+    curl -fsSL https://raw.githubusercontent.com/Thaton3gu7/ProjectR/master/setup.sh | bash
+    wget -qO- https://raw.githubusercontent.com/Thaton3gu7/ProjectR/master/setup.sh | bash
 
 Options:
   --command=<name>       Launcher command name (default: project)
   --install-dir=<path>   Hidden install location (default: ~/.local/share/projectr)
   --bin-dir=<path>       Directory for launcher (default: ~/.local/bin)
   --add-path             Add the bin dir to common shell rc files when missing
+  --no-menu              Skip interactive menu, use defaults/flags directly
   -h, --help             Show this help
 
 Environment overrides:
@@ -78,11 +170,12 @@ Environment overrides:
   PROJECTR_REPO_URL      Git remote to clone (default: $PROJECTR_REPO_URL)
 
 Examples:
-  bash setup.sh         - To setup launcher in default mode
-  project               - To run interactive mode via launcher name
-  project --help        - To see this help menu
-  project --install=git - Installs git non-interactively
-  project --self-update - Updates ProjectR via github
+  bash setup.sh               - Launch interactive setup menu
+  bash setup.sh --no-menu     - Install with defaults (no menu)
+  project                     - Run interactive mode via launcher name
+  project --help              - To see this help menu
+  project --install=git       - Installs git non-interactively
+  project --self-update       - Updates ProjectR via github
 USAGE
 }
 
@@ -101,7 +194,6 @@ require_commands() {
     for cmd in tar mktemp mkdir rm mv chmod dirname basename; do
         command -v "$cmd" >/dev/null 2>&1 || missing+=("$cmd")
     done
-
     if [[ ${#missing[@]} -gt 0 ]]; then
         fail "Missing required setup command(s): ${missing[*]}"
     fi
@@ -116,26 +208,288 @@ ensure_dir_with_fallback() {
         printf '%s\n' "$requested"
         return 0
     fi
-
     warn "Could not create $label directory: $requested"
     warn "Falling back to: $fallback"
-
     if mkdir -p "$fallback" 2>/dev/null; then
         printf '%s\n' "$fallback"
         return 0
     fi
-
     fail "Could not create $label directory at either '$requested' or '$fallback'."
 }
 
-# ---------------------------------------------------------------------------
-# Remote-mode: clone ProjectR into the install directory
-# ---------------------------------------------------------------------------
+# ======================= Interactive Setup Menu ============================
+
+_show_banner() {
+    clear 2>/dev/null || true
+    local tty_out="/dev/stderr"
+    [[ -t 1 ]] && tty_out="/dev/stdout"
+
+    echo -e "${BOLD_BRIGHT_CYAN}" >&2
+    cat >&2 <<'BANNER'
+
+    ╔═══════════════════════════════════════════════════════════╗
+    ║                                                           ║
+    ║   ██▓███   ██▀███   ▒█████     ██▓▓█████  ▄████▄  ██▀███ ║
+    ║  ▓██░  ██▒▓██ ▒ ██▒▒██▒  ██▒ ▓██▒▓█   ▀ ▒██▀ ▀█ ▓██ ▒ ██▒║
+    ║  ▓██░ ██▓▒▓██ ░▄█ ▒▒██░  ██▒ ▒██▒▒███   ▒▓█    ▄▓██ ░▄█ ▒║
+    ║  ▒██▄█▓▒ ▒▒██▀▀█▄  ▒██   ██░ ░██░▒▓█  ▄ ▒▓▓▄ ▄██▒██▀▀█▄  ║
+    ║  ▒██▒ ░  ░░██▓ ▒██▒░ ████▓▒░ ░██░░▒████▒▒ ▓███▀ ░██▓ ▒██▒║
+    ║  ▒▓▒░ ░  ░░ ▒▓ ░▒▓░░ ▒░▒░▒░  ░▓  ░░ ▒░ ░░ ░▒ ▒  ░ ▒▓ ░▒▓░║
+    ║  ░▒ ░       ░▒ ░ ▒░  ░ ▒ ▒░   ▒ ░ ░ ░  ░  ░  ▒    ░▒ ░ ▒░║
+    ║  ░░         ░░   ░ ░ ░ ░ ▒    ▒ ░   ░   ░       ░░   ░  ║
+    ║              ░         ░ ░    ░     ░  ░░ ░       ░      ║
+    ║                                         ░                 ║
+    ║                                                           ║
+    ║               S E T U P   W I Z A R D                     ║
+    ║                                                           ║
+    ╚═══════════════════════════════════════════════════════════╝
+BANNER
+    echo -e "${RST}" >&2
+}
+
+_show_current_config() {
+    echo "" >&2
+    echo -e "${BARR}   ╔══════════════════════════════════════════════════════════╗${RST}" >&2
+    echo -e "${BARR}   ║ ${RST}${BOLD_WHITE} Current Setup Configuration:                             ${BARR}║${RST}" >&2
+    echo -e "${BARR}   ╠══════════════════════════════════════════════════════════╣${RST}" >&2
+    printf  "${BARR}   ║${RST} ${OPTION}  Command name   ${RST}: ${BOLD_WHITE}%-36s${BARR} ║${RST}\n" "$COMMAND_NAME" >&2
+    printf  "${BARR}   ║${RST} ${OPTION}  Install dir    ${RST}: ${BOLD_WHITE}%-36s${BARR} ║${RST}\n" "$INSTALL_DIR" >&2
+    printf  "${BARR}   ║${RST} ${OPTION}  Bin dir        ${RST}: ${BOLD_WHITE}%-36s${BARR} ║${RST}\n" "$BIN_DIR" >&2
+    printf  "${BARR}   ║${RST} ${OPTION}  Add to PATH    ${RST}: ${BOLD_WHITE}%-36s${BARR} ║${RST}\n" "$(if (( ADD_PATH )); then echo 'Yes'; else echo 'No'; fi)" >&2
+    if (( REMOTE_MODE )); then
+        printf  "${BARR}   ║${RST} ${OPTION}  Repo URL       ${RST}: ${BOLD_WHITE}%-36s${BARR} ║${RST}\n" "$PROJECTR_REPO_URL" >&2
+    else
+        printf  "${BARR}   ║${RST} ${OPTION}  Source dir     ${RST}: ${BOLD_WHITE}%-36s${BARR} ║${RST}\n" "$SOURCE_DIR" >&2
+    fi
+    local mode_label
+    if (( REMOTE_MODE )); then mode_label="Remote (curl/wget)"; else mode_label="Local (cloned repo)"; fi
+    printf  "${BARR}   ║${RST} ${OPTION}  Mode           ${RST}: ${BOLD_WHITE}%-36s${BARR} ║${RST}\n" "$mode_label" >&2
+    echo -e "${BARR}   ╚══════════════════════════════════════════════════════════╝${RST}" >&2
+    echo "" >&2
+}
+
+_show_menu_options() {
+    echo -e "${BARR}   ╔═══════════════════╗${RST}" >&2
+    echo -e "${BARR}   ║ ${RST}${BOLD_WHITE} Setup Options:   ${BARR}║${RST}" >&2
+    echo -e "${BARR}   ╚╔══════════════════╝═══════════════════════════════════╗${RST}" >&2
+    echo -e "${BARR}    ║${RST}${OPTION} [${BRIGHT_WHITE}1${OPTION}] Change launcher command name   ${DIM}(currently: ${COMMAND_NAME})${RST}" >&2
+    echo -e "${BARR}    ║${RST}${OPTION} [${BRIGHT_WHITE}2${OPTION}] Change install directory       ${DIM}(where files live)${RST}" >&2
+    echo -e "${BARR}    ║${RST}${OPTION} [${BRIGHT_WHITE}3${OPTION}] Change bin directory            ${DIM}(where launcher goes)${RST}" >&2
+    echo -e "${BARR}    ║${RST}${OPTION} [${BRIGHT_WHITE}4${OPTION}] Toggle add-to-PATH             ${DIM}(currently: $(if (( ADD_PATH )); then echo 'ON'; else echo 'OFF'; fi))${RST}" >&2
+    if (( REMOTE_MODE )); then
+        echo -e "${BARR}    ║${RST}${OPTION} [${BRIGHT_WHITE}5${OPTION}] Change repo URL                ${DIM}(for remote clone)${RST}" >&2
+    fi
+    echo -e "${BARR}    ║${RST}${OPTION} [${BRIGHT_WHITE}r${OPTION}] Reset all to defaults${RST}" >&2
+    echo -e "${BARR}    ╠═══════════════════════════════════════════════════════╣${RST}" >&2
+    echo -e "${BARR}    ║${RST}${ACCENT} [${BOLD_BRIGHT_WHITE}i${ACCENT}] ✓ Install with current settings${RST}" >&2
+    echo -e "${BARR}    ║${RST}${ERROR} [${BRIGHT_WHITE}q${ERROR}] ✗ Quit without installing${RST}" >&2
+    echo -e "${BARR}    ╚═══════════════════════════════════════════════════════╝${RST}" >&2
+    echo "" >&2
+}
+
+_validate_command_name() {
+    local name="$1"
+    if [[ ! "$name" =~ ^[A-Za-z0-9._-]+$ ]]; then
+        echo -e "  ${ERROR}[✗] Invalid command name: '${name}'. Only letters, numbers, dots, hyphens, underscores.${RST}" >&2
+        return 1
+    fi
+    return 0
+}
+
+_validate_path() {
+    local path="$1" label="$2"
+    path="$(expand_path "$path")"
+    if [[ -z "$path" ]]; then
+        echo -e "  ${ERROR}[✗] ${label} cannot be empty.${RST}" >&2
+        return 1
+    fi
+    printf '%s' "$path"
+    return 0
+}
+
+_prompt_change_command() {
+    local new_name
+    echo "" >&2
+    echo -e "  ${INFO}Current command name: ${BOLD_WHITE}${COMMAND_NAME}${RST}" >&2
+    echo -e "  ${DIM}This is the name you'll type to run ProjectR (e.g. 'project', 'projectr', 'pr')${RST}" >&2
+    _read_input "  ${ACCENT}[?]${RST} New command name ${DIM}(Enter to keep '${COMMAND_NAME}')${RST}: " new_name
+    echo "" >&2
+    if [[ -n "$new_name" ]]; then
+        new_name="$(basename "$new_name")"
+        if _validate_command_name "$new_name"; then
+            COMMAND_NAME="$new_name"
+            echo -e "  ${OPTION}[✓] Command name set to: ${BOLD_WHITE}${COMMAND_NAME}${RST}" >&2
+        fi
+    else
+        echo -e "  ${DIM}[*] Keeping: ${COMMAND_NAME}${RST}" >&2
+    fi
+    sleep 1
+}
+
+_prompt_change_install_dir() {
+    local new_dir validated
+    echo "" >&2
+    echo -e "  ${INFO}Current install directory: ${BOLD_WHITE}${INSTALL_DIR}${RST}" >&2
+    echo -e "  ${DIM}This is where all ProjectR files (scripts, lib, tools.d, etc.) will be stored.${RST}" >&2
+    _read_input "  ${ACCENT}[?]${RST} New install dir ${DIM}(Enter to keep current)${RST}: " new_dir
+    echo "" >&2
+    if [[ -n "$new_dir" ]]; then
+        validated="$(_validate_path "$new_dir" "Install directory")" || return 0
+        INSTALL_DIR="$validated"
+        echo -e "  ${OPTION}[✓] Install directory set to: ${BOLD_WHITE}${INSTALL_DIR}${RST}" >&2
+    else
+        echo -e "  ${DIM}[*] Keeping: ${INSTALL_DIR}${RST}" >&2
+    fi
+    sleep 1
+}
+
+_prompt_change_bin_dir() {
+    local new_dir validated
+    echo "" >&2
+    echo -e "  ${INFO}Current bin directory: ${BOLD_WHITE}${BIN_DIR}${RST}" >&2
+    echo -e "  ${DIM}This is where the launcher script will be placed (must be in PATH or --add-path).${RST}" >&2
+    _read_input "  ${ACCENT}[?]${RST} New bin dir ${DIM}(Enter to keep current)${RST}: " new_dir
+    echo "" >&2
+    if [[ -n "$new_dir" ]]; then
+        validated="$(_validate_path "$new_dir" "Bin directory")" || return 0
+        BIN_DIR="$validated"
+        echo -e "  ${OPTION}[✓] Bin directory set to: ${BOLD_WHITE}${BIN_DIR}${RST}" >&2
+    else
+        echo -e "  ${DIM}[*] Keeping: ${BIN_DIR}${RST}" >&2
+    fi
+    sleep 1
+}
+
+_toggle_add_path() {
+    if (( ADD_PATH )); then
+        ADD_PATH=0
+        echo -e "  ${INFO}[*] Add-to-PATH is now: ${BOLD_WHITE}OFF${RST}" >&2
+    else
+        ADD_PATH=1
+        echo -e "  ${OPTION}[✓] Add-to-PATH is now: ${BOLD_WHITE}ON${RST}" >&2
+    fi
+    echo -e "  ${DIM}When ON, setup will add the bin dir to .bashrc, .zshrc, and .profile${RST}" >&2
+    sleep 1
+}
+
+_prompt_change_repo_url() {
+    local new_url
+    echo "" >&2
+    echo -e "  ${INFO}Current repo URL: ${BOLD_WHITE}${PROJECTR_REPO_URL}${RST}" >&2
+    echo -e "  ${DIM}Change this if you're using a fork or a private mirror.${RST}" >&2
+    _read_input "  ${ACCENT}[?]${RST} New repo URL ${DIM}(Enter to keep current)${RST}: " new_url
+    echo "" >&2
+    if [[ -n "$new_url" ]]; then
+        PROJECTR_REPO_URL="$new_url"
+        echo -e "  ${OPTION}[✓] Repo URL set to: ${BOLD_WHITE}${PROJECTR_REPO_URL}${RST}" >&2
+    else
+        echo -e "  ${DIM}[*] Keeping: ${PROJECTR_REPO_URL}${RST}" >&2
+    fi
+    sleep 1
+}
+
+_reset_defaults() {
+    COMMAND_NAME="${PROJECTR_COMMAND_NAME:-project}"
+    INSTALL_DIR="${PROJECTR_INSTALL_DIR:-$DEFAULT_INSTALL_DIR}"
+    BIN_DIR="${PROJECTR_BIN_DIR:-$DEFAULT_BIN_DIR}"
+    ADD_PATH=0
+    PROJECTR_REPO_URL="${PROJECTR_REPO_URL_ORIGINAL:-https://github.com/Thaton3gu7/ProjectR.git}"
+    echo -e "  ${OPTION}[✓] All settings reset to defaults.${RST}" >&2
+    sleep 1
+}
+
+_confirm_install() {
+    echo "" >&2
+    echo -e "${BARR}   ╔══════════════════════════════════════════════════════════╗${RST}" >&2
+    echo -e "${BARR}   ║ ${RST}${BOLD_WHITE} Ready to install with these settings:                    ${BARR}║${RST}" >&2
+    echo -e "${BARR}   ╠══════════════════════════════════════════════════════════╣${RST}" >&2
+    printf  "${BARR}   ║${RST}  ${OPTION}Command    ${RST}: ${BOLD_WHITE}%-42s${BARR}║${RST}\n" "$COMMAND_NAME" >&2
+    printf  "${BARR}   ║${RST}  ${OPTION}Files      ${RST}: ${BOLD_WHITE}%-42s${BARR}║${RST}\n" "$INSTALL_DIR" >&2
+    printf  "${BARR}   ║${RST}  ${OPTION}Launcher   ${RST}: ${BOLD_WHITE}%-42s${BARR}║${RST}\n" "$BIN_DIR/$COMMAND_NAME" >&2
+    printf  "${BARR}   ║${RST}  ${OPTION}Add PATH   ${RST}: ${BOLD_WHITE}%-42s${BARR}║${RST}\n" "$(if (( ADD_PATH )); then echo 'Yes'; else echo 'No'; fi)" >&2
+    if (( REMOTE_MODE )); then
+        printf  "${BARR}   ║${RST}  ${OPTION}Repo       ${RST}: ${BOLD_WHITE}%-42s${BARR}║${RST}\n" "$PROJECTR_REPO_URL" >&2
+    fi
+    echo -e "${BARR}   ╚══════════════════════════════════════════════════════════╝${RST}" >&2
+    echo "" >&2
+
+    local confirm
+    _read_input "  ${ACCENT}[?]${RST} Proceed with installation? ${DIM}[Y/n]${RST}: " confirm
+    echo "" >&2
+    confirm="${confirm:-y}"
+    confirm="${confirm,,}"
+    case "$confirm" in
+        y|yes|yeah|yep) return 0 ;;
+        *) return 1 ;;
+    esac
+}
+
+# Main interactive menu loop
+_run_setup_menu() {
+    # Save original repo URL for reset
+    PROJECTR_REPO_URL_ORIGINAL="$PROJECTR_REPO_URL"
+
+    while true; do
+        _show_banner
+        _show_current_config
+        _show_menu_options
+
+        local choice
+        _read_input "  ${BG_GREEN}${BOLD_WHITE} [*] Choose an option ${RST} : " choice
+        echo "" >&2
+
+        case "$choice" in
+            1) _prompt_change_command ;;
+            2) _prompt_change_install_dir ;;
+            3) _prompt_change_bin_dir ;;
+            4) _toggle_add_path ;;
+            5)
+                if (( REMOTE_MODE )); then
+                    _prompt_change_repo_url
+                else
+                    echo -e "  ${ERROR}[!] Invalid option: $choice${RST}" >&2
+                    sleep 1
+                fi
+                ;;
+            r|R) _reset_defaults ;;
+            i|I)
+                if _confirm_install; then
+                    echo -e "  ${OPTION}[✓] Starting installation...${RST}" >&2
+                    sleep 1
+                    return 0
+                else
+                    echo -e "  ${INFO}[*] Installation cancelled. Returning to menu...${RST}" >&2
+                    sleep 1
+                fi
+                ;;
+            q|Q)
+                echo "" >&2
+                echo -e "  ${INFO}" >&2
+                echo -e "  ┌──────────────────────────────────────────────┐" >&2
+                echo -e "  │  Setup cancelled. No changes were made.     │" >&2
+                echo -e "  │  Run setup.sh again when you're ready.      │" >&2
+                echo -e "  └──────────────────────────────────────────────┘" >&2
+                echo -e "  ${RST}" >&2
+                exit 0
+                ;;
+            h|H)
+                usage >&2
+                echo "" >&2
+                _read_input "  ${DIM}[press Enter to return to menu]${RST}" _discard
+                ;;
+            *)
+                echo -e "  ${ERROR}[!] Invalid option: '$choice'. Please select a valid option.${RST}" >&2
+                sleep 1
+                ;;
+        esac
+    done
+}
+
+# ======================= Remote clone functions ============================
 clone_project_remote() {
     info "Remote mode detected — no local checkout found."
     info "Cloning $PROJECT_NAME from $PROJECTR_REPO_URL ..."
 
-    # We need git or curl+tar for this
     if command -v git >/dev/null 2>&1; then
         _clone_with_git
     elif command -v curl >/dev/null 2>&1 || command -v wget >/dev/null 2>&1; then
@@ -148,13 +502,11 @@ clone_project_remote() {
 _clone_with_git() {
     local clone_target="$INSTALL_DIR"
 
-    # If there is already a clone there, try to update it
     if [[ -d "$clone_target/.git" ]]; then
         info "Existing clone found at $clone_target — pulling latest changes ..."
         git -C "$clone_target" pull --ff-only 2>/dev/null \
             || warn "Fast-forward pull failed; continuing with existing checkout."
     else
-        # Remove any non-git remnants so the clone succeeds
         if [[ -d "$clone_target" ]]; then
             local backup="${clone_target}.bak.$$"
             mv "$clone_target" "$backup" || fail "Could not move old install directory."
@@ -175,7 +527,6 @@ _clone_with_git() {
 }
 
 _clone_with_archive() {
-    # Derive a tarball URL from the git URL
     local archive_url="${PROJECTR_REPO_URL%.git}"
     archive_url="${archive_url}/archive/refs/heads/master.tar.gz"
     local tmp_archive tmp_extract
@@ -196,7 +547,6 @@ _clone_with_archive() {
     tar -xzf "$tmp_archive" -C "$tmp_extract" --strip-components=1 \
         || fail "Failed to extract archive."
 
-    # Move extracted files into install dir
     if [[ -d "$INSTALL_DIR" ]]; then
         local backup="${INSTALL_DIR}.bak.$$"
         mv "$INSTALL_DIR" "$backup" || fail "Could not move old install directory."
@@ -215,6 +565,7 @@ _clone_with_archive() {
     SOURCE_DIR="$INSTALL_DIR"
 }
 
+# ======================= Install functions =================================
 write_metadata() {
     local metadata_file="$INSTALL_DIR/.projectr-install"
     {
@@ -231,9 +582,6 @@ copy_project() {
     local install_parent tmp_dir backup_dir
     install_parent="$(dirname "$INSTALL_DIR")"
 
-    # If setup is being run from the installed copy, avoid deleting the source while
-    # this script is running. Users can rerun setup from their original checkout or
-    # use the launcher's --self-update command when metadata points at that checkout.
     if [[ "$SOURCE_DIR" == "$(cd "$install_parent" && pwd -P)/$(basename "$INSTALL_DIR")" ]]; then
         info "Setup is running from the installed copy; skipping app-file refresh."
         return 0
@@ -290,7 +638,7 @@ write_launcher() {
         echo '      git -C "$PROJECTR_SOURCE_DIR" pull --ff-only || { echo "[!] Pull failed." >&2; exit 1; }'
         echo '    fi'
         echo '    if [[ -f "$PROJECTR_SOURCE_DIR/setup.sh" ]]; then'
-        echo '      exec bash "$PROJECTR_SOURCE_DIR/setup.sh" --command="$PROJECTR_COMMAND_NAME" --install-dir="$PROJECTR_HOME" --bin-dir="$PROJECTR_BIN_DIR"'
+        echo '      exec bash "$PROJECTR_SOURCE_DIR/setup.sh" --no-menu --command="$PROJECTR_COMMAND_NAME" --install-dir="$PROJECTR_HOME" --bin-dir="$PROJECTR_BIN_DIR"'
         echo '    fi'
         echo '    echo "[!] Original ProjectR checkout was not found: $PROJECTR_SOURCE_DIR" >&2'
         echo '    echo "    Re-clone ProjectR or rerun setup.sh from a valid checkout." >&2'
@@ -314,7 +662,7 @@ write_launcher() {
 maybe_add_path() {
     local do_add="$ADD_PATH"
 
-    # In remote mode, always try to add PATH (the user expects a turnkey install)
+    # In remote mode, always try to add PATH (user expects turnkey install)
     if (( REMOTE_MODE )); then
         do_add=1
     fi
@@ -334,15 +682,50 @@ maybe_add_path() {
     done
 }
 
-# ---------------------------------------------------------------------------
-# Parse CLI arguments
-# ---------------------------------------------------------------------------
+_show_success() {
+    echo "" >&2
+    echo -e "${BOLD_BRIGHT_CYAN}" >&2
+    echo "   ╔══════════════════════════════════════════════════════════╗" >&2
+    echo "   ║                                                          ║" >&2
+    echo "   ║   ✓  ProjectR has been installed successfully!           ║" >&2
+    echo "   ║                                                          ║" >&2
+    echo "   ╚══════════════════════════════════════════════════════════╝" >&2
+    echo -e "${RST}" >&2
+    echo "" >&2
+    printf "  ${OPTION}  App files${RST} : %s\n" "$INSTALL_DIR" >&2
+    printf "  ${OPTION}  Launcher ${RST} : %s\n" "$BIN_DIR/$COMMAND_NAME" >&2
+    printf "  ${OPTION}  Source   ${RST} : %s\n" "$SOURCE_DIR" >&2
+    echo "" >&2
+    echo -e "  ${INFO}Run:${RST}" >&2
+    echo -e "      ${BOLD_WHITE}${COMMAND_NAME}${RST}                  ${DIM}# Launch interactive menu${RST}" >&2
+    echo -e "      ${BOLD_WHITE}${COMMAND_NAME} --help${RST}            ${DIM}# Show all flags${RST}" >&2
+    echo -e "      ${BOLD_WHITE}${COMMAND_NAME} --install=git${RST}     ${DIM}# Install a tool non-interactively${RST}" >&2
+    echo -e "      ${BOLD_WHITE}${COMMAND_NAME} --self-update${RST}     ${DIM}# Pull latest changes and refresh${RST}" >&2
+    echo -e "      ${BOLD_WHITE}${COMMAND_NAME} --setup-info${RST}      ${DIM}# Show install/source paths${RST}" >&2
+    echo "" >&2
+
+    if [[ ":$PATH:" != *":$BIN_DIR:"* ]]; then
+        echo -e "  ${INFO}[!] ${BOLD_WHITE}$BIN_DIR${INFO} is not currently in PATH for this shell.${RST}" >&2
+        echo -e "      Run this once now:" >&2
+        echo -e "          ${BOLD_WHITE}export PATH=\"$BIN_DIR:\$PATH\"${RST}" >&2
+        echo "" >&2
+        if (( ADD_PATH )) || (( REMOTE_MODE )); then
+            echo -e "      ${DIM}Or open a new terminal — your shell rc file has been updated.${RST}" >&2
+        else
+            echo -e "      ${DIM}Or rerun setup with: ${BOLD_WHITE}bash setup.sh --add-path${RST}" >&2
+        fi
+        echo "" >&2
+    fi
+}
+
+# ======================= Parse CLI arguments ===============================
 for arg in "$@"; do
     case "$arg" in
         --command=*) COMMAND_NAME="${arg#--command=}" ;;
         --install-dir=*) INSTALL_DIR="${arg#--install-dir=}" ;;
         --bin-dir=*) BIN_DIR="${arg#--bin-dir=}" ;;
         --add-path) ADD_PATH=1 ;;
+        --no-menu) SHOW_MENU=0 ;;
         -h|--help) usage; exit 0 ;;
         *) warn "Unknown setup option: $arg"; usage; exit 1 ;;
     esac
@@ -358,16 +741,23 @@ fi
 
 require_commands
 
-# ---------------------------------------------------------------------------
-# Remote mode: clone first, then proceed like a local setup
-# ---------------------------------------------------------------------------
-if (( REMOTE_MODE )); then
-    info ""
-    info "╔══════════════════════════════════════════════════╗"
-    info "║   ProjectR — One-Shot Remote Installer          ║"
-    info "╚══════════════════════════════════════════════════╝"
-    info ""
+# ======================= Show interactive menu =============================
+# The menu is shown when:
+#   - No --no-menu flag was passed
+#   - We can read from a terminal (either stdin or /dev/tty)
+# This works both locally and when piped via curl (reads from /dev/tty).
+if (( SHOW_MENU )); then
+    # Check if we have access to a terminal for interactive input
+    if [[ -t 0 ]] || [[ -e /dev/tty ]]; then
+        _run_setup_menu
+    else
+        info "No terminal available — skipping interactive menu, using defaults."
+    fi
+fi
 
+# ======================= Run the actual installation =======================
+
+if (( REMOTE_MODE )); then
     INSTALL_PARENT="$(dirname "$INSTALL_DIR")"
     INSTALL_PARENT="$(ensure_dir_with_fallback "$INSTALL_PARENT" "$HOME/.projectr-app" "install parent")"
     if [[ "$INSTALL_PARENT" != "$(dirname "$INSTALL_DIR")" ]]; then
@@ -378,7 +768,6 @@ if (( REMOTE_MODE )); then
 
     clone_project_remote
 
-    # After cloning, SOURCE_DIR is now set — verify it looks right
     if [[ ! -f "$SOURCE_DIR/main.sh" || ! -d "$SOURCE_DIR/lib" ]]; then
         fail "Clone succeeded but the repository doesn't look like a valid ProjectR checkout."
     fi
@@ -387,39 +776,12 @@ if (( REMOTE_MODE )); then
     write_metadata
     write_launcher
     maybe_add_path
-
-    success "$PROJECT_NAME installed via remote one-shot setup."
-    printf '    App files: %s\n' "$INSTALL_DIR"
-    printf '    Launcher:  %s\n' "$BIN_DIR/$COMMAND_NAME"
-    printf '    Source:    %s\n\n' "$SOURCE_DIR"
-    cat <<DONE
-Run:
-    $COMMAND_NAME
-    $COMMAND_NAME --help
-    $COMMAND_NAME --install=git
-    $COMMAND_NAME --self-update    # pull latest changes and refresh
-    $COMMAND_NAME --setup-info     # show install/source paths
-DONE
-
-    if [[ ":$PATH:" != *":$BIN_DIR:"* ]]; then
-        cat <<PATH_NOTE
-
-[!] $BIN_DIR is not currently in PATH for this shell.
-    Run this once now:
-        export PATH="$BIN_DIR:\$PATH"
-
-    Or open a new terminal — your shell rc file has been updated.
-
-    Then use: $COMMAND_NAME
-PATH_NOTE
-    fi
+    _show_success
 
     exit 0
 fi
 
-# ---------------------------------------------------------------------------
-# Local mode: original behaviour (run from a cloned checkout)
-# ---------------------------------------------------------------------------
+# ======================= Local mode ========================================
 if [[ ! -f "$SOURCE_DIR/main.sh" || ! -d "$SOURCE_DIR/lib" ]]; then
     fail "setup.sh must be run from a valid ProjectR checkout."
 fi
@@ -437,30 +799,4 @@ chmod +x "$INSTALL_DIR/main.sh" 2>/dev/null || warn "Could not mark main.sh exec
 write_metadata
 write_launcher
 maybe_add_path
-
-success "$PROJECT_NAME command installed."
-printf '    App files: %s\n' "$INSTALL_DIR"
-printf '    Launcher:  %s\n' "$BIN_DIR/$COMMAND_NAME"
-printf '    Source:    %s\n\n' "$SOURCE_DIR"
-cat <<DONE
-Run:
-    $COMMAND_NAME
-    $COMMAND_NAME --help
-    $COMMAND_NAME --install=git
-    $COMMAND_NAME --self-update    # refresh hidden app files from the original checkout
-    $COMMAND_NAME --setup-info     # show install/source paths
-DONE
-
-if [[ ":$PATH:" != *":$BIN_DIR:"* ]]; then
-    cat <<PATH_NOTE
-
-[!] $BIN_DIR is not currently in PATH for this shell.
-    Run this once now:
-        export PATH="$BIN_DIR:\$PATH"
-
-    Or rerun setup with:
-        bash setup.sh --add-path
-
-    Then open a new terminal and use: $COMMAND_NAME
-PATH_NOTE
-fi
+_show_success

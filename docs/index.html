@@ -500,39 +500,48 @@ h1,h2,h3,h4{color:var(--text-bright);font-weight:700}
         <div class="steps">
           <div class="step">
             <div class="step-number">1</div>
+            <h3>Interactive Setup Menu</h3>
+            <p>An interactive menu opens where you can customize the launcher name, install directory, bin directory, PATH settings, and repo URL — all before anything is installed.</p>
+          </div>
+          <div class="step">
+            <div class="step-number">2</div>
             <h3>Detection</h3>
             <p>The script detects it's running in remote/piped mode (no local checkout found).</p>
           </div>
           <div class="step">
-            <div class="step-number">2</div>
-            <h3>Clone</h3>
-            <p>Uses <code>git clone --depth 1</code> (or downloads a tarball if git isn't available) into <code>~/.local/share/projectr</code>.</p>
-          </div>
-          <div class="step">
             <div class="step-number">3</div>
-            <h3>Launcher</h3>
-            <p>Creates an executable <code>project</code> command in <code>~/.local/bin/</code>.</p>
+            <h3>Clone</h3>
+            <p>Uses <code>git clone --depth 1</code> (or downloads a tarball if git isn't available) into your chosen install directory.</p>
           </div>
           <div class="step">
             <div class="step-number">4</div>
+            <h3>Launcher</h3>
+            <p>Creates an executable launcher command in your chosen bin directory.</p>
+          </div>
+          <div class="step">
+            <div class="step-number">5</div>
             <h3>PATH</h3>
-            <p>Automatically adds <code>~/.local/bin</code> to your <code>.bashrc</code>, <code>.zshrc</code>, and <code>.profile</code>.</p>
+            <p>Automatically adds the bin directory to your <code>.bashrc</code>, <code>.zshrc</code>, and <code>.profile</code>.</p>
           </div>
         </div>
       </div>
 
       <div style="max-width:800px;margin:32px auto 0">
-        <h3 style="margin-bottom:12px">Customize the remote install:</h3>
+        <h3 style="margin-bottom:12px">Interactive menu or headless:</h3>
+        <p style="color:var(--text-dim);margin-bottom:16px">By default, setup.sh opens an interactive menu where you can configure everything visually. To skip the menu and use defaults or environment overrides, pass <code>--no-menu</code>:</p>
         <div class="code-block">
-          <div class="code-header"><span>Environment overrides</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
-          <div class="code-content"><span class="cm"># Custom command name</span>
-<span class="fl">PROJECTR_COMMAND_NAME</span>=projectr <span class="fl">curl</span> -fsSL .../setup.sh | <span class="fl">sh</span>
+          <div class="code-header"><span>Headless / scripted installs</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+          <div class="code-content"><span class="cm"># Skip menu, use defaults</span>
+<span class="fl">curl</span> -fsSL .../setup.sh | <span class="fl">bash</span> -s -- --no-menu
 
-<span class="cm"># Custom install location</span>
-<span class="fl">PROJECTR_INSTALL_DIR</span>=~/.projectr <span class="fl">curl</span> -fsSL .../setup.sh | <span class="fl">sh</span>
+<span class="cm"># Skip menu with custom command name</span>
+<span class="fl">PROJECTR_COMMAND_NAME</span>=projectr <span class="fl">curl</span> -fsSL .../setup.sh | <span class="fl">bash</span> -s -- --no-menu
+
+<span class="cm"># Skip menu with custom install location</span>
+<span class="fl">PROJECTR_INSTALL_DIR</span>=~/.projectr <span class="fl">curl</span> -fsSL .../setup.sh | <span class="fl">bash</span> -s -- --no-menu
 
 <span class="cm"># Custom repo (forks, private mirrors)</span>
-<span class="fl">PROJECTR_REPO_URL</span>=https://github.com/you/ProjectR.git <span class="fl">curl</span> -fsSL .../setup.sh | <span class="fl">sh</span></div>
+<span class="fl">PROJECTR_REPO_URL</span>=https://github.com/you/ProjectR.git <span class="fl">curl</span> -fsSL .../setup.sh | <span class="fl">bash</span> -s -- --no-menu</div>
         </div>
       </div>
     </div>
@@ -547,22 +556,30 @@ h1,h2,h3,h4{color:var(--text-bright);font-weight:700}
     </div>
 
     <div class="reveal" style="max-width:800px;margin:0 auto">
+      <p style="color:var(--text-dim);margin-bottom:20px">
+        Running <code>setup.sh</code> opens an <strong style="color:var(--accent)">interactive setup menu</strong> where you can configure the launcher command name, install directory, bin directory, PATH settings, and more — all from a beautiful TUI before anything is installed. You can also bypass the menu with flags:
+      </p>
       <div class="code-block">
-        <div class="code-header"><span>Setup with options</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
-        <div class="code-content"><span class="cm"># Default setup</span>
-<span class="fl">bash</span> setup.sh
+        <div class="code-header"><span>Setup with interactive menu (default)</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+        <div class="code-content"><span class="cm"># Opens the interactive setup menu</span>
+<span class="fl">bash</span> setup.sh</div>
+      </div>
+      <div class="code-block">
+        <div class="code-header"><span>Setup with flags (skip menu)</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+        <div class="code-content"><span class="cm"># Install with defaults, no menu</span>
+<span class="fl">bash</span> setup.sh --no-menu
 
 <span class="cm"># Custom command name</span>
-<span class="fl">bash</span> setup.sh --command=projectr
+<span class="fl">bash</span> setup.sh --no-menu --command=projectr
 
 <span class="cm"># Custom install directory</span>
-<span class="fl">bash</span> setup.sh --install-dir=<span class="str">"$HOME/.projectr"</span>
+<span class="fl">bash</span> setup.sh --no-menu --install-dir=<span class="str">"$HOME/.projectr"</span>
 
 <span class="cm"># Custom bin directory</span>
-<span class="fl">bash</span> setup.sh --bin-dir=<span class="str">"$HOME/bin"</span>
+<span class="fl">bash</span> setup.sh --no-menu --bin-dir=<span class="str">"$HOME/bin"</span>
 
 <span class="cm"># Auto-add to PATH in shell rc files</span>
-<span class="fl">bash</span> setup.sh --add-path</div>
+<span class="fl">bash</span> setup.sh --no-menu --add-path</div>
       </div>
 
       <h3 style="margin:32px 0 12px">After setup:</h3>
@@ -1218,6 +1235,6 @@ function toggleFaq(el){
   el.closest('.faq-item').classList.toggle('open');
 }
 </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a06d122a5f6298d6',t:'MTc4MDY0MDQyMQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script defer src="https://static.cloudflareinsights.com/beacon.min.js/v833ccba57c9e4d2798f2e76cebdd09a11778172276447" integrity="sha512-57MDmcccJXYtNnH+ZiBwzC4jb2rvgVCEokYN+L/nLlmO8rfYT/gIpW2A569iJ/3b+0UEasghjuZH/ma3wIs/EQ==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a06dd620fe6f2969',t:'MTc4MDY0ODQ0OA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script defer src="https://static.cloudflareinsights.com/beacon.min.js/v833ccba57c9e4d2798f2e76cebdd09a11778172276447" integrity="sha512-57MDmcccJXYtNnH+ZiBwzC4jb2rvgVCEokYN+L/nLlmO8rfYT/gIpW2A569iJ/3b+0UEasghjuZH/ma3wIs/EQ==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
 </body>
 </html>
