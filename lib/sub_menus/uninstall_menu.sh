@@ -33,12 +33,11 @@ echo -e "${RST}"
       printf "   [%03d]${OPTION} %-18s ${INFO}- %s ${OPTION}(%s)${RST}\n" "$num" "$name" "$desc" "$cat"
     done
     echo ""
-    echo -e "${INFO} [*] Showing ${BOLD_WHITE}${visible_count}${INFO}/${BOLD_WHITE}${total_tools}${INFO} tools${RST}"
+ if (( PROJECTR_UNINSTALL_VISIBLE_TOOL_COUNT < ${#TOOLS[@]} )); then
+    echo -e "${INFO}  [*] Showing ${BOLD_WHITE}${visible_count}${INFO}/${BOLD_WHITE}${total_tools}${INFO} tools ${BOLD_WHITE}- ${DIM}type 'l' to load more tools${RST}"
+ fi
     
  echo ""
- if (( PROJECTR_UNINSTALL_VISIBLE_TOOL_COUNT < ${#TOOLS[@]} )); then
-   echo -e "${OPTION}  [l] Load ${PROJECTR_TOOL_PAGE_STEP:-50} more tools ${RST}"
- fi
  echo -e "${OPTION}  [i] Inspect installed ${RST}"
  echo -e "${INFO}  [b] Back to main-menu ${RST}"
  echo -e "${ERROR}  [e] Exit Script${RST}"
@@ -84,9 +83,8 @@ echo -e "${RST}"
         sleep 2
       fi
     done
-
-   echo -e "${OPTION}"
-    read -p " [*] Press ENTER to continue..."
-   echo -e "${RST}"
+     echo ""
+     printf "${DIM} [press ENTER]${RST}"
+     read -s; echo
 done
 }

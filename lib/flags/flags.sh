@@ -34,7 +34,7 @@ parse_flags() {
 
     case "$1" in
         --version|-v|version)
-            echo -e "${OPTION}projectr ${BOLD_WHITE}v1.3${RST}"
+            echo -e "${OPTION}projectr ${BOLD_WHITE}v1.4${RST}"
             exit 0
             ;;
 

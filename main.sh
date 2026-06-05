@@ -122,7 +122,7 @@ EOF
   done
   echo -e "${BARR}    ╚════════════════════════════════════╝${RST}"
 if (( PROJECTR_VISIBLE_TOOL_COUNT < ${#TOOLS[@]} )); then
-  echo -e "${INFO}    [*] Showing ${BOLD_WHITE}${visible_count}${INFO}/${BOLD_WHITE}${total_tools}${INFO} tools - type 'l' to load more tools${RST}"
+  echo -e "${INFO}    [*] Showing ${BOLD_WHITE}${visible_count}${INFO}/${BOLD_WHITE}${total_tools}${INFO} tools ${BOLD_WHITE}-${DIM} type 'l' to load more tools${RST}"
 fi
 echo ""
 

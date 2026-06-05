@@ -86,7 +86,7 @@ prompt_nvim_config() {
         echo -e "${OPTION}  [✓] .git folder removed.${RST}"
     fi
 }
-# The following commands are for installing zsh & oh-my-zsh.
+#  install zsh & oh-my-zsh.
 setup_zsh() {
     install_pkg zsh zsh "Zsh: Extended shell with powerful features"
     sleep 1
