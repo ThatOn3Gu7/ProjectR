@@ -29,7 +29,7 @@ ADD_PATH=0
 REMOTE_MODE=0
 SHOW_MENU=1
 
-# ======================= Colours (self-contained) ==========================
+#  Colours (self-contained) 
 RST='\e[0m'
 BOLD='\e[1m'
 DIM='\e[2m'
@@ -70,7 +70,7 @@ ERROR="${BOLD_BRIGHT_RED}"
 BARR="${BRIGHT_MAGENTA}"
 ACCENT="${BOLD_BRIGHT_CYAN}"
 
-# ======================= Detect remote (piped) mode ========================
+#  Detect remote (piped) mode 
 _detect_source_dir() {
     local candidate="${BASH_SOURCE[0]:-}"
     if [[ -n "$candidate" ]]; then
@@ -88,7 +88,7 @@ _detect_source_dir() {
 
 _detect_source_dir
 
-# ======================= Helpers ===========================================
+# Helpers 
 info()    { printf "${ACCENT}[*]${RST} %s\n" "$*"; }
 success() { printf "${OPTION}[✓]${RST} %s\n" "$*"; }
 warn()    { printf "${INFO}[!]${RST} %s\n" "$*" >&2; }
@@ -217,73 +217,64 @@ ensure_dir_with_fallback() {
     fail "Could not create $label directory at either '$requested' or '$fallback'."
 }
 
-# ======================= Interactive Setup Menu ============================
+#  Interactive Setup Menu 
 
 _show_banner() {
     clear 2>/dev/null || true
-    local tty_out="/dev/stderr"
-    [[ -t 1 ]] && tty_out="/dev/stdout"
-
-    echo -e "${BOLD_BRIGHT_CYAN}" >&2
-    cat >&2 <<'BANNER'
-
-    ╔═══════════════════════════════════════════════════════════╗
-    ║                                                           ║
-    ║   ██▓███   ██▀███   ▒█████     ██▓▓█████  ▄████▄  ██▀███ ║
-    ║  ▓██░  ██▒▓██ ▒ ██▒▒██▒  ██▒ ▓██▒▓█   ▀ ▒██▀ ▀█ ▓██ ▒ ██▒║
-    ║  ▓██░ ██▓▒▓██ ░▄█ ▒▒██░  ██▒ ▒██▒▒███   ▒▓█    ▄▓██ ░▄█ ▒║
-    ║  ▒██▄█▓▒ ▒▒██▀▀█▄  ▒██   ██░ ░██░▒▓█  ▄ ▒▓▓▄ ▄██▒██▀▀█▄  ║
-    ║  ▒██▒ ░  ░░██▓ ▒██▒░ ████▓▒░ ░██░░▒████▒▒ ▓███▀ ░██▓ ▒██▒║
-    ║  ▒▓▒░ ░  ░░ ▒▓ ░▒▓░░ ▒░▒░▒░  ░▓  ░░ ▒░ ░░ ░▒ ▒  ░ ▒▓ ░▒▓░║
-    ║  ░▒ ░       ░▒ ░ ▒░  ░ ▒ ▒░   ▒ ░ ░ ░  ░  ░  ▒    ░▒ ░ ▒░║
-    ║  ░░         ░░   ░ ░ ░ ░ ▒    ▒ ░   ░   ░       ░░   ░  ║
-    ║              ░         ░ ░    ░     ░  ░░ ░       ░      ║
-    ║                                         ░                 ║
-    ║                                                           ║
-    ║               S E T U P   W I Z A R D                     ║
-    ║                                                           ║
-    ╚═══════════════════════════════════════════════════════════╝
-BANNER
-    echo -e "${RST}" >&2
+    echo "" >&2
+    echo -e "${BOLD_BRIGHT_CYAN}  ╭──────────────────────────────────────────────────────────────────╮${RST}" >&2
+    echo -e "${BOLD_BRIGHT_CYAN}  │${RST}                                                                  ${BOLD_BRIGHT_CYAN}│${RST}" >&2
+    echo -e "${BOLD_BRIGHT_CYAN}  │${RST}   ${BOLD_BRIGHT_WHITE} ██████╗ ██████╗  ██████╗      ██╗███████╗ ██████╗████████╗${RST}    ${BOLD_BRIGHT_CYAN}│${RST}" >&2
+    echo -e "${BOLD_BRIGHT_CYAN}  │${RST}   ${BOLD_BRIGHT_WHITE} ██╔══██╗██╔══██╗██╔═══██╗     ██║██╔════╝██╔════╝╚══██╔══╝${RST}    ${BOLD_BRIGHT_CYAN}│${RST}" >&2
+    echo -e "${BOLD_BRIGHT_CYAN}  │${RST}   ${BOLD_BRIGHT_WHITE} ██████╔╝██████╔╝██║   ██║     ██║█████╗  ██║        ██║   ${RST}    ${BOLD_BRIGHT_CYAN}│${RST}" >&2
+    echo -e "${BOLD_BRIGHT_CYAN}  │${RST}   ${BOLD_BRIGHT_WHITE} ██╔═══╝ ██╔══██╗██║   ██║██   ██║██╔══╝  ██║        ██║   ${RST}    ${BOLD_BRIGHT_CYAN}│${RST}" >&2
+    echo -e "${BOLD_BRIGHT_CYAN}  │${RST}   ${BOLD_BRIGHT_WHITE} ██║     ██║  ██║╚██████╔╝╚█████╔╝███████╗╚██████╗   ██║   ${RST}    ${BOLD_BRIGHT_CYAN}│${RST}" >&2
+    echo -e "${BOLD_BRIGHT_CYAN}  │${RST}   ${BOLD_BRIGHT_WHITE} ╚═╝     ╚═╝  ╚═╝ ╚═════╝  ╚════╝ ╚══════╝ ╚═════╝   ╚═╝   ${RST}    ${BOLD_BRIGHT_CYAN}│${RST}" >&2
+    echo -e "${BOLD_BRIGHT_CYAN}  │${RST}                                                                  ${BOLD_BRIGHT_CYAN}│${RST}" >&2
+    echo -e "${BOLD_BRIGHT_CYAN}  │${RST}  ${DIM}                   Setup Wizard  •  v1.0                      ${RST}  ${BOLD_BRIGHT_CYAN}│${RST}" >&2
+    echo -e "${BOLD_BRIGHT_CYAN}  ╰──────────────────────────────────────────────────────────────────╯${RST}" >&2
+    echo "" >&2
 }
 
 _show_current_config() {
-    echo "" >&2
-    echo -e "${BARR}   ╔══════════════════════════════════════════════════════════╗${RST}" >&2
-    echo -e "${BARR}   ║ ${RST}${BOLD_WHITE} Current Setup Configuration:                             ${BARR}║${RST}" >&2
-    echo -e "${BARR}   ╠══════════════════════════════════════════════════════════╣${RST}" >&2
-    printf  "${BARR}   ║${RST} ${OPTION}  Command name   ${RST}: ${BOLD_WHITE}%-36s${BARR} ║${RST}\n" "$COMMAND_NAME" >&2
-    printf  "${BARR}   ║${RST} ${OPTION}  Install dir    ${RST}: ${BOLD_WHITE}%-36s${BARR} ║${RST}\n" "$INSTALL_DIR" >&2
-    printf  "${BARR}   ║${RST} ${OPTION}  Bin dir        ${RST}: ${BOLD_WHITE}%-36s${BARR} ║${RST}\n" "$BIN_DIR" >&2
-    printf  "${BARR}   ║${RST} ${OPTION}  Add to PATH    ${RST}: ${BOLD_WHITE}%-36s${BARR} ║${RST}\n" "$(if (( ADD_PATH )); then echo 'Yes'; else echo 'No'; fi)" >&2
-    if (( REMOTE_MODE )); then
-        printf  "${BARR}   ║${RST} ${OPTION}  Repo URL       ${RST}: ${BOLD_WHITE}%-36s${BARR} ║${RST}\n" "$PROJECTR_REPO_URL" >&2
-    else
-        printf  "${BARR}   ║${RST} ${OPTION}  Source dir     ${RST}: ${BOLD_WHITE}%-36s${BARR} ║${RST}\n" "$SOURCE_DIR" >&2
-    fi
     local mode_label
     if (( REMOTE_MODE )); then mode_label="Remote (curl/wget)"; else mode_label="Local (cloned repo)"; fi
-    printf  "${BARR}   ║${RST} ${OPTION}  Mode           ${RST}: ${BOLD_WHITE}%-36s${BARR} ║${RST}\n" "$mode_label" >&2
-    echo -e "${BARR}   ╚══════════════════════════════════════════════════════════╝${RST}" >&2
+    local path_label
+    if (( REMOTE_MODE )); then path_label="Repo URL"; else path_label="Source dir"; fi
+    local path_value
+    if (( REMOTE_MODE )); then path_value="$PROJECTR_REPO_URL"; else path_value="$SOURCE_DIR"; fi
+    local add_path_val
+    if (( ADD_PATH )); then add_path_val="Yes"; else add_path_val="No"; fi
+
+    echo -e "${BARR}  ╭──────────────────────────────────────────────────────────────────╮${RST}" >&2
+    echo -e "${BARR}  │${RST}  ${BOLD_BRIGHT_YELLOW}⚙  Current Configuration${RST}                                        ${BARR}│${RST}" >&2
+    echo -e "${BARR}  ├──────────────────────────────────────────────────────────────────┤${RST}" >&2
+    printf  "${BARR}  │${RST}  ${OPTION}%-14s${RST}  ${BRIGHT_BLACK}│${RST}   ${BOLD_WHITE}%-44s${RST}${BARR}│${RST}\n" "Command name"  "$COMMAND_NAME"   >&2
+    printf  "${BARR}  │${RST}  ${OPTION}%-14s${RST}  ${BRIGHT_BLACK}│${RST}   ${BOLD_WHITE}%-44s${RST}${BARR}│${RST}\n" "Install dir"   "$INSTALL_DIR"    >&2
+    printf  "${BARR}  │${RST}  ${OPTION}%-14s${RST}  ${BRIGHT_BLACK}│${RST}   ${BOLD_WHITE}%-44s${RST}${BARR}│${RST}\n" "Bin dir"       "$BIN_DIR"        >&2
+    printf  "${BARR}  │${RST}  ${OPTION}%-14s${RST}  ${BRIGHT_BLACK}│${RST}   ${BOLD_WHITE}%-44s${RST}${BARR}│${RST}\n" "Add to PATH"   "$add_path_val"   >&2
+    printf  "${BARR}  │${RST}  ${OPTION}%-14s${RST}  ${BRIGHT_BLACK}│${RST}   ${BOLD_WHITE}%-44s${RST}${BARR}│${RST}\n" "$path_label"   "$path_value"     >&2
+    printf  "${BARR}  │${RST}  ${OPTION}%-14s${RST}  ${BRIGHT_BLACK}│${RST}   ${BOLD_WHITE}%-44s${RST}${BARR}│${RST}\n" "Mode"          "$mode_label"     >&2
+    echo -e "${BARR}  ╰──────────────────────────────────────────────────────────────────╯${RST}" >&2
     echo "" >&2
 }
 
 _show_menu_options() {
-    echo -e "${BARR}   ╔═══════════════════╗${RST}" >&2
-    echo -e "${BARR}   ║ ${RST}${BOLD_WHITE} Setup Options:   ${BARR}║${RST}" >&2
-    echo -e "${BARR}   ╚╔══════════════════╝═══════════════════════════════════╗${RST}" >&2
-    echo -e "${BARR}    ║${RST}${OPTION} [${BRIGHT_WHITE}1${OPTION}] Change launcher command name   ${DIM}(currently: ${COMMAND_NAME})${RST}" >&2
-    echo -e "${BARR}    ║${RST}${OPTION} [${BRIGHT_WHITE}2${OPTION}] Change install directory       ${DIM}(where files live)${RST}" >&2
-    echo -e "${BARR}    ║${RST}${OPTION} [${BRIGHT_WHITE}3${OPTION}] Change bin directory            ${DIM}(where launcher goes)${RST}" >&2
-    echo -e "${BARR}    ║${RST}${OPTION} [${BRIGHT_WHITE}4${OPTION}] Toggle add-to-PATH             ${DIM}(currently: $(if (( ADD_PATH )); then echo 'ON'; else echo 'OFF'; fi))${RST}" >&2
+    echo -e "${BARR}  ╭──────────────────────────────────────────────────────────────────╮${RST}" >&2
+    echo -e "${BARR}  │${RST}  ${BOLD_BRIGHT_YELLOW}☰  Setup Options${RST}                                                ${BARR}│${RST}" >&2
+    echo -e "${BARR}  ├──────────────────────────────────────────────────────────────────┤${RST}" >&2
+    echo -e "${BARR}  │${RST}  ${OPTION}[${BOLD_BRIGHT_WHITE}1${OPTION}]${RST}  Change launcher command name    ${DIM}(currently: ${COMMAND_NAME})${RST}" >&2
+    echo -e "${BARR}  │${RST}  ${OPTION}[${BOLD_BRIGHT_WHITE}2${OPTION}]${RST}  Change install directory        ${DIM}(where files live)${RST}" >&2
+    echo -e "${BARR}  │${RST}  ${OPTION}[${BOLD_BRIGHT_WHITE}3${OPTION}]${RST}  Change bin directory            ${DIM}(where launcher goes)${RST}" >&2
+    echo -e "${BARR}  │${RST}  ${OPTION}[${BOLD_BRIGHT_WHITE}4${OPTION}]${RST}  Toggle add-to-PATH              ${DIM}(currently: $(if (( ADD_PATH )); then echo 'ON'; else echo 'OFF'; fi))${RST}" >&2
     if (( REMOTE_MODE )); then
-        echo -e "${BARR}    ║${RST}${OPTION} [${BRIGHT_WHITE}5${OPTION}] Change repo URL                ${DIM}(for remote clone)${RST}" >&2
+        echo -e "${BARR}  │${RST}  ${OPTION}[${BOLD_BRIGHT_WHITE}5${OPTION}]${RST}  Change repo URL                 ${DIM}(for remote clone)${RST}" >&2
     fi
-    echo -e "${BARR}    ║${RST}${OPTION} [${BRIGHT_WHITE}r${OPTION}] Reset all to defaults${RST}" >&2
-    echo -e "${BARR}    ╠═══════════════════════════════════════════════════════╣${RST}" >&2
-    echo -e "${BARR}    ║${RST}${ACCENT} [${BOLD_BRIGHT_WHITE}i${ACCENT}] ✓ Install with current settings${RST}" >&2
-    echo -e "${BARR}    ║${RST}${ERROR} [${BRIGHT_WHITE}q${ERROR}] ✗ Quit without installing${RST}" >&2
-    echo -e "${BARR}    ╚═══════════════════════════════════════════════════════╝${RST}" >&2
+    echo -e "${BARR}  │${RST}  ${OPTION}[${BOLD_BRIGHT_WHITE}r${OPTION}]${RST}  Reset all to defaults           ${DIM}(reset and setup with defaults) ${RST}" >&2
+    echo -e "${BARR}  ├──────────────────────────────────────────────────────────────────┤${RST}" >&2
+    echo -e "${BARR}  │${RST}  ${ACCENT}[${BOLD_BRIGHT_WHITE}i${ACCENT}]${RST}  ${BOLD_BRIGHT_GREEN}✓  Install${RST} with current settings${RST}" >&2
+    echo -e "${BARR}  │${RST}  ${ERROR}[${BOLD_BRIGHT_WHITE}q${ERROR}]${RST}  ${BOLD_BRIGHT_RED}✗  Quit${RST}    without installing${RST}" >&2
+    echo -e "${BARR}  ╰──────────────────────────────────────────────────────────────────╯${RST}" >&2
     echo "" >&2
 }
 
@@ -400,17 +391,17 @@ _reset_defaults() {
 
 _confirm_install() {
     echo "" >&2
-    echo -e "${BARR}   ╔══════════════════════════════════════════════════════════╗${RST}" >&2
-    echo -e "${BARR}   ║ ${RST}${BOLD_WHITE} Ready to install with these settings:                    ${BARR}║${RST}" >&2
-    echo -e "${BARR}   ╠══════════════════════════════════════════════════════════╣${RST}" >&2
-    printf  "${BARR}   ║${RST}  ${OPTION}Command    ${RST}: ${BOLD_WHITE}%-42s${BARR}║${RST}\n" "$COMMAND_NAME" >&2
-    printf  "${BARR}   ║${RST}  ${OPTION}Files      ${RST}: ${BOLD_WHITE}%-42s${BARR}║${RST}\n" "$INSTALL_DIR" >&2
-    printf  "${BARR}   ║${RST}  ${OPTION}Launcher   ${RST}: ${BOLD_WHITE}%-42s${BARR}║${RST}\n" "$BIN_DIR/$COMMAND_NAME" >&2
-    printf  "${BARR}   ║${RST}  ${OPTION}Add PATH   ${RST}: ${BOLD_WHITE}%-42s${BARR}║${RST}\n" "$(if (( ADD_PATH )); then echo 'Yes'; else echo 'No'; fi)" >&2
+    echo -e "${BARR}  ╭──────────────────────────────────────────────────────────────────╮${RST}" >&2
+    echo -e "${BARR}  │${RST}  ${BOLD_BRIGHT_YELLOW}▶  Ready to Install${RST}                                               ${BARR}│${RST}" >&2
+    echo -e "${BARR}  ├──────────────────────────────────────────────────────────────────┤${RST}" >&2
+    printf  "${BARR}  │${RST}  ${OPTION}%-12s${RST}  ${BRIGHT_BLACK}│${RST}  ${BOLD_WHITE}%-44s${RST}${BARR}│${RST}\n" "Command"    "$COMMAND_NAME"           >&2
+    printf  "${BARR}  │${RST}  ${OPTION}%-12s${RST}  ${BRIGHT_BLACK}│${RST}  ${BOLD_WHITE}%-44s${RST}${BARR}│${RST}\n" "Files"      "$INSTALL_DIR"            >&2
+    printf  "${BARR}  │${RST}  ${OPTION}%-12s${RST}  ${BRIGHT_BLACK}│${RST}  ${BOLD_WHITE}%-44s${RST}${BARR}│${RST}\n" "Launcher"   "$BIN_DIR/$COMMAND_NAME"  >&2
+    printf  "${BARR}  │${RST}  ${OPTION}%-12s${RST}  ${BRIGHT_BLACK}│${RST}  ${BOLD_WHITE}%-44s${RST}${BARR}│${RST}\n" "Add PATH"   "$(if (( ADD_PATH )); then echo 'Yes'; else echo 'No'; fi)" >&2
     if (( REMOTE_MODE )); then
-        printf  "${BARR}   ║${RST}  ${OPTION}Repo       ${RST}: ${BOLD_WHITE}%-42s${BARR}║${RST}\n" "$PROJECTR_REPO_URL" >&2
+        printf  "${BARR}  │${RST}  ${OPTION}%-12s${RST}  ${BRIGHT_BLACK}│${RST}  ${BOLD_WHITE}%-44s${RST}${BARR}│${RST}\n" "Repo"   "$PROJECTR_REPO_URL" >&2
     fi
-    echo -e "${BARR}   ╚══════════════════════════════════════════════════════════╝${RST}" >&2
+    echo -e "${BARR}  ╰──────────────────────────────────────────────────────────────────╯${RST}" >&2
     echo "" >&2
 
     local confirm
@@ -465,10 +456,10 @@ _run_setup_menu() {
             q|Q)
                 echo "" >&2
                 echo -e "  ${INFO}" >&2
-                echo -e "  ┌──────────────────────────────────────────────┐" >&2
-                echo -e "  │  Setup cancelled. No changes were made.     │" >&2
-                echo -e "  │  Run setup.sh again when you're ready.      │" >&2
-                echo -e "  └──────────────────────────────────────────────┘" >&2
+                echo -e "  ╭──────────────────────────────────────────────╮" >&2
+                echo -e "  │  Setup cancelled. No changes were made.      │" >&2
+                echo -e "  │  Run setup.sh again when you're ready.       │" >&2
+                echo -e "  ╰──────────────────────────────────────────────╯" >&2
                 echo -e "  ${RST}" >&2
                 exit 0
                 ;;
@@ -685,11 +676,11 @@ maybe_add_path() {
 _show_success() {
     echo "" >&2
     echo -e "${BOLD_BRIGHT_CYAN}" >&2
-    echo "   ╔══════════════════════════════════════════════════════════╗" >&2
-    echo "   ║                                                          ║" >&2
-    echo "   ║   ✓  ProjectR has been installed successfully!           ║" >&2
-    echo "   ║                                                          ║" >&2
-    echo "   ╚══════════════════════════════════════════════════════════╝" >&2
+    echo "   ╭──────────────────────────────────────────────────────────╮" >&2
+    echo "   │                                                          │" >&2
+    echo "   │   ✓  ProjectR has been installed successfully!           │" >&2
+    echo "   │                                                          │" >&2
+    echo "   ╰──────────────────────────────────────────────────────────╯" >&2
     echo -e "${RST}" >&2
     echo "" >&2
     printf "  ${OPTION}  App files${RST} : %s\n" "$INSTALL_DIR" >&2

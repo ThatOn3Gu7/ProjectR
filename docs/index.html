@@ -398,15 +398,13 @@ h1,h2,h3,h4{color:var(--text-bright);font-weight:700}
         <span class="terminal-title">bash — ProjectR</span>
       </div>
       <div class="terminal-body">
-<span class="comment"># One command. Full setup. No clone needed.</span>
-<span class="prompt">$</span> <span class="cmd">curl -fsSL https://raw.githubusercontent.com/Thaton3gu7/ProjectR/master/setup.sh | sh</span>
-<span class="output">[✓] ProjectR installed via remote one-shot setup.</span>
-<span class="output">    App files: ~/.local/share/projectr</span>
-<span class="output">    Launcher:  ~/.local/bin/project</span>
+<span class="comment"># One command. Full setup. No clone needed.</span> <br>
+<span class="prompt">$</span> <span class="cmd">curl -fsSL https://raw.githubusercontent.com/Thaton3gu7/ProjectR/master/setup.sh | sh</span> <br>
+<span class="output">[✓] ProjectR installed via remote one-shot setup.</span> <br>
+<span class="output">    App files: ~/.local/share/projectr</span> <br>
+<span class="output">    Launcher:  ~/.local/bin/project</span> <br>
 
 <span class="prompt">$</span> <span class="cmd">project</span>
-<span class="output">    ██▓███   ██▀███   ▒█████   ▄████▄  ▓█████   ██████     ██▀███</span>
-<span class="output">   ▓██░  ██▒▓██ ▒ ██▒▒██▒  ██▒...</span>
       </div>
     </div>
   </section>
@@ -1061,33 +1059,65 @@ h1,h2,h3,h4{color:var(--text-bright);font-weight:700}
       <p>Clean modular layout — readable, hackable, and maintainable.</p>
     </div>
 
-    <div class="reveal" style="max-width:700px;margin:0 auto">
-      <div class="tree">
+<div class="reveal" style="max-width:960px;margin:0 auto">
+  <div class="tree" style="overflow-x:auto; white-space:pre">
 <span class="dir">ProjectR/</span>
-├── <span class="file">main.sh</span>                    <span class="desc"># Entry point & interactive menu</span>
-├── <span class="file">setup.sh</span>                   <span class="desc"># Global command installer + remote install</span>
+├── <span class="file">main.sh</span>                         <span class="desc"># Entry point & interactive menu</span>
+├── <span class="file">setup.sh</span>                        <span class="desc"># Global command installer + remote install</span>
 ├── <span class="dir">lib/</span>
-│   ├── <span class="dir">core/</span>                  <span class="desc"># UI, colours, prompts, logging, spinner, progress</span>
-│   │   ├── <span class="file">array_context.sh</span>   <span class="desc"># Scoped array helpers</span>
-│   │   ├── <span class="file">cli.sh</span>             <span class="desc"># CLI parsing utilities</span>
-│   │   ├── <span class="file">colours.sh</span>         <span class="desc"># ANSI colour definitions</span>
-│   │   ├── <span class="file">display.sh</span>         <span class="desc"># Box drawing, TUI helpers</span>
-│   │   ├── <span class="file">logging.sh</span>         <span class="desc"># Structured log engine</span>
-│   │   ├── <span class="file">progress_bar.sh</span>    <span class="desc"># Progress bar UI</span>
-│   │   ├── <span class="file">prompts.sh</span>         <span class="desc"># User prompt helpers</span>
-│   │   ├── <span class="file">spinner.sh</span>         <span class="desc"># Async spinner with cleanup</span>
-│   │   └── <span class="file">strict_mode.sh</span>     <span class="desc"># Safe command execution wrappers</span>
-│   ├── <span class="dir">data/</span>                  <span class="desc"># Configuration & tool registry</span>
-│   │   ├── <span class="file">config.sh</span>          <span class="desc"># Persistent key-value config</span>
-│   │   └── <span class="file">tools.sh</span>           <span class="desc"># Master tool registry (240+ entries)</span>
-│   ├── <span class="dir">features/</span>              <span class="desc"># Install, uninstall, search, presets, etc.</span>
-│   ├── <span class="dir">flags/</span>                 <span class="desc"># Flag & subcommand dispatcher</span>
-│   ├── <span class="dir">sub_menus/</span>             <span class="desc"># Preset & uninstall menus</span>
-│   └── <span class="dir">system/</span>                <span class="desc"># OS/package-manager/dependency checks</span>
-├── <span class="dir">tools.d/</span>                   <span class="desc"># Plugin tool definitions (TOML)</span>
-├── <span class="dir">tests/</span>                     <span class="desc"># BATS test suite</span>
-├── <span class="dir">log/</span>                       <span class="desc"># Runtime logs & session history</span>
-└── <span class="dir">docs/</span>                      <span class="desc"># Documentation & this website</span>
+│   ├── <span class="dir">core/</span>                         <span class="desc"># UI, colours, prompts, logging, spinner, progress</span>
+│   │   ├── <span class="file">array_context.sh</span>          <span class="desc"># Scoped array helpers (namerefs + eval fallback)</span>
+│   │   ├── <span class="file">cli.sh</span>                    <span class="desc"># CLI parsing utilities & shared helpers</span>
+│   │   ├── <span class="file">colours.sh</span>                <span class="desc"># ANSI colour & style definitions</span>
+│   │   ├── <span class="file">disk_inspector.sh</span>         <span class="desc"># Pre-install disk space guard</span>
+│   │   ├── <span class="file">display.sh</span>                <span class="desc"># Box drawing, TUI helpers, graceful exit</span>
+│   │   ├── <span class="file">logging.sh</span>                <span class="desc"># Structured log engine with rotation</span>
+│   │   ├── <span class="file">progress_bar.sh</span>           <span class="desc"># Animated progress bar with error analysis</span>
+│   │   ├── <span class="file">prompts.sh</span>                <span class="desc"># ask() / ask_rich() / ask_confirm() helpers</span>
+│   │   ├── <span class="file">spinner.sh</span>                <span class="desc"># Async spinner with signal-safe cleanup</span>
+│   │   └── <span class="file">strict_mode.sh</span>            <span class="desc"># projectr_require / _try / _optional wrappers</span>
+│   ├── <span class="dir">data/</span>                         <span class="desc"># Configuration & tool registry</span>
+│   │   ├── <span class="file">config.sh</span>                 <span class="desc"># Persistent key=value config store</span>
+│   │   └── <span class="file">tools.sh</span>                  <span class="desc"># Master tool registry (240+ pipe-delimited entries)</span>
+│   ├── <span class="dir">features/</span>                     <span class="desc"># User-facing install & management features</span>
+│   │   ├── <span class="file">doctor.sh</span>                 <span class="desc"># Environment health checks</span>
+│   │   ├── <span class="file">dry_run.sh</span>                <span class="desc"># Dry-run planner with JSON output</span>
+│   │   ├── <span class="file">installer.sh</span>              <span class="desc"># install_pkg / install_lang / batch installer</span>
+│   │   ├── <span class="file">plugin_loader.sh</span>          <span class="desc"># TOML plugin sandboxed loader</span>
+│   │   ├── <span class="file">post_install.sh</span>           <span class="desc"># Post-install summary boxes</span>
+│   │   ├── <span class="file">presets.sh</span>                <span class="desc"># Preset tool group definitions</span>
+│   │   ├── <span class="file">profile_code.sh</span>           <span class="desc"># YAML/TOML config-as-code profile reader</span>
+│   │   ├── <span class="file">profile_manager.sh</span>        <span class="desc"># export_profile / import_profile</span>
+│   │   ├── <span class="file">search_install.sh</span>         <span class="desc"># Multi-manager search & install by name</span>
+│   │   ├── <span class="file">snapshot.sh</span>               <span class="desc"># Timeshift / Btrfs / ZFS pre-install snapshots</span>
+│   │   ├── <span class="file">spacial_setup.sh</span>          <span class="desc"># Special installers: nvim, zsh, docker, go…</span>
+│   │   ├── <span class="file">state.sh</span>                  <span class="desc"># SQLite/TSV install state, verify & repair</span>
+│   │   ├── <span class="file">sync.sh</span>                   <span class="desc"># pkg_update / pkg_upgrade across all managers</span>
+│   │   ├── <span class="file">tool_audit.sh</span>             <span class="desc"># Registry audit with --strict CI mode</span>
+│   │   ├── <span class="file">undo_engine.sh</span>            <span class="desc"># Session history rollback (--undo)</span>
+│   │   └── <span class="file">uninstaller.sh</span>            <span class="desc"># uninstall_pkg / uninstall_lang / dispatcher</span>
+│   ├── <span class="dir">flags/</span>                        <span class="desc"># Flag & subcommand dispatcher</span>
+│   │   └── <span class="file">flags.sh</span>                  <span class="desc"># parse_flags() — routes all CLI args</span>
+│   ├── <span class="dir">sub_menus/</span>                    <span class="desc"># Interactive sub-menus</span>
+│   │   ├── <span class="file">presets_menu.sh</span>           <span class="desc"># Preset picker (whiptail + text fallback)</span>
+│   │   └── <span class="file">uninstall_menu.sh</span>         <span class="desc"># Paged uninstall menu</span>
+│   └── <span class="dir">system/</span>                       <span class="desc"># OS & environment detection</span>
+│       ├── <span class="file">checker.sh</span>                <span class="desc"># check_tool / check_all_tools</span>
+│       ├── <span class="file">daemon_checker.sh</span>         <span class="desc"># Background update alert + cron registration</span>
+│       ├── <span class="file">dependencies.sh</span>           <span class="desc"># Dependency checks & auto-install hints</span>
+│       ├── <span class="file">detect.sh</span>                 <span class="desc"># detect_pkg_manager / detect_pkg_for_tool</span>
+│       └── <span class="file">network.sh</span>                <span class="desc"># check_internet / require_internet / startup check</span>
+├── <span class="dir">tools.d/</span>                        <span class="desc"># Plugin tool definitions (TOML drop-ins)</span>
+│   └── <span class="file">README.md</span>                   <span class="desc"># Plugin authoring guide</span>
+├── <span class="dir">tests/</span>                          <span class="desc"># BATS automated test suite</span>
+│   └── <span class="file">suite.bats</span>                  <span class="desc"># Detection, scoping, plugin, batch & CLI tests</span>
+├── <span class="dir">log/</span>                            <span class="desc"># Runtime logs & session history</span>
+│   ├── <span class="file">install.log</span>                 <span class="desc"># Structured install/error log (auto-rotating)</span>
+│   └── <span class="file">session_history.tmp</span>         <span class="desc"># Per-session install record used by --undo</span>
+└── <span class="dir">docs/</span>                           <span class="desc"># Documentation & project website</span>
+    ├── <span class="file">index.html</span>                  <span class="desc"># Project landing page</span>
+    ├── <span class="file">feature_review.md</span>           <span class="desc"># Feature ideas & bug findings</span>
+    └── <span class="file">architectural_audit_and_roadmap.md</span> <span class="desc"># Enterprise hardening & roadmap</span>
       </div>
     </div>
   </section>
