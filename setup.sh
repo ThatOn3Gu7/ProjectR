@@ -263,17 +263,17 @@ _show_menu_options() {
     echo -e "${BARR}  ╭──────────────────────────────────────────────────────────────────╮${RST}" >&2
     echo -e "${BARR}  │${RST}  ${BOLD_BRIGHT_YELLOW}☰  Setup Options${RST}                                                ${BARR}│${RST}" >&2
     echo -e "${BARR}  ├──────────────────────────────────────────────────────────────────┤${RST}" >&2
-    echo -e "${BARR}  │${RST}  ${OPTION}[${BOLD_BRIGHT_WHITE}1${OPTION}]${RST}  Change launcher command name    ${DIM}(currently: ${COMMAND_NAME})${RST}" >&2
-    echo -e "${BARR}  │${RST}  ${OPTION}[${BOLD_BRIGHT_WHITE}2${OPTION}]${RST}  Change install directory        ${DIM}(where files live)${RST}" >&2
-    echo -e "${BARR}  │${RST}  ${OPTION}[${BOLD_BRIGHT_WHITE}3${OPTION}]${RST}  Change bin directory            ${DIM}(where launcher goes)${RST}" >&2
-    echo -e "${BARR}  │${RST}  ${OPTION}[${BOLD_BRIGHT_WHITE}4${OPTION}]${RST}  Toggle add-to-PATH              ${DIM}(currently: $(if (( ADD_PATH )); then echo 'ON'; else echo 'OFF'; fi))${RST}" >&2
+    echo -e "${BARR}  │${RST}  ${OPTION}[${BOLD_BRIGHT_WHITE}1${OPTION}]${RST}  Change launcher command name    ${DIM}(currently: ${COMMAND_NAME})       ${BARR}│${RST}" >&2
+    echo -e "${BARR}  │${RST}  ${OPTION}[${BOLD_BRIGHT_WHITE}2${OPTION}]${RST}  Change install directory        ${DIM}(where files live)         ${BARR}│${RST}" >&2
+    echo -e "${BARR}  │${RST}  ${OPTION}[${BOLD_BRIGHT_WHITE}3${OPTION}]${RST}  Change bin directory            ${DIM}(where launcher goes)      ${BARR}│${RST}" >&2
+    echo -e "${BARR}  │${RST}  ${OPTION}[${BOLD_BRIGHT_WHITE}4${OPTION}]${RST}  Toggle add-to-PATH              ${DIM}(currently: $(if (( ADD_PATH )); then echo 'ON'; else echo 'OFF'; fi))           ${BARR}│${RST}" >&2
     if (( REMOTE_MODE )); then
-        echo -e "${BARR}  │${RST}  ${OPTION}[${BOLD_BRIGHT_WHITE}5${OPTION}]${RST}  Change repo URL                 ${DIM}(for remote clone)${RST}" >&2
+        echo -e "${BARR}  │${RST}  ${OPTION}[${BOLD_BRIGHT_WHITE}5${OPTION}]${RST}  Change repo URL                 ${DIM}(for remote clone)               ${BARR}│${RST}" >&2
     fi
-    echo -e "${BARR}  │${RST}  ${OPTION}[${BOLD_BRIGHT_WHITE}r${OPTION}]${RST}  Reset all to defaults           ${DIM}(reset and setup with defaults) ${RST}" >&2
+    echo -e "${BARR}  │${RST}  ${OPTION}[${BOLD_BRIGHT_WHITE}r${OPTION}]${RST}  Reset all to defaults           ${DIM}(setup with defaults)      ${BARR}│${RST}" >&2
     echo -e "${BARR}  ├──────────────────────────────────────────────────────────────────┤${RST}" >&2
-    echo -e "${BARR}  │${RST}  ${ACCENT}[${BOLD_BRIGHT_WHITE}i${ACCENT}]${RST}  ${BOLD_BRIGHT_GREEN}✓  Install${RST} with current settings${RST}" >&2
-    echo -e "${BARR}  │${RST}  ${ERROR}[${BOLD_BRIGHT_WHITE}q${ERROR}]${RST}  ${BOLD_BRIGHT_RED}✗  Quit${RST}    without installing${RST}" >&2
+    echo -e "${BARR}  │${RST}  ${ACCENT}[${BOLD_BRIGHT_WHITE}i${ACCENT}]${RST}  ${BOLD_BRIGHT_GREEN}✓  Install${RST} with current settings                           ${BARR}│${RST}" >&2
+    echo -e "${BARR}  │${RST}  ${ERROR}[${BOLD_BRIGHT_WHITE}q${ERROR}]${RST}  ${BOLD_BRIGHT_RED}✗  Quit${RST}    without installing                              ${BARR}│${RST}" >&2
     echo -e "${BARR}  ╰──────────────────────────────────────────────────────────────────╯${RST}" >&2
     echo "" >&2
 }
