@@ -64,13 +64,13 @@ BANNER
   local item preset_id preset_title preset_desc preset_array
   for item in "${PRESET_MENU_ITEMS[@]}"; do
       IFS="|" read -r preset_id preset_title preset_desc preset_array <<< "$item"
-      printf "${BOLD_WHITE}   [%s] ${BOLD_GREEN}%-22s ${BOLD_YELLOW}-- %s ${RST}\n" \
+      printf "${BOLD_WHITE}   [%s] ${BOLD_GREEN}%s${BOLD_YELLOW} -- %s ${RST}\n" \
           "$preset_id" "$preset_title" "$preset_desc"
   done
    echo ""
   echo -e "${ERROR} [b]ack to main menu ${RST}"
    echo ""
-  echo -ne "${INFO} [*] Choose an option: ${RST}"
+  echo -ne "${INFO}  ◇ Choose an option: ${RST}"
    read -r profile_choice
   echo ""
   case "$profile_choice" in
@@ -92,15 +92,13 @@ preview_preset() {
     
     clear
     echo -e "${BOLD_CYAN}"
-    echo "╔══════════════════════════════════════════════════════════════════╗"
-    echo "║                     📦 PRESET CONTENTS                           ║"
-    echo "╚══════════════════════════════════════════════════════════════════╝"
+    echo "╭────────────────────────────────────────────────────────────────────╮"
+    echo "│                     📦 PRESET CONTENTS                             │"
+    echo "╰────────────────────────────────────────────────────────────────────╯"
     echo -e "${RST}"
     
-    echo -e "${BOLD_YELLOW}┌─────────────────────────────────────────────────────────────────┐${RST}"
-    echo -e "${BOLD_YELLOW}│${RST} ${BOLD_GREEN}Preset: ${BOLD_WHITE}$preset_name${RST}"
-    echo -e "${BOLD_YELLOW}│${RST} ${BOLD_GREEN}Total tools: ${BOLD_WHITE}$total_tools${RST}"
-    echo -e "${BOLD_YELLOW}└─────────────────────────────────────────────────────────────────┘${RST}"
+    echo -e "${BOLD_GREEN}   ◇ Preset: ${BOLD_WHITE}$preset_name${RST}"
+    echo -e "${BOLD_GREEN}   ◇ Total tools: ${BOLD_WHITE}$total_tools${RST}"
     echo ""
     
     echo -e "${BOLD_BLUE}  [*] The following tools will be installed:${RST}"
@@ -109,7 +107,7 @@ preview_preset() {
     local count=1 entry tool_name tool_desc tool_cat
     for entry in "${preset_items[@]}"; do
         IFS="|" read -r tool_name tool_desc tool_cat <<< "$(projectr_tool_summary_by_cmd "$entry")"
-        printf "  ${BOLD_GREEN}%2d${RST} ${BOLD_WHITE}%-18s${RST} ${OPTION}→${RST} ${INFO}%-48s${RST} ${DIM}[%s]${RST}\n" \
+        printf "  ${BOLD_GREEN}%2d${RST} ${BOLD_WHITE}%-15s${RST} ${OPTION}→${RST} ${INFO}%-35s${RST} ${DIM}[%s]${RST}\n" \
                "$count" "$entry" "$tool_desc" "$tool_cat"
         ((count++))
     done

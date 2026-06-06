@@ -18,7 +18,7 @@ uninstall_menu() {
 
 BANNER
 echo -e "${OPTION}"
-print_box left "[*] Available tools for deletion:"
+print_box left "◇ Available tools for deletion:"
 echo -e "${RST}"
 
     local total_tools=${#TOOLS[@]}
@@ -34,7 +34,7 @@ echo -e "${RST}"
     done
     echo ""
  if (( PROJECTR_UNINSTALL_VISIBLE_TOOL_COUNT < ${#TOOLS[@]} )); then
-    echo -e "${INFO}  [*] Showing ${BOLD_WHITE}${visible_count}${INFO}/${BOLD_WHITE}${total_tools}${INFO} tools ${BOLD_WHITE}- ${DIM}type 'l' to load more tools${RST}"
+    echo -e "${INFO}   ◇ Showing ${BOLD_WHITE}${visible_count}${INFO}/${BOLD_WHITE}${total_tools}${INFO} tools ${BOLD_WHITE}- ${DIM}type 'l' to load more tools${RST}"
  fi
     
  echo ""
@@ -42,7 +42,7 @@ echo -e "${RST}"
  echo -e "${INFO}  [b] Back to main-menu ${RST}"
  echo -e "${ERROR}  [e] Exit Script${RST}"
   echo ""
-  echo -ne " ${BG_CYAN}[*] Select numbers ${RST} ${OPTION}(space separated)${RST} : "
+  echo -ne " ${BG_CYAN} ◇ Select numbers ${RST} ${OPTION}(space separated)${RST} : "
    read -a choices
     for choice in "${choices[@]}"; do
       # --- Special menu options ---
