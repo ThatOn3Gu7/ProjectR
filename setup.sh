@@ -94,7 +94,7 @@ success() { printf "${OPTION}[✓]${RST} %s\n" "$*"; }
 warn()    { printf "${INFO}[!]${RST} %s\n" "$*" >&2; }
 fail()    { printf "${ERROR}[✗]${RST} %s\n" "$*" >&2; exit 1; }
 
-# Read a line from the user. When stdin is a pipe (curl | sh), we must read
+# Read a line from the user. When stdin is a pipe (curl | bash), we must read
 # from /dev/tty directly so user keyboard input actually reaches us.
 _read_input() {
     local prompt_text="$1" var_name="$2"
@@ -492,25 +492,28 @@ clone_project_remote() {
 
 _clone_with_git() {
     local clone_target="$INSTALL_DIR"
+    local backup=""
 
     if [[ -d "$clone_target/.git" ]]; then
         info "Existing clone found at $clone_target — pulling latest changes ..."
-        git -C "$clone_target" pull --ff-only 2>/dev/null \
-            || warn "Fast-forward pull failed; continuing with existing checkout."
+        git -C "$clone_target" pull --ff-only 2>/dev/null             || warn "Fast-forward pull failed; continuing with existing checkout."
     else
         if [[ -d "$clone_target" ]]; then
-            local backup="${clone_target}.bak.$$"
+            backup="${clone_target}.bak.$$"
             mv "$clone_target" "$backup" || fail "Could not move old install directory."
-            trap "rm -rf '$backup'" EXIT
         fi
 
         mkdir -p "$(dirname "$clone_target")" 2>/dev/null || true
-        git clone --depth 1 "$PROJECTR_REPO_URL" "$clone_target" \
-            || fail "git clone failed. Check your network and the repo URL."
+        if ! git clone --depth 1 "$PROJECTR_REPO_URL" "$clone_target"; then
+            if [[ -n "$backup" && -d "$backup" ]]; then
+                rm -rf "$clone_target" 2>/dev/null || true
+                mv "$backup" "$clone_target" 2>/dev/null || true
+            fi
+            fail "git clone failed. Check your network and the repo URL. Previous install was restored if it existed."
+        fi
 
-        if [[ -n "${backup:-}" ]]; then
+        if [[ -n "$backup" ]]; then
             rm -rf "$backup"
-            trap - EXIT
         fi
     fi
 
@@ -520,7 +523,7 @@ _clone_with_git() {
 _clone_with_archive() {
     local archive_url="${PROJECTR_REPO_URL%.git}"
     archive_url="${archive_url}/archive/refs/heads/master.tar.gz"
-    local tmp_archive tmp_extract
+    local tmp_archive tmp_extract backup=""
 
     tmp_archive="$(mktemp "${TMPDIR:-/tmp}/projectr-archive.XXXXXX.tar.gz")"
     tmp_extract="$(mktemp -d "${TMPDIR:-/tmp}/projectr-extract.XXXXXX")"
@@ -528,25 +531,28 @@ _clone_with_archive() {
 
     info "Downloading $PROJECT_NAME archive ..."
     if command -v curl >/dev/null 2>&1; then
-        curl -fsSL -o "$tmp_archive" "$archive_url" \
-            || fail "Failed to download archive from $archive_url"
+        curl -fsSL -o "$tmp_archive" "$archive_url"             || fail "Failed to download archive from $archive_url"
     else
-        wget -qO "$tmp_archive" "$archive_url" \
-            || fail "Failed to download archive from $archive_url"
+        wget -qO "$tmp_archive" "$archive_url"             || fail "Failed to download archive from $archive_url"
     fi
 
-    tar -xzf "$tmp_archive" -C "$tmp_extract" --strip-components=1 \
-        || fail "Failed to extract archive."
+    tar -xzf "$tmp_archive" -C "$tmp_extract" --strip-components=1         || fail "Failed to extract archive."
 
     if [[ -d "$INSTALL_DIR" ]]; then
-        local backup="${INSTALL_DIR}.bak.$$"
+        backup="${INSTALL_DIR}.bak.$$"
         mv "$INSTALL_DIR" "$backup" || fail "Could not move old install directory."
     fi
 
     mkdir -p "$(dirname "$INSTALL_DIR")" 2>/dev/null || true
-    mv "$tmp_extract" "$INSTALL_DIR" || fail "Could not move extracted files into $INSTALL_DIR"
+    if ! mv "$tmp_extract" "$INSTALL_DIR"; then
+        if [[ -n "$backup" && -d "$backup" ]]; then
+            rm -rf "$INSTALL_DIR" 2>/dev/null || true
+            mv "$backup" "$INSTALL_DIR" 2>/dev/null || true
+        fi
+        fail "Could not move extracted files into $INSTALL_DIR. Previous install was restored if it existed."
+    fi
 
-    if [[ -n "${backup:-}" ]]; then
+    if [[ -n "$backup" ]]; then
         rm -rf "$backup"
     fi
 

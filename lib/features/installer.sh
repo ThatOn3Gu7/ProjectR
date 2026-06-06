@@ -7,7 +7,7 @@ projectr_install_tool_by_fields() {
         pkg)
             install_pkg "$cmd" "$pkg" "$name"
             ;;
-        pip|pip3|pipx|cargo|gem|npm|yarn)
+        pip|pip3|pipx|cargo|gem|npm|yarn|pnpm|bun)
             install_lang "$type" "$pkg" "$name" "$cmd"
             ;;
         special)
@@ -34,7 +34,7 @@ install_all() {
     echo ""
     echo -e "${ERROR}  [!] Bulk install of all tools is disabled.${RST}"
     echo -e "${INFO}  [*] Use presets instead: ${BOLD_WHITE}project install --profile <file>.yml${RST}"
-    echo -e "${OPTION}  [*] If you still wnat to go with it, then open 'installer.sh' in your preferred editor and uncomment everything in the function ${RST}"
+    echo -e "${OPTION}  [*] If you still want to go with it, then open 'installer.sh' in your preferred editor and uncomment everything in the function ${RST}"
     printf "${DIM}  [press ENTER]${RST}"
     read -s; echo
     return 1
@@ -259,6 +259,7 @@ install_pkg() {
         log FAIL "$name failed to install (on $PM)"
     fi
     sleep 2
+    return "$install_exit"
 }
 # Universal language package installer
 # install_lang "pip" "holehe" "Holehe" "holehe"
@@ -307,6 +308,8 @@ install_lang() {
             pip|pip3|pipx) install_cmd=("$lang_pm" install --quiet "$pkg_name") ;;
             npm)           install_cmd=(npm install -g --quiet "$pkg_name") ;;
             yarn)          install_cmd=(yarn global add --silent "$pkg_name") ;;
+            pnpm)          install_cmd=(pnpm add -g "$pkg_name") ;;
+            bun)           install_cmd=(bun add -g "$pkg_name") ;;
             gem)           install_cmd=(gem install --silent "$pkg_name") ;;
             cargo)         install_cmd=(cargo install --quiet "$pkg_name") ;;
             *)
@@ -372,6 +375,8 @@ projectr_batch_command_for_group() {
         pip|pip3|pipx) "$manager" install --quiet "$@" ;;
         npm)    npm install -g --quiet "$@" ;;
         yarn)   yarn global add --silent "$@" ;;
+        pnpm)   pnpm add -g "$@" ;;
+        bun)    bun add -g "$@" ;;
         gem)    gem install --silent "$@" ;;
         cargo)  cargo install --quiet "$@" ;;
         *) return 2 ;;
@@ -397,7 +402,7 @@ projectr_install_batch_by_entries() {
         fi
         case "$type" in
             pkg) key="$PM" ;;
-            pip|pip3|pipx|cargo|gem|npm|yarn) key="$(detect_pkg_for_tool "$type")" ;;
+            pip|pip3|pipx|cargo|gem|npm|yarn|pnpm|bun) key="$(detect_pkg_for_tool "$type")" ;;
             *) projectr_install_tool_by_fields "$cmd" "$pkg" "$name" "$type" "$extra"; continue ;;
         esac
         [[ "$key" != "none" && -n "$key" ]] || { projectr_install_result_push failed "$name"; continue; }
@@ -433,7 +438,7 @@ projectr_install_batch_by_entries() {
                 IFS="|" read -r num cmd pkg name desc type extra cat <<< "$entry"
                 case "$type" in
                     pkg) [[ "$group" == "$PM" ]] && projectr_install_tool_by_fields "$cmd" "$pkg" "$name" "$type" "$extra" ;;
-                    pip|pip3|pipx|cargo|gem|npm|yarn) [[ "$group" == "$(detect_pkg_for_tool "$type")" ]] && projectr_install_tool_by_fields "$cmd" "$pkg" "$name" "$type" "$extra" ;;
+                    pip|pip3|pipx|cargo|gem|npm|yarn|pnpm|bun) [[ "$group" == "$(detect_pkg_for_tool "$type")" ]] && projectr_install_tool_by_fields "$cmd" "$pkg" "$name" "$type" "$extra" ;;
                 esac
             done
         fi

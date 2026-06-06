@@ -12,8 +12,13 @@ config_init() {
 
 # Get a value by key. Prints the value or nothing if not set.
 # Usage: val=$(config_get "skip_dep_check")
+config_key_valid() {
+    [[ "${1:-}" =~ ^[A-Za-z_][A-Za-z0-9_]*$ ]]
+}
+
 config_get() {
     local key="$1"
+    config_key_valid "$key" || return 1
     grep -E "^${key}=" "$CONFIG_FILE" 2>/dev/null | tail -n1 | cut -d'=' -f2-
 }
 
@@ -21,6 +26,7 @@ config_get() {
 # Usage: config_set "skip_dep_check" "true"
 config_set() {
     local key="$1" value="$2"
+    config_key_valid "$key" || { echo -e "${ERROR} [✗] Invalid config key '${key}'.${RST}" >&2; return 1; }
     config_init
     local tmp
     tmp=$(mktemp "${CONFIG_FILE}.XXXXXX") || return 1
@@ -33,6 +39,8 @@ config_set() {
 # Usage: config_clear "skip_dep_check"
 config_clear() {
     local key="$1"
+    config_key_valid "$key" || { echo -e "${ERROR} [✗] Invalid config key '${key}'.${RST}" >&2; return 1; }
+    config_init
     local tmp
     tmp=$(mktemp "${CONFIG_FILE}.XXXXXX") || return 1
     grep -v "^${key}=" "$CONFIG_FILE" > "$tmp" 2>/dev/null || true

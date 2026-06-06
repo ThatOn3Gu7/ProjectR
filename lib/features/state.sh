@@ -36,7 +36,7 @@ projectr_tool_version() {
 }
 
 projectr_state_record_install() {
-    local name="$1" package="$2" manager="$3" cmd="$4" version now source
+    local name="$1" package="$2" manager="$3" cmd="$4" version now source tmp
     projectr_state_init
     version=$(projectr_tool_version "$cmd")
     now=$(date -u '+%Y-%m-%dT%H:%M:%SZ')
@@ -45,10 +45,32 @@ projectr_state_record_install() {
     if command -v sqlite3 >/dev/null 2>&1; then
         sqlite3 "$PROJECTR_STATE_DB" "INSERT OR REPLACE INTO installs(name,package,manager,version,installed_at,source) VALUES($(projectr_sql_quote "$name"),$(projectr_sql_quote "$package"),$(projectr_sql_quote "$manager"),$(projectr_sql_quote "$version"),$(projectr_sql_quote "$now"),$(projectr_sql_quote "$source"));"
     else
-        awk -F '\t' -v name="$name" 'NR==1 || $1 != name' "$PROJECTR_STATE_TSV" > "$PROJECTR_STATE_TSV.tmp" 2>/dev/null || true
-        printf '%s\t%s\t%s\t%s\t%s\t%s\n' "$name" "$package" "$manager" "$version" "$now" "$source" >> "$PROJECTR_STATE_TSV.tmp"
-        mv "$PROJECTR_STATE_TSV.tmp" "$PROJECTR_STATE_TSV"
+        tmp=$(mktemp "${PROJECTR_STATE_TSV}.XXXXXX") || return 1
+        awk -F '\t' -v name="$name" 'NR==1 || $1 != name' "$PROJECTR_STATE_TSV" > "$tmp" 2>/dev/null || true
+        printf '%s\t%s\t%s\t%s\t%s\t%s\n' "$name" "$package" "$manager" "$version" "$now" "$source" >> "$tmp"
+        mv "$tmp" "$PROJECTR_STATE_TSV" || { rm -f "$tmp"; return 1; }
     fi
+}
+
+projectr_state_records() {
+    projectr_state_init
+    if command -v sqlite3 >/dev/null 2>&1; then
+        sqlite3 -separator $'\t' "$PROJECTR_STATE_DB" 'SELECT name, package, manager FROM installs ORDER BY name;' 2>/dev/null
+    else
+        awk -F '\t' 'NR > 1 && NF >= 3 { print $1 "\t" $2 "\t" $3 }' "$PROJECTR_STATE_TSV" 2>/dev/null
+    fi
+}
+
+projectr_state_find_registry_entry() {
+    local record_name="$1" record_package="${2:-}" entry num cmd pkg name desc type extra cat
+    for entry in "${TOOLS[@]}"; do
+        IFS='|' read -r num cmd pkg name desc type extra cat <<< "$entry"
+        if [[ "$name" == "$record_name" || ( -n "$record_package" && "$pkg" == "$record_package" ) ]]; then
+            printf '%s\n' "$entry"
+            return 0
+        fi
+    done
+    return 1
 }
 
 projectr_state_list() {
@@ -62,29 +84,65 @@ projectr_state_list() {
 
 projectr_verify_state() {
     projectr_state_init
-    local missing=0
+    local missing=0 checked=0 unknown=0 record record_name record_package record_manager entry cmd pkg name
+    local -a records=()
+    mapfile -t records < <(projectr_state_records)
+
     echo -e "${OPTION}[*] Verifying ProjectR-managed tools${RST}"
-    for entry in "${TOOLS[@]}"; do
-        IFS='|' read -r _ cmd _ name _ _ _ _ <<< "$entry"
+    if [[ ${#records[@]} -eq 0 ]]; then
+        echo -e "${DIM}[*] No ProjectR-managed installs have been recorded yet.${RST}"
+        return 0
+    fi
+
+    for record in "${records[@]}"; do
+        IFS=$'\t' read -r record_name record_package record_manager <<< "$record"
+        entry=$(projectr_state_find_registry_entry "$record_name" "$record_package") || {
+            printf '  %s %-18s %s\n' '!' "$record_name" 'not present in current registry'
+            unknown=$((unknown + 1))
+            continue
+        }
+        IFS='|' read -r _ cmd pkg name _ _ _ _ <<< "$entry"
+        checked=$((checked + 1))
         if command -v "$cmd" >/dev/null 2>&1; then
             printf '  %s %-18s %s\n' '✓' "$name" "$(command -v "$cmd")"
         else
-            printf '  %s %-18s %s\n' '!' "$name" 'missing from PATH'
+            printf '  %s %-18s %s\n' '!' "$name" "missing from PATH (package: $pkg, manager: $record_manager)"
             missing=$((missing + 1))
         fi
     done
-    [[ $missing -eq 0 ]] || return 1
+
+    echo -e "${DIM}[*] Checked $checked recorded tool(s); missing=$missing; unknown=$unknown.${RST}"
+    [[ $missing -eq 0 && $unknown -eq 0 ]]
 }
 
 projectr_repair_state() {
+    projectr_state_init
+    local repaired=0 failed=0 record record_name record_package record_manager entry cmd pkg name type extra
+    local -a records=()
+    mapfile -t records < <(projectr_state_records)
+
     echo -e "${OPTION}[*] Repairing missing ProjectR-managed tools${RST}"
-    local repaired=0
-    for entry in "${TOOLS[@]}"; do
+    if [[ ${#records[@]} -eq 0 ]]; then
+        echo -e "${DIM}[*] No recorded ProjectR-managed installs to repair.${RST}"
+        return 0
+    fi
+
+    for record in "${records[@]}"; do
+        IFS=$'\t' read -r record_name record_package record_manager <<< "$record"
+        entry=$(projectr_state_find_registry_entry "$record_name" "$record_package") || {
+            echo -e "${BOLD_YELLOW:-}[!] Recorded tool '$record_name' is not in the current registry — skipping.${RST:-}"
+            failed=$((failed + 1))
+            continue
+        }
         IFS='|' read -r _ cmd pkg name _ type extra _ <<< "$entry"
         command -v "$cmd" >/dev/null 2>&1 && continue
         if projectr_install_tool_by_fields "$cmd" "$pkg" "$name" "$type" "$extra"; then
             repaired=$((repaired + 1))
+        else
+            failed=$((failed + 1))
         fi
     done
-    echo -e "${OPTION}[✓] Repair attempted for $repaired tool(s).${RST}"
+
+    echo -e "${OPTION}[✓] Repair attempted for $repaired tool(s); failed/skipped unknown: $failed.${RST}"
+    [[ $failed -eq 0 ]]
 }

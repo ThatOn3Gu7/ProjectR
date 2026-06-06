@@ -139,7 +139,11 @@ echo -e "${BARR}  ╰───────────────────�
   echo ""
   echo ""
   echo -ne " ${BG_GREEN} ◇ Enter the tool numbers ${RST} ${BOLD_BRIGHT_GREEN}(separate by spaces)${RST} : "
-  read -ra selections
+  if ! read -ra selections; then
+    echo ""
+    log_info "Interactive input stream closed; exiting gracefully" "menu"
+    graceful_exit
+  fi
   echo ""
 }
 

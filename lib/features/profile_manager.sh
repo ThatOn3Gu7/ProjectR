@@ -87,7 +87,7 @@ import_profile() {
     local failed=0
     for tool_entry in "${tools_to_install[@]}"; do
         IFS="|" read -r num cmd pkg name desc type extra cat <<< "$tool_entry"
-        install_pkg "$cmd" "$pkg" "$name" || ((failed++))
+        projectr_install_tool_by_fields "$cmd" "$pkg" "$name" "$type" "$extra" || ((failed++))
     done
 
     [[ $failed -gt 0 ]] && echo -e "${ERROR} [!] $failed tool(s) failed to install.${RST}" && return 1

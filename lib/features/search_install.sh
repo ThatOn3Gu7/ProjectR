@@ -131,6 +131,9 @@ _si_check_avail() {
         brew)          $t brew info "$pkg" >/dev/null 2>&1 ;;
         pkg)           $t pkg show "$pkg" >/dev/null 2>&1 ;;
         npm)           $t npm info "$pkg" >/dev/null 2>&1 ;;
+        yarn)          $t yarn info "$pkg" >/dev/null 2>&1 ;;
+        pnpm)          $t pnpm view "$pkg" version >/dev/null 2>&1 ;;
+        bun)           $t bun pm view "$pkg" version >/dev/null 2>&1 ;;
         pip|pip3)      $t $mgr index versions "$pkg" >/dev/null 2>&1 \
         || $t $mgr install --dry-run "$pkg" >/dev/null 2>&1 ;;
         pipx)          $t pip index versions "$pkg" >/dev/null 2>&1 \
@@ -175,33 +178,32 @@ _si_get_suggestions() {
         fi
     done
 
-    # 2. Try package manager search commands
-    local pm_commands="
-        apt-cache:apt-cache search __INPUT__ 2>/dev/null
-        dnf:dnf search __INPUT__ 2>/dev/null | grep -v '^='
-        yum:yum search __INPUT__ 2>/dev/null
-        pacman:pacman -Ss __INPUT__ 2>/dev/null
-        apk:apk search __INPUT__ 2>/dev/null
-        brew:brew search __INPUT__ 2>/dev/null
-        snap:snap find __INPUT__ 2>/dev/null | tail -n +2
-        flatpak:flatpak search __INPUT__ 2>/dev/null
-        cargo:cargo search __INPUT__ --limit 5 2>/dev/null
-        npm:npm search __INPUT__ 2>/dev/null | tail -n +2
-        yarn:yarn search __INPUT__ 2>/dev/null
-        pip:pip index versions __INPUT__ 2>/dev/null
-        gem:gem search __INPUT__ --remote 2>/dev/null
-        pkg:pkg search __INPUT__ 2>/dev/null
-    "
+    # 2. Try package manager search commands. Keep each command as an
+    # argument array instead of using eval so a search term can never become
+    # shell syntax.
+    local pm_searchers=(apt-cache dnf yum pacman apk brew snap flatpak cargo npm yarn pip gem pkg)
 
-    for entry in $pm_commands; do
-        local pm="${entry%%:*}"
-        local cmd="${entry#*:__INPUT__}"
-        local full_cmd="${cmd//__INPUT__/$input}"
-
+    for pm in "${pm_searchers[@]}"; do
         command -v "$pm" >/dev/null 2>&1 || continue
 
         local out
-        out=$($t eval "$full_cmd" 2>/dev/null) || continue
+        case "$pm" in
+            apt-cache) out=$($t apt-cache search "$input" 2>/dev/null) || continue ;;
+            dnf)       out=$($t dnf search "$input" 2>/dev/null | grep -v '^=') || continue ;;
+            yum)       out=$($t yum search "$input" 2>/dev/null) || continue ;;
+            pacman)    out=$($t pacman -Ss "$input" 2>/dev/null) || continue ;;
+            apk)       out=$($t apk search "$input" 2>/dev/null) || continue ;;
+            brew)      out=$($t brew search "$input" 2>/dev/null) || continue ;;
+            snap)      out=$($t snap find "$input" 2>/dev/null | tail -n +2) || continue ;;
+            flatpak)   out=$($t flatpak search "$input" 2>/dev/null) || continue ;;
+            cargo)     out=$($t cargo search "$input" --limit 5 2>/dev/null) || continue ;;
+            npm)       out=$($t npm search "$input" 2>/dev/null | tail -n +2) || continue ;;
+            yarn)      out=$($t yarn search "$input" 2>/dev/null) || continue ;;
+            pip)       out=$($t pip index versions "$input" 2>/dev/null) || continue ;;
+            gem)       out=$($t gem search "$input" --remote 2>/dev/null) || continue ;;
+            pkg)       out=$($t pkg search "$input" 2>/dev/null) || continue ;;
+            *)         continue ;;
+        esac
         [[ -z "$out" ]] && continue
 
         local extracted=""
@@ -211,18 +213,11 @@ _si_get_suggestions() {
 
             local pkg_name=""
             case "$pm" in
-                apt-cache)   pkg_name=$(echo "$line" | awk '{print $1}') ;;
-                dnf|yum)     pkg_name=$(echo "$line" | awk '{print $1}') ;;
+                apt-cache|dnf|yum|brew|snap|flatpak|cargo|npm|pip|pkg) pkg_name=$(echo "$line" | awk '{print $1}') ;;
                 pacman)      pkg_name=$(echo "$line" | awk -F/ '{print $2}' | awk '{print $1}') ;;
                 apk)         pkg_name=$(echo "$line" | awk -F'-[0-9]' '{print $1}') ;;
-                brew)        pkg_name=$(echo "$line" | awk '{print $1}') ;;
-                snap)        pkg_name=$(echo "$line" | awk '{print $1}') ;;
-                flatpak)     pkg_name=$(echo "$line" | awk '{print $1}') ;;
-                cargo)       pkg_name=$(echo "$line" | awk '{print $1}') ;;
-                npm)         pkg_name=$(echo "$line" | awk '{print $1}') ;;
-                pip)         pkg_name=$(echo "$line" | awk '{print $1}') ;;
+                yarn)        pkg_name=$(echo "$line" | awk '{print $1}') ;;
                 gem)         pkg_name=$(echo "$line" | awk '{print $1}' | sed 's/^gems\///') ;;
-                pkg)         pkg_name=$(echo "$line" | awk '{print $1}') ;;
             esac
 
             [[ -n "$pkg_name" && "$pkg_name" != "$input" && "$pkg_name" =~ ^[a-zA-Z0-9] ]] && extracted+="$pkg_name "
@@ -276,6 +271,13 @@ _si_get_suggestions() {
 search_and_install() {
     local input="$1"
     echo ""
+
+    if [[ -z "$input" || ! "$input" =~ ^[A-Za-z0-9._@+:/=-]+$ ]]; then
+        echo -e "${ERROR}  [✗] Invalid search term: '${input}'. Use package-style names only.${RST}"
+        log_warn "Rejected unsafe search/install term: $input" "search-install"
+        FAILED_PKGS+=("$input")
+        return 2
+    fi
 
     local matched
     matched=$(_si_find_in_tools "$input")
@@ -382,7 +384,7 @@ search_and_install() {
     local sys_pm; sys_pm="${PRIMARY_PKG_MANAGER:-$(detect_pkg_manager)}"
     local candidates=()
     [ -n "$sys_pm" ] && candidates+=("$sys_pm")
-    for lm in cargo npm pip pip3 gem pipx; do
+    for lm in cargo npm yarn pnpm bun pipx pip pip3 gem; do
         command -v "$lm" >/dev/null 2>&1 && candidates+=("$lm")
     done
 
@@ -453,8 +455,8 @@ search_and_install() {
     log INSTALL "search_and_install: '$input' → pkg='$pkg' via '$chosen'"
 
     case "$chosen" in
-        pip|pip3|pipx) install_lang "pip"   "$pkg" "$input" "$binary" ;;
-        npm|yarn)      install_lang "npm"   "$pkg" "$input" "$binary" ;;
+        pip|pip3|pipx) install_lang "$chosen" "$pkg" "$input" "$binary" ;;
+        npm|yarn|pnpm|bun) install_lang "$chosen" "$pkg" "$input" "$binary" ;;
         gem)           install_lang "gem"   "$pkg" "$input" "$binary" ;;
         cargo)         install_lang "cargo" "$pkg" "$input" "$binary" ;;
         *)             install_pkg "$binary" "$pkg" "$input" ;;

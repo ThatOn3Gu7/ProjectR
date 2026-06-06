@@ -158,3 +158,30 @@ TOML
   grep -q 'skip_sys_upgrade=do' "$HOME/.config/projectr/session.conf"
   [[ "$output" == *"no preferences were changed"* ]]
 }
+
+@test "install_pkg propagates package manager failures" {
+  cat >"$PROJECTR_TEST_ROOT/bin/sudo" <<'SH'
+#!/usr/bin/env bash
+exit 42
+SH
+  chmod +x "$PROJECTR_TEST_ROOT/bin/sudo"
+  source "$SCRIPT_DIR/lib/core/spinner.sh"
+  source "$SCRIPT_DIR/lib/system/detect.sh"
+  source "$SCRIPT_DIR/lib/features/installer.sh"
+  PRIMARY_PKG_MANAGER=apt
+  INSTALLED_PKGS=(); SKIPPED_PKGS=(); FAILED_PKGS=()
+
+  run install_pkg projectr-missing-bin projectr-missing-pkg "Missing Tool"
+  [ "$status" -eq 42 ]
+  [[ " ${FAILED_PKGS[*]} " == *" Missing Tool "* ]]
+}
+
+@test "search install rejects shell metacharacters before manager probing" {
+  source "$SCRIPT_DIR/lib/features/search_install.sh"
+  FAILED_PKGS=()
+
+  run search_and_install 'bad;name'
+  [ "$status" -eq 2 ]
+  [[ "$output" == *"Invalid search term"* ]]
+  [[ " ${FAILED_PKGS[*]} " == *" bad;name "* ]]
+}

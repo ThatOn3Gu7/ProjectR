@@ -28,7 +28,7 @@ projectr_simulation_manager_for_type() {
     local type="${1:-pkg}"
     case "$type" in
         pkg|special) printf '%s\n' "${PRIMARY_PKG_MANAGER:-$(detect_pkg_manager)}" ;;
-        pip|pip3|pipx|cargo|gem|npm|yarn) detect_pkg_for_tool "$type" ;;
+        pip|pip3|pipx|cargo|gem|npm|yarn|pnpm|bun) detect_pkg_for_tool "$type" ;;
         *) printf '%s\n' "${PRIMARY_PKG_MANAGER:-$(detect_pkg_manager)}" ;;
     esac
 }
@@ -46,6 +46,8 @@ projectr_package_simulation() {
         pipx) printf 'install %s\n' "$pkg" ;;
         npm) npm view "$pkg" version >/dev/null 2>&1 && printf 'install %s\n' "$pkg" ;;
         yarn) yarn info "$pkg" version >/dev/null 2>&1 && printf 'install %s\n' "$pkg" ;;
+        pnpm) pnpm view "$pkg" version >/dev/null 2>&1 && printf 'install %s\n' "$pkg" ;;
+        bun) bun pm view "$pkg" version >/dev/null 2>&1 && printf 'install %s\n' "$pkg" ;;
         gem) gem query --remote --exact --name-matches "^${pkg}$" >/dev/null 2>&1 && printf 'install %s\n' "$pkg" ;;
         cargo) cargo search --limit 1 "$pkg" 2>/dev/null | grep -q "^$pkg " && printf 'install %s\n' "$pkg" ;;
         none) printf 'manager-missing %s\n' "$type" ;;
@@ -167,19 +169,30 @@ projectr_dry_run_profile() {
 }
 
 projectr_dry_run_repair() {
-    local json=0 arg entries=() entry cmd
+    local json=0 arg entries=() entry cmd record record_name record_package record_manager
+    local -a records=()
     for arg in "$@"; do
         case "$arg" in
             --json) json=1 ;;
             --*) echo -e "${ERROR}[!] Unknown repair dry-run option: $arg${RST}" >&2; return 2 ;;
         esac
     done
-    for entry in "${TOOLS[@]}"; do
+
+    if ! declare -f projectr_state_records >/dev/null 2>&1 || ! declare -f projectr_state_find_registry_entry >/dev/null 2>&1; then
+        echo -e "${ERROR}[!] State helpers are not loaded; cannot plan repair safely.${RST}" >&2
+        return 1
+    fi
+
+    mapfile -t records < <(projectr_state_records)
+    for record in "${records[@]}"; do
+        IFS=$'	' read -r record_name record_package record_manager <<< "$record"
+        entry=$(projectr_state_find_registry_entry "$record_name" "$record_package") || continue
         IFS='|' read -r _ cmd _ _ _ _ _ _ <<< "$entry"
         command -v "$cmd" >/dev/null 2>&1 || entries+=("$entry")
     done
+
     if [[ ${#entries[@]} -eq 0 ]]; then
-        [[ $json -eq 1 ]] && printf '{"dry_run":true,"plan":[]}\n' || echo -e "${OPTION}[✓] Dry-run repair: no missing tools detected.${RST}"
+        [[ $json -eq 1 ]] && printf '{"dry_run":true,"plan":[]}\n' || echo -e "${OPTION}[✓] Dry-run repair: no missing recorded ProjectR-managed tools detected.${RST}"
         return 0
     fi
     projectr_dry_run_entries "$json" "${entries[@]}"
