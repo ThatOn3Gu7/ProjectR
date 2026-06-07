@@ -36,6 +36,11 @@ projectr_plugin_reject() {
     return 1
 }
 
+projectr_plugin_validate_key() {
+    local key="$1"
+    [[ "$key" =~ ^(cmd|pkg|name|desc|type|extra|category|schema_version|min_projectr_version|platforms|homepage|pkg_[A-Za-z0-9_]+|cmd_[A-Za-z0-9_]+)$ ]]
+}
+
 projectr_plugin_validate_file() {
     local file="$1" plugin_dir="${PROJECTR_TOOLS_DIR:-$SCRIPT_DIR/tools.d}"
     [[ -f "$file" ]] || projectr_plugin_reject "$file" "not a regular file" || return 1
@@ -49,8 +54,6 @@ projectr_plugin_validate_file() {
         *) projectr_plugin_reject "$file" "outside configured plugin directory"; return 1 ;;
     esac
 
-    # Reject TOML keys outside the data schema before reading values. This keeps
-    # plugin authors from shadowing core variables such as SCRIPT_DIR or TOOLS.
     local bad_key
     bad_key=$(awk -F '=' '
         /^[[:space:]]*($|#|\[)/ { next }
@@ -59,9 +62,11 @@ projectr_plugin_validate_file() {
             key=$1
             sub(/^[[:space:]]*/, "", key)
             sub(/[[:space:]]*$/, "", key)
-            if (key !~ /^(cmd|pkg|name|desc|type|extra|category)$/) { print key; exit }
+            print key
         }
-    ' "$file")
+    ' "$file" | while IFS= read -r key; do
+        [[ "$key" =~ ^(cmd|pkg|name|desc|type|extra|category|schema_version|min_projectr_version|platforms|homepage|pkg_[A-Za-z0-9_]+|cmd_[A-Za-z0-9_]+)$ ]] || { echo "$key"; break; }
+    done)
     [[ -z "$bad_key" ]] || { projectr_plugin_reject "$file" "unsupported key '$bad_key'"; return 1; }
 }
 
@@ -77,9 +82,21 @@ projectr_plugin_safe_token() {
     [[ "$value" =~ ^[A-Za-z0-9._@+:/=-]+$ ]]
 }
 
+projectr_plugin_supported_platform() {
+    local platforms="$1"
+    [[ -z "$platforms" ]] && return 0
+    local os
+    os=$(uname -s 2>/dev/null | tr '[:upper:]' '[:lower:]')
+    case ",$platforms," in
+        *,all,*|*,$os,*) return 0 ;;
+        *) return 1 ;;
+    esac
+}
+
 projectr_load_tool_plugin() {
     local file="$1"
-    local cmd pkg name desc type extra cat num
+    local cmd pkg name desc type extra cat num schema_version min_version platforms homepage
+    local line key value manager
 
     projectr_plugin_validate_file "$file" || return 0
 
@@ -90,9 +107,26 @@ projectr_load_tool_plugin() {
     type=$(projectr_toml_value type "$file")
     extra=$(projectr_toml_value extra "$file")
     cat=$(projectr_toml_value category "$file")
+    schema_version=$(projectr_toml_value schema_version "$file")
+    min_version=$(projectr_toml_value min_projectr_version "$file")
+    platforms=$(projectr_toml_value platforms "$file")
+    homepage=$(projectr_toml_value homepage "$file")
 
     [[ -n "$cmd" && -n "$pkg" && -n "$name" ]] || {
         projectr_plugin_reject "$file" "missing required cmd/pkg/name"
+        return 0
+    }
+
+    [[ -z "$schema_version" || "$schema_version" == "1" ]] || {
+        projectr_plugin_reject "$file" "unsupported schema_version '$schema_version'"
+        return 0
+    }
+    [[ -z "$min_version" || "$min_version" == "1.4" ]] || {
+        projectr_plugin_reject "$file" "requires ProjectR version '$min_version'"
+        return 0
+    }
+    projectr_plugin_supported_platform "$platforms" || {
+        log_info "Skipping plugin '$file' because it does not target this platform ($platforms)" "plugin"
         return 0
     }
 
@@ -101,6 +135,7 @@ projectr_load_tool_plugin() {
     projectr_plugin_safe_text "$name" || { projectr_plugin_reject "$file" "unsafe name"; return 0; }
     projectr_plugin_safe_text "$desc" || { projectr_plugin_reject "$file" "unsafe desc"; return 0; }
     projectr_plugin_safe_text "$cat" || { projectr_plugin_reject "$file" "unsafe category"; return 0; }
+    projectr_plugin_safe_text "$homepage" || { projectr_plugin_reject "$file" "unsafe homepage"; return 0; }
 
     desc=${desc:-Plugin-provided tool}
     type=${type:-pkg}
@@ -108,7 +143,7 @@ projectr_load_tool_plugin() {
     cat=${cat:-Plugin}
 
     case "$type" in
-        pkg|pip|pip3|pipx|cargo|gem|npm|yarn|pnpm|bun) ;;
+        pkg|pip|pip3|pipx|cargo|gem|npm|yarn|pnpm|bun|go|composer) ;;
         special)
             projectr_plugin_reject "$file" "type 'special' is not allowed in plugins"
             return 0
@@ -121,7 +156,24 @@ projectr_load_tool_plugin() {
     [[ "$extra" == "-" || -z "$extra" ]] || { projectr_plugin_reject "$file" "extra hooks are disabled for plugins"; return 0; }
     extra="-"
 
+    while IFS='=' read -r key value || [[ -n "$key" ]]; do
+        key=$(printf '%s' "$key" | sed 's/^[[:space:]]*//; s/[[:space:]]*$//')
+        value=$(printf '%s' "$value" | sed 's/^[[:space:]]*//; s/[[:space:]]*$//; s/^"//; s/"$//')
+        case "$key" in
+            pkg_*)
+                manager="${key#pkg_}"
+                projectr_plugin_safe_token "$value" || { projectr_plugin_reject "$file" "unsafe package override for $manager"; return 0; }
+                PROJECTR_TOOL_PKG_OVERRIDES["$cmd:${manager//_/-}"]="$value"
+                ;;
+            cmd_*)
+                manager="${key#cmd_}"
+                projectr_plugin_safe_token "$value" || { projectr_plugin_reject "$file" "unsafe command override for $manager"; return 0; }
+                PROJECTR_TOOL_CMD_OVERRIDES["$cmd:${manager//_/-}"]="$value"
+                ;;
+        esac
+    done < "$file"
+
     num=$(( ${#TOOLS[@]} + 1 ))
     TOOLS+=("$num|$cmd|$pkg|$name|$desc|$type|$extra|$cat")
-    log_info "Loaded tool plugin '$name' from $file as #$num type=$type" "plugin"
+    log_info "Loaded tool plugin '$name' from $file as #$num type=$type homepage=${homepage:-n/a}" "plugin"
 }
