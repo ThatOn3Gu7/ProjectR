@@ -110,7 +110,9 @@ project --self-update
 bash setup.sh
 ```
 
-`project --self-update` reruns the original checkout's `setup.sh` with the same command name, install directory, and launcher directory.
+`project --self-update` reruns the original checkout's `setup.sh` with the same command name, install directory, and launcher directory. In current v2 behavior it runs in a non-interactive refresh mode, so the setup menu does not appear during self-update.
+
+When you run `project update` from an installed launcher copy, ProjectR now refreshes the hidden installed app too. It prefers the original git checkout when it still exists, and falls back to updating the installed copy directly from the configured GitHub repo URL when needed.
 
 You can inspect where the launcher points with:
 
@@ -269,7 +271,12 @@ category = "Dev"
 
 ### Doctor and update
 
-`project doctor` checks PATH, core dependencies, package manager detection, state database support, and log writability. Add `--json` for CI or bug reports. `project update` runs a fast-forward git update and prints a clean git-log summary of any commits that were applied; if nothing changed, it explains that the checkout was already current.
+`project doctor` checks PATH, core dependencies, package manager detection, privilege capabilities, scheduler status, state database support, and log writability. Add `--json` for CI or bug reports.
+
+`project update` now has two behaviors:
+
+- **inside a real git checkout**: it performs a fast-forward git update and prints a git-log summary of applied commits.
+- **from an installed launcher copy**: it refreshes the hidden installed app directory. It prefers the original checkout if it still exists, and otherwise falls back to the configured GitHub repo URL.
 
 
 | Flag | What it does |
@@ -279,10 +286,12 @@ category = "Dev"
 | `--list <target>`, `--list=<target>` | Show `tools`, `installed`, `categories`, `manager`, or `state`. |
 | `--search <name>`, `--search=<name>` | Search ProjectR and supported package managers for a package name. |
 | `--install <name>`, `--install=<name>` | Install a tool non-interactively. |
+| `--source <manager>`, `--source=<manager>` | Force a specific install/search source manager when supported. |
 | `--uninstall <name>`, `--uninstall=<name>` | Uninstall a tool non-interactively. |
 | `--log`, `--log <n>`, `--log=<n>` | Print recent install log lines. |
 | `--reset` | Clear saved ProjectR preferences. |
 | `--export` | Export a profile of currently installed ProjectR tools. |
+| `--export-lock` | Export a richer YAML lockfile with versions and managers. |
 | `--import <file>`, `--import=<file>` | Install tools listed in an exported profile. |
 | `--diff-profile <file>`, `--diff-profile=<file>` | Compare a YAML/TOML profile with the current machine. |
 | `--doctor [--json]` | Run health checks, optionally as JSON for CI/bug reports. |
@@ -293,7 +302,8 @@ Launcher-only helper flags:
 
 | Flag | What it does |
 | --- | --- |
-| `--self-update`, `--projectr-update` | Refresh the hidden installed copy from the original checkout. |
+| `--self-update`, `--projectr-update` | Refresh the hidden installed copy in non-interactive mode. |
+| `update`, `--update` | Update the current git checkout, or refresh the installed copy when run from the launcher. |
 | `--setup-info`, `--projectr-info` | Show launcher, install, source, and bin paths. |
 
 Examples:
