@@ -104,10 +104,10 @@ declare -A SI_BIN_MAP=(
 
 declare -A SI_TIER=(
     [apt]=1   [apt-get]=1  [pacman]=1 [dnf]=1   [yum]=1    [zypper]=1
-    [apk]=1   [emerge]=1   [xbps]=1   [nix]=1   [brew]=1   [port]=1
-    [pkg]=1   [pkg_add]=1  [winget]=1 [choco]=1 [scoop]=1
+    [apk]=1   [emerge]=1   [xbps]=1   [nix]=1   [brew]=1   [macports]=1 [bsd-pkg]=1
+    [pkg]=1   [pkg_add]=1  [winget]=1 [choco]=1 [scoop]=1 [guix]=1 [eopkg]=1 [urpmi]=1 [slackpkg]=1
     [pipx]=2  [flatpak]=2  [snap]=2
-    [cargo]=3 [npm]=3      [yarn]=3   [pip]=3   [pip3]=3   [gem]=3
+    [cargo]=3 [npm]=3      [yarn]=3   [pip]=3   [pip3]=3   [gem]=3 [go]=3 [composer]=3
 )
 
 # ── Helpers ───
@@ -121,27 +121,11 @@ _si_normalize() {
 
 _si_check_avail() {
     local pkg="$1" mgr="$2"
-    local t=""
-    command -v timeout >/dev/null 2>&1 && t="timeout 8"
-
-    case "$mgr" in
-        apt|apt-get)   $t apt-cache show "$pkg" >/dev/null 2>&1 ;;
-        pacman)        $t pacman -Ss "^${pkg}$" >/dev/null 2>&1 ;;
-        dnf|yum)       $t $mgr info "$pkg" >/dev/null 2>&1 ;;
-        brew)          $t brew info "$pkg" >/dev/null 2>&1 ;;
-        pkg)           $t pkg show "$pkg" >/dev/null 2>&1 ;;
-        npm)           $t npm info "$pkg" >/dev/null 2>&1 ;;
-        yarn)          $t yarn info "$pkg" >/dev/null 2>&1 ;;
-        pnpm)          $t pnpm view "$pkg" version >/dev/null 2>&1 ;;
-        bun)           $t bun pm view "$pkg" version >/dev/null 2>&1 ;;
-        pip|pip3)      $t $mgr index versions "$pkg" >/dev/null 2>&1 \
-        || $t $mgr install --dry-run "$pkg" >/dev/null 2>&1 ;;
-        pipx)          $t pip index versions "$pkg" >/dev/null 2>&1 \
-        || $t pip install --dry-run "$pkg" >/dev/null 2>&1 ;;
-        gem)           $t gem list -r "^${pkg}$" >/dev/null 2>&1 ;;
-        cargo)         $t cargo search --limit 1 "$pkg" 2>/dev/null | grep -q "^$pkg " ;;
-        *)             return 0 ;;
-    esac
+    if declare -f projectr_manager_availability_check >/dev/null 2>&1; then
+        projectr_manager_availability_check "$pkg" "$mgr"
+    else
+        return 1
+    fi
 }
 
 _si_find_in_tools() {
@@ -283,17 +267,26 @@ search_and_install() {
     matched=$(_si_find_in_tools "$input")
     if [ -n "$matched" ]; then
         IFS="|" read -r num cmd pkg name desc type extra cat <<< "$matched"
+        local found_manager="${PROJECTR_INSTALL_MANAGER_OVERRIDE:-${PRIMARY_PKG_MANAGER:-$(detect_pkg_manager)}}"
+        local found_tool_id found_cmd found_pkg
+        found_tool_id=$(projectr_tool_id "$cmd")
+        found_cmd=$(projectr_effective_cmd "$found_tool_id" "$cmd" "$found_manager")
+        found_pkg=$(projectr_effective_package "$found_tool_id" "$pkg" "$found_manager")
         echo -e "${OPTION}  [✓] Found in tool list: ${BOLD_WHITE}$name${RST} ${DIM}(#$num – $cat)${RST}"
-        sleep 2
+        sleep 1
         echo ""
 
-        if command -v "$cmd" >/dev/null 2>&1; then
+        if command -v "$found_cmd" >/dev/null 2>&1; then
             echo -e "${OPTION}  [✓] $name is already installed — nothing to do.${RST}"
             SKIPPED_PKGS+=("$name")
-            sleep 2; return 0
+            sleep 1; return 0
         fi
 
-        projectr_install_tool_by_fields "$cmd" "$pkg" "$name" "$type" "$extra"
+        if [[ "$type" == "pkg" && -n "${PROJECTR_INSTALL_MANAGER_OVERRIDE:-}" ]]; then
+            install_pkg "$cmd" "$pkg" "$name" "$PROJECTR_INSTALL_MANAGER_OVERRIDE"
+        else
+            projectr_install_tool_by_fields "$cmd" "$pkg" "$name" "$type" "$extra"
+        fi
         return
     fi
 
@@ -352,46 +345,47 @@ search_and_install() {
             done
         fi
 
-        echo ""
-        echo -ne "  ${BRIGHT_MAGENTA}[*] Pick a number to install, or press Enter to skip: ${RST}"
-        read -r pick
-
-        if [[ "$pick" =~ ^[0-9]+$ ]] && (( pick >= 1 && pick <= count )); then
-            local selected="${suggestion_array[$((pick - 1))]}"
-            local tool_info=$(_si_find_in_tools "$selected")
-            if [ -n "$tool_info" ]; then
-                IFS="|" read -r num cmd pkg name desc type extra cat <<< "$tool_info"
-                echo ""
-                echo -e "${INFO}  [*] Installing ${BOLD_WHITE}$name${RST}..."
-                sleep 2
-                projectr_install_tool_by_fields "$cmd" "$pkg" "$name" "$type" "$extra"
-                return
-            else
-                echo ""
-                echo -e "${INFO}  [*] Routing '${BOLD_WHITE}$selected${RST}' through package manager...${RST}"
-                sleep 2
-                local new_norm; new_norm=$(_si_normalize "$selected")
-                pkg="${new_norm%|*}"
-                binary="${new_norm#*|}"
-            fi
+        if [[ "${NON_INTERACTIVE:-0}" == "1" ]]; then
+            echo -e "${DIM}      Non-interactive mode — continuing with normal scan.${RST}"
+            echo ""
         else
-            echo -e "${DIM}      Skipped — continuing with normal scan.${RST}"
-            sleep 1
+            echo ""
+            echo -ne "  ${BRIGHT_MAGENTA}[*] Pick a number to install, or press Enter to skip: ${RST}"
+            read -r pick
+
+            if [[ "$pick" =~ ^[0-9]+$ ]] && (( pick >= 1 && pick <= count )); then
+                local selected="${suggestion_array[$((pick - 1))]}"
+                local tool_info=$(_si_find_in_tools "$selected")
+                if [ -n "$tool_info" ]; then
+                    IFS="|" read -r num cmd pkg name desc type extra cat <<< "$tool_info"
+                    echo ""
+                    echo -e "${INFO}  [*] Installing ${BOLD_WHITE}$name${RST}..."
+                    sleep 1
+                    projectr_install_tool_by_fields "$cmd" "$pkg" "$name" "$type" "$extra"
+                    return
+                else
+                    echo ""
+                    echo -e "${INFO}  [*] Routing '${BOLD_WHITE}$selected${RST}' through package manager...${RST}"
+                    sleep 1
+                    local new_norm; new_norm=$(_si_normalize "$selected")
+                    pkg="${new_norm%|*}"
+                    binary="${new_norm#*|}"
+                fi
+            else
+                echo -e "${DIM}      Skipped — continuing with normal scan.${RST}"
+                sleep 1
+            fi
+            echo ""
         fi
-        echo ""
     fi
 
-    local sys_pm; sys_pm="${PRIMARY_PKG_MANAGER:-$(detect_pkg_manager)}"
-    local candidates=()
-    [ -n "$sys_pm" ] && candidates+=("$sys_pm")
-    for lm in cargo npm yarn pnpm bun pipx pip pip3 gem; do
-        command -v "$lm" >/dev/null 2>&1 && candidates+=("$lm")
-    done
-
+    local override_mgr="${PROJECTR_INSTALL_MANAGER_OVERRIDE:-}"
     local unique=()
-    for m in "${candidates[@]}"; do
-        [[ " ${unique[*]} " == *" $m "* ]] || unique+=("$m")
-    done
+    if [[ -n "$override_mgr" ]]; then
+        unique=("$override_mgr")
+    else
+        mapfile -t unique < <(projectr_candidate_managers)
+    fi
     local available=()
     local total_mgrs=${#unique[@]}
     local mgr_idx=0
@@ -418,7 +412,9 @@ search_and_install() {
     fi
 
     local chosen="${available[0]}"
-    if [ ${#available[@]} -gt 1 ]; then
+    if [[ -n "$override_mgr" || "${NON_INTERACTIVE:-0}" == "1" ]]; then
+        [[ -n "$override_mgr" ]] && chosen="$override_mgr"
+    elif [ ${#available[@]} -gt 1 ]; then
         echo ""
         echo -e "${INFO}  [?] Multiple sources found — choose one:${RST}"
         echo ""
@@ -459,7 +455,7 @@ search_and_install() {
         npm|yarn|pnpm|bun) install_lang "$chosen" "$pkg" "$input" "$binary" ;;
         gem)           install_lang "gem"   "$pkg" "$input" "$binary" ;;
         cargo)         install_lang "cargo" "$pkg" "$input" "$binary" ;;
-        *)             install_pkg "$binary" "$pkg" "$input" ;;
+        *)             install_pkg "$binary" "$pkg" "$input" "$chosen" ;;
     esac
 }
 
