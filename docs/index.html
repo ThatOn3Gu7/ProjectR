@@ -4,719 +4,1304 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ProjectR — Terminal Setup Assistant</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
 <style>
-/* ============================== CSS RESET & BASE ============================== */
+/* ═══════════════════════════════════════════════════════════
+   RESET & CSS VARIABLES
+═══════════════════════════════════════════════════════════ */
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-:root{
-  --bg:#0a0e17;--bg2:#111827;--bg3:#1e293b;--bg4:#253449;
-  --text:#e2e8f0;--text-dim:#94a3b8;--text-bright:#f8fafc;
-  --accent:#22d3ee;--accent2:#a78bfa;--accent3:#34d399;--accent4:#f472b6;
-  --gradient:linear-gradient(135deg,#22d3ee,#a78bfa,#f472b6);
-  --gradient2:linear-gradient(135deg,#34d399,#22d3ee);
-  --card-border:rgba(34,211,238,.15);--card-bg:rgba(17,24,39,.6);
-  --radius:16px;--radius-sm:10px;
-  --font-mono:'Courier New',Consolas,'Liberation Mono',monospace;
-  --font-sans:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Oxygen,sans-serif;
-  --max-w:1200px;
-  --transition:all .3s cubic-bezier(.4,0,.2,1);
-}
-html{scroll-behavior:smooth;font-size:16px}
-body{font-family:var(--font-sans);background:var(--bg);color:var(--text);line-height:1.7;overflow-x:hidden}
-a{color:var(--accent);text-decoration:none;transition:var(--transition)}
-a:hover{color:var(--accent2)}
-h1,h2,h3,h4{color:var(--text-bright);font-weight:700}
-::selection{background:var(--accent);color:var(--bg)}
 
-/* Scrollbar */
-::-webkit-scrollbar{width:8px}
-::-webkit-scrollbar-track{background:var(--bg2)}
-::-webkit-scrollbar-thumb{background:var(--bg4);border-radius:4px}
-::-webkit-scrollbar-thumb:hover{background:var(--accent)}
+:root {
+  --bg:        #050810;
+  --bg2:       #080d1a;
+  --bg3:       #0d1526;
+  --bg4:       #131e33;
+  --bg5:       #1a2640;
 
-/* ============================== SIDEBAR NAV ============================== */
-.sidebar{
-  position:fixed;top:0;left:0;width:280px;height:100vh;
-  background:var(--bg2);border-right:1px solid var(--card-border);
-  padding:24px 0;overflow-y:auto;z-index:100;
-  transition:transform .3s ease;
-}
-.sidebar-brand{
-  display:flex;align-items:center;gap:12px;
-  padding:0 24px 24px;border-bottom:1px solid var(--card-border);
-  margin-bottom:16px;
-}
-.sidebar-brand .logo{
-  width:40px;height:40px;border-radius:10px;
-  background:var(--gradient);display:flex;align-items:center;justify-content:center;
-  font-weight:900;font-size:18px;color:var(--bg);flex-shrink:0;
-}
-.sidebar-brand h2{font-size:1.1rem;background:var(--gradient);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
-.sidebar-brand .version{font-size:.7rem;color:var(--text-dim);display:block;-webkit-text-fill-color:var(--text-dim)}
-.sidebar nav{display:flex;flex-direction:column;gap:2px;padding:0 12px}
-.sidebar nav a{
-  display:flex;align-items:center;gap:10px;
-  padding:10px 14px;border-radius:var(--radius-sm);
-  font-size:.88rem;color:var(--text-dim);transition:var(--transition);
-}
-.sidebar nav a:hover,.sidebar nav a.active{background:rgba(34,211,238,.08);color:var(--accent)}
-.sidebar nav a .nav-icon{font-size:1.1rem;width:22px;text-align:center;flex-shrink:0}
-.sidebar nav .nav-group{
-  font-size:.7rem;text-transform:uppercase;letter-spacing:.08em;
-  color:var(--accent2);padding:16px 14px 6px;font-weight:600;
+  --text:      #c8d8f0;
+  --text-dim:  #5a7290;
+  --text-mid:  #8aa4c0;
+  --text-bright: #eef4ff;
+
+  --cyan:      #00e5ff;
+  --cyan-dim:  #0099bb;
+  --violet:    #b06aff;
+  --violet-dim:#7040b0;
+  --green:     #00ffb3;
+  --green-dim: #009966;
+  --pink:      #ff5caa;
+  --pink-dim:  #aa2266;
+  --gold:      #ffc94d;
+
+  --g1: linear-gradient(135deg, #00e5ff, #b06aff);
+  --g2: linear-gradient(135deg, #00ffb3, #00e5ff);
+  --g3: linear-gradient(135deg, #b06aff, #ff5caa);
+  --g4: linear-gradient(135deg, #ffc94d, #ff5caa);
+
+  --border:    rgba(0,229,255,0.08);
+  --border-h:  rgba(0,229,255,0.25);
+  --radius:    18px;
+  --radius-sm: 10px;
+  --radius-xs: 6px;
+
+  --font-mono: 'Space Mono', monospace;
+  --font-display: 'Syne', sans-serif;
+  --font-body: 'DM Sans', sans-serif;
+
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --max-w: 1180px;
+  --sidebar-w: 270px;
+
+  --glow-cyan:   0 0 40px rgba(0,229,255,0.15), 0 0 80px rgba(0,229,255,0.05);
+  --glow-violet: 0 0 40px rgba(176,106,255,0.15), 0 0 80px rgba(176,106,255,0.05);
+  --glow-green:  0 0 40px rgba(0,255,179,0.12), 0 0 80px rgba(0,255,179,0.04);
 }
 
-/* hamburger */
-.hamburger{
-  display:none;position:fixed;top:16px;left:16px;z-index:200;
-  background:var(--bg3);border:1px solid var(--card-border);
-  border-radius:8px;padding:8px 10px;cursor:pointer;
-  color:var(--text);font-size:1.3rem;line-height:1;
-}
-.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:90}
-
-/* ============================== MAIN CONTENT ============================== */
-.main{margin-left:280px;min-height:100vh}
-
-/* ============================== HERO ============================== */
-.hero{
-  position:relative;overflow:hidden;
-  padding:100px 40px 80px;text-align:center;
-  background:linear-gradient(180deg,rgba(34,211,238,.06) 0%,transparent 60%);
-}
-.hero::before{
-  content:'';position:absolute;top:-200px;left:50%;transform:translateX(-50%);
-  width:800px;height:800px;border-radius:50%;
-  background:radial-gradient(circle,rgba(34,211,238,.08) 0%,transparent 70%);
-  pointer-events:none;animation:heroPulse 6s ease-in-out infinite alternate;
-}
-@keyframes heroPulse{0%{transform:translateX(-50%) scale(1);opacity:.6}100%{transform:translateX(-50%) scale(1.15);opacity:1}}
-.hero h1{
-  font-size:clamp(2.2rem,5vw,3.8rem);
-  background:var(--gradient);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
-  margin-bottom:16px;position:relative;
-}
-.hero .subtitle{font-size:clamp(1rem,2vw,1.3rem);color:var(--text-dim);max-width:700px;margin:0 auto 36px}
-.hero-buttons{display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
-.btn{
-  display:inline-flex;align-items:center;gap:8px;
-  padding:12px 28px;border-radius:50px;font-weight:600;font-size:.92rem;
-  border:none;cursor:pointer;transition:var(--transition);
-}
-.btn-primary{background:var(--gradient);color:var(--bg);box-shadow:0 4px 24px rgba(34,211,238,.3)}
-.btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 32px rgba(34,211,238,.45);-webkit-text-fill-color:var(--bg);color:var(--bg)}
-.btn-outline{background:transparent;border:2px solid var(--accent);color:var(--accent)}
-.btn-outline:hover{background:rgba(34,211,238,.1);transform:translateY(-2px);color:var(--accent)}
-.hero-terminal{
-  margin:48px auto 0;max-width:700px;
-  background:var(--bg2);border:1px solid var(--card-border);
-  border-radius:var(--radius);overflow:hidden;text-align:left;
-  box-shadow:0 20px 60px rgba(0,0,0,.4);
-  animation:floatIn .8s ease;
-}
-@keyframes floatIn{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
-.terminal-bar{
-  display:flex;align-items:center;gap:8px;
-  padding:12px 16px;background:var(--bg3);
-  border-bottom:1px solid var(--card-border);
-}
-.terminal-dot{width:12px;height:12px;border-radius:50%}
-.terminal-dot.r{background:#ef4444}.terminal-dot.y{background:#eab308}.terminal-dot.g{background:#22c55e}
-.terminal-title{margin-left:8px;font-size:.75rem;color:var(--text-dim)}
-.terminal-body{padding:20px;font-family:var(--font-mono);font-size:.85rem;line-height:1.8}
-.terminal-body .prompt{color:var(--accent3)}
-.terminal-body .cmd{color:var(--text-bright)}
-.terminal-body .comment{color:var(--text-dim);font-style:italic}
-.terminal-body .output{color:var(--accent)}
-
-/* Stats ribbon */
-.stats{
-  display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
-  gap:20px;padding:0 40px;max-width:var(--max-w);margin:-30px auto 0;
-  position:relative;z-index:2;
-}
-.stat-card{
-  background:var(--card-bg);backdrop-filter:blur(12px);
-  border:1px solid var(--card-border);border-radius:var(--radius);
-  padding:24px;text-align:center;
-  transition:var(--transition);
-}
-.stat-card:hover{transform:translateY(-4px);border-color:var(--accent)}
-.stat-number{
-  font-size:2.2rem;font-weight:800;
-  background:var(--gradient);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
-}
-.stat-label{font-size:.82rem;color:var(--text-dim);margin-top:4px}
-
-/* ============================== SECTIONS ============================== */
-.section{padding:80px 40px;max-width:var(--max-w);margin:0 auto}
-.section-header{text-align:center;margin-bottom:56px}
-.section-header h2{font-size:clamp(1.6rem,3vw,2.4rem);margin-bottom:12px}
-.section-header p{color:var(--text-dim);max-width:600px;margin:0 auto;font-size:1.05rem}
-.badge{
-  display:inline-block;padding:4px 14px;border-radius:50px;
-  font-size:.72rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;
-  margin-bottom:12px;
-}
-.badge-cyan{background:rgba(34,211,238,.12);color:var(--accent)}
-.badge-purple{background:rgba(167,139,250,.12);color:var(--accent2)}
-.badge-green{background:rgba(52,211,153,.12);color:var(--accent3)}
-.badge-pink{background:rgba(244,114,182,.12);color:var(--accent4)}
-
-/* Features grid */
-.features-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:24px}
-.feature-card{
-  background:var(--card-bg);backdrop-filter:blur(12px);
-  border:1px solid var(--card-border);border-radius:var(--radius);
-  padding:32px;transition:var(--transition);position:relative;overflow:hidden;
-}
-.feature-card::before{
-  content:'';position:absolute;top:0;left:0;right:0;height:3px;
-  background:var(--gradient);opacity:0;transition:var(--transition);
-}
-.feature-card:hover{transform:translateY(-4px);border-color:rgba(34,211,238,.3)}
-.feature-card:hover::before{opacity:1}
-.feature-icon{
-  width:48px;height:48px;border-radius:12px;
-  display:flex;align-items:center;justify-content:center;
-  font-size:1.5rem;margin-bottom:16px;
-}
-.feature-icon.cyan{background:rgba(34,211,238,.12)}
-.feature-icon.purple{background:rgba(167,139,250,.12)}
-.feature-icon.green{background:rgba(52,211,153,.12)}
-.feature-icon.pink{background:rgba(244,114,182,.12)}
-.feature-card h3{font-size:1.1rem;margin-bottom:8px}
-.feature-card p{font-size:.9rem;color:var(--text-dim);line-height:1.6}
-
-/* Code blocks */
-.code-block{
-  background:var(--bg2);border:1px solid var(--card-border);
-  border-radius:var(--radius-sm);overflow:hidden;margin:20px 0;
-}
-.code-header{
-  display:flex;justify-content:space-between;align-items:center;
-  padding:10px 16px;background:var(--bg3);
-  border-bottom:1px solid var(--card-border);
-  font-size:.78rem;color:var(--text-dim);
-}
-.copy-btn{
-  background:transparent;border:1px solid var(--card-border);
-  color:var(--text-dim);padding:4px 12px;border-radius:6px;
-  cursor:pointer;font-size:.75rem;transition:var(--transition);
-}
-.copy-btn:hover{border-color:var(--accent);color:var(--accent)}
-.code-content{
-  padding:16px 20px;font-family:var(--font-mono);font-size:.85rem;
-  line-height:1.8;overflow-x:auto;color:var(--text);white-space:pre;
-}
-.code-content .kw{color:var(--accent2)}
-.code-content .str{color:var(--accent3)}
-.code-content .cm{color:var(--text-dim);font-style:italic}
-.code-content .fl{color:var(--accent)}
-.code-content .op{color:var(--accent4)}
-
-/* Tool categories */
-.categories-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:20px}
-.category-card{
-  background:var(--card-bg);backdrop-filter:blur(12px);
-  border:1px solid var(--card-border);border-radius:var(--radius);
-  padding:24px;transition:var(--transition);
-}
-.category-card:hover{border-color:rgba(34,211,238,.3);transform:translateY(-3px)}
-.category-header{display:flex;align-items:center;gap:12px;margin-bottom:12px}
-.category-icon{font-size:1.6rem}
-.category-name{font-weight:700;font-size:1rem}
-.category-count{
-  margin-left:auto;font-size:.72rem;padding:2px 10px;
-  background:rgba(34,211,238,.1);color:var(--accent);border-radius:50px;
-}
-.category-tools{display:flex;flex-wrap:wrap;gap:6px}
-.tool-tag{
-  padding:4px 10px;background:var(--bg3);border-radius:6px;
-  font-size:.75rem;color:var(--text-dim);border:1px solid transparent;
-  transition:var(--transition);
-}
-.tool-tag:hover{border-color:var(--accent);color:var(--accent)}
-
-/* Package managers */
-.managers-flex{display:flex;flex-wrap:wrap;gap:12px;justify-content:center}
-.manager-chip{
-  padding:8px 18px;background:var(--bg3);border:1px solid var(--card-border);
-  border-radius:50px;font-size:.82rem;color:var(--text-dim);
-  transition:var(--transition);
-}
-.manager-chip:hover{border-color:var(--accent);color:var(--accent);background:rgba(34,211,238,.05)}
-
-/* Flags table */
-.flags-table{width:100%;border-collapse:separate;border-spacing:0;border-radius:var(--radius);overflow:hidden;border:1px solid var(--card-border)}
-.flags-table th{
-  background:var(--bg3);padding:14px 20px;text-align:left;
-  font-size:.82rem;text-transform:uppercase;letter-spacing:.05em;color:var(--accent);
-  border-bottom:1px solid var(--card-border);
-}
-.flags-table td{padding:12px 20px;border-bottom:1px solid var(--card-border);font-size:.88rem}
-.flags-table tr:last-child td{border-bottom:none}
-.flags-table tr:hover td{background:rgba(34,211,238,.03)}
-.flags-table code{
-  font-family:var(--font-mono);font-size:.82rem;
-  background:var(--bg3);padding:2px 8px;border-radius:4px;color:var(--accent);
+html { scroll-behavior: smooth; font-size: 16px; }
+body {
+  font-family: var(--font-body);
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.7;
+  overflow-x: hidden;
+  cursor: none;
 }
 
-/* Steps */
-.steps{display:flex;flex-direction:column;gap:32px;position:relative;padding-left:48px}
-.steps::before{content:'';position:absolute;left:18px;top:8px;bottom:8px;width:2px;background:var(--bg4)}
-.step{position:relative}
-.step-number{
-  position:absolute;left:-48px;top:0;width:36px;height:36px;
-  border-radius:50%;display:flex;align-items:center;justify-content:center;
-  font-weight:800;font-size:.85rem;
-  background:var(--gradient);color:var(--bg);z-index:1;
-}
-.step h3{font-size:1.05rem;margin-bottom:8px}
-.step p{color:var(--text-dim);font-size:.9rem}
+a { color: var(--cyan); text-decoration: none; transition: color 0.25s; }
+a:hover { color: var(--violet); }
+::selection { background: var(--cyan); color: var(--bg); }
 
-/* Architecture tree */
-.tree{
-  font-family:var(--font-mono);font-size:.85rem;
-  background:var(--bg2);border:1px solid var(--card-border);
-  border-radius:var(--radius);padding:24px 28px;line-height:2;
-  color:var(--text-dim);overflow-x:auto;
+/* ═══════════════════════════════════════════════════════════
+   CUSTOM CURSOR
+═══════════════════════════════════════════════════════════ */
+#cursor-dot {
+  width: 6px; height: 6px;
+  background: var(--cyan);
+  border-radius: 50%;
+  position: fixed; top: 0; left: 0;
+  pointer-events: none; z-index: 9999;
+  transform: translate(-50%,-50%);
+  transition: transform 0.1s, background 0.2s;
+  box-shadow: 0 0 12px var(--cyan), 0 0 24px rgba(0,229,255,0.4);
 }
-.tree .dir{color:var(--accent2);font-weight:700}
-.tree .file{color:var(--text)}
-.tree .desc{color:var(--text-dim);font-style:italic}
+#cursor-ring {
+  width: 32px; height: 32px;
+  border: 1.5px solid rgba(0,229,255,0.5);
+  border-radius: 50%;
+  position: fixed; top: 0; left: 0;
+  pointer-events: none; z-index: 9998;
+  transform: translate(-50%,-50%);
+  transition: transform 0.18s var(--ease-out-expo), width 0.3s, height 0.3s, border-color 0.3s;
+}
+body.cursor-hover #cursor-ring {
+  width: 48px; height: 48px;
+  border-color: rgba(176,106,255,0.6);
+}
+body.cursor-hover #cursor-dot { background: var(--violet); }
 
-/* FAQ */
-.faq-list{display:flex;flex-direction:column;gap:12px}
-.faq-item{
-  background:var(--card-bg);border:1px solid var(--card-border);
-  border-radius:var(--radius-sm);overflow:hidden;
+/* ═══════════════════════════════════════════════════════════
+   SCROLL PROGRESS BAR
+═══════════════════════════════════════════════════════════ */
+#scroll-bar {
+  position: fixed; top: 0; left: 0; height: 2px;
+  background: var(--g1); z-index: 9997;
+  width: 0%; transition: width 0.1s linear;
+  box-shadow: 0 0 8px var(--cyan);
 }
-.faq-q{
-  display:flex;align-items:center;justify-content:space-between;gap:12px;
-  padding:18px 24px;cursor:pointer;font-weight:600;font-size:.95rem;
-  color:var(--text-bright);transition:var(--transition);
-}
-.faq-q:hover{color:var(--accent)}
-.faq-arrow{transition:transform .3s ease;font-size:.8rem;color:var(--text-dim);flex-shrink:0}
-.faq-item.open .faq-arrow{transform:rotate(180deg)}
-.faq-a{
-  max-height:0;overflow:hidden;transition:max-height .4s ease,padding .3s ease;
-  padding:0 24px;color:var(--text-dim);font-size:.9rem;line-height:1.7;
-}
-.faq-item.open .faq-a{max-height:600px;padding:0 24px 20px}
 
-/* Footer */
-.footer{
-  text-align:center;padding:48px 40px;
-  border-top:1px solid var(--card-border);
-  color:var(--text-dim);font-size:.85rem;
+/* ═══════════════════════════════════════════════════════════
+   AURORA / MESH BACKGROUND
+═══════════════════════════════════════════════════════════ */
+#aurora-canvas {
+  position: fixed; inset: 0;
+  width: 100%; height: 100%;
+  pointer-events: none; z-index: 0;
+  opacity: 0.6;
 }
-.footer a{color:var(--accent)}
-.footer .footer-links{display:flex;gap:24px;justify-content:center;margin-bottom:16px;flex-wrap:wrap}
 
-/* Animations on scroll */
-.reveal{opacity:0;transform:translateY(30px);transition:opacity .6s ease,transform .6s ease}
-.reveal.visible{opacity:1;transform:translateY(0)}
+/* Noise texture overlay */
+body::after {
+  content: '';
+  position: fixed; inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+  pointer-events: none; z-index: 1; opacity: 0.4;
+}
 
-/* ============================== RESPONSIVE ============================== */
-@media(max-width:1024px){
-  .sidebar{transform:translateX(-100%)}
-  .sidebar.open{transform:translateX(0)}
-  .overlay.open{display:block}
-  .hamburger{display:block}
-  .main{margin-left:0}
-  .hero{padding:80px 24px 60px}
-  .section{padding:60px 24px}
-  .stats{padding:0 24px}
+/* ═══════════════════════════════════════════════════════════
+   SIDEBAR
+═══════════════════════════════════════════════════════════ */
+.sidebar {
+  position: fixed; top: 0; left: 0;
+  width: var(--sidebar-w); height: 100vh;
+  background: rgba(8,13,26,0.85);
+  backdrop-filter: blur(24px);
+  border-right: 1px solid var(--border);
+  padding: 28px 0; overflow-y: auto;
+  z-index: 100;
+  transition: transform 0.4s var(--ease-out-expo);
 }
-@media(max-width:640px){
-  .features-grid{grid-template-columns:1fr}
-  .categories-grid{grid-template-columns:1fr}
-  .hero-buttons{flex-direction:column;align-items:center}
-  .btn{width:100%;max-width:300px;justify-content:center}
-  .stats{grid-template-columns:1fr 1fr}
-  .flags-table{font-size:.8rem}
-  .flags-table th,.flags-table td{padding:10px 12px}
+.sidebar::-webkit-scrollbar { width: 4px; }
+.sidebar::-webkit-scrollbar-thumb { background: var(--bg4); border-radius: 2px; }
+
+.sidebar-brand {
+  display: flex; align-items: center; gap: 14px;
+  padding: 0 24px 28px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 18px;
 }
-@media(max-width:400px){
-  .stats{grid-template-columns:1fr}
+.logo-mark {
+  width: 42px; height: 42px; border-radius: 12px;
+  background: var(--g1);
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-display);
+  font-weight: 800; font-size: 20px; color: var(--bg);
+  flex-shrink: 0;
+  box-shadow: var(--glow-cyan);
+  position: relative;
+  overflow: hidden;
+}
+.logo-mark::after {
+  content: '';
+  position: absolute; inset: 0;
+  background: linear-gradient(135deg, rgba(255,255,255,0.25) 0%, transparent 60%);
+}
+.brand-text h2 {
+  font-family: var(--font-display);
+  font-size: 1.15rem; font-weight: 800;
+  background: var(--g1); -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent; background-clip: text;
+  letter-spacing: -0.01em;
+}
+.brand-text .version {
+  font-size: 0.68rem; color: var(--text-dim);
+  font-family: var(--font-mono);
+  letter-spacing: 0.05em;
+}
+
+.sidebar nav { display: flex; flex-direction: column; gap: 1px; padding: 0 14px; }
+.nav-group {
+  font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.12em;
+  color: var(--violet); font-weight: 700;
+  padding: 18px 12px 8px;
+  font-family: var(--font-display);
+}
+.sidebar nav a {
+  display: flex; align-items: center; gap: 10px;
+  padding: 9px 14px; border-radius: var(--radius-xs);
+  font-size: 0.84rem; color: var(--text-dim);
+  transition: all 0.2s; position: relative;
+  overflow: hidden; font-family: var(--font-body);
+}
+.sidebar nav a .nav-icon { font-size: 1rem; width: 20px; text-align: center; flex-shrink: 0; }
+.sidebar nav a::before {
+  content: ''; position: absolute; left: 0; top: 0; bottom: 0;
+  width: 2px; background: var(--g1); opacity: 0;
+  transition: opacity 0.2s;
+}
+.sidebar nav a:hover,
+.sidebar nav a.active {
+  background: rgba(0,229,255,0.06);
+  color: var(--cyan);
+}
+.sidebar nav a:hover::before,
+.sidebar nav a.active::before { opacity: 1; }
+
+/* ═══════════════════════════════════════════════════════════
+   HAMBURGER
+═══════════════════════════════════════════════════════════ */
+.hamburger {
+  display: none; position: fixed; top: 18px; left: 18px; z-index: 200;
+  background: rgba(8,13,26,0.9); backdrop-filter: blur(12px);
+  border: 1px solid var(--border); border-radius: 10px;
+  padding: 9px 12px; cursor: none;
+  color: var(--text); font-size: 1.2rem;
+}
+.overlay {
+  display: none; position: fixed; inset: 0;
+  background: rgba(0,0,0,0.6); backdrop-filter: blur(4px);
+  z-index: 90;
+}
+.overlay.open { display: block; }
+
+/* ═══════════════════════════════════════════════════════════
+   MAIN LAYOUT
+═══════════════════════════════════════════════════════════ */
+.main { margin-left: var(--sidebar-w); position: relative; z-index: 2; }
+
+/* ═══════════════════════════════════════════════════════════
+   HERO
+═══════════════════════════════════════════════════════════ */
+.hero {
+  position: relative; overflow: hidden;
+  padding: 120px 48px 100px;
+  text-align: center;
+  min-height: 100vh;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+}
+
+/* Radial vignette */
+.hero::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: radial-gradient(ellipse 80% 60% at 50% 40%, rgba(0,229,255,0.04) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+/* Scanlines */
+.hero::after {
+  content: '';
+  position: absolute; inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0,229,255,0.008) 2px,
+    rgba(0,229,255,0.008) 4px
+  );
+  pointer-events: none;
+}
+
+.hero-eyebrow {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 6px 18px; border-radius: 50px;
+  border: 1px solid rgba(0,229,255,0.2);
+  background: rgba(0,229,255,0.05);
+  font-family: var(--font-mono); font-size: 0.72rem;
+  color: var(--cyan); letter-spacing: 0.08em;
+  margin-bottom: 28px;
+  animation: fadeSlideDown 0.8s var(--ease-out-expo) both;
+}
+.hero-eyebrow .dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--cyan);
+  box-shadow: 0 0 8px var(--cyan);
+  animation: blink 2s ease-in-out infinite;
+}
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+.hero h1 {
+  font-family: var(--font-display);
+  font-size: clamp(3.5rem, 8vw, 7rem);
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  line-height: 0.95;
+  margin-bottom: 24px;
+  animation: fadeSlideDown 0.9s var(--ease-out-expo) 0.1s both;
+}
+.hero h1 .line1 {
+  display: block;
+  background: var(--g1); -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent; background-clip: text;
+  position: relative;
+}
+.hero h1 .line2 {
+  display: block; color: var(--text-bright);
+  -webkit-text-fill-color: var(--text-bright);
+}
+
+.hero-sub {
+  font-size: clamp(1rem, 1.8vw, 1.2rem);
+  color: var(--text-mid); max-width: 600px; margin: 0 auto 44px;
+  line-height: 1.7; font-weight: 300;
+  animation: fadeSlideDown 1s var(--ease-out-expo) 0.2s both;
+}
+
+.hero-cta {
+  display: flex; gap: 14px; justify-content: center; flex-wrap: wrap;
+  animation: fadeSlideDown 1s var(--ease-out-expo) 0.3s both;
+  margin-bottom: 64px;
+}
+
+/* Buttons */
+.btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 13px 30px; border-radius: 50px;
+  font-weight: 500; font-size: 0.9rem;
+  border: none; cursor: none;
+  transition: all 0.3s var(--ease-spring);
+  font-family: var(--font-body);
+  position: relative; overflow: hidden;
+}
+.btn::after {
+  content: '';
+  position: absolute; inset: 0;
+  background: linear-gradient(135deg, rgba(255,255,255,0.15) 0%, transparent 60%);
+  opacity: 0; transition: opacity 0.3s;
+}
+.btn:hover::after { opacity: 1; }
+.btn:hover { transform: translateY(-3px); }
+.btn:active { transform: translateY(-1px); }
+
+.btn-primary {
+  background: var(--g1); color: var(--bg);
+  box-shadow: 0 4px 24px rgba(0,229,255,0.3), 0 0 0 1px rgba(0,229,255,0.2);
+}
+.btn-primary:hover {
+  box-shadow: 0 8px 40px rgba(0,229,255,0.45), 0 0 0 1px rgba(0,229,255,0.4);
+  color: var(--bg); -webkit-text-fill-color: var(--bg);
+}
+.btn-ghost {
+  background: transparent;
+  border: 1px solid var(--border-h);
+  color: var(--text);
+  backdrop-filter: blur(12px);
+}
+.btn-ghost:hover {
+  border-color: var(--cyan); color: var(--cyan);
+  box-shadow: 0 0 24px rgba(0,229,255,0.12);
+}
+
+/* ═══════════════════════════════════════════════════════════
+   ANIMATED TERMINAL
+═══════════════════════════════════════════════════════════ */
+.hero-terminal {
+  max-width: 680px; width: 100%;
+  margin: 0 auto;
+  background: rgba(8,13,26,0.8);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow:
+    0 0 0 1px rgba(0,229,255,0.04),
+    0 24px 80px rgba(0,0,0,0.6),
+    0 0 60px rgba(0,229,255,0.06);
+  animation: fadeSlideUp 1.2s var(--ease-out-expo) 0.4s both;
+  position: relative;
+}
+.hero-terminal::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: linear-gradient(135deg, rgba(0,229,255,0.04) 0%, rgba(176,106,255,0.04) 100%);
+  pointer-events: none;
+}
+
+.term-bar {
+  display: flex; align-items: center; gap: 7px;
+  padding: 14px 18px;
+  background: rgba(5,8,16,0.8);
+  border-bottom: 1px solid var(--border);
+  position: relative;
+}
+.term-dot {
+  width: 11px; height: 11px; border-radius: 50%;
+  cursor: none;
+}
+.term-dot.r { background: #ff5f57; box-shadow: 0 0 6px rgba(255,95,87,0.5); }
+.term-dot.y { background: #febc2e; box-shadow: 0 0 6px rgba(254,188,46,0.5); }
+.term-dot.g { background: #28c840; box-shadow: 0 0 6px rgba(40,200,64,0.5); }
+.term-title {
+  position: absolute; left: 50%; transform: translateX(-50%);
+  font-family: var(--font-mono); font-size: 0.7rem; color: var(--text-dim);
+}
+
+.term-body {
+  padding: 22px 24px;
+  font-family: var(--font-mono);
+  font-size: 0.82rem; line-height: 2;
+  min-height: 180px;
+}
+.term-line { display: block; opacity: 0; }
+.term-line.visible { opacity: 1; }
+.term-prompt { color: var(--green); }
+.term-cmd { color: var(--text-bright); }
+.term-comment { color: var(--text-dim); font-style: italic; }
+.term-out { color: var(--cyan); }
+.term-out.success { color: var(--green); }
+.term-cursor {
+  display: inline-block;
+  width: 8px; height: 14px;
+  background: var(--cyan);
+  vertical-align: middle;
+  margin-left: 2px;
+  animation: cursorBlink 1s step-end infinite;
+  box-shadow: 0 0 8px var(--cyan);
+}
+@keyframes cursorBlink { 0%,100%{opacity:1} 50%{opacity:0} }
+
+/* ═══════════════════════════════════════════════════════════
+   STATS RIBBON
+═══════════════════════════════════════════════════════════ */
+.stats-ribbon {
+  padding: 0 48px;
+  max-width: calc(var(--max-w) + 96px);
+  margin: -40px auto 0;
+  position: relative; z-index: 3;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+}
+.stat-card {
+  background: rgba(8,13,26,0.7);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 28px 20px;
+  text-align: center;
+  transition: all 0.35s var(--ease-spring);
+  position: relative; overflow: hidden;
+  cursor: none;
+}
+.stat-card::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: var(--g1); opacity: 0;
+  transition: opacity 0.3s;
+}
+.stat-card:hover {
+  transform: translateY(-6px);
+  border-color: rgba(0,229,255,0.25);
+  box-shadow: var(--glow-cyan);
+}
+.stat-card:hover::before { opacity: 0.03; }
+.stat-number {
+  font-family: var(--font-display);
+  font-size: 2.4rem; font-weight: 800;
+  background: var(--g1); -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent; background-clip: text;
+  display: block; line-height: 1;
+  margin-bottom: 8px;
+}
+.stat-label {
+  font-size: 0.78rem; color: var(--text-dim);
+  font-family: var(--font-body); font-weight: 300;
+  letter-spacing: 0.03em;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   SECTIONS
+═══════════════════════════════════════════════════════════ */
+.section {
+  padding: 100px 48px;
+  max-width: calc(var(--max-w) + 96px);
+  margin: 0 auto;
+}
+
+.section-header {
+  text-align: center;
+  margin-bottom: 64px;
+}
+.section-header h2 {
+  font-family: var(--font-display);
+  font-size: clamp(1.8rem, 3.5vw, 2.8rem);
+  font-weight: 800; letter-spacing: -0.03em;
+  color: var(--text-bright);
+  margin-bottom: 14px;
+}
+.section-header p {
+  color: var(--text-dim); max-width: 560px;
+  margin: 0 auto; font-size: 1rem; font-weight: 300;
+}
+
+/* Badge */
+.badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 5px 14px; border-radius: 50px;
+  font-family: var(--font-mono); font-size: 0.68rem;
+  font-weight: 700; letter-spacing: 0.08em;
+  text-transform: uppercase; margin-bottom: 14px;
+}
+.badge-cyan  { background: rgba(0,229,255,0.08); color: var(--cyan); border: 1px solid rgba(0,229,255,0.15); }
+.badge-violet{ background: rgba(176,106,255,0.08); color: var(--violet); border: 1px solid rgba(176,106,255,0.15); }
+.badge-green { background: rgba(0,255,179,0.08); color: var(--green); border: 1px solid rgba(0,255,179,0.15); }
+.badge-pink  { background: rgba(255,92,170,0.08); color: var(--pink); border: 1px solid rgba(255,92,170,0.15); }
+
+/* ═══════════════════════════════════════════════════════════
+   FEATURES GRID
+═══════════════════════════════════════════════════════════ */
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(310px, 1fr));
+  gap: 20px;
+}
+.feature-card {
+  background: rgba(8,13,26,0.6);
+  backdrop-filter: blur(16px);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 32px 28px;
+  transition: all 0.35s var(--ease-spring);
+  position: relative; overflow: hidden;
+  cursor: none;
+}
+.feature-card::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; height: 2px;
+  background: var(--g1); opacity: 0;
+  transition: opacity 0.3s;
+}
+.feature-card::after {
+  content: '';
+  position: absolute; inset: 0;
+  background: radial-gradient(circle at 50% 0%, rgba(0,229,255,0.05) 0%, transparent 60%);
+  opacity: 0; transition: opacity 0.3s;
+}
+.feature-card:hover {
+  transform: translateY(-6px) scale(1.01);
+  border-color: rgba(0,229,255,0.15);
+  box-shadow: 0 20px 60px rgba(0,0,0,0.4), var(--glow-cyan);
+}
+.feature-card:hover::before { opacity: 1; }
+.feature-card:hover::after { opacity: 1; }
+
+.feature-icon-wrap {
+  width: 48px; height: 48px; border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.4rem; margin-bottom: 18px;
+  position: relative;
+}
+.feature-icon-wrap.cyan   { background: rgba(0,229,255,0.1); box-shadow: 0 0 20px rgba(0,229,255,0.1); }
+.feature-icon-wrap.violet { background: rgba(176,106,255,0.1); box-shadow: 0 0 20px rgba(176,106,255,0.1); }
+.feature-icon-wrap.green  { background: rgba(0,255,179,0.1); box-shadow: 0 0 20px rgba(0,255,179,0.1); }
+.feature-icon-wrap.pink   { background: rgba(255,92,170,0.1); box-shadow: 0 0 20px rgba(255,92,170,0.1); }
+
+.feature-card h3 {
+  font-family: var(--font-display);
+  font-size: 1.05rem; font-weight: 700;
+  color: var(--text-bright); margin-bottom: 8px;
+  letter-spacing: -0.01em;
+}
+.feature-card p { font-size: 0.87rem; color: var(--text-dim); line-height: 1.65; font-weight: 300; }
+
+/* ═══════════════════════════════════════════════════════════
+   CODE BLOCKS
+═══════════════════════════════════════════════════════════ */
+.code-block {
+  background: rgba(5,8,16,0.9);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  overflow: hidden; margin: 20px 0;
+  position: relative;
+}
+.code-block::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; height: 1px;
+  background: var(--g1); opacity: 0.3;
+}
+.code-header {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 10px 18px;
+  background: rgba(8,13,26,0.8);
+  border-bottom: 1px solid var(--border);
+  font-family: var(--font-mono); font-size: 0.72rem; color: var(--text-dim);
+}
+.copy-btn {
+  background: transparent; border: 1px solid var(--border);
+  color: var(--text-dim); padding: 4px 12px; border-radius: 5px;
+  cursor: none; font-family: var(--font-mono); font-size: 0.7rem;
+  transition: all 0.2s;
+}
+.copy-btn:hover { border-color: var(--cyan); color: var(--cyan); }
+.code-content {
+  padding: 18px 22px;
+  font-family: var(--font-mono); font-size: 0.82rem;
+  line-height: 1.9; overflow-x: auto;
+  color: var(--text); white-space: pre;
+}
+.code-content .kw  { color: var(--violet); }
+.code-content .str { color: var(--green); }
+.code-content .cm  { color: var(--text-dim); font-style: italic; }
+.code-content .fl  { color: var(--cyan); }
+.code-content .op  { color: var(--pink); }
+
+/* ═══════════════════════════════════════════════════════════
+   TOOL CATEGORIES
+═══════════════════════════════════════════════════════════ */
+.categories-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 18px;
+}
+.category-card {
+  background: rgba(8,13,26,0.6);
+  backdrop-filter: blur(16px);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 24px;
+  transition: all 0.3s var(--ease-spring);
+  cursor: none;
+  position: relative; overflow: hidden;
+}
+.category-card::before {
+  content: '';
+  position: absolute; bottom: 0; left: 0; right: 0; height: 1px;
+  background: var(--g1); opacity: 0;
+  transition: opacity 0.3s;
+}
+.category-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(0,229,255,0.18);
+  box-shadow: 0 16px 48px rgba(0,0,0,0.3);
+}
+.category-card:hover::before { opacity: 1; }
+
+.cat-header {
+  display: flex; align-items: center; gap: 12px;
+  margin-bottom: 14px;
+}
+.cat-icon { font-size: 1.5rem; }
+.cat-name {
+  font-family: var(--font-display);
+  font-weight: 700; font-size: 0.95rem;
+  color: var(--text-bright);
+}
+.cat-count {
+  margin-left: auto;
+  font-family: var(--font-mono); font-size: 0.65rem;
+  padding: 3px 10px; border-radius: 50px;
+  background: rgba(0,229,255,0.08); color: var(--cyan);
+  border: 1px solid rgba(0,229,255,0.12);
+}
+.tool-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+.tool-tag {
+  padding: 3px 9px;
+  background: rgba(13,21,38,0.8);
+  border: 1px solid rgba(255,255,255,0.04);
+  border-radius: 5px;
+  font-size: 0.72rem; color: var(--text-dim);
+  transition: all 0.2s; cursor: none;
+}
+.tool-tag:hover {
+  border-color: rgba(0,229,255,0.2);
+  color: var(--cyan);
+  background: rgba(0,229,255,0.04);
+}
+
+/* ═══════════════════════════════════════════════════════════
+   PACKAGE MANAGER CHIPS
+═══════════════════════════════════════════════════════════ */
+.managers-wrap { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; }
+.mgr-chip {
+  padding: 8px 20px;
+  background: rgba(8,13,26,0.8);
+  border: 1px solid var(--border);
+  border-radius: 50px;
+  font-family: var(--font-mono); font-size: 0.78rem; color: var(--text-dim);
+  transition: all 0.25s var(--ease-spring); cursor: none;
+  position: relative; overflow: hidden;
+}
+.mgr-chip::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: var(--g1); opacity: 0;
+  transition: opacity 0.3s;
+}
+.mgr-chip:hover {
+  border-color: var(--cyan); color: var(--cyan);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(0,229,255,0.15);
+}
+.mgr-chip:hover::before { opacity: 0.05; }
+
+/* ═══════════════════════════════════════════════════════════
+   FLAGS TABLE
+═══════════════════════════════════════════════════════════ */
+.flags-table {
+  width: 100%; border-collapse: separate; border-spacing: 0;
+  border-radius: var(--radius); overflow: hidden;
+  border: 1px solid var(--border);
+}
+.flags-table th {
+  background: rgba(5,8,16,0.9);
+  padding: 14px 20px; text-align: left;
+  font-family: var(--font-mono); font-size: 0.72rem;
+  text-transform: uppercase; letter-spacing: 0.08em;
+  color: var(--cyan); border-bottom: 1px solid var(--border);
+}
+.flags-table td {
+  padding: 11px 20px; border-bottom: 1px solid rgba(255,255,255,0.03);
+  font-size: 0.86rem; transition: background 0.2s;
+}
+.flags-table tr:last-child td { border-bottom: none; }
+.flags-table tr:hover td { background: rgba(0,229,255,0.02); }
+.flags-table code {
+  font-family: var(--font-mono); font-size: 0.78rem;
+  background: rgba(0,229,255,0.06); padding: 2px 8px;
+  border-radius: 4px; color: var(--cyan);
+  border: 1px solid rgba(0,229,255,0.1);
+}
+
+/* ═══════════════════════════════════════════════════════════
+   STEPS
+═══════════════════════════════════════════════════════════ */
+.steps { display: flex; flex-direction: column; gap: 36px; position: relative; padding-left: 56px; }
+.steps::before {
+  content: '';
+  position: absolute; left: 20px; top: 8px; bottom: 8px;
+  width: 1px;
+  background: linear-gradient(to bottom, var(--cyan), var(--violet), transparent);
+  opacity: 0.3;
+}
+.step { position: relative; }
+.step-num {
+  position: absolute; left: -56px; top: 0;
+  width: 40px; height: 40px; border-radius: 50%;
+  background: var(--g1);
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-display); font-weight: 800; font-size: 0.85rem;
+  color: var(--bg); z-index: 1;
+  box-shadow: var(--glow-cyan);
+}
+.step h3 {
+  font-family: var(--font-display); font-size: 1.05rem;
+  font-weight: 700; color: var(--text-bright);
+  margin-bottom: 8px; letter-spacing: -0.01em;
+}
+.step p { color: var(--text-dim); font-size: 0.88rem; font-weight: 300; }
+
+/* ═══════════════════════════════════════════════════════════
+   ARCHITECTURE TREE
+═══════════════════════════════════════════════════════════ */
+.arch-tree {
+  font-family: var(--font-mono); font-size: 0.82rem;
+  background: rgba(5,8,16,0.9);
+  border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 28px 32px;
+  line-height: 2.1; color: var(--text-dim);
+  overflow-x: auto; white-space: pre;
+  position: relative;
+}
+.arch-tree::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; height: 2px;
+  background: var(--g2); opacity: 0.4;
+}
+.arch-tree .dir  { color: var(--violet); font-weight: 700; }
+.arch-tree .file { color: var(--text); }
+.arch-tree .desc { color: var(--text-dim); font-style: italic; }
+
+/* ═══════════════════════════════════════════════════════════
+   FAQ
+═══════════════════════════════════════════════════════════ */
+.faq-list { display: flex; flex-direction: column; gap: 10px; }
+.faq-item {
+  background: rgba(8,13,26,0.7);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm); overflow: hidden;
+  transition: border-color 0.2s;
+}
+.faq-item:hover { border-color: rgba(0,229,255,0.15); }
+.faq-item.open { border-color: rgba(0,229,255,0.2); }
+
+.faq-q {
+  display: flex; align-items: center; justify-content: space-between; gap: 16px;
+  padding: 18px 24px; cursor: none;
+  font-family: var(--font-display); font-weight: 600; font-size: 0.95rem;
+  color: var(--text-bright); transition: color 0.2s;
+  user-select: none;
+}
+.faq-q:hover { color: var(--cyan); }
+.faq-arrow {
+  width: 20px; height: 20px;
+  border: 1px solid var(--border-h); border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.65rem; color: var(--text-dim); flex-shrink: 0;
+  transition: transform 0.3s var(--ease-spring), border-color 0.2s, background 0.2s;
+}
+.faq-item.open .faq-arrow {
+  transform: rotate(180deg);
+  border-color: var(--cyan); background: rgba(0,229,255,0.08); color: var(--cyan);
+}
+.faq-a {
+  max-height: 0; overflow: hidden;
+  transition: max-height 0.4s var(--ease-out-expo), padding 0.3s;
+  padding: 0 24px; color: var(--text-dim);
+  font-size: 0.88rem; line-height: 1.75; font-weight: 300;
+}
+.faq-item.open .faq-a { max-height: 400px; padding: 0 24px 20px; }
+
+/* ═══════════════════════════════════════════════════════════
+   ONE-SHOT SECTION (special treatment)
+═══════════════════════════════════════════════════════════ */
+.one-shot-section {
+  padding: 100px 48px;
+  position: relative; overflow: hidden;
+}
+.one-shot-section::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: radial-gradient(ellipse 80% 100% at 50% 50%, rgba(176,106,255,0.04) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   FOOTER
+═══════════════════════════════════════════════════════════ */
+.footer {
+  text-align: center; padding: 60px 48px;
+  border-top: 1px solid var(--border);
+  color: var(--text-dim); font-size: 0.85rem;
+  position: relative; overflow: hidden;
+}
+.footer::before {
+  content: '';
+  position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+  width: 300px; height: 1px;
+  background: var(--g1); opacity: 0.4;
+}
+.footer-links {
+  display: flex; gap: 28px; justify-content: center;
+  margin-bottom: 20px; flex-wrap: wrap;
+}
+.footer-links a {
+  color: var(--text-dim); transition: color 0.2s;
+  font-size: 0.85rem; font-weight: 300;
+}
+.footer-links a:hover { color: var(--cyan); }
+.footer-logo {
+  font-family: var(--font-display); font-size: 2rem; font-weight: 800;
+  background: var(--g1); -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent; background-clip: text;
+  margin-bottom: 20px; display: inline-block;
+  letter-spacing: -0.04em;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   REVEAL ANIMATIONS
+═══════════════════════════════════════════════════════════ */
+.reveal {
+  opacity: 0; transform: translateY(32px);
+  transition: opacity 0.7s var(--ease-out-expo), transform 0.7s var(--ease-out-expo);
+}
+.reveal.visible { opacity: 1; transform: translateY(0); }
+.reveal-delay-1 { transition-delay: 0.1s; }
+.reveal-delay-2 { transition-delay: 0.2s; }
+.reveal-delay-3 { transition-delay: 0.3s; }
+
+@keyframes fadeSlideDown {
+  from { opacity: 0; transform: translateY(-24px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeSlideUp {
+  from { opacity: 0; transform: translateY(32px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Floating particles */
+.particle {
+  position: fixed; border-radius: 50%;
+  pointer-events: none; z-index: 1;
+  animation: particleDrift linear infinite;
+  opacity: 0;
+}
+@keyframes particleDrift {
+  0%   { transform: translateY(100vh) translateX(0) scale(0); opacity: 0; }
+  10%  { opacity: 1; }
+  90%  { opacity: 0.6; }
+  100% { transform: translateY(-10vh) translateX(var(--drift)) scale(1); opacity: 0; }
+}
+
+/* Glitch effect on hover for logo */
+.logo-mark:hover {
+  animation: glitch 0.4s ease-in-out;
+}
+@keyframes glitch {
+  0%,100% { transform: none; }
+  20% { transform: translate(-2px, 1px); filter: hue-rotate(90deg); }
+  40% { transform: translate(2px, -1px); filter: hue-rotate(-90deg); }
+  60% { transform: translate(-1px, 2px); }
+  80% { transform: translate(1px, -2px); }
+}
+
+/* Counter animation */
+.count-up { display: inline-block; }
+
+/* Divider */
+.divider {
+  height: 1px; margin: 0;
+  background: linear-gradient(to right, transparent, var(--border), transparent);
+}
+
+/* Section alt bg */
+.section-alt { background: rgba(8,13,26,0.4); backdrop-filter: blur(4px); }
+
+/* ═══════════════════════════════════════════════════════════
+   RESPONSIVE
+═══════════════════════════════════════════════════════════ */
+@media(max-width:1024px) {
+  :root { --sidebar-w: 0px; }
+  .sidebar { transform: translateX(-270px); width: 270px; }
+  .sidebar.open { transform: translateX(0); }
+  .main { margin-left: 0; }
+  .hamburger { display: block; }
+  .hero { padding: 100px 24px 80px; }
+  .section { padding: 72px 24px; }
+  .one-shot-section { padding: 72px 24px; }
+  .stats-ribbon { padding: 0 24px; grid-template-columns: repeat(2, 1fr); }
+  body { cursor: auto; }
+  #cursor-dot, #cursor-ring { display: none; }
+}
+@media(max-width:640px) {
+  .features-grid { grid-template-columns: 1fr; }
+  .categories-grid { grid-template-columns: 1fr; }
+  .stats-ribbon { grid-template-columns: 1fr 1fr; }
+  .hero-cta { flex-direction: column; align-items: center; }
+  .btn { width: 100%; max-width: 300px; justify-content: center; }
+  .flags-table { font-size: 0.78rem; }
+  .flags-table th, .flags-table td { padding: 10px 12px; }
 }
 </style>
 </head>
 <body>
 
+<!-- Custom Cursor -->
+<div id="cursor-dot"></div>
+<div id="cursor-ring"></div>
+
+<!-- Scroll Progress -->
+<div id="scroll-bar"></div>
+
+<!-- Aurora Canvas -->
+<canvas id="aurora-canvas"></canvas>
+
 <!-- Hamburger -->
 <button class="hamburger" onclick="toggleSidebar()" aria-label="Menu">☰</button>
 <div class="overlay" id="overlay" onclick="toggleSidebar()"></div>
 
-<!-- Sidebar -->
+<!-- ══════════════════════ SIDEBAR ══════════════════════ -->
 <aside class="sidebar" id="sidebar">
   <div class="sidebar-brand">
-    <div class="logo">R</div>
-    <div>
-      <h2>ProjectR<span class="version">v1.0</span></h2>
+    <div class="logo-mark">R</div>
+    <div class="brand-text">
+      <h2>ProjectR</h2>
+      <span class="version">v1.4 — stable</span>
     </div>
   </div>
   <nav>
     <div class="nav-group">Getting Started</div>
-    <a href="#hero"><span class="nav-icon">🏠</span> Home</a>
-    <a href="#quick-start"><span class="nav-icon">🚀</span> Quick Start</a>
-    <a href="#one-shot"><span class="nav-icon">⚡</span> One-Shot Install</a>
-    <a href="#setup"><span class="nav-icon">🔧</span> Setup Launcher</a>
-    <div class="nav-group">Core</div>
-    <a href="#features"><span class="nav-icon">✨</span> Features</a>
-    <a href="#tools"><span class="nav-icon">📦</span> Tool Registry</a>
-    <a href="#managers"><span class="nav-icon">🖥️</span> Package Managers</a>
-    <a href="#flags"><span class="nav-icon">🏁</span> CLI Flags</a>
+    <a href="#hero"><span class="nav-icon">⌂</span> Home</a>
+    <a href="#quick-start"><span class="nav-icon">⚡</span> Quick Start</a>
+    <a href="#one-shot"><span class="nav-icon">↯</span> One-Shot Install</a>
+    <a href="#setup"><span class="nav-icon">⚙</span> Setup Launcher</a>
+    <div class="nav-group">Reference</div>
+    <a href="#features"><span class="nav-icon">✦</span> Features</a>
+    <a href="#tools"><span class="nav-icon">□</span> Tool Registry</a>
+    <a href="#managers"><span class="nav-icon">◈</span> Package Managers</a>
+    <a href="#flags"><span class="nav-icon">⚑</span> CLI Flags</a>
     <div class="nav-group">Advanced</div>
-    <a href="#presets"><span class="nav-icon">📋</span> Presets</a>
-    <a href="#profiles"><span class="nav-icon">📁</span> Profiles</a>
-    <a href="#plugins"><span class="nav-icon">🧩</span> Plugins</a>
-    <a href="#architecture"><span class="nav-icon">🏗️</span> Architecture</a>
-    <a href="#faq"><span class="nav-icon">❓</span> FAQ</a>
+    <a href="#presets"><span class="nav-icon">◉</span> Presets</a>
+    <a href="#profiles"><span class="nav-icon">◎</span> Profiles</a>
+    <a href="#plugins"><span class="nav-icon">◆</span> Plugins</a>
+    <a href="#architecture"><span class="nav-icon">⋮</span> Architecture</a>
+    <a href="#faq"><span class="nav-icon">?</span> FAQ</a>
   </nav>
 </aside>
 
-<!-- Main Content -->
+<!-- ══════════════════════ MAIN ══════════════════════ -->
 <main class="main">
 
-  <!-- ==================== HERO ==================== -->
+  <!-- ══ HERO ══ -->
   <section class="hero" id="hero">
-    <span class="badge badge-cyan">Open Source Terminal Toolkit</span>
-    <h1>ProjectR</h1>
-    <p class="subtitle">A modular Bash terminal setup assistant that turns a fresh shell into a powerful workspace — interactively or fully automated.</p>
-    <div class="hero-buttons">
-      <a href="#one-shot" class="btn btn-primary">⚡ One-Shot Install</a>
-      <a href="#quick-start" class="btn btn-outline">📖 Get Started</a>
-      <a href="https://github.com/Thaton3gu7/ProjectR" class="btn btn-outline" target="_blank" rel="noopener">⭐ GitHub</a>
+    <div class="hero-eyebrow">
+      <span class="dot"></span>
+      Open Source Terminal Toolkit
     </div>
-    <div class="hero-terminal">
-      <div class="terminal-bar">
-        <span class="terminal-dot r"></span>
-        <span class="terminal-dot y"></span>
-        <span class="terminal-dot g"></span>
-        <span class="terminal-title">bash — ProjectR</span>
-      </div>
-      <div class="terminal-body">
-<span class="comment"># One command. Full setup. No clone needed.</span> <br>
-<span class="prompt">$</span> <span class="cmd">curl -fsSL https://raw.githubusercontent.com/Thaton3gu7/ProjectR/master/setup.sh | bash</span> <br>
-<span class="output">[✓] ProjectR installed via remote one-shot setup.</span> <br>
-<span class="output">    App files: ~/.local/share/projectr</span> <br>
-<span class="output">    Launcher:  ~/.local/bin/project</span> <br>
+    <h1>
+      <span class="line1">ProjectR</span>
+      <span class="line2">Terminal Setup</span>
+    </h1>
+    <p class="hero-sub">
+      A modular Bash assistant that turns a fresh shell into a powerful workspace — interactively or fully automated, across any Linux, macOS, or Termux environment.
+    </p>
+    <div class="hero-cta">
+      <a href="#one-shot" class="btn btn-primary">⚡ One-Shot Install</a>
+      <a href="#quick-start" class="btn btn-ghost">📖 Read the Docs</a>
+      <a href="https://github.com/Thaton3gu7/ProjectR" class="btn btn-ghost" target="_blank" rel="noopener">★ GitHub</a>
+    </div>
 
-<span class="prompt">$</span> <span class="cmd">project</span>
+    <!-- Animated Terminal -->
+    <div class="hero-terminal">
+      <div class="term-bar">
+        <span class="term-dot r"></span>
+        <span class="term-dot y"></span>
+        <span class="term-dot g"></span>
+        <span class="term-title">bash — ProjectR v1.4</span>
+      </div>
+      <div class="term-body" id="term-body">
+        <span class="term-cursor" id="term-cursor"></span>
       </div>
     </div>
   </section>
 
-  <!-- Stats -->
-  <div class="stats reveal">
-    <div class="stat-card">
-      <div class="stat-number">240+</div>
+  <!-- ══ STATS ══ -->
+  <div class="stats-ribbon">
+    <div class="stat-card reveal">
+      <span class="stat-number"><span class="count-up" data-target="240">0</span>+</span>
       <div class="stat-label">Tools Available</div>
     </div>
-    <div class="stat-card">
-      <div class="stat-number">15+</div>
+    <div class="stat-card reveal reveal-delay-1">
+      <span class="stat-number"><span class="count-up" data-target="24">0</span></span>
       <div class="stat-label">Package Managers</div>
     </div>
-    <div class="stat-card">
-      <div class="stat-number">14</div>
+    <div class="stat-card reveal reveal-delay-2">
+      <span class="stat-number"><span class="count-up" data-target="14">0</span></span>
       <div class="stat-label">Tool Categories</div>
     </div>
-    <div class="stat-card">
-      <div class="stat-number">∞</div>
+    <div class="stat-card reveal reveal-delay-3">
+      <span class="stat-number">∞</span>
       <div class="stat-label">Extensible via Plugins</div>
     </div>
   </div>
 
-  <!-- ==================== QUICK START ==================== -->
+  <div class="divider" style="margin-top:80px"></div>
+
+  <!-- ══ QUICK START ══ -->
   <section class="section" id="quick-start">
     <div class="section-header reveal">
       <span class="badge badge-green">Beginner Friendly</span>
       <h2>Quick Start</h2>
-      <p>Get up and running with ProjectR in under a minute. Clone, run, enjoy.</p>
+      <p>Get up and running in under a minute. Clone, run, done.</p>
     </div>
-
-    <div class="steps reveal">
-      <div class="step">
-        <div class="step-number">1</div>
-        <h3>Clone the repository</h3>
-        <p>Grab the latest version from GitHub.</p>
-        <div class="code-block">
-          <div class="code-header"><span>bash</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
-          <div class="code-content"><span class="fl">git</span> clone https://github.com/Thaton3gu7/ProjectR.git
+    <div style="max-width:720px;margin:0 auto">
+      <div class="steps reveal">
+        <div class="step">
+          <div class="step-num">1</div>
+          <h3>Clone the repository</h3>
+          <p>Grab the latest version directly from GitHub.</p>
+          <div class="code-block">
+            <div class="code-header"><span>shell</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+            <div class="code-content"><span class="fl">git</span> clone https://github.com/Thaton3gu7/ProjectR.git
 <span class="kw">cd</span> ProjectR</div>
+          </div>
         </div>
-      </div>
-      <div class="step">
-        <div class="step-number">2</div>
-        <h3>Run ProjectR directly</h3>
-        <p>Launch the interactive menu — no installation required.</p>
-        <div class="code-block">
-          <div class="code-header"><span>bash</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
-          <div class="code-content"><span class="fl">bash</span> main.sh</div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <h3>Launch the interactive menu</h3>
+          <p>No installation required — runs directly from the checkout.</p>
+          <div class="code-block">
+            <div class="code-header"><span>shell</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+            <div class="code-content"><span class="fl">bash</span> main.sh</div>
+          </div>
         </div>
-      </div>
-      <div class="step">
-        <div class="step-number">3</div>
-        <h3>Or install the global launcher</h3>
-        <p>Run <code>setup.sh</code> once to install the <code>project</code> command system-wide.</p>
-        <div class="code-block">
-          <div class="code-header"><span>bash</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
-          <div class="code-content"><span class="fl">bash</span> setup.sh
-<span class="cm"># Now use from anywhere:</span>
-<span class="fl">project</span>
+        <div class="step">
+          <div class="step-num">3</div>
+          <h3>Install the global launcher</h3>
+          <p>Run <code style="color:var(--cyan);font-family:var(--font-mono);font-size:0.85em">setup.sh</code> once to get the <code style="color:var(--cyan);font-family:var(--font-mono);font-size:0.85em">project</code> command available system-wide.</p>
+          <div class="code-block">
+            <div class="code-header"><span>shell</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+            <div class="code-content"><span class="fl">bash</span> setup.sh
+<span class="cm"># Use from anywhere:</span>
 <span class="fl">project</span> --help
 <span class="fl">project</span> --install=git</div>
+          </div>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- ==================== ONE-SHOT ==================== -->
-  <section class="section" id="one-shot" style="background:linear-gradient(180deg,rgba(167,139,250,.04) 0%,transparent 100%);border-radius:24px">
+  <div class="divider"></div>
+
+  <!-- ══ ONE-SHOT ══ -->
+  <section class="one-shot-section" id="one-shot">
     <div class="section-header reveal">
-      <span class="badge badge-purple">Zero Prerequisites</span>
+      <span class="badge badge-violet">Zero Prerequisites</span>
       <h2>⚡ One-Shot Remote Install</h2>
-      <p>No need to clone first. A single curl command clones the repo, sets up the launcher, and adds it to your PATH — all in one shot.</p>
+      <p>No clone needed. One command — clone, setup, and PATH configuration in a single shot.</p>
     </div>
-
-    <div class="reveal">
-      <div class="code-block" style="max-width:800px;margin:0 auto">
-        <div class="code-header"><span>One-Shot Install via curl</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
-        <div class="code-content"><span class="cm"># Install ProjectR with a single command</span>
-<span class="fl">curl</span> -fsSL https://raw.githubusercontent.com/Thaton3gu7/ProjectR/master/setup.sh | <span class="fl">bash</span></div>
+    <div style="max-width:760px;margin:0 auto">
+      <div class="code-block reveal">
+        <div class="code-header"><span>curl install</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+        <div class="code-content"><span class="cm"># Full install with a single command</span>
+<span class="fl">curl</span> -fsSL https://raw.githubusercontent.com/Thaton3gu7/ProjectR/master/setup.sh | <span class="fl">sh</span></div>
       </div>
-
-      <div class="code-block" style="max-width:800px;margin:20px auto 0">
-        <div class="code-header"><span>Or with wget</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
-        <div class="code-content"><span class="fl">wget</span> -qO- https://raw.githubusercontent.com/Thaton3gu7/ProjectR/master/setup.sh | <span class="fl">bash</span></div>
+      <div class="code-block reveal">
+        <div class="code-header"><span>wget install</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+        <div class="code-content"><span class="fl">wget</span> -qO- https://raw.githubusercontent.com/Thaton3gu7/ProjectR/master/setup.sh | <span class="fl">sh</span></div>
       </div>
-
-      <div style="max-width:800px;margin:32px auto 0">
-        <h3 style="margin-bottom:16px">What happens behind the scenes:</h3>
-        <div class="steps">
+      <div style="margin-top:48px">
+        <h3 style="font-family:var(--font-display);font-weight:700;font-size:1.1rem;color:var(--text-bright);margin-bottom:28px">What happens under the hood:</h3>
+        <div class="steps reveal">
           <div class="step">
-            <div class="step-number">1</div>
+            <div class="step-num">1</div>
             <h3>Interactive Setup Menu</h3>
-            <p>An interactive menu opens where you can customize the launcher name, install directory, bin directory, PATH settings, and repo URL — all before anything is installed.</p>
+            <p>A TUI menu opens to configure launcher name, install dir, bin dir, and PATH settings before anything is installed.</p>
           </div>
           <div class="step">
-            <div class="step-number">2</div>
-            <h3>Detection</h3>
-            <p>The script detects it's running in remote/piped mode (no local checkout found).</p>
-          </div>
-          <div class="step">
-            <div class="step-number">3</div>
+            <div class="step-num">2</div>
             <h3>Clone</h3>
-            <p>Uses <code>git clone --depth 1</code> (or downloads a tarball if git isn't available) into your chosen install directory.</p>
+            <p>Uses <code style="color:var(--cyan);font-family:var(--font-mono);font-size:0.85em">git clone --depth 1</code> (or tarball fallback if git isn't available).</p>
           </div>
           <div class="step">
-            <div class="step-number">4</div>
-            <h3>Launcher</h3>
-            <p>Creates an executable launcher command in your chosen bin directory.</p>
-          </div>
-          <div class="step">
-            <div class="step-number">5</div>
-            <h3>PATH</h3>
-            <p>Automatically adds the bin directory to your <code>.bashrc</code>, <code>.zshrc</code>, and <code>.profile</code>.</p>
+            <div class="step-num">3</div>
+            <h3>Launcher + PATH</h3>
+            <p>Creates the executable launcher and updates <code style="color:var(--cyan);font-family:var(--font-mono);font-size:0.85em">.bashrc</code>, <code style="color:var(--cyan);font-family:var(--font-mono);font-size:0.85em">.zshrc</code>, and <code style="color:var(--cyan);font-family:var(--font-mono);font-size:0.85em">.profile</code> automatically.</p>
           </div>
         </div>
       </div>
-
-      <div style="max-width:800px;margin:32px auto 0">
-        <h3 style="margin-bottom:12px">Interactive menu or headless:</h3>
-        <p style="color:var(--text-dim);margin-bottom:16px">By default, setup.sh opens an interactive menu where you can configure everything visually. To skip the menu and use defaults or environment overrides, pass <code>--no-menu</code>:</p>
+      <div style="margin-top:40px" class="reveal">
+        <h3 style="font-family:var(--font-display);font-weight:700;font-size:1rem;color:var(--text-bright);margin-bottom:14px">Headless / scripted installs:</h3>
         <div class="code-block">
-          <div class="code-header"><span>Headless / scripted installs</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+          <div class="code-header"><span>headless mode</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
           <div class="code-content"><span class="cm"># Skip menu, use defaults</span>
 <span class="fl">curl</span> -fsSL .../setup.sh | <span class="fl">bash</span> -s -- --no-menu
 
-<span class="cm"># Skip menu with custom command name</span>
-<span class="fl">PROJECTR_COMMAND_NAME</span>=projectr <span class="fl">curl</span> -fsSL .../setup.sh | <span class="fl">bash</span> -s -- --no-menu
-
-<span class="cm"># Skip menu with custom install location</span>
-<span class="fl">PROJECTR_INSTALL_DIR</span>=~/.projectr <span class="fl">curl</span> -fsSL .../setup.sh | <span class="fl">bash</span> -s -- --no-menu
-
-<span class="cm"># Custom repo (forks, private mirrors)</span>
-<span class="fl">PROJECTR_REPO_URL</span>=https://github.com/you/ProjectR.git <span class="fl">curl</span> -fsSL .../setup.sh | <span class="fl">bash</span> -s -- --no-menu</div>
+<span class="cm"># Custom command name + install dir</span>
+<span class="fl">PROJECTR_COMMAND_NAME</span>=projectr <span class="fl">PROJECTR_INSTALL_DIR</span>=~/.projectr \
+  <span class="fl">curl</span> -fsSL .../setup.sh | <span class="fl">bash</span> -s -- --no-menu</div>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- ==================== SETUP ==================== -->
+  <div class="divider"></div>
+
+  <!-- ══ SETUP ══ -->
   <section class="section" id="setup">
     <div class="section-header reveal">
       <span class="badge badge-cyan">Configuration</span>
       <h2>🔧 Setup & Launcher</h2>
-      <p>Install the global <code>project</code> command for use from any directory.</p>
+      <p>Install the global <code style="color:var(--cyan);font-family:var(--font-mono)">project</code> command for any-directory use.</p>
     </div>
-
-    <div class="reveal" style="max-width:800px;margin:0 auto">
-      <p style="color:var(--text-dim);margin-bottom:20px">
-        Running <code>setup.sh</code> opens an <strong style="color:var(--accent)">interactive setup menu</strong> where you can configure the launcher command name, install directory, bin directory, PATH settings, and more — all from a beautiful TUI before anything is installed. You can also bypass the menu with flags:
-      </p>
-      <div class="code-block">
-        <div class="code-header"><span>Setup with interactive menu (default)</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
-        <div class="code-content"><span class="cm"># Opens the interactive setup menu</span>
-<span class="fl">bash</span> setup.sh</div>
+    <div style="max-width:720px;margin:0 auto">
+      <div class="code-block reveal">
+        <div class="code-header"><span>Interactive (recommended)</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+        <div class="code-content"><span class="fl">bash</span> setup.sh</div>
       </div>
-      <div class="code-block">
-        <div class="code-header"><span>Setup with flags (skip menu)</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
-        <div class="code-content"><span class="cm"># Install with defaults, no menu</span>
+      <div class="code-block reveal">
+        <div class="code-header"><span>With flags</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+        <div class="code-content"><span class="cm"># Defaults, no menu</span>
 <span class="fl">bash</span> setup.sh --no-menu
 
-<span class="cm"># Custom command name</span>
-<span class="fl">bash</span> setup.sh --no-menu --command=projectr
+<span class="cm"># Custom name + location</span>
+<span class="fl">bash</span> setup.sh --no-menu --command=projectr --install-dir=<span class="str">"$HOME/.projectr"</span>
 
-<span class="cm"># Custom install directory</span>
-<span class="fl">bash</span> setup.sh --no-menu --install-dir=<span class="str">"$HOME/.projectr"</span>
-
-<span class="cm"># Custom bin directory</span>
-<span class="fl">bash</span> setup.sh --no-menu --bin-dir=<span class="str">"$HOME/bin"</span>
-
-<span class="cm"># Auto-add to PATH in shell rc files</span>
+<span class="cm"># Auto-update PATH in shell rc files</span>
 <span class="fl">bash</span> setup.sh --no-menu --add-path</div>
       </div>
-
-      <h3 style="margin:32px 0 12px">After setup:</h3>
-      <div class="code-block">
-        <div class="code-header"><span>Launcher commands</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
-        <div class="code-content"><span class="fl">project</span>                  <span class="cm"># Launch interactive menu</span>
+      <div style="margin-top:32px" class="reveal">
+        <h3 style="font-family:var(--font-display);font-weight:700;font-size:1rem;color:var(--text-bright);margin-bottom:14px">After setup:</h3>
+        <div class="code-block">
+          <div class="code-header"><span>launcher commands</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+          <div class="code-content"><span class="fl">project</span>                  <span class="cm"># Launch interactive menu</span>
 <span class="fl">project</span> --help            <span class="cm"># Show all flags</span>
 <span class="fl">project</span> --install=git     <span class="cm"># Install a tool non-interactively</span>
 <span class="fl">project</span> --self-update     <span class="cm"># Pull & refresh from source checkout</span>
 <span class="fl">project</span> --setup-info      <span class="cm"># Show install paths</span></div>
+        </div>
       </div>
-
-      <h3 style="margin:32px 0 12px">Fallback directories:</h3>
-      <p style="color:var(--text-dim);font-size:.9rem;line-height:1.8">
-        If <code>~/.local/share</code> can't be created, setup falls back to <code>~/.projectr-app/projectr</code>.<br>
-        If <code>~/.local/bin</code> can't be created, it falls back to <code>~/bin</code>.<br>
-        If both fail, setup exits with an error — no half-installed state.
-      </p>
     </div>
   </section>
 
-  <!-- ==================== FEATURES ==================== -->
+  <div class="divider"></div>
+
+  <!-- ══ FEATURES ══ -->
   <section class="section" id="features">
     <div class="section-header reveal">
       <span class="badge badge-pink">Power Features</span>
-      <h2>✨ Everything ProjectR Can Do</h2>
-      <p>A comprehensive toolkit packed with features for beginners and power users alike.</p>
+      <h2>✦ Everything ProjectR Can Do</h2>
+      <p>A comprehensive toolkit for beginners and power users alike.</p>
     </div>
-
-    <div class="features-grid reveal">
-      <div class="feature-card">
-        <div class="feature-icon cyan">🎛️</div>
+    <div class="features-grid">
+      <div class="feature-card reveal">
+        <div class="feature-icon-wrap cyan">🎛️</div>
         <h3>Interactive Menu</h3>
-        <p>Beautiful TUI with numbered tools, multi-select install, presets, search, and uninstall — all from one menu.</p>
+        <p>Beautiful TUI with numbered tools, multi-select install, presets, search, and uninstall — all from one screen.</p>
       </div>
-      <div class="feature-card">
-        <div class="feature-icon purple">🏁</div>
+      <div class="feature-card reveal reveal-delay-1">
+        <div class="feature-icon-wrap violet">⚑</div>
         <h3>CLI Flags & Subcommands</h3>
-        <p>Full non-interactive mode for scripting and automation. Install, uninstall, search, audit, export, and more via flags.</p>
+        <p>Full non-interactive mode for scripting and automation. Install, search, audit, export, and more via flags.</p>
       </div>
-      <div class="feature-card">
-        <div class="feature-icon green">🔍</div>
+      <div class="feature-card reveal reveal-delay-2">
+        <div class="feature-icon-wrap green">🔍</div>
         <h3>Smart Search</h3>
-        <p>Search ProjectR's registry first, then query all supported package managers — with fuzzy matching via fzf when available.</p>
+        <p>Checks the built-in registry first, then queries all supported package managers with fuzzy matching via fzf.</p>
       </div>
-      <div class="feature-card">
-        <div class="feature-icon pink">📦</div>
+      <div class="feature-card reveal">
+        <div class="feature-icon-wrap pink">📦</div>
         <h3>240+ Tool Registry</h3>
-        <p>Curated collection spanning dev tools, terminal fun, OSINT, databases, cloud CLIs, security tools, and more.</p>
+        <p>Curated collection: dev tools, terminal fun, OSINT, databases, cloud CLIs, security tools, and more.</p>
       </div>
-      <div class="feature-card">
-        <div class="feature-icon cyan">🖥️</div>
-        <h3>15+ Package Managers</h3>
-        <p>Auto-detects apt, pacman, dnf, brew, pkg, apk, zypper, xbps, nix, snap, flatpak, and language-specific managers.</p>
+      <div class="feature-card reveal reveal-delay-1">
+        <div class="feature-icon-wrap cyan">🖥️</div>
+        <h3>24+ Package Managers</h3>
+        <p>Auto-detects apt, pacman, dnf, brew, pkg, apk, zypper, xbps, nix, snap, flatpak, and language managers.</p>
       </div>
-      <div class="feature-card">
-        <div class="feature-icon purple">📋</div>
-        <h3>Presets</h3>
-        <p>One-click preset groups: Minimal, Developer, or Fun. Install a curated workspace in seconds.</p>
+      <div class="feature-card reveal reveal-delay-2">
+        <div class="feature-icon-wrap violet">📋</div>
+        <h3>Curated Presets</h3>
+        <p>One-click preset groups: Minimal, Developer, Fun. Build a complete workspace in seconds.</p>
       </div>
-      <div class="feature-card">
-        <div class="feature-icon green">🧪</div>
+      <div class="feature-card reveal">
+        <div class="feature-icon-wrap green">🧪</div>
         <h3>Dry-Run Simulation</h3>
-        <p>Preview exactly what would be installed without changing anything. JSON output for CI pipelines.</p>
+        <p>Preview exactly what would happen without installing anything. JSON output for CI pipelines.</p>
       </div>
-      <div class="feature-card">
-        <div class="feature-icon pink">⏪</div>
+      <div class="feature-card reveal reveal-delay-1">
+        <div class="feature-icon-wrap pink">⏪</div>
         <h3>Undo & Rollback</h3>
-        <p>Every install session is recorded. Use <code>--undo</code> to roll back the last batch of installs.</p>
+        <p>Every install session is recorded. Use <code style="color:var(--cyan);font-family:var(--font-mono);font-size:0.82em">--undo</code> to roll back the last batch.</p>
       </div>
-      <div class="feature-card">
-        <div class="feature-icon cyan">📁</div>
+      <div class="feature-card reveal reveal-delay-2">
+        <div class="feature-icon-wrap cyan">📁</div>
         <h3>Profile Export/Import</h3>
-        <p>Export your installed tool list as a profile. Import it on another machine to replicate your setup.</p>
+        <p>Export your installed tools as a profile and replay the exact setup on any other machine.</p>
       </div>
-      <div class="feature-card">
-        <div class="feature-icon purple">🧩</div>
+      <div class="feature-card reveal">
+        <div class="feature-icon-wrap violet">🧩</div>
         <h3>Plugin System</h3>
-        <p>Drop TOML files into <code>tools.d/</code> to add custom tools without editing the core registry.</p>
+        <p>Drop TOML files into <code style="color:var(--cyan);font-family:var(--font-mono);font-size:0.82em">tools.d/</code> to add custom tools without touching the core registry.</p>
       </div>
-      <div class="feature-card">
-        <div class="feature-icon green">🩺</div>
+      <div class="feature-card reveal reveal-delay-1">
+        <div class="feature-icon-wrap green">🩺</div>
         <h3>Doctor & Audit</h3>
-        <p><code>project doctor</code> checks your environment. <code>project audit</code> validates the tool database for CI.</p>
+        <p><code style="color:var(--cyan);font-family:var(--font-mono);font-size:0.82em">project doctor</code> checks your environment. <code style="color:var(--cyan);font-family:var(--font-mono);font-size:0.82em">project audit</code> validates the tool database.</p>
       </div>
-      <div class="feature-card">
-        <div class="feature-icon pink">📊</div>
+      <div class="feature-card reveal reveal-delay-2">
+        <div class="feature-icon-wrap pink">📊</div>
         <h3>Structured Logging</h3>
-        <p>Every action is logged with timestamps, exit codes, durations, and failure diagnostics. Auto-rotating log files.</p>
+        <p>Every action logged with timestamps, exit codes, durations, and failure diagnostics. Auto-rotating logs.</p>
       </div>
-      <div class="feature-card">
-        <div class="feature-icon cyan">🌐</div>
+      <div class="feature-card reveal">
+        <div class="feature-icon-wrap cyan">🌐</div>
         <h3>Connectivity Checks</h3>
-        <p>Pre-flight network, dependency, and disk-space checks before heavy operations prevent wasted time.</p>
+        <p>Pre-flight network, dependency, and disk-space checks before heavy operations — no wasted time.</p>
       </div>
-      <div class="feature-card">
-        <div class="feature-icon purple">📸</div>
+      <div class="feature-card reveal reveal-delay-1">
+        <div class="feature-icon-wrap violet">📸</div>
         <h3>Filesystem Snapshots</h3>
         <p>Opt-in pre-install snapshots via Timeshift, Btrfs, or ZFS for safe system-level rollback.</p>
       </div>
-      <div class="feature-card">
-        <div class="feature-icon green">⚙️</div>
+      <div class="feature-card reveal reveal-delay-2">
+        <div class="feature-icon-wrap green">⚙️</div>
         <h3>Special Installers</h3>
-        <p>Tools like Neovim, Zsh/Oh My Zsh, Docker, and code-server get dedicated setup helpers beyond simple package install.</p>
+        <p>Neovim, Zsh/Oh My Zsh, Docker, and code-server get dedicated setup helpers beyond a plain package install.</p>
       </div>
-      <div class="feature-card">
-        <div class="feature-icon pink">📄</div>
+      <div class="feature-card reveal">
+        <div class="feature-icon-wrap pink">📄</div>
         <h3>Config as Code</h3>
-        <p>Commit a <code>projectr.yml</code> or <code>projectr.toml</code> with your dotfiles. Install your entire stack from one profile file.</p>
+        <p>Commit a <code style="color:var(--cyan);font-family:var(--font-mono);font-size:0.82em">projectr.yml</code> or <code style="color:var(--cyan);font-family:var(--font-mono);font-size:0.82em">projectr.toml</code> with your dotfiles and install your full stack from one file.</p>
       </div>
-      <div class="feature-card">
-        <div class="feature-icon cyan">🔒</div>
+      <div class="feature-card reveal reveal-delay-1">
+        <div class="feature-icon-wrap cyan">🔒</div>
         <h3>Session Locking</h3>
         <p>Only one ProjectR session runs at a time, preventing conflicting package operations.</p>
       </div>
-      <div class="feature-card">
-        <div class="feature-icon purple">🔄</div>
+      <div class="feature-card reveal reveal-delay-2">
+        <div class="feature-icon-wrap violet">🔄</div>
         <h3>Self-Update</h3>
-        <p><code>project --self-update</code> pulls latest changes and refreshes the installed copy automatically.</p>
+        <p><code style="color:var(--cyan);font-family:var(--font-mono);font-size:0.82em">project --self-update</code> pulls the latest changes and refreshes the installed copy automatically.</p>
       </div>
     </div>
   </section>
 
-  <!-- ==================== TOOLS ==================== -->
+  <div class="divider"></div>
+
+  <!-- ══ TOOLS ══ -->
   <section class="section" id="tools">
     <div class="section-header reveal">
       <span class="badge badge-green">Registry</span>
-      <h2>📦 Tool Categories</h2>
-      <p>240+ tools organized into categories. Install individually, in bulk, or via presets.</p>
+      <h2>□ Tool Categories</h2>
+      <p>240+ tools organized into 14 categories. Install individually, in bulk, or via presets.</p>
     </div>
-
-    <div class="categories-grid reveal">
-      <div class="category-card">
-        <div class="category-header">
-          <span class="category-icon">💻</span>
-          <span class="category-name">Dev</span>
-          <span class="category-count">60+ tools</span>
-        </div>
-        <div class="category-tools">
+    <div class="categories-grid">
+      <div class="category-card reveal">
+        <div class="cat-header"><span class="cat-icon">💻</span><span class="cat-name">Dev</span><span class="cat-count">60+ tools</span></div>
+        <div class="tool-tags">
           <span class="tool-tag">Git</span><span class="tool-tag">Neovim</span><span class="tool-tag">Tmux</span>
           <span class="tool-tag">Fzf</span><span class="tool-tag">Lazygit</span><span class="tool-tag">Ripgrep</span>
           <span class="tool-tag">Node.js</span><span class="tool-tag">Go</span><span class="tool-tag">Rust</span>
@@ -724,111 +1309,75 @@ h1,h2,h3,h4{color:var(--text-bright);font-weight:700}
           <span class="tool-tag">code-server</span><span class="tool-tag">+more</span>
         </div>
       </div>
-      <div class="category-card">
-        <div class="category-header">
-          <span class="category-icon">📦</span>
-          <span class="category-name">Min (Essentials)</span>
-          <span class="category-count">15+ tools</span>
-        </div>
-        <div class="category-tools">
+      <div class="category-card reveal reveal-delay-1">
+        <div class="cat-header"><span class="cat-icon">📦</span><span class="cat-name">Essentials</span><span class="cat-count">15+ tools</span></div>
+        <div class="tool-tags">
           <span class="tool-tag">Curl</span><span class="tool-tag">Wget</span><span class="tool-tag">Htop</span>
           <span class="tool-tag">Python</span><span class="tool-tag">Nano</span><span class="tool-tag">Bat</span>
           <span class="tool-tag">Duf</span><span class="tool-tag">Lsd</span><span class="tool-tag">Eza</span>
           <span class="tool-tag">Neofetch</span><span class="tool-tag">Broot</span>
         </div>
       </div>
-      <div class="category-card">
-        <div class="category-header">
-          <span class="category-icon">🎮</span>
-          <span class="category-name">Fun</span>
-          <span class="category-count">20+ tools</span>
-        </div>
-        <div class="category-tools">
+      <div class="category-card reveal reveal-delay-2">
+        <div class="cat-header"><span class="cat-icon">🎮</span><span class="cat-name">Fun</span><span class="cat-count">20+ tools</span></div>
+        <div class="tool-tags">
           <span class="tool-tag">Sl</span><span class="tool-tag">Cbonsai</span><span class="tool-tag">Cmatrix</span>
           <span class="tool-tag">Pipes.sh</span><span class="tool-tag">Cowsay</span><span class="tool-tag">Figlet</span>
           <span class="tool-tag">Lolcat</span><span class="tool-tag">Nyancat</span><span class="tool-tag">2048</span>
           <span class="tool-tag">Asciiquarium</span>
         </div>
       </div>
-      <div class="category-card">
-        <div class="category-header">
-          <span class="category-icon">🔐</span>
-          <span class="category-name">Security</span>
-          <span class="category-count">15+ tools</span>
-        </div>
-        <div class="category-tools">
+      <div class="category-card reveal">
+        <div class="cat-header"><span class="cat-icon">🔐</span><span class="cat-name">Security</span><span class="cat-count">15+ tools</span></div>
+        <div class="tool-tags">
           <span class="tool-tag">Nmap</span><span class="tool-tag">Hydra</span><span class="tool-tag">SQLmap</span>
           <span class="tool-tag">Nikto</span><span class="tool-tag">John</span><span class="tool-tag">Hashcat</span>
           <span class="tool-tag">Gobuster</span><span class="tool-tag">Ffuf</span><span class="tool-tag">Lynis</span>
         </div>
       </div>
-      <div class="category-card">
-        <div class="category-header">
-          <span class="category-icon">🕵️</span>
-          <span class="category-name">OSINT</span>
-          <span class="category-count">10+ tools</span>
-        </div>
-        <div class="category-tools">
+      <div class="category-card reveal reveal-delay-1">
+        <div class="cat-header"><span class="cat-icon">🕵️</span><span class="cat-name">OSINT</span><span class="cat-count">10+ tools</span></div>
+        <div class="tool-tags">
           <span class="tool-tag">Holehe</span><span class="tool-tag">Sherlock</span><span class="tool-tag">Maigret</span>
           <span class="tool-tag">Amass</span><span class="tool-tag">TheHarvester</span>
           <span class="tool-tag">Subfinder</span><span class="tool-tag">ExifTool</span>
         </div>
       </div>
-      <div class="category-card">
-        <div class="category-header">
-          <span class="category-icon">☁️</span>
-          <span class="category-name">Cloud & Containers</span>
-          <span class="category-count">15+ tools</span>
-        </div>
-        <div class="category-tools">
+      <div class="category-card reveal reveal-delay-2">
+        <div class="cat-header"><span class="cat-icon">☁️</span><span class="cat-name">Cloud & Containers</span><span class="cat-count">15+ tools</span></div>
+        <div class="tool-tags">
           <span class="tool-tag">Docker</span><span class="tool-tag">Podman</span><span class="tool-tag">Kubectl</span>
           <span class="tool-tag">Helm</span><span class="tool-tag">K9s</span><span class="tool-tag">Terraform</span>
-          <span class="tool-tag">Ansible</span><span class="tool-tag">AWS CLI</span><span class="tool-tag">Vercel</span>
+          <span class="tool-tag">Ansible</span><span class="tool-tag">AWS CLI</span>
         </div>
       </div>
-      <div class="category-card">
-        <div class="category-header">
-          <span class="category-icon">🗄️</span>
-          <span class="category-name">Database</span>
-          <span class="category-count">10+ tools</span>
-        </div>
-        <div class="category-tools">
+      <div class="category-card reveal">
+        <div class="cat-header"><span class="cat-icon">🗄️</span><span class="cat-name">Database</span><span class="cat-count">10+ tools</span></div>
+        <div class="tool-tags">
           <span class="tool-tag">PostgreSQL</span><span class="tool-tag">MySQL</span><span class="tool-tag">SQLite</span>
           <span class="tool-tag">Redis</span><span class="tool-tag">DuckDB</span><span class="tool-tag">Pgcli</span>
-          <span class="tool-tag">Mycli</span><span class="tool-tag">Litecli</span>
+          <span class="tool-tag">Mycli</span>
         </div>
       </div>
-      <div class="category-card">
-        <div class="category-header">
-          <span class="category-icon">🌐</span>
-          <span class="category-name">Web & Network</span>
-          <span class="category-count">20+ tools</span>
-        </div>
-        <div class="category-tools">
+      <div class="category-card reveal reveal-delay-1">
+        <div class="cat-header"><span class="cat-icon">🌐</span><span class="cat-name">Web & Network</span><span class="cat-count">20+ tools</span></div>
+        <div class="tool-tags">
           <span class="tool-tag">HTTPie</span><span class="tool-tag">Aria2</span><span class="tool-tag">Mosh</span>
           <span class="tool-tag">Socat</span><span class="tool-tag">Lynx</span><span class="tool-tag">Tcpdump</span>
-          <span class="tool-tag">WeeChat</span><span class="tool-tag">Newsboat</span>
+          <span class="tool-tag">WeeChat</span>
         </div>
       </div>
-      <div class="category-card">
-        <div class="category-header">
-          <span class="category-icon">📊</span>
-          <span class="category-name">Data & Docs</span>
-          <span class="category-count">10+ tools</span>
-        </div>
-        <div class="category-tools">
+      <div class="category-card reveal reveal-delay-2">
+        <div class="cat-header"><span class="cat-icon">📊</span><span class="cat-name">Data & Docs</span><span class="cat-count">10+ tools</span></div>
+        <div class="tool-tags">
           <span class="tool-tag">Jq</span><span class="tool-tag">Yq</span><span class="tool-tag">Pandoc</span>
           <span class="tool-tag">Hugo</span><span class="tool-tag">MkDocs</span><span class="tool-tag">Glow</span>
-          <span class="tool-tag">VisiData</span><span class="tool-tag">Gnuplot</span>
+          <span class="tool-tag">VisiData</span>
         </div>
       </div>
-      <div class="category-card">
-        <div class="category-header">
-          <span class="category-icon">🤖</span>
-          <span class="category-name">AI</span>
-          <span class="category-count">5 tools</span>
-        </div>
-        <div class="category-tools">
+      <div class="category-card reveal">
+        <div class="cat-header"><span class="cat-icon">🤖</span><span class="cat-name">AI</span><span class="cat-count">5 tools</span></div>
+        <div class="tool-tags">
           <span class="tool-tag">Ollama</span><span class="tool-tag">Mods</span><span class="tool-tag">AIChat</span>
           <span class="tool-tag">Tgpt</span><span class="tool-tag">Fabric</span>
         </div>
@@ -836,54 +1385,46 @@ h1,h2,h3,h4{color:var(--text-bright);font-weight:700}
     </div>
   </section>
 
-  <!-- ==================== PACKAGE MANAGERS ==================== -->
+  <div class="divider"></div>
+
+  <!-- ══ PACKAGE MANAGERS ══ -->
   <section class="section" id="managers">
     <div class="section-header reveal">
-      <span class="badge badge-purple">Cross-Platform</span>
-      <h2>🖥️ Supported Package Managers</h2>
-      <p>ProjectR auto-detects your system and uses the best available package manager.</p>
+      <span class="badge badge-violet">Cross-Platform</span>
+      <h2>◈ Supported Package Managers</h2>
+      <p>ProjectR auto-detects your system and uses the best available package manager, prioritising native distro managers.</p>
     </div>
-    <div class="managers-flex reveal">
-      <span class="manager-chip">apt</span>
-      <span class="manager-chip">pacman</span>
-      <span class="manager-chip">dnf / yum</span>
-      <span class="manager-chip">zypper</span>
-      <span class="manager-chip">apk</span>
-      <span class="manager-chip">brew</span>
-      <span class="manager-chip">pkg (Termux)</span>
-      <span class="manager-chip">xbps</span>
-      <span class="manager-chip">emerge</span>
-      <span class="manager-chip">nix</span>
-      <span class="manager-chip">guix</span>
-      <span class="manager-chip">snap</span>
-      <span class="manager-chip">flatpak</span>
-      <span class="manager-chip">winget</span>
-      <span class="manager-chip">choco</span>
-      <span class="manager-chip">scoop</span>
-      <span class="manager-chip">pip / pip3</span>
-      <span class="manager-chip">pipx</span>
-      <span class="manager-chip">npm</span>
-      <span class="manager-chip">yarn / pnpm</span>
-      <span class="manager-chip">cargo</span>
-      <span class="manager-chip">gem</span>
-      <span class="manager-chip">go install</span>
+    <div class="managers-wrap reveal">
+      <span class="mgr-chip">apt</span><span class="mgr-chip">pacman</span>
+      <span class="mgr-chip">dnf / yum</span><span class="mgr-chip">zypper</span>
+      <span class="mgr-chip">apk</span><span class="mgr-chip">brew</span>
+      <span class="mgr-chip">pkg (Termux)</span><span class="mgr-chip">xbps</span>
+      <span class="mgr-chip">emerge</span><span class="mgr-chip">nix</span>
+      <span class="mgr-chip">guix</span><span class="mgr-chip">snap</span>
+      <span class="mgr-chip">flatpak</span><span class="mgr-chip">winget</span>
+      <span class="mgr-chip">choco</span><span class="mgr-chip">scoop</span>
+      <span class="mgr-chip">pip / pip3</span><span class="mgr-chip">pipx</span>
+      <span class="mgr-chip">npm</span><span class="mgr-chip">yarn / pnpm</span>
+      <span class="mgr-chip">cargo</span><span class="mgr-chip">gem</span>
+      <span class="mgr-chip">go install</span><span class="mgr-chip">composer</span>
     </div>
-    <div class="reveal" style="max-width:600px;margin:32px auto 0">
+    <div style="max-width:500px;margin:32px auto 0" class="reveal">
       <div class="code-block">
-        <div class="code-header"><span>Check your detected manager</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+        <div class="code-header"><span>check your system</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
         <div class="code-content"><span class="fl">project</span> --list=manager</div>
       </div>
     </div>
   </section>
 
-  <!-- ==================== CLI FLAGS ==================== -->
+  <div class="divider"></div>
+
+  <!-- ══ FLAGS ══ -->
   <section class="section" id="flags">
     <div class="section-header reveal">
       <span class="badge badge-cyan">Reference</span>
-      <h2>🏁 CLI Flags & Commands</h2>
+      <h2>⚑ CLI Flags & Commands</h2>
       <p>Full command-line interface for scripting, automation, and quick actions.</p>
     </div>
-
     <div class="reveal" style="overflow-x:auto">
       <table class="flags-table">
         <thead>
@@ -897,19 +1438,19 @@ h1,h2,h3,h4{color:var(--text-bright);font-weight:700}
           <tr><td><code>--search &lt;name&gt;</code></td><td>Search registry + all package managers</td></tr>
           <tr><td><code>--list tools</code></td><td>Show all available tools</td></tr>
           <tr><td><code>--list installed</code></td><td>Show currently installed tools</td></tr>
-          <tr><td><code>--list categories</code></td><td>Show tool categories</td></tr>
-          <tr><td><code>--list manager</code></td><td>Show detected package manager</td></tr>
+          <tr><td><code>--list categories</code></td><td>Show tool categories with install status</td></tr>
+          <tr><td><code>--list manager</code></td><td>Show detected package managers</td></tr>
           <tr><td><code>--list state</code></td><td>Inspect state database</td></tr>
-          <tr><td><code>--dry-run &lt;tool&gt;</code></td><td>Simulate install without changes</td></tr>
+          <tr><td><code>--dry-run &lt;tool&gt;</code></td><td>Simulate install without making changes</td></tr>
           <tr><td><code>--dry-run --json</code></td><td>Dry-run with JSON output for CI</td></tr>
           <tr><td><code>--log</code>, <code>--log=100</code></td><td>Print recent install log lines</td></tr>
           <tr><td><code>--export</code></td><td>Export installed tool profile</td></tr>
           <tr><td><code>--import &lt;file&gt;</code></td><td>Import and install from a profile</td></tr>
-          <tr><td><code>--undo</code></td><td>Undo last install session</td></tr>
+          <tr><td><code>--undo</code></td><td>Roll back last install session</td></tr>
           <tr><td><code>--reset</code></td><td>Clear saved preferences</td></tr>
-          <tr><td><code>audit [--strict]</code></td><td>Validate tool database</td></tr>
+          <tr><td><code>audit [--strict]</code></td><td>Validate the tool database</td></tr>
           <tr><td><code>doctor</code></td><td>Check environment health</td></tr>
-          <tr><td><code>verify</code></td><td>Check managed tools on PATH</td></tr>
+          <tr><td><code>verify</code></td><td>Check managed tools are on PATH</td></tr>
           <tr><td><code>repair</code></td><td>Reinstall missing managed tools</td></tr>
           <tr><td><code>update</code></td><td>Git-pull latest ProjectR changes</td></tr>
           <tr><td><code>--self-update</code></td><td>Refresh installed copy from checkout</td></tr>
@@ -917,83 +1458,77 @@ h1,h2,h3,h4{color:var(--text-bright);font-weight:700}
         </tbody>
       </table>
     </div>
-
-    <div class="reveal" style="margin-top:40px;max-width:800px;margin-left:auto;margin-right:auto">
-      <h3 style="margin-bottom:16px">Examples:</h3>
+    <div style="margin-top:40px;max-width:720px;margin-left:auto;margin-right:auto" class="reveal">
+      <h3 style="font-family:var(--font-display);font-weight:700;font-size:1rem;color:var(--text-bright);margin-bottom:14px">Examples:</h3>
       <div class="code-block">
-        <div class="code-header"><span>Usage examples</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+        <div class="code-header"><span>usage</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
         <div class="code-content"><span class="cm"># Command style</span>
 <span class="fl">project</span> install git
 <span class="fl">project</span> install --profile projectr.yml
-<span class="fl">project</span> install git --dry-run --json
 <span class="fl">project</span> list tools
 <span class="fl">project</span> doctor
 
-<span class="cm"># Flag style</span>
+<span class="cm"># Flag style (equivalent)</span>
 <span class="fl">project</span> --install=git
-<span class="fl">project</span> --search=rg
-<span class="fl">project</span> --list=tools
+<span class="fl">project</span> --search=ripgrep
 <span class="fl">project</span> --dry-run git --json
 <span class="fl">project</span> --export
-<span class="fl">project</span> --import=projectr_profile_2026-05-30.txt
 <span class="fl">project</span> --undo</div>
       </div>
     </div>
   </section>
 
-  <!-- ==================== PRESETS ==================== -->
+  <div class="divider"></div>
+
+  <!-- ══ PRESETS ══ -->
   <section class="section" id="presets">
     <div class="section-header reveal">
       <span class="badge badge-green">Quick Setup</span>
-      <h2>📋 Presets</h2>
-      <p>Curated groups for instant workspace setup.</p>
+      <h2>◉ Presets</h2>
+      <p>Curated tool groups for instant workspace setup.</p>
     </div>
-
-    <div class="features-grid reveal">
-      <div class="feature-card">
-        <div class="feature-icon green">🪶</div>
+    <div class="features-grid" style="grid-template-columns:repeat(auto-fill,minmax(280px,1fr))">
+      <div class="feature-card reveal">
+        <div class="feature-icon-wrap green">🪶</div>
         <h3>Minimal</h3>
-        <p>Lightweight essentials: curl, wget, htop, bat, nano, python, neofetch, duf, lsd, and broot. Everything you need for a clean terminal.</p>
+        <p>curl, wget, htop, bat, nano, python, neofetch, duf, lsd, broot. Everything for a clean terminal baseline.</p>
       </div>
-      <div class="feature-card">
-        <div class="feature-icon purple">🛠️</div>
+      <div class="feature-card reveal reveal-delay-1">
+        <div class="feature-icon-wrap violet">🛠️</div>
         <h3>Developer</h3>
-        <p>Full professional workspace: git, neovim, tmux, fzf, zoxide, lazygit, ripgrep, node.js, gh, code-server, and more.</p>
+        <p>git, neovim, tmux, fzf, zoxide, lazygit, ripgrep, node.js, gh, code-server and 50+ more professional tools.</p>
       </div>
-      <div class="feature-card">
-        <div class="feature-icon pink">🎉</div>
+      <div class="feature-card reveal reveal-delay-2">
+        <div class="feature-icon-wrap pink">🎉</div>
         <h3>Fun</h3>
-        <p>Terminal toys: sl, cbonsai, cmatrix, pipes.sh, cowsay, figlet, lolcat, nyancat, asciiquarium, and 2048.</p>
+        <p>sl, cbonsai, cmatrix, pipes.sh, cowsay, figlet, lolcat, nyancat, asciiquarium, 2048 and more.</p>
       </div>
     </div>
-
-    <div class="reveal" style="max-width:600px;margin:32px auto 0">
-      <p style="color:var(--text-dim);text-align:center;font-size:.9rem">
-        Select presets from the interactive menu (press <code>p</code>) or use <code>whiptail</code> for a dialog-style picker.
-      </p>
-    </div>
+    <p style="text-align:center;color:var(--text-dim);font-size:0.88rem;margin-top:28px;font-weight:300" class="reveal">
+      Select presets from the interactive menu (press <code style="color:var(--cyan);font-family:var(--font-mono)">p</code>) or use <code style="color:var(--cyan);font-family:var(--font-mono)">whiptail</code> for a dialog-style picker.
+    </p>
   </section>
 
-  <!-- ==================== PROFILES ==================== -->
+  <div class="divider"></div>
+
+  <!-- ══ PROFILES ══ -->
   <section class="section" id="profiles">
     <div class="section-header reveal">
       <span class="badge badge-pink">Reproducible</span>
-      <h2>📁 Profiles & Config as Code</h2>
-      <p>Export, share, and replay your terminal setup across machines.</p>
+      <h2>◎ Profiles & Config as Code</h2>
+      <p>Export, share, and replay your exact terminal setup across any machine.</p>
     </div>
-
-    <div class="reveal" style="max-width:800px;margin:0 auto">
-      <div class="code-block">
-        <div class="code-header"><span>Profile workflow</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+    <div style="max-width:720px;margin:0 auto">
+      <div class="code-block reveal">
+        <div class="code-header"><span>profile workflow</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
         <div class="code-content"><span class="cm"># Export your current installed tools</span>
 <span class="fl">project</span> --export
 
 <span class="cm"># Import on another machine</span>
 <span class="fl">project</span> --import=projectr_profile_2026-05-30.txt</div>
       </div>
-
-      <h3 style="margin:32px 0 12px">Config as Code — YAML</h3>
-      <div class="code-block">
+      <h3 style="font-family:var(--font-display);font-weight:700;font-size:1rem;color:var(--text-bright);margin:32px 0 14px" class="reveal">YAML config:</h3>
+      <div class="code-block reveal">
         <div class="code-header"><span>projectr.yml</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
         <div class="code-content"><span class="kw">tools</span>:
   - git
@@ -1003,34 +1538,30 @@ h1,h2,h3,h4{color:var(--text-bright);font-weight:700}
   - fzf
   - ripgrep</div>
       </div>
-
-      <h3 style="margin:24px 0 12px">Config as Code — TOML</h3>
-      <div class="code-block">
+      <h3 style="font-family:var(--font-display);font-weight:700;font-size:1rem;color:var(--text-bright);margin:24px 0 14px" class="reveal">TOML config:</h3>
+      <div class="code-block reveal">
         <div class="code-header"><span>projectr.toml</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
         <div class="code-content"><span class="kw">tools</span> = [<span class="str">"git"</span>, <span class="str">"curl"</span>, <span class="str">"tmux"</span>, <span class="str">"neovim"</span>]</div>
       </div>
-
-      <div class="code-block">
-        <div class="code-header"><span>Install from config file</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <div class="code-block reveal">
+        <div class="code-header"><span>install from profile</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
         <div class="code-content"><span class="fl">project</span> install --profile=projectr.yml</div>
       </div>
     </div>
   </section>
 
-  <!-- ==================== PLUGINS ==================== -->
+  <div class="divider"></div>
+
+  <!-- ══ PLUGINS ══ -->
   <section class="section" id="plugins">
     <div class="section-header reveal">
-      <span class="badge badge-purple">Extensible</span>
-      <h2>🧩 Plugin System</h2>
-      <p>Add custom tools without editing the core registry.</p>
+      <span class="badge badge-violet">Extensible</span>
+      <h2>◆ Plugin System</h2>
+      <p>Add custom tools without editing the core registry. Drop a TOML file and you're done.</p>
     </div>
-
-    <div class="reveal" style="max-width:800px;margin:0 auto">
-      <p style="color:var(--text-dim);margin-bottom:20px">
-        Drop TOML files into the <code>tools.d/</code> directory. ProjectR loads them automatically on startup. Plugins are treated as data-only — no executable hooks or shell code allowed for security.
-      </p>
-      <div class="code-block">
-        <div class="code-header"><span>tools.d/ripgrep.toml</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+    <div style="max-width:720px;margin:0 auto">
+      <div class="code-block reveal">
+        <div class="code-header"><span>tools.d/mytool.toml</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
         <div class="code-content"><span class="kw">cmd</span>      = <span class="str">"ripgrep"</span>
 <span class="kw">pkg</span>      = <span class="str">"ripgrep"</span>
 <span class="kw">name</span>     = <span class="str">"Ripgrep"</span>
@@ -1039,158 +1570,104 @@ h1,h2,h3,h4{color:var(--text-bright);font-weight:700}
 <span class="kw">extra</span>    = <span class="str">"-"</span>
 <span class="kw">category</span> = <span class="str">"Dev"</span></div>
       </div>
-
-      <h3 style="margin:28px 0 12px">Plugin rules:</h3>
-      <ul style="color:var(--text-dim);font-size:.9rem;line-height:2;list-style:none;padding:0">
-        <li>✅ Can append tool entries to the registry</li>
-        <li>✅ Must be valid TOML with supported keys only</li>
-        <li>🚫 Cannot define <code>special</code> types or executable hooks</li>
-        <li>🚫 Cannot mutate core variables or <code>SCRIPT_DIR</code></li>
-        <li>🚫 Cannot install signal traps or define shell functions</li>
-      </ul>
+      <div style="margin-top:28px" class="reveal">
+        <h3 style="font-family:var(--font-display);font-weight:700;font-size:1rem;color:var(--text-bright);margin-bottom:14px">Plugin rules:</h3>
+        <ul style="list-style:none;padding:0;display:flex;flex-direction:column;gap:8px;font-size:0.88rem;font-weight:300">
+          <li style="color:var(--green)">✓ Can append tool entries to the registry</li>
+          <li style="color:var(--green)">✓ Must use supported TOML keys only</li>
+          <li style="color:var(--text-dim)">✗ Cannot use <code style="font-family:var(--font-mono);font-size:0.82em;color:var(--pink)">special</code> type or executable hooks</li>
+          <li style="color:var(--text-dim)">✗ Cannot shadow core variables or <code style="font-family:var(--font-mono);font-size:0.82em;color:var(--pink)">SCRIPT_DIR</code></li>
+          <li style="color:var(--text-dim)">✗ Cannot install signal traps or define shell functions</li>
+        </ul>
+      </div>
     </div>
   </section>
 
-  <!-- ==================== ARCHITECTURE ==================== -->
+  <div class="divider"></div>
+
+  <!-- ══ ARCHITECTURE ══ -->
   <section class="section" id="architecture">
     <div class="section-header reveal">
       <span class="badge badge-cyan">Internals</span>
-      <h2>🏗️ Project Architecture</h2>
+      <h2>⋮ Project Architecture</h2>
       <p>Clean modular layout — readable, hackable, and maintainable.</p>
     </div>
-
-<div class="reveal" style="max-width:960px;margin:0 auto">
-  <div class="tree" style="overflow-x:auto; white-space:pre">
-<span class="dir">ProjectR/</span>
-├── <span class="file">main.sh</span>                         <span class="desc"># Entry point & interactive menu</span>
-├── <span class="file">setup.sh</span>                        <span class="desc"># Global command installer + remote install</span>
+    <div style="max-width:680px;margin:0 auto" class="reveal">
+      <div class="arch-tree"><span class="dir">ProjectR/</span>
+├── <span class="file">main.sh</span>                  <span class="desc"># Entry point & interactive menu</span>
+├── <span class="file">setup.sh</span>                 <span class="desc"># Global command installer + remote install</span>
 ├── <span class="dir">lib/</span>
-│   ├── <span class="dir">core/</span>                         <span class="desc"># UI, colours, prompts, logging, spinner, progress</span>
-│   │   ├── <span class="file">array_context.sh</span>          <span class="desc"># Scoped array helpers (namerefs + eval fallback)</span>
-│   │   ├── <span class="file">cli.sh</span>                    <span class="desc"># CLI parsing utilities & shared helpers</span>
-│   │   ├── <span class="file">colours.sh</span>                <span class="desc"># ANSI colour & style definitions</span>
-│   │   ├── <span class="file">disk_inspector.sh</span>         <span class="desc"># Pre-install disk space guard</span>
-│   │   ├── <span class="file">display.sh</span>                <span class="desc"># Box drawing, TUI helpers, graceful exit</span>
-│   │   ├── <span class="file">logging.sh</span>                <span class="desc"># Structured log engine with rotation</span>
-│   │   ├── <span class="file">progress_bar.sh</span>           <span class="desc"># Animated progress bar with error analysis</span>
-│   │   ├── <span class="file">prompts.sh</span>                <span class="desc"># ask() / ask_rich() / ask_confirm() helpers</span>
-│   │   ├── <span class="file">spinner.sh</span>                <span class="desc"># Async spinner with signal-safe cleanup</span>
-│   │   └── <span class="file">strict_mode.sh</span>            <span class="desc"># projectr_require / _try / _optional wrappers</span>
-│   ├── <span class="dir">data/</span>                         <span class="desc"># Configuration & tool registry</span>
-│   │   ├── <span class="file">config.sh</span>                 <span class="desc"># Persistent key=value config store</span>
-│   │   └── <span class="file">tools.sh</span>                  <span class="desc"># Master tool registry (240+ pipe-delimited entries)</span>
-│   ├── <span class="dir">features/</span>                     <span class="desc"># User-facing install & management features</span>
-│   │   ├── <span class="file">doctor.sh</span>                 <span class="desc"># Environment health checks</span>
-│   │   ├── <span class="file">dry_run.sh</span>                <span class="desc"># Dry-run planner with JSON output</span>
-│   │   ├── <span class="file">installer.sh</span>              <span class="desc"># install_pkg / install_lang / batch installer</span>
-│   │   ├── <span class="file">plugin_loader.sh</span>          <span class="desc"># TOML plugin sandboxed loader</span>
-│   │   ├── <span class="file">post_install.sh</span>           <span class="desc"># Post-install summary boxes</span>
-│   │   ├── <span class="file">presets.sh</span>                <span class="desc"># Preset tool group definitions</span>
-│   │   ├── <span class="file">profile_code.sh</span>           <span class="desc"># YAML/TOML config-as-code profile reader</span>
-│   │   ├── <span class="file">profile_manager.sh</span>        <span class="desc"># export_profile / import_profile</span>
-│   │   ├── <span class="file">search_install.sh</span>         <span class="desc"># Multi-manager search & install by name</span>
-│   │   ├── <span class="file">snapshot.sh</span>               <span class="desc"># Timeshift / Btrfs / ZFS pre-install snapshots</span>
-│   │   ├── <span class="file">special_setup.sh</span>          <span class="desc"># Special installers: nvim, zsh, docker, go…</span>
-│   │   ├── <span class="file">state.sh</span>                  <span class="desc"># SQLite/TSV install state, verify & repair</span>
-│   │   ├── <span class="file">sync.sh</span>                   <span class="desc"># pkg_update / pkg_upgrade across all managers</span>
-│   │   ├── <span class="file">tool_audit.sh</span>             <span class="desc"># Registry audit with --strict CI mode</span>
-│   │   ├── <span class="file">undo_engine.sh</span>            <span class="desc"># Session history rollback (--undo)</span>
-│   │   └── <span class="file">uninstaller.sh</span>            <span class="desc"># uninstall_pkg / uninstall_lang / dispatcher</span>
-│   ├── <span class="dir">flags/</span>                        <span class="desc"># Flag & subcommand dispatcher</span>
-│   │   └── <span class="file">flags.sh</span>                  <span class="desc"># parse_flags() — routes all CLI args</span>
-│   ├── <span class="dir">sub_menus/</span>                    <span class="desc"># Interactive sub-menus</span>
-│   │   ├── <span class="file">presets_menu.sh</span>           <span class="desc"># Preset picker (whiptail + text fallback)</span>
-│   │   └── <span class="file">uninstall_menu.sh</span>         <span class="desc"># Paged uninstall menu</span>
-│   └── <span class="dir">system/</span>                       <span class="desc"># OS & environment detection</span>
-│       ├── <span class="file">checker.sh</span>                <span class="desc"># check_tool / check_all_tools</span>
-│       ├── <span class="file">daemon_checker.sh</span>         <span class="desc"># Background update alert + cron registration</span>
-│       ├── <span class="file">dependencies.sh</span>           <span class="desc"># Dependency checks & auto-install hints</span>
-│       ├── <span class="file">detect.sh</span>                 <span class="desc"># detect_pkg_manager / detect_pkg_for_tool</span>
-│       └── <span class="file">network.sh</span>                <span class="desc"># check_internet / require_internet / startup check</span>
-├── <span class="dir">tools.d/</span>                        <span class="desc"># Plugin tool definitions (TOML drop-ins)</span>
-│   └── <span class="file">README.md</span>                   <span class="desc"># Plugin authoring guide</span>
-├── <span class="dir">tests/</span>                          <span class="desc"># BATS automated test suite</span>
-│   └── <span class="file">suite.bats</span>                  <span class="desc"># Detection, scoping, plugin, batch & CLI tests</span>
-├── <span class="dir">log/</span>                            <span class="desc"># Runtime logs & session history</span>
-│   ├── <span class="file">install.log</span>                 <span class="desc"># Structured install/error log (auto-rotating)</span>
-│   └── <span class="file">session_history.tmp</span>         <span class="desc"># Per-session install record used by --undo</span>
-└── <span class="dir">docs/</span>                           <span class="desc"># Documentation & project website</span>
-    ├── <span class="file">index.html</span>                  <span class="desc"># Project landing page</span>
-    ├── <span class="file">feature_review.md</span>           <span class="desc"># Feature ideas & bug findings</span>
-    └── <span class="file">architectural_audit_and_roadmap.md</span> <span class="desc"># Enterprise hardening & roadmap</span>
-      </div>
+│   ├── <span class="dir">core/</span>                <span class="desc"># UI, colours, prompts, logging, spinner</span>
+│   │   ├── <span class="file">array_context.sh</span> <span class="desc"># Scoped array helpers</span>
+│   │   ├── <span class="file">cli.sh</span>           <span class="desc"># CLI parsing utilities</span>
+│   │   ├── <span class="file">colours.sh</span>       <span class="desc"># ANSI colour definitions</span>
+│   │   ├── <span class="file">display.sh</span>       <span class="desc"># Box drawing, TUI helpers</span>
+│   │   ├── <span class="file">logging.sh</span>       <span class="desc"># Structured log engine</span>
+│   │   ├── <span class="file">progress_bar.sh</span>  <span class="desc"># Progress bar UI</span>
+│   │   ├── <span class="file">prompts.sh</span>       <span class="desc"># ask_rich + ask_confirm</span>
+│   │   ├── <span class="file">spinner.sh</span>       <span class="desc"># Async spinner with cleanup</span>
+│   │   └── <span class="file">strict_mode.sh</span>   <span class="desc"># Safe command wrappers</span>
+│   ├── <span class="dir">data/</span>                <span class="desc"># Configuration & tool registry</span>
+│   │   ├── <span class="file">config.sh</span>        <span class="desc"># Persistent key-value config</span>
+│   │   └── <span class="file">tools.sh</span>         <span class="desc"># Master tool registry (240+ entries)</span>
+│   ├── <span class="dir">features/</span>            <span class="desc"># Install, uninstall, search, presets...</span>
+│   ├── <span class="dir">flags/</span>               <span class="desc"># Flag & subcommand dispatcher</span>
+│   ├── <span class="dir">sub_menus/</span>           <span class="desc"># Preset & uninstall menus</span>
+│   └── <span class="dir">system/</span>              <span class="desc"># OS/PM/dependency/network checks</span>
+├── <span class="dir">tools.d/</span>                 <span class="desc"># Plugin tool definitions (TOML)</span>
+├── <span class="dir">tests/</span>                   <span class="desc"># BATS test suite</span>
+├── <span class="dir">log/</span>                     <span class="desc"># Runtime logs & session history</span>
+└── <span class="dir">docs/</span>                    <span class="desc"># Documentation & this website</span></div>
     </div>
   </section>
 
-  <!-- ==================== FAQ ==================== -->
+  <div class="divider"></div>
+
+  <!-- ══ FAQ ══ -->
   <section class="section" id="faq">
     <div class="section-header reveal">
       <span class="badge badge-pink">Help</span>
-      <h2>❓ Frequently Asked Questions</h2>
+      <h2>? FAQ</h2>
     </div>
-
-    <div class="faq-list reveal" style="max-width:800px;margin:0 auto">
+    <div class="faq-list reveal" style="max-width:760px;margin:0 auto">
       <div class="faq-item">
-        <div class="faq-q" onclick="toggleFaq(this)">
-          Does the installed copy auto-update?
-          <span class="faq-arrow">▼</span>
-        </div>
-        <div class="faq-a">No. ProjectR does <strong>not</strong> auto-sync on every run to avoid surprises. Use <code>project --self-update</code> or rerun <code>bash setup.sh</code> from your checkout to refresh.</div>
+        <div class="faq-q" onclick="toggleFaq(this)">Does the installed copy auto-update?<span class="faq-arrow">▼</span></div>
+        <div class="faq-a">No. ProjectR does <strong>not</strong> auto-sync on every run. Use <code style="font-family:var(--font-mono);color:var(--cyan)">project --self-update</code> or rerun <code style="font-family:var(--font-mono);color:var(--cyan)">bash setup.sh</code> from your checkout to refresh.</div>
       </div>
       <div class="faq-item">
-        <div class="faq-q" onclick="toggleFaq(this)">
-          What if <code>~/.local</code> doesn't exist?
-          <span class="faq-arrow">▼</span>
-        </div>
-        <div class="faq-a"><code>setup.sh</code> creates the needed directories with <code>mkdir -p</code>. If normal locations fail, it falls back to <code>~/.projectr-app/projectr</code> and <code>~/bin</code>.</div>
+        <div class="faq-q" onclick="toggleFaq(this)">What if <code style="font-family:var(--font-mono)">~/.local</code> doesn't exist?<span class="faq-arrow">▼</span></div>
+        <div class="faq-a"><code style="font-family:var(--font-mono);color:var(--cyan)">setup.sh</code> creates the needed directories with <code style="font-family:var(--font-mono);color:var(--cyan)">mkdir -p</code>. If the normal location fails, it falls back to <code style="font-family:var(--font-mono);color:var(--cyan)">~/.projectr-app/projectr</code> and <code style="font-family:var(--font-mono);color:var(--cyan)">~/bin</code>.</div>
       </div>
       <div class="faq-item">
-        <div class="faq-q" onclick="toggleFaq(this)">
-          Does the one-shot curl install need git?
-          <span class="faq-arrow">▼</span>
-        </div>
-        <div class="faq-a">Ideally yes — it uses <code>git clone --depth 1</code> for the fastest setup. But if git isn't available, it falls back to downloading a tarball via curl/wget.</div>
+        <div class="faq-q" onclick="toggleFaq(this)">Does the one-shot install need git?<span class="faq-arrow">▼</span></div>
+        <div class="faq-a">Ideally yes — it uses <code style="font-family:var(--font-mono);color:var(--cyan)">git clone --depth 1</code> for the fastest setup. But if git isn't available, it falls back to downloading a tarball via curl/wget.</div>
       </div>
       <div class="faq-item">
-        <div class="faq-q" onclick="toggleFaq(this)">
-          Can I use ProjectR on Termux (Android)?
-          <span class="faq-arrow">▼</span>
-        </div>
-        <div class="faq-a">Yes! ProjectR is designed to work in minimal environments including Termux. It auto-detects <code>pkg</code> as the package manager.</div>
+        <div class="faq-q" onclick="toggleFaq(this)">Does it work on Termux (Android)?<span class="faq-arrow">▼</span></div>
+        <div class="faq-a">Yes. ProjectR is designed to work in minimal environments including Termux. It auto-detects <code style="font-family:var(--font-mono);color:var(--cyan)">pkg</code> as the package manager and handles Android-specific paths.</div>
       </div>
       <div class="faq-item">
-        <div class="faq-q" onclick="toggleFaq(this)">
-          Is it safe to pipe curl into sh?
-          <span class="faq-arrow">▼</span>
-        </div>
-        <div class="faq-a">The setup script only clones the public GitHub repo and creates a launcher script. It does not run any package installs, modify system files, or require sudo. You can inspect the script first with <code>curl -fsSL .../setup.sh | less</code>.</div>
+        <div class="faq-q" onclick="toggleFaq(this)">Is it safe to pipe curl into sh?<span class="faq-arrow">▼</span></div>
+        <div class="faq-a">The setup script only clones the public GitHub repo and creates a launcher. No package installs, no system file modification, no sudo required. You can inspect it first: <code style="font-family:var(--font-mono);color:var(--cyan)">curl -fsSL .../setup.sh | less</code>.</div>
       </div>
       <div class="faq-item">
-        <div class="faq-q" onclick="toggleFaq(this)">
-          How do I add my own tools?
-          <span class="faq-arrow">▼</span>
-        </div>
-        <div class="faq-a">Either add entries to <code>lib/data/tools.sh</code> using the pipe-delimited format, or drop TOML files into <code>tools.d/</code> for a non-invasive plugin approach.</div>
+        <div class="faq-q" onclick="toggleFaq(this)">How do I add my own tools?<span class="faq-arrow">▼</span></div>
+        <div class="faq-a">Either add entries to <code style="font-family:var(--font-mono);color:var(--cyan)">lib/data/tools.sh</code> using the pipe-delimited format, or drop TOML files into <code style="font-family:var(--font-mono);color:var(--cyan)">tools.d/</code> for a non-invasive plugin approach.</div>
       </div>
       <div class="faq-item">
-        <div class="faq-q" onclick="toggleFaq(this)">
-          What Bash version is required?
-          <span class="faq-arrow">▼</span>
-        </div>
-        <div class="faq-a">Bash 4+ is recommended. Some features like scoped namerefs require Bash 4.3+, but ProjectR includes eval-based fallbacks for older versions.</div>
+        <div class="faq-q" onclick="toggleFaq(this)">What Bash version is required?<span class="faq-arrow">▼</span></div>
+        <div class="faq-a">Bash 4+ is recommended. Scoped namerefs require Bash 4.3+, but ProjectR includes eval-based fallbacks for older versions — useful on macOS which ships with Bash 3.2.</div>
       </div>
       <div class="faq-item">
-        <div class="faq-q" onclick="toggleFaq(this)">
-          Can I use ProjectR in CI/CD pipelines?
-          <span class="faq-arrow">▼</span>
-        </div>
-        <div class="faq-a">Absolutely. Use flags like <code>--install=&lt;name&gt;</code>, <code>--dry-run --json</code>, <code>audit --strict</code>, and profile imports for fully non-interactive CI usage.</div>
+        <div class="faq-q" onclick="toggleFaq(this)">Can I use ProjectR in CI/CD pipelines?<span class="faq-arrow">▼</span></div>
+        <div class="faq-a">Absolutely. Use <code style="font-family:var(--font-mono);color:var(--cyan)">--install=&lt;name&gt;</code>, <code style="font-family:var(--font-mono);color:var(--cyan)">--dry-run --json</code>, <code style="font-family:var(--font-mono);color:var(--cyan)">audit --strict</code>, and profile imports for fully non-interactive CI usage.</div>
       </div>
     </div>
   </section>
 
-  <!-- Footer -->
+  <!-- ══ FOOTER ══ -->
   <footer class="footer">
+    <div class="footer-logo">ProjectR</div>
     <div class="footer-links">
       <a href="https://github.com/Thaton3gu7/ProjectR" target="_blank" rel="noopener">GitHub</a>
       <a href="#quick-start">Quick Start</a>
@@ -1199,72 +1676,283 @@ h1,h2,h3,h4{color:var(--text-bright);font-weight:700}
       <a href="#faq">FAQ</a>
     </div>
     <p>Built with ❤️ by <a href="https://github.com/Thaton3gu7" target="_blank" rel="noopener">ThatOn3Gu7</a></p>
-    <p style="margin-top:8px;font-size:.75rem">ProjectR — Modular Bash Terminal Setup Assistant</p>
+    <p style="margin-top:8px;font-size:0.75rem;font-family:var(--font-mono);color:var(--text-dim)">ProjectR — Modular Bash Terminal Setup Assistant</p>
   </footer>
 
 </main>
 
 <script>
-// Sidebar toggle
-function toggleSidebar(){
+// ═══════════════════════════════════════════════════════════
+// CURSOR
+// ═══════════════════════════════════════════════════════════
+const dot  = document.getElementById('cursor-dot');
+const ring = document.getElementById('cursor-ring');
+let mx = 0, my = 0, rx = 0, ry = 0;
+
+document.addEventListener('mousemove', e => {
+  mx = e.clientX; my = e.clientY;
+  dot.style.left = mx + 'px'; dot.style.top = my + 'px';
+});
+
+function animateCursor() {
+  rx += (mx - rx) * 0.12;
+  ry += (my - ry) * 0.12;
+  ring.style.left = rx + 'px'; ring.style.top = ry + 'px';
+  requestAnimationFrame(animateCursor);
+}
+animateCursor();
+
+document.querySelectorAll('a,button,.feature-card,.stat-card,.category-card,.mgr-chip,.tool-tag,.faq-q,.copy-btn,.sidebar nav a').forEach(el => {
+  el.addEventListener('mouseenter', () => document.body.classList.add('cursor-hover'));
+  el.addEventListener('mouseleave', () => document.body.classList.remove('cursor-hover'));
+});
+
+// ═══════════════════════════════════════════════════════════
+// SCROLL PROGRESS
+// ═══════════════════════════════════════════════════════════
+const scrollBar = document.getElementById('scroll-bar');
+window.addEventListener('scroll', () => {
+  const pct = (window.scrollY / (document.documentElement.scrollHeight - window.innerHeight)) * 100;
+  scrollBar.style.width = pct + '%';
+});
+
+// ═══════════════════════════════════════════════════════════
+// AURORA BACKGROUND
+// ═══════════════════════════════════════════════════════════
+const canvas = document.getElementById('aurora-canvas');
+const ctx = canvas.getContext('2d');
+
+function resizeCanvas() {
+  canvas.width  = window.innerWidth;
+  canvas.height = window.innerHeight;
+}
+resizeCanvas();
+window.addEventListener('resize', resizeCanvas);
+
+const blobs = [
+  { x: 0.2, y: 0.3, r: 0.5, color: [0, 229, 255],   speed: 0.0003, phase: 0 },
+  { x: 0.8, y: 0.6, r: 0.45, color: [176, 106, 255], speed: 0.0004, phase: 2 },
+  { x: 0.5, y: 0.8, r: 0.4,  color: [0, 255, 179],   speed: 0.00035, phase: 4 },
+  { x: 0.1, y: 0.7, r: 0.35, color: [255, 92, 170],  speed: 0.00025, phase: 1 },
+  { x: 0.9, y: 0.2, r: 0.42, color: [255, 201, 77],  speed: 0.00045, phase: 3 },
+];
+
+let auroraT = 0;
+function drawAurora() {
+  auroraT++;
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  blobs.forEach(b => {
+    const ox = Math.sin(auroraT * b.speed + b.phase) * 0.15;
+    const oy = Math.cos(auroraT * b.speed * 0.7 + b.phase) * 0.12;
+    const cx = (b.x + ox) * canvas.width;
+    const cy = (b.y + oy) * canvas.height;
+    const radius = b.r * Math.max(canvas.width, canvas.height);
+
+    const grad = ctx.createRadialGradient(cx, cy, 0, cx, cy, radius);
+    grad.addColorStop(0,   `rgba(${b.color[0]},${b.color[1]},${b.color[2]},0.12)`);
+    grad.addColorStop(0.5, `rgba(${b.color[0]},${b.color[1]},${b.color[2]},0.04)`);
+    grad.addColorStop(1,   `rgba(${b.color[0]},${b.color[1]},${b.color[2]},0)`);
+
+    ctx.fillStyle = grad;
+    ctx.beginPath();
+    ctx.ellipse(cx, cy, radius, radius * 0.7, auroraT * b.speed * 0.5, 0, Math.PI * 2);
+    ctx.fill();
+  });
+
+  requestAnimationFrame(drawAurora);
+}
+drawAurora();
+
+// ═══════════════════════════════════════════════════════════
+// FLOATING PARTICLES
+// ═══════════════════════════════════════════════════════════
+const particleColors = ['#00e5ff','#b06aff','#00ffb3','#ff5caa'];
+for (let i = 0; i < 24; i++) {
+  const p = document.createElement('div');
+  p.className = 'particle';
+  const size = Math.random() * 3 + 1;
+  const color = particleColors[Math.floor(Math.random() * particleColors.length)];
+  p.style.cssText = `
+    width:${size}px; height:${size}px;
+    background:${color};
+    left:${Math.random() * 100}vw;
+    top:${Math.random() * 100}vh;
+    --drift:${(Math.random() - 0.5) * 200}px;
+    animation-duration:${Math.random() * 20 + 15}s;
+    animation-delay:${Math.random() * -20}s;
+    box-shadow: 0 0 ${size * 3}px ${color};
+  `;
+  document.body.appendChild(p);
+}
+
+// ═══════════════════════════════════════════════════════════
+// ANIMATED TERMINAL
+// ═══════════════════════════════════════════════════════════
+const lines = [
+  { type: 'comment', text: '# One command. Full setup.' },
+  { type: 'cmd',     prompt: '$ ', text: 'curl -fsSL https://raw.githubusercontent.com/Thaton3gu7/ProjectR/master/setup.sh | sh' },
+  { type: 'out',     text: '' },
+  { type: 'out-s',   text: '[✓] ProjectR installed via remote one-shot setup.' },
+  { type: 'out',     text: '    App files : ~/.local/share/projectr' },
+  { type: 'out',     text: '    Launcher  : ~/.local/bin/project' },
+  { type: 'out',     text: '' },
+  { type: 'cmd',     prompt: '$ ', text: 'project --install=neovim' },
+  { type: 'out-s',   text: '[✓] Neovim installed successfully (via apt).' },
+  { type: 'cmd',     prompt: '$ ', text: 'project --list=manager' },
+  { type: 'out',     text: '  Primary PM  :  apt' },
+  { type: 'out',     text: '  Also found  :  pip3, npm, cargo, gem' },
+];
+
+const termBody = document.getElementById('term-body');
+const termCursor = document.getElementById('term-cursor');
+
+function buildLine(line) {
+  const span = document.createElement('span');
+  span.className = 'term-line';
+
+  if (line.type === 'comment') {
+    span.innerHTML = `<span class="term-comment">${line.text}</span>`;
+  } else if (line.type === 'cmd') {
+    span.innerHTML = `<span class="term-prompt">${line.prompt}</span><span class="term-cmd"></span>`;
+  } else if (line.type === 'out-s') {
+    span.innerHTML = `<span class="term-out success">${line.text}</span>`;
+  } else {
+    span.innerHTML = `<span class="term-out">${line.text}</span>`;
+  }
+
+  return span;
+}
+
+async function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+async function typeTerminal() {
+  await sleep(1400);
+
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i];
+    const el = buildLine(line);
+    termBody.insertBefore(el, termCursor);
+    el.classList.add('visible');
+
+    if (line.type === 'cmd') {
+      const cmdSpan = el.querySelector('.term-cmd');
+      for (let c = 0; c < line.text.length; c++) {
+        cmdSpan.textContent += line.text[c];
+        await sleep(28 + Math.random() * 22);
+      }
+      await sleep(280);
+    } else {
+      await sleep(line.type === 'out' && !line.text ? 60 : 180);
+    }
+  }
+}
+
+typeTerminal();
+
+// ═══════════════════════════════════════════════════════════
+// COUNTER ANIMATION
+// ═══════════════════════════════════════════════════════════
+function animateCount(el) {
+  const target = parseInt(el.dataset.target);
+  const dur = 1800;
+  const start = performance.now();
+  function tick(now) {
+    const t = Math.min((now - start) / dur, 1);
+    const ease = 1 - Math.pow(1 - t, 4);
+    el.textContent = Math.round(ease * target);
+    if (t < 1) requestAnimationFrame(tick);
+    else el.textContent = target;
+  }
+  requestAnimationFrame(tick);
+}
+
+// ═══════════════════════════════════════════════════════════
+// SCROLL REVEAL + COUNTER TRIGGER
+// ═══════════════════════════════════════════════════════════
+const revealObs = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.classList.add('visible');
+      e.target.querySelectorAll('.count-up').forEach(animateCount);
+      revealObs.unobserve(e.target);
+    }
+  });
+}, { threshold: 0.08, rootMargin: '0px 0px -40px 0px' });
+
+document.querySelectorAll('.reveal').forEach(el => revealObs.observe(el));
+
+// ═══════════════════════════════════════════════════════════
+// ACTIVE NAV
+// ═══════════════════════════════════════════════════════════
+const navLinks = document.querySelectorAll('.sidebar nav a');
+const sectionEls = document.querySelectorAll('section[id]');
+
+window.addEventListener('scroll', () => {
+  let cur = '';
+  sectionEls.forEach(s => {
+    if (window.scrollY >= s.offsetTop - 140) cur = s.id;
+  });
+  navLinks.forEach(l => {
+    l.classList.toggle('active', l.getAttribute('href') === '#' + cur);
+  });
+}, { passive: true });
+
+// ═══════════════════════════════════════════════════════════
+// SIDEBAR TOGGLE
+// ═══════════════════════════════════════════════════════════
+function toggleSidebar() {
   document.getElementById('sidebar').classList.toggle('open');
   document.getElementById('overlay').classList.toggle('open');
 }
-
-// Close sidebar on nav click (mobile)
-document.querySelectorAll('.sidebar nav a').forEach(a=>{
-  a.addEventListener('click',()=>{
+document.querySelectorAll('.sidebar nav a').forEach(a => {
+  a.addEventListener('click', () => {
     document.getElementById('sidebar').classList.remove('open');
     document.getElementById('overlay').classList.remove('open');
   });
 });
 
-// Active nav highlight on scroll
-const sections=document.querySelectorAll('section[id]');
-const navLinks=document.querySelectorAll('.sidebar nav a');
-window.addEventListener('scroll',()=>{
-  let current='';
-  sections.forEach(s=>{
-    if(window.scrollY>=s.offsetTop-120) current=s.getAttribute('id');
-  });
-  navLinks.forEach(l=>{
-    l.classList.remove('active');
-    if(l.getAttribute('href')==='#'+current) l.classList.add('active');
-  });
-});
+// ═══════════════════════════════════════════════════════════
+// FAQ ACCORDION
+// ═══════════════════════════════════════════════════════════
+function toggleFaq(el) {
+  el.closest('.faq-item').classList.toggle('open');
+}
 
-// Scroll reveal
-const revealEls=document.querySelectorAll('.reveal');
-const observer=new IntersectionObserver((entries)=>{
-  entries.forEach(e=>{
-    if(e.isIntersecting){e.target.classList.add('visible');observer.unobserve(e.target)}
-  });
-},{threshold:0.1,rootMargin:'0px 0px -50px 0px'});
-revealEls.forEach(el=>observer.observe(el));
-
-// Copy code
-function copyCode(btn){
-  const code=btn.closest('.code-block').querySelector('.code-content');
-  const text=code.innerText;
-  navigator.clipboard.writeText(text).then(()=>{
-    btn.textContent='Copied!';
-    setTimeout(()=>btn.textContent='Copy',2000);
-  }).catch(()=>{
-    // Fallback
-    const ta=document.createElement('textarea');
-    ta.value=text;ta.style.position='fixed';ta.style.opacity='0';
-    document.body.appendChild(ta);ta.select();
-    try{document.execCommand('copy');btn.textContent='Copied!';setTimeout(()=>btn.textContent='Copy',2000)}
-    catch(e){}
+// ═══════════════════════════════════════════════════════════
+// COPY CODE
+// ═══════════════════════════════════════════════════════════
+function copyCode(btn) {
+  const code = btn.closest('.code-block').querySelector('.code-content');
+  navigator.clipboard.writeText(code.innerText.trim()).then(() => {
+    btn.textContent = 'Copied!';
+    setTimeout(() => btn.textContent = 'Copy', 2000);
+  }).catch(() => {
+    const ta = document.createElement('textarea');
+    ta.value = code.innerText.trim();
+    ta.style.cssText = 'position:fixed;opacity:0';
+    document.body.appendChild(ta); ta.select();
+    try { document.execCommand('copy'); btn.textContent = 'Copied!'; setTimeout(() => btn.textContent = 'Copy', 2000); } catch(e){}
     document.body.removeChild(ta);
   });
 }
 
-// FAQ accordion
-function toggleFaq(el){
-  el.closest('.faq-item').classList.toggle('open');
-}
+// ═══════════════════════════════════════════════════════════
+// CARD TILT (subtle mouse-tracking)
+// ═══════════════════════════════════════════════════════════
+document.querySelectorAll('.feature-card, .stat-card').forEach(card => {
+  card.addEventListener('mousemove', e => {
+    const rect = card.getBoundingClientRect();
+    const cx = rect.left + rect.width / 2;
+    const cy = rect.top  + rect.height / 2;
+    const dx = (e.clientX - cx) / rect.width;
+    const dy = (e.clientY - cy) / rect.height;
+    card.style.transform = `translateY(-6px) rotateX(${-dy * 6}deg) rotateY(${dx * 6}deg) scale(1.01)`;
+  });
+  card.addEventListener('mouseleave', () => {
+    card.style.transform = '';
+  });
+});
 </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a06dd620fe6f2969',t:'MTc4MDY0ODQ0OA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script defer src="https://static.cloudflareinsights.com/beacon.min.js/v833ccba57c9e4d2798f2e76cebdd09a11778172276447" integrity="sha512-57MDmcccJXYtNnH+ZiBwzC4jb2rvgVCEokYN+L/nLlmO8rfYT/gIpW2A569iJ/3b+0UEasghjuZH/ma3wIs/EQ==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
 </body>
 </html>
