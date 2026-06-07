@@ -10,9 +10,14 @@ parse_flags() {
     # Feature-specific implementation still lives in lib/core or lib/features,
     # but every CLI argument is routed from this function.
     [[ $# -eq 0 ]] && return 0
-
-    local args=() arg
-    for arg in "$@"; do
+    local args=() arg idx source_next=""
+    for ((idx=1; idx<=$#; idx++)); do
+        arg="${!idx}"
+        if [[ -n "$source_next" ]]; then
+            export PROJECTR_INSTALL_MANAGER_OVERRIDE="$arg"
+            source_next=""
+            continue
+        fi
         case "$arg" in
             --no-color)
                 export PROJECTR_NO_COLOR=1
@@ -22,6 +27,12 @@ parse_flags() {
                 ;;
             --quiet)
                 export PROJECTR_QUIET=1
+                ;;
+            --source)
+                source_next=1
+                ;;
+            --source=*)
+                export PROJECTR_INSTALL_MANAGER_OVERRIDE="${arg#--source=}"
                 ;;
             *) args+=("$arg") ;;
         esac
@@ -165,6 +176,11 @@ parse_flags() {
             exit $?
             ;;
 
+        export-lock|--export-lock)
+            export_profile_lock
+            exit $?
+            ;;
+
         import|--import)
             shift
             [[ -n "${1:-}" ]] || { echo -e "${ERROR}[!] import requires a file path.${RST}"; log_error "import command missing file path" "cli"; exit 1; }
@@ -237,6 +253,12 @@ parse_flags() {
             else
                 projectr_repair_state
             fi
+            exit $?
+            ;;
+
+        scheduler|--scheduler)
+            shift
+            projectr_cli_scheduler_args "$@"
             exit $?
             ;;
 
@@ -431,9 +453,12 @@ _flag_list_installed() {
 
     for entry in "${TOOLS[@]}"; do
         IFS="|" read -r num cmd pkg name desc type extra cat <<< "$entry"
-        if command -v "$cmd" >/dev/null 2>&1; then
+        local tool_id effective_cmd
+        tool_id=$(projectr_tool_id "$cmd")
+        effective_cmd=$(projectr_effective_cmd "$tool_id" "$cmd" "${PRIMARY_PKG_MANAGER:-$(detect_pkg_manager)}")
+        if command -v "$effective_cmd" >/dev/null 2>&1; then
             local version
-            version=$("$cmd" --version 2>/dev/null | head -n1 \
+            version=$("$effective_cmd" --version 2>/dev/null | head -n1 \
                       | grep -oE '[0-9]+\.[0-9]+[.0-9]*' | head -n1)
             found+=("$num|$name|$cat|${version:--}")
         else
@@ -487,8 +512,10 @@ _flag_list_categories() {
             IFS="|" read -r num cmd pkg name desc type extra cat <<< "$entry"
             [[ "$cat" != "$category" ]] && continue
             # Show install status inline
-            local status_icon status_color
-            if command -v "$cmd" >/dev/null 2>&1; then
+            local status_icon status_color tool_id effective_cmd
+            tool_id=$(projectr_tool_id "$cmd")
+            effective_cmd=$(projectr_effective_cmd "$tool_id" "$cmd" "${PRIMARY_PKG_MANAGER:-$(detect_pkg_manager)}")
+            if command -v "$effective_cmd" >/dev/null 2>&1; then
                 status_icon="✔" status_color="${OPTION}"
             else
                 status_icon="✘" status_color="${ERROR}"
@@ -622,9 +649,12 @@ _flag_install() {
     fi
 
     IFS="|" read -r num cmd pkg name desc type extra cat <<< "$matched_entry"
+    local tool_id effective_cmd
+    tool_id=$(projectr_tool_id "$cmd")
+    effective_cmd=$(projectr_effective_cmd "$tool_id" "$cmd" "${PROJECTR_INSTALL_MANAGER_OVERRIDE:-${PRIMARY_PKG_MANAGER:-$(detect_pkg_manager)}}")
 
     # Already installed?
-    if command -v "$cmd" >/dev/null 2>&1; then
+    if command -v "$effective_cmd" >/dev/null 2>&1; then
         echo -e "  ${OPTION}[✓] ${name} is already installed — nothing to do.${RST}"
         echo ""
         return 0
@@ -690,8 +720,12 @@ _flag_uninstall() {
     fi
 
     IFS="|" read -r num cmd pkg name desc type extra cat <<< "$matched_entry"
+    local tool_id effective_cmd uninstall_manager
+    tool_id=$(projectr_tool_id "$cmd")
+    uninstall_manager="${PROJECTR_UNINSTALL_MANAGER_OVERRIDE:-$(projectr_state_lookup_manager "$tool_id" "$pkg")}" 
+    effective_cmd=$(projectr_effective_cmd "$tool_id" "$cmd" "${uninstall_manager:-${PRIMARY_PKG_MANAGER:-$(detect_pkg_manager)}}")
 
-    if ! command -v "$cmd" >/dev/null 2>&1; then
+    if ! command -v "$effective_cmd" >/dev/null 2>&1; then
         echo -e "  ${DIM}[*] ${name} is not installed — nothing to do.${RST}"
         echo ""
         return 0
@@ -742,8 +776,10 @@ _flag_search() {
     done
 
     local -a INSTALLED_PKGS=() SKIPPED_PKGS=() FAILED_PKGS=()
+    export NON_INTERACTIVE=1
     search_and_install "$target"
     local status=$?
+    unset NON_INTERACTIVE
     echo ""
     return "$status"
 }

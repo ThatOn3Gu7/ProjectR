@@ -19,6 +19,7 @@ set -euo pipefail
 # and use the defaults or flag/env overrides directly.
 
 PROJECTR_REPO_URL="${PROJECTR_REPO_URL:-https://github.com/Thaton3gu7/ProjectR.git}"
+PROJECTR_TRUSTED_REPO_REGEX="${PROJECTR_TRUSTED_REPO_REGEX:-^(https://github\.com/Thaton3gu7/ProjectR(\.git)?|git@github\.com:Thaton3gu7/ProjectR(\.git)?)$}"
 PROJECT_NAME="ProjectR"
 COMMAND_NAME="${PROJECTR_COMMAND_NAME:-project}"
 DEFAULT_INSTALL_DIR="${XDG_DATA_HOME:-$HOME/.local/share}/projectr"
@@ -28,6 +29,8 @@ BIN_DIR="${PROJECTR_BIN_DIR:-$DEFAULT_BIN_DIR}"
 ADD_PATH=0
 REMOTE_MODE=0
 SHOW_MENU=1
+SELF_UPDATE_MODE=0
+FORCE_REMOTE_MODE=0
 
 #  Colours (self-contained) 
 RST='\e[0m'
@@ -75,6 +78,12 @@ _detect_source_dir() {
     local candidate="${BASH_SOURCE[0]:-}"
     if [[ -n "$candidate" ]]; then
         candidate="$(cd "$(dirname "$candidate")" 2>/dev/null && pwd -P)" || candidate=""
+    fi
+
+    if (( FORCE_REMOTE_MODE )); then
+        REMOTE_MODE=1
+        SOURCE_DIR=""
+        return 0
     fi
 
     if [[ -n "$candidate" && -f "$candidate/main.sh" && -d "$candidate/lib" ]]; then
@@ -161,6 +170,8 @@ Options:
   --bin-dir=<path>       Directory for launcher (default: ~/.local/bin)
   --add-path             Add the bin dir to common shell rc files when missing
   --no-menu              Skip interactive menu, use defaults/flags directly
+  --self-update-mode      Internal: refresh installed copy without any setup UI
+  --force-remote          Internal: refresh installed copy directly from PROJECTR_REPO_URL
   -h, --help             Show this help
 
 Environment overrides:
@@ -186,6 +197,11 @@ expand_path() {
         '~/'*) printf '%s/%s\n' "$HOME" "${path#~/}" ;;
         *) printf '%s\n' "$path" ;;
     esac
+}
+
+validate_repo_url() {
+    [[ "${PROJECTR_ALLOW_ANY_REMOTE:-0}" == "1" ]] && return 0
+    [[ "$1" =~ $PROJECTR_TRUSTED_REPO_REGEX ]]
 }
 
 require_commands() {
@@ -478,6 +494,7 @@ _run_setup_menu() {
 
 # ======================= Remote clone functions ============================
 clone_project_remote() {
+    validate_repo_url "$PROJECTR_REPO_URL" || fail "Refusing to clone an untrusted repository URL: $PROJECTR_REPO_URL"
     info "Remote mode detected — no local checkout found."
     info "Cloning $PROJECT_NAME from $PROJECTR_REPO_URL ..."
 
@@ -521,8 +538,9 @@ _clone_with_git() {
 }
 
 _clone_with_archive() {
-    local archive_url="${PROJECTR_REPO_URL%.git}"
-    archive_url="${archive_url}/archive/refs/heads/master.tar.gz"
+    local archive_base="${PROJECTR_REPO_URL%.git}"
+    local archive_url="${archive_base}/archive/refs/heads/main.tar.gz"
+    local archive_url_fallback="${archive_base}/archive/refs/heads/master.tar.gz"
     local tmp_archive tmp_extract backup=""
 
     tmp_archive="$(mktemp "${TMPDIR:-/tmp}/projectr-archive.XXXXXX.tar.gz")"
@@ -531,9 +549,9 @@ _clone_with_archive() {
 
     info "Downloading $PROJECT_NAME archive ..."
     if command -v curl >/dev/null 2>&1; then
-        curl -fsSL -o "$tmp_archive" "$archive_url"             || fail "Failed to download archive from $archive_url"
+        curl -fsSL -o "$tmp_archive" "$archive_url" >/dev/null 2>&1 || curl -fsSL -o "$tmp_archive" "$archive_url_fallback" >/dev/null 2>&1 || fail "Failed to download archive from $archive_url or $archive_url_fallback"
     else
-        wget -qO "$tmp_archive" "$archive_url"             || fail "Failed to download archive from $archive_url"
+        wget -qO "$tmp_archive" "$archive_url" >/dev/null 2>&1 || wget -qO "$tmp_archive" "$archive_url_fallback" >/dev/null 2>&1 || fail "Failed to download archive from $archive_url or $archive_url_fallback"
     fi
 
     tar -xzf "$tmp_archive" -C "$tmp_extract" --strip-components=1         || fail "Failed to extract archive."
@@ -572,6 +590,7 @@ write_metadata() {
         printf 'PROJECTR_COMMAND_NAME=%q\n' "$COMMAND_NAME"
         printf 'PROJECTR_INSTALLED_AT=%q\n' "$(date '+%Y-%m-%d %H:%M:%S %z')"
         printf 'PROJECTR_REMOTE_MODE=%q\n' "$REMOTE_MODE"
+        printf 'PROJECTR_REPO_URL=%q\n' "$PROJECTR_REPO_URL"
     } > "$metadata_file"
 }
 
@@ -626,19 +645,24 @@ write_launcher() {
         printf 'PROJECTR_SOURCE_DIR=%q\n' "$SOURCE_DIR"
         printf 'PROJECTR_BIN_DIR=%q\n' "$BIN_DIR"
         printf 'PROJECTR_COMMAND_NAME=%q\n' "$COMMAND_NAME"
+        printf 'PROJECTR_REPO_URL=%q\n' "$PROJECTR_REPO_URL"
+        echo 'export PROJECTR_HOME PROJECTR_SOURCE_DIR PROJECTR_BIN_DIR PROJECTR_COMMAND_NAME PROJECTR_REPO_URL'
         echo 'export PROJECTR_LAUNCHER_NAME="$(basename "$0")"'
         echo ''
         echo 'case "${1:-}" in'
-        echo '  --self-update|--projectr-update)'
+        echo '  update|--update|--self-update|--projectr-update|self-update|projectr-update)'
         echo '    if [[ -d "$PROJECTR_SOURCE_DIR/.git" ]]; then'
         echo '      echo "[*] Pulling latest changes ..."'
-        echo '      git -C "$PROJECTR_SOURCE_DIR" pull --ff-only || { echo "[!] Pull failed." >&2; exit 1; }'
+        echo '      branch="$(git -C "$PROJECTR_SOURCE_DIR" rev-parse --abbrev-ref HEAD 2>/dev/null || printf %s master)"'
+        echo '      git -C "$PROJECTR_SOURCE_DIR" remote get-url origin >/dev/null 2>&1 && git -C "$PROJECTR_SOURCE_DIR" fetch --tags --prune origin >/dev/null 2>&1 && git -C "$PROJECTR_SOURCE_DIR" merge --ff-only "origin/$branch" >/dev/null 2>&1 || echo "[*] Continuing with the current local checkout."'
         echo '    fi'
         echo '    if [[ -f "$PROJECTR_SOURCE_DIR/setup.sh" ]]; then'
-        echo '      exec bash "$PROJECTR_SOURCE_DIR/setup.sh" --no-menu --command="$PROJECTR_COMMAND_NAME" --install-dir="$PROJECTR_HOME" --bin-dir="$PROJECTR_BIN_DIR"'
+        echo '      exec bash "$PROJECTR_SOURCE_DIR/setup.sh" --no-menu --self-update-mode --command="$PROJECTR_COMMAND_NAME" --install-dir="$PROJECTR_HOME" --bin-dir="$PROJECTR_BIN_DIR"'
         echo '    fi'
-        echo '    echo "[!] Original ProjectR checkout was not found: $PROJECTR_SOURCE_DIR" >&2'
-        echo '    echo "    Re-clone ProjectR or rerun setup.sh from a valid checkout." >&2'
+        echo '    if [[ -f "$PROJECTR_HOME/setup.sh" ]]; then'
+        echo '      exec env PROJECTR_REPO_URL="$PROJECTR_REPO_URL" bash "$PROJECTR_HOME/setup.sh" --no-menu --self-update-mode --force-remote --command="$PROJECTR_COMMAND_NAME" --install-dir="$PROJECTR_HOME" --bin-dir="$PROJECTR_BIN_DIR"'
+        echo '    fi'
+        echo '    echo "[!] Could not locate a refreshable ProjectR checkout." >&2'
         echo '    exit 1'
         echo '    ;;'
         echo '  --setup-info|--projectr-info)'
@@ -723,6 +747,8 @@ for arg in "$@"; do
         --bin-dir=*) BIN_DIR="${arg#--bin-dir=}" ;;
         --add-path) ADD_PATH=1 ;;
         --no-menu) SHOW_MENU=0 ;;
+        --self-update-mode) SHOW_MENU=0; SELF_UPDATE_MODE=1 ;;
+        --force-remote) SHOW_MENU=0; FORCE_REMOTE_MODE=1 ;;
         -h|--help) usage; exit 0 ;;
         *) warn "Unknown setup option: $arg"; usage; exit 1 ;;
     esac
@@ -731,6 +757,7 @@ done
 COMMAND_NAME="$(basename "$COMMAND_NAME")"
 INSTALL_DIR="$(expand_path "$INSTALL_DIR")"
 BIN_DIR="$(expand_path "$BIN_DIR")"
+_detect_source_dir
 
 if [[ ! "$COMMAND_NAME" =~ ^[A-Za-z0-9._-]+$ ]]; then
     fail "Invalid command name: $COMMAND_NAME"
@@ -773,7 +800,11 @@ if (( REMOTE_MODE )); then
     write_metadata
     write_launcher
     maybe_add_path
-    _show_success
+    if (( SELF_UPDATE_MODE )); then
+        success "$PROJECT_NAME files refreshed successfully."
+    else
+        _show_success
+    fi
 
     exit 0
 fi
@@ -796,4 +827,8 @@ chmod +x "$INSTALL_DIR/main.sh" 2>/dev/null || warn "Could not mark main.sh exec
 write_metadata
 write_launcher
 maybe_add_path
-_show_success
+if (( SELF_UPDATE_MODE )); then
+    success "$PROJECT_NAME files refreshed successfully."
+else
+    _show_success
+fi
