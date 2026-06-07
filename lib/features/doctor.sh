@@ -20,7 +20,7 @@ projectr_doctor_check() {
 }
 
 projectr_doctor_collect() {
-    local tmp="$1" failures=0 dep pm state_db log_status log_detail sudo_status sudo_detail
+    local tmp="$1" failures=0 dep pm state_db log_status log_detail priv_status priv_detail scheduler_status
     : > "$tmp"
 
     if [[ -n "${PATH:-}" ]]; then
@@ -39,21 +39,6 @@ projectr_doctor_collect() {
         fi
     done
 
-    if command -v sudo >/dev/null 2>&1; then
-        if sudo -n true 2>/dev/null; then
-            sudo_status=ok
-            sudo_detail="available (passwordless)"
-        else
-            sudo_status=warn
-            sudo_detail="available (password required)"
-        fi
-    else
-        sudo_status=missing
-        sudo_detail="installs requiring root will fail"
-        failures=$((failures+1))
-    fi
-    projectr_doctor_check sudo "$sudo_status" "$sudo_detail" >> "$tmp"
-
     pm="${PRIMARY_PKG_MANAGER:-$(detect_pkg_manager)}"
     if [[ -n "$pm" && "$pm" != "unknown" ]]; then
         projectr_doctor_check package-manager ok "$pm" >> "$tmp"
@@ -61,6 +46,15 @@ projectr_doctor_collect() {
         projectr_doctor_check package-manager missing >> "$tmp"
         failures=$((failures+1))
     fi
+
+    if declare -f projectr_privilege_status >/dev/null 2>&1; then
+        IFS=$'\t' read -r priv_status priv_detail < <(projectr_privilege_status "$pm")
+    else
+        priv_status=warn
+        priv_detail="privilege abstraction not loaded"
+    fi
+    projectr_doctor_check privilege "$priv_status" "$priv_detail" >> "$tmp"
+    [[ "$priv_status" == "missing" ]] && failures=$((failures+1))
 
     if command -v sqlite3 >/dev/null 2>&1; then
         state_db="sqlite"
@@ -78,6 +72,11 @@ projectr_doctor_collect() {
         failures=$((failures+1))
     fi
     projectr_doctor_check logs "$log_status" "$log_detail" >> "$tmp"
+
+    if declare -f projectr_scheduler_status >/dev/null 2>&1; then
+        scheduler_status=$(projectr_scheduler_status | paste -sd ';' -)
+        projectr_doctor_check scheduler ok "${scheduler_status:-disabled}" >> "$tmp"
+    fi
 
     return "$failures"
 }

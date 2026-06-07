@@ -155,7 +155,6 @@ verify_dependencies() {
         "lolcat:Lolcat (Recommended)"
         "git:Git (Required)"
         "curl:cURL (Required)"
-        "crontab:Crontab (Required)"
     )
     
     # Check each dependency
