@@ -52,3 +52,109 @@ projectr_install_profile() {
     done
     return "$status"
 }
+
+
+projectr_profile_json_escape() {
+    if declare -f projectr_doctor_json_escape >/dev/null 2>&1; then
+        projectr_doctor_json_escape "${1-}"
+    elif declare -f projectr_escape_json >/dev/null 2>&1; then
+        projectr_escape_json "${1-}"
+    else
+        local value="${1-}"
+        value=$(printf '%s' "$value" | sed 's/\\/\\\\/g; s/"/\\"/g' | tr '\t\r\n' '   ')
+        printf '%s' "$value"
+    fi
+}
+
+projectr_profile_find_entry() {
+    local target="$1" entry cmd pkg name desc type extra cat
+    for entry in "${TOOLS[@]}"; do
+        IFS='|' read -r _ cmd pkg name desc type extra cat <<< "$entry"
+        if [[ "${cmd,,}" == "${target,,}" || "${pkg,,}" == "${target,,}" || "${name,,}" == "${target,,}" ]]; then
+            printf '%s\n' "$entry"
+            return 0
+        fi
+    done
+    return 1
+}
+
+projectr_profile_diff() {
+    local file="" json=0 arg
+    for arg in "$@"; do
+        case "$arg" in
+            --profile=*) file="${arg#--profile=}" ;;
+            --profile) file="__NEXT__" ;;
+            --json) json=1 ;;
+            --*) echo -e "${ERROR}[!] Unknown diff option: $arg${RST}" >&2; return 2 ;;
+            *)
+                if [[ "$file" == "__NEXT__" ]]; then
+                    file="$arg"
+                elif [[ -z "$file" ]]; then
+                    file="$arg"
+                else
+                    echo -e "${ERROR}[!] Unexpected diff argument: $arg${RST}" >&2
+                    return 2
+                fi
+                ;;
+        esac
+    done
+
+    [[ -n "$file" && "$file" != "__NEXT__" ]] || { echo -e "${ERROR}[!] diff requires --profile <file>.${RST}" >&2; return 1; }
+    [[ -f "$file" ]] || { projectr_profile_tools "$file" >/dev/null; return 1; }
+    case "$file" in
+        *.yml|*.yaml|*.toml) ;;
+        *) projectr_profile_tools "$file" >/dev/null; return 1 ;;
+    esac
+
+    local tmp tool entry cmd pkg name desc type extra cat status installed=0 missing=0 unknown=0 first=1
+    tmp=$(mktemp) || return 1
+    while IFS= read -r tool; do
+        [[ -n "$tool" ]] || continue
+        entry=$(projectr_profile_find_entry "$tool") || {
+            printf '%s\t%s\t%s\t%s\t%s\n' "$tool" "-" "-" "unknown" "not in registry" >> "$tmp"
+            unknown=$((unknown + 1))
+            continue
+        }
+        IFS='|' read -r _ cmd pkg name desc type extra cat <<< "$entry"
+        if command -v "$cmd" >/dev/null 2>&1; then
+            status="installed"
+            installed=$((installed + 1))
+        else
+            status="missing"
+            missing=$((missing + 1))
+        fi
+        printf '%s\t%s\t%s\t%s\t%s\n' "$name" "$cmd" "$pkg" "$status" "$type" >> "$tmp"
+    done < <(projectr_profile_tools "$file")
+
+    if [[ ! -s "$tmp" ]]; then
+        rm -f "$tmp"
+        echo -e "${ERROR}[!] No tools found in $file${RST}" >&2
+        return 1
+    fi
+
+    if [[ $json -eq 1 ]]; then
+        printf '{"profile":"%s","installed":%s,"missing":%s,"unknown":%s,"tools":[' "$(projectr_profile_json_escape "$file")" "$installed" "$missing" "$unknown"
+        while IFS=$'\t' read -r name cmd pkg status type; do
+            [[ $first -eq 0 ]] && printf ','
+            first=0
+            printf '{"name":"%s","cmd":"%s","package":"%s","status":"%s","type":"%s"}' \
+                "$(projectr_profile_json_escape "$name")" \
+                "$(projectr_profile_json_escape "$cmd")" \
+                "$(projectr_profile_json_escape "$pkg")" \
+                "$(projectr_profile_json_escape "$status")" \
+                "$(projectr_profile_json_escape "$type")"
+        done < "$tmp"
+        printf ']}\n'
+    else
+        echo -e "${OPTION}[*] Profile diff: ${BOLD_WHITE}$file${RST}"
+        printf '  %-18s %-14s %-18s %-10s %s\n' Tool Command Package Status Type
+        printf '  %s\n' '────────────────────────────────────────────────────────────────────'
+        while IFS=$'\t' read -r name cmd pkg status type; do
+            printf '  %-18s %-14s %-18s %-10s %s\n' "$name" "$cmd" "$pkg" "$status" "$type"
+        done < "$tmp"
+        printf '  %s\n' '────────────────────────────────────────────────────────────────────'
+        echo -e "${DIM}[*] installed=$installed missing=$missing unknown=$unknown${RST}"
+    fi
+    rm -f "$tmp"
+    [[ $missing -eq 0 && $unknown -eq 0 ]]
+}

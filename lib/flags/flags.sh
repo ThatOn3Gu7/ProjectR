@@ -1,5 +1,5 @@
 #!/bin/bash
-# -- for safely Sourceimg files --
+# -- for safely sourcing files --
 _FLAGS_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 _PROJECT_ROOT="$(cd "$_FLAGS_DIR/../.." && pwd)"
 
@@ -194,7 +194,27 @@ parse_flags() {
             ;;
 
         doctor|--doctor)
-            projectr_doctor
+            shift
+            projectr_doctor "$@"
+            exit $?
+            ;;
+
+        diff|profile-diff)
+            shift
+            projectr_profile_diff "$@"
+            exit $?
+            ;;
+
+        --diff-profile)
+            shift
+            projectr_profile_diff --profile "$@"
+            exit $?
+            ;;
+
+        --diff-profile=*)
+            local diff_profile_path="${1#--diff-profile=}"
+            shift
+            projectr_profile_diff --profile "$diff_profile_path" "$@"
             exit $?
             ;;
 

@@ -56,7 +56,8 @@ Commands:
   list [tools|installed|categories|manager|state]
   upgrade                                     Upgrade system packages with the detected manager
   update | self-update                        Update ProjectR's git checkout and show applied commits
-  doctor                                      Check PATH, dependencies, package manager, and logs
+  doctor [--json]                             Check PATH, dependencies, package manager, and logs
+  diff --profile <file> [--json]              Compare a profile against the current machine
   verify                                      Verify ProjectR-managed tools are on PATH
   repair                                      Reinstall missing non-special managed tools
   dry-run install <tool|all> [--json]         Detailed dry-run plan for CI or review
@@ -72,7 +73,8 @@ Flags:
   --list <target>, --list=<target>            List tools, installed, categories, manager, or state
   --dry-run [tool|all] [--json]               Simulate changes without installing packages
   --profile <file>, --profile=<file>          Install YAML/TOML configuration as code
-  --doctor                                    Run health checks
+  --doctor [--json]                           Run health checks
+  --diff-profile <file>, --diff-profile=<file> Compare profile tools against this machine
   --verify                                    Verify managed tools on PATH
   --repair                                    Reinstall missing non-special managed tools
   --update, --self-update                     Fast-forward this checkout and show git-log summary
@@ -103,6 +105,8 @@ Examples:
   ${usage_cmd} list state
   ${usage_cmd} --list state
   ${usage_cmd} doctor
+  ${usage_cmd} doctor --json
+  ${usage_cmd} diff --profile projectr.yml
   ${usage_cmd} --doctor
   ${usage_cmd} audit --strict
   

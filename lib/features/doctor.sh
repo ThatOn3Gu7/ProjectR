@@ -1,65 +1,157 @@
 #!/bin/bash
-projectr_doctor() {
-    local failures=0
-    echo ""
-    echo -e "${OPTION}[*] ProjectR doctor${RST}"
-    log_info "Starting doctor checks" "doctor"
-    echo ""
-    printf '  %-22s %s\n' Check Result
-    printf '  %s\n' '─────────────────────────────'
 
-    if [[ -n "${PATH:-}" ]]; then printf '  %-22s %s\n' PATH ok; else printf '  %-22s %s\n' PATH missing; failures=$((failures+1)); fi
+projectr_doctor_json_escape() {
+    if declare -f projectr_escape_json >/dev/null 2>&1; then
+        projectr_escape_json "${1-}"
+        return
+    fi
+    local value="${1-}"
+    value=${value//\\/\\\\}
+    value=${value//\"/\\\"}
+    value=${value//$'\t'/\\t}
+    value=${value//$'\r'/\\r}
+    value=${value//$'\n'/\\n}
+    printf '%s' "$value"
+}
 
-    local dep
+projectr_doctor_check() {
+    local name="$1" status="$2" detail="${3:-}"
+    printf '%s\t%s\t%s\n' "$name" "$status" "$detail"
+}
+
+projectr_doctor_collect() {
+    local tmp="$1" failures=0 dep pm state_db log_status log_detail sudo_status sudo_detail
+    : > "$tmp"
+
+    if [[ -n "${PATH:-}" ]]; then
+        projectr_doctor_check PATH ok >> "$tmp"
+    else
+        projectr_doctor_check PATH missing >> "$tmp"
+        failures=$((failures+1))
+    fi
+
     for dep in bash awk sed find git; do
         if command -v "$dep" >/dev/null 2>&1; then
-            printf '  %-22s %s\n' "$dep" "$(command -v "$dep")"
+            projectr_doctor_check "$dep" ok "$(command -v "$dep")" >> "$tmp"
         else
-            printf '  %-22s %s\n' "$dep" missing
+            projectr_doctor_check "$dep" missing >> "$tmp"
             failures=$((failures+1))
         fi
     done
 
     if command -v sudo >/dev/null 2>&1; then
-      if sudo -n true 2>/dev/null; then
-         printf '  %-22s %s\n' sudo "available (passwordless)"
-       else
-         printf '  %-22s %s\n' sudo "available (password required)"
-      fi
-     else
-         printf '  %-22s %s\n' sudo "MISSING — installs requiring root will fail"
-         failures=$((failures+1))
-    fi
-    local pm="${PRIMARY_PKG_MANAGER:-$(detect_pkg_manager)}"
-    if [[ -n "$pm" && "$pm" != "unknown" ]]; then
-        printf '  %-22s %s\n' package-manager "$pm"
+        if sudo -n true 2>/dev/null; then
+            sudo_status=ok
+            sudo_detail="available (passwordless)"
+        else
+            sudo_status=warn
+            sudo_detail="available (password required)"
+        fi
     else
-        printf '  %-22s %s\n' package-manager missing
+        sudo_status=missing
+        sudo_detail="installs requiring root will fail"
+        failures=$((failures+1))
+    fi
+    projectr_doctor_check sudo "$sudo_status" "$sudo_detail" >> "$tmp"
+
+    pm="${PRIMARY_PKG_MANAGER:-$(detect_pkg_manager)}"
+    if [[ -n "$pm" && "$pm" != "unknown" ]]; then
+        projectr_doctor_check package-manager ok "$pm" >> "$tmp"
+    else
+        projectr_doctor_check package-manager missing >> "$tmp"
         failures=$((failures+1))
     fi
 
     if command -v sqlite3 >/dev/null 2>&1; then
-        printf '  %-22s %s\n' state-db sqlite
+        state_db="sqlite"
     else
-        printf '  %-22s %s\n' state-db 'TSV fallback (install sqlite3 for SQLite state)'
+        state_db="TSV fallback (install sqlite3 for SQLite state)"
     fi
+    projectr_doctor_check state-db ok "$state_db" >> "$tmp"
 
     if [[ -w "$SCRIPT_DIR/log" || ! -e "$SCRIPT_DIR/log" ]]; then
-        printf '  %-22s %s\n' logs writable
+        log_status=ok
+        log_detail="writable"
     else
-        printf '  %-22s %s\n' logs not-writable
+        log_status=missing
+        log_detail="not-writable"
         failures=$((failures+1))
     fi
+    projectr_doctor_check logs "$log_status" "$log_detail" >> "$tmp"
+
+    return "$failures"
+}
+
+projectr_doctor_print_json() {
+    local tmp="$1" failures="$2" first=1 name status detail
+    printf '{"ok":%s,"failures":%s,"checks":[' "$([[ "$failures" -eq 0 ]] && printf true || printf false)" "$failures"
+    while IFS=$'\t' read -r name status detail; do
+        [[ -n "$name" ]] || continue
+        [[ $first -eq 0 ]] && printf ','
+        first=0
+        printf '{"name":"%s","status":"%s","detail":"%s"}' \
+            "$(projectr_doctor_json_escape "$name")" \
+            "$(projectr_doctor_json_escape "$status")" \
+            "$(projectr_doctor_json_escape "$detail")"
+    done < "$tmp"
+    printf ']}\n'
+}
+
+projectr_doctor_print_table() {
+    local tmp="$1" failures="$2" name status detail result
+    echo ""
+    echo -e "${OPTION}[*] ProjectR doctor${RST}"
+    echo ""
+    printf '  %-22s %s\n' Check Result
+    printf '  %s\n' '─────────────────────────────'
+
+    while IFS=$'\t' read -r name status detail; do
+        [[ -n "$name" ]] || continue
+        case "$status" in
+            ok) result="${detail:-ok}" ;;
+            warn) result="$detail" ;;
+            *) result="${detail:-missing}" ;;
+        esac
+        printf '  %-22s %s\n' "$name" "$result"
+    done < "$tmp"
+
     printf '  %s\n' '─────────────────────────────'
     echo ""
     if [[ $failures -eq 0 ]]; then
         echo -e "${OPTION}[✓] Doctor found no blocking issues.${RST}"
         echo ""
-        log_ok "Doctor completed with no blocking issues" "doctor"
     else
         echo -e "${ERROR}[!] Doctor found $failures issue(s).${RST}"
         echo ""
-        log_fail "Doctor found $failures issue(s)" "doctor"
-        return 1
     fi
+}
+
+projectr_doctor() {
+    local json=0 arg tmp failures
+    for arg in "$@"; do
+        case "$arg" in
+            --json) json=1 ;;
+            --no-color) declare -f projectr_disable_color >/dev/null 2>&1 && projectr_disable_color ;;
+            *) echo -e "${ERROR}[!] Unknown doctor option: $arg${RST}" >&2; return 2 ;;
+        esac
+    done
+
+    tmp=$(mktemp) || { echo -e "${ERROR}[!] Could not create doctor temp file.${RST}" >&2; return 1; }
+    log_info "Starting doctor checks json=$json" "doctor"
+    projectr_doctor_collect "$tmp"
+    failures=$?
+
+    if [[ $json -eq 1 ]]; then
+        projectr_doctor_print_json "$tmp" "$failures"
+    else
+        projectr_doctor_print_table "$tmp" "$failures"
+    fi
+    rm -f "$tmp"
+
+    if [[ $failures -eq 0 ]]; then
+        log_ok "Doctor completed with no blocking issues" "doctor"
+        return 0
+    fi
+    log_fail "Doctor found $failures issue(s)" "doctor"
+    return 1
 }
