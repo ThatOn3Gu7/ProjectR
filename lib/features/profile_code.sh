@@ -9,6 +9,7 @@ projectr_profile_tools() {
             awk '
                 /^[[:space:]]*tools:[[:space:]]*$/ { in_tools=1; next }
                 in_tools && /^[^[:space:]-]/ { in_tools=0 }
+                in_tools && /^[[:space:]]*-[[:space:]]*id:[[:space:]]*/ { sub(/^[[:space:]]*-[[:space:]]*id:[[:space:]]*/, ""); gsub(/["'"'"']/, ""); print; next }
                 in_tools && /^[[:space:]]*-[[:space:]]*/ { sub(/^[[:space:]]*-[[:space:]]*/, ""); gsub(/["'"'"']/, ""); print }
             ' "$file"
             ;;
@@ -43,13 +44,23 @@ projectr_install_profile() {
     local file="$1" tool
     mapfile -t _projectr_profile_tools < <(projectr_profile_tools "$file")
     [[ ${#_projectr_profile_tools[@]} -gt 0 ]] || { echo -e "${ERROR}[!] No tools found in $file${RST}"; log_warn "No tools found in profile: $file" "profile"; return 1; }
+    local _old_nvim="${PROJECTR_NVIM_CONFIG-}" _old_omz="${PROJECTR_ZSH_INSTALL_OMZ-}" _old_theme="${PROJECTR_ZSH_THEME-}" _old_p10k="${PROJECTR_ZSH_INSTALL_P10K-}"
+    declare -f projectr_profile_export_settings >/dev/null 2>&1 && projectr_profile_export_settings "$file" || true
     log_info "Installing profile $file with ${#_projectr_profile_tools[@]} tool(s)" "profile"
-    local status=0 rc
+    local status=0 rc entry cmd pkg name desc type extra cat
     for tool in "${_projectr_profile_tools[@]}"; do
-        _flag_install "$tool"
+        entry=$(projectr_profile_find_entry "$tool") || {
+            echo -e "${ERROR}[!] Unknown tool in profile: $tool${RST}"
+            status=1
+            continue
+        }
+        IFS='|' read -r _ cmd pkg name desc type extra cat <<< "$entry"
+        projectr_install_tool_by_fields "$cmd" "$pkg" "$name" "$type" "$extra"
         rc=$?
         [[ $rc -ne 0 ]] && status=$rc
     done
+    PROJECTR_NVIM_CONFIG="${_old_nvim}" PROJECTR_ZSH_INSTALL_OMZ="${_old_omz}" PROJECTR_ZSH_THEME="${_old_theme}" PROJECTR_ZSH_INSTALL_P10K="${_old_p10k}"
+    export PROJECTR_NVIM_CONFIG PROJECTR_ZSH_INSTALL_OMZ PROJECTR_ZSH_THEME PROJECTR_ZSH_INSTALL_P10K
     return "$status"
 }
 

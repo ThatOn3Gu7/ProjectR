@@ -1,30 +1,63 @@
 #!/bin/bash
 
+projectr_truthy() {
+    case "${1:-}" in
+        1|true|TRUE|yes|YES|y|Y|on|ON) return 0 ;;
+        *) return 1 ;;
+    esac
+}
+
+projectr_nvim_config_repo() {
+    case "${1,,}" in
+        nvchad|1) printf 'NvChad|https://github.com/NvChad/starter\n' ;;
+        lazyvim|2) printf 'LazyVim|https://github.com/LazyVim/starter\n' ;;
+        astronvim|3) printf 'AstroNvim|https://github.com/AstroNvim/template\n' ;;
+        skip|4|'') printf 'skip|\n' ;;
+        *) return 1 ;;
+    esac
+}
+
+projectr_zsh_set_theme() {
+    local theme="$1" zshrc="$HOME/.zshrc" tmp
+    [[ -f "$zshrc" ]] || return 0
+    tmp=$(mktemp) || return 1
+    awk -v theme="$theme" '
+        BEGIN { changed=0 }
+        /^ZSH_THEME=/ { print "ZSH_THEME=\"" theme "\""; changed=1; next }
+        { print }
+        END { if (!changed) print "ZSH_THEME=\"" theme "\"" }
+    ' "$zshrc" > "$tmp" && mv "$tmp" "$zshrc"
+}
+
 # -- install neovim & config --
 setup_nvim() {
 
   install_pkg nvim neovim "Neovim: Best code editor"
   sleep 1
-  
-    local saved
+
+    local saved desired
     saved=$(config_get "nvim_config_choice")
+    desired="${PROJECTR_NVIM_CONFIG:-}"
 
-    # User already said skip — respect it
-    if [[ "$saved" == "skip" ]]; then
+    if [[ "$saved" == "skip" && -z "$desired" ]]; then
         return 0
     fi
 
-    # User already installed a config in a previous run — don't ask again
-    if [[ "$saved" == "done" ]]; then
+    if [[ "$saved" == "done" && -z "$desired" ]]; then
         return 0
     fi
 
-    # Config dir already exists — something is there, move on
     local STANDARD_PATH="$HOME/.config/nvim"
-    if [[ -d "$STANDARD_PATH" ]]; then
+    if [[ -d "$STANDARD_PATH" && -z "$desired" ]]; then
         echo -e "${OPTION}  [✓] A Neovim config is already installed!${RST}"
-        sleep 2
+        sleep 1
         return 0
+    fi
+
+    if [[ -n "$desired" ]]; then
+        prompt_nvim_config "$desired"
+        [[ $? -eq 0 ]] && config_set "nvim_config_choice" "done"
+        return $?
     fi
 
     if ! ask "  [*] Install a config for NeoVim?"; then
@@ -33,11 +66,10 @@ setup_nvim() {
     fi
 
     if prompt_nvim_config; then
-        # Only mark done if the clone actually succeeded
         config_set "nvim_config_choice" "done"
     fi
  }
-# Checks for a nvim config and gives the user the choice to clone one
+
 prompt_nvim_config() {
 
     if ! command -v git >/dev/null 2>&1; then
@@ -45,34 +77,33 @@ prompt_nvim_config() {
         return 1
     fi
 
-    echo -e "${INFO}  [*] Which config would you like to install? ${RST}"
-    echo ""
-    echo -e "${OPTION}   [1] NvChad ${RST}"
-    echo -e "${OPTION}   [2] LazyVim ${RST}"
-    echo -e "${OPTION}   [3] AstroNvim ${RST}"
-    echo -e "${OPTION}   [4] Skip ${RST}"
-    echo ""
-    echo -ne "${INFO}  [*] Select option (1-4): ${RST}"
-    read -r config_choice
+    local forced_choice="${1:-}" config_choice repo url
+    if [[ -z "$forced_choice" ]]; then
+        echo -e "${INFO}  [*] Which config would you like to install? ${RST}"
+        echo ""
+        echo -e "${OPTION}   [1] NvChad ${RST}"
+        echo -e "${OPTION}   [2] LazyVim ${RST}"
+        echo -e "${OPTION}   [3] AstroNvim ${RST}"
+        echo -e "${OPTION}   [4] Skip ${RST}"
+        echo ""
+        echo -ne "${INFO}  [*] Select option (1-4): ${RST}"
+        read -r config_choice
+    else
+        config_choice="$forced_choice"
+    fi
 
-    local repo url
-    case "$config_choice" in
-        1) repo="NvChad";    url="https://github.com/NvChad/starter" ;;
-        2) repo="LazyVim";   url="https://github.com/LazyVim/starter" ;;
-        3) repo="AstroNvim"; url="https://github.com/AstroNvim/template" ;;
-        4)
-            echo -e "${INFO}  [*] Skipping Neovim config installation...${RST}"
-            return 0
-            ;;
-        *)
-            echo -e "${ERROR}  [!] Invalid option: '$config_choice'${RST}"
-            return 1
-            ;;
-    esac
+    IFS='|' read -r repo url < <(projectr_nvim_config_repo "$config_choice") || {
+        echo -e "${ERROR}  [!] Invalid option: '$config_choice'${RST}"
+        return 1
+    }
+    if [[ "$repo" == "skip" ]]; then
+        echo -e "${INFO}  [*] Skipping Neovim config installation...${RST}"
+        return 0
+    fi
 
     echo -e "${OPTION}  [*] Cloning $repo...${RST}"
-
-    if ! git clone --depth 1 "$url" ~/.config/nvim 2>&1; then
+    rm -rf ~/.config/nvim 2>/dev/null || true
+    if ! git clone --depth 1 "$url" ~/.config/nvim >/dev/null 2>&1; then
         echo -e "${ERROR}  [!] Failed to clone $repo — check your internet connection.${RST}"
         log FAIL "git clone failed for $repo ($url)"
         return 1
@@ -81,63 +112,58 @@ prompt_nvim_config() {
     echo -e "${OPTION}  [✓] $repo cloned successfully.${RST}"
     log INSTALL "$repo Neovim config cloned"
 
-    if ask "  [*] Remove .git folder?" "y"; then
+    if [[ -n "$forced_choice" ]] || ask "  [*] Remove .git folder?" "y"; then
         rm -rf ~/.config/nvim/.git
         echo -e "${OPTION}  [✓] .git folder removed.${RST}"
     fi
 }
+
 #  install zsh & oh-my-zsh.
 setup_zsh() {
     install_pkg zsh zsh "Zsh: Extended shell with powerful features"
     sleep 1
 
-    if ! ask "  [*] Install oh-my-zsh?" "y"; then
+    local want_omz="${PROJECTR_ZSH_INSTALL_OMZ:-}"
+    local want_p10k="${PROJECTR_ZSH_INSTALL_P10K:-}"
+    local theme_choice="${PROJECTR_ZSH_THEME:-}"
+
+    if [[ -z "$want_omz" ]]; then
+        ask "  [*] Install oh-my-zsh?" "y" || return 0
+    elif ! projectr_truthy "$want_omz"; then
         return 0
     fi
 
     if [[ -d "$HOME/.oh-my-zsh" ]]; then
         echo -e "${OPTION}  [✓] Oh-My-Zsh already exists. Skipping...${RST}"
-        sleep 2
+        sleep 1
     else
-        if ! command -v curl >/dev/null 2>&1; then
-            echo -e "${ERROR}  [!] curl is not installed — cannot download oh-my-zsh.${RST}"
+        if ! command -v git >/dev/null 2>&1; then
+            echo -e "${ERROR}  [!] git is not installed — cannot clone oh-my-zsh safely.${RST}"
             return 1
         fi
-
-        echo -e "${ERROR}  [!] IMPORTANT: The oh-my-zsh installer will REPLACE this shell session.${RST}"
-        echo -e "${ERROR}  [!] ProjectR will exit when the new shell starts. This is expected.${RST}"
-        echo -e "${INFO}  [*] Re-run ProjectR after zsh finishes setting up.${RST}"
-        echo -e "${INFO}  [*] Clone plugins manually afterwards for full ohmyzsh features.${RST}"
-        echo ""
-        sleep 2
-
-        log EXIT "oh-my-zsh installer launched — shell will be replaced by zsh"
-        stop_spinner 2>/dev/null
-        safe_tput cnorm
-
-        local omz_installer
-        omz_installer=$(mktemp)
-        if ! curl -fsSL \
-                https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh \
-                -o "$omz_installer" 2>/dev/null || [[ ! -s "$omz_installer" ]]; then
-            echo -e "${ERROR}  [!] Failed to download oh-my-zsh installer.${RST}"
-            rm -f "$omz_installer"
+        echo -e "${INFO}  [*] Cloning oh-my-zsh repository instead of executing a remote installer...${RST}"
+        if ! git clone --depth=1 https://github.com/ohmyzsh/ohmyzsh.git "$HOME/.oh-my-zsh" >/dev/null 2>&1; then
+            echo -e "${ERROR}  [!] Failed to clone oh-my-zsh repository.${RST}"
             return 1
         fi
-
-        KEEP_ZSHRC=yes sh "$omz_installer"
-        rm -f "$omz_installer"
+        if [[ ! -f "$HOME/.zshrc" && -f "$HOME/.oh-my-zsh/templates/zshrc.zsh-template" ]]; then
+            cp "$HOME/.oh-my-zsh/templates/zshrc.zsh-template" "$HOME/.zshrc" 2>/dev/null || true
+        fi
     fi
 
-    sleep 1
+    if [[ -n "$theme_choice" && "$theme_choice" != "powerlevel10k" ]]; then
+        projectr_zsh_set_theme "$theme_choice" || true
+    fi
 
-    if ! ask "  [*] Also install Powerlevel10k?" "y"; then
+    if [[ -z "$want_p10k" ]]; then
+        ask "  [*] Also install Powerlevel10k?" "y" || return 0
+    elif ! projectr_truthy "$want_p10k"; then
         return 0
     fi
 
     if [[ -d "$HOME/.oh-my-zsh/custom/themes/powerlevel10k" ]]; then
         echo -e "${OPTION}  [✓] Powerlevel10k already installed — skipping.${RST}"
-        sleep 3
+        sleep 1
         return 0
     fi
 
@@ -147,13 +173,13 @@ setup_zsh() {
     fi
 
     echo -e "${INFO}  [*] Cloning Powerlevel10k...${RST}"
-    if ! git clone --depth=1 https://github.com/romkatv/powerlevel10k.git \
-            "${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k" >/dev/null 2>&1; then
+    if ! git clone --depth=1 https://github.com/romkatv/powerlevel10k.git             "${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k" >/dev/null 2>&1; then
         echo -e "${ERROR}  [!] Failed to clone Powerlevel10k — check your connection.${RST}"
         log FAIL "git clone failed for Powerlevel10k"
         return 1
     fi
 
+    projectr_zsh_set_theme "powerlevel10k/powerlevel10k" || true
     echo ""
     echo -e "${OPTION} [✓] Powerlevel10k installed. Run: p10k configure${RST}"
     log INSTALL "Powerlevel10k cloned successfully"
