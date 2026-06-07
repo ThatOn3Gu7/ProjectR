@@ -17,8 +17,13 @@ source "$SCRIPT_DIR/lib/core/display.sh"
 source "$SCRIPT_DIR/lib/core/logging.sh"
 source "$SCRIPT_DIR/lib/core/array_context.sh"
 source "$SCRIPT_DIR/lib/core/strict_mode.sh"
+source "$SCRIPT_DIR/lib/core/session.sh"
 source "$SCRIPT_DIR/lib/system/detect.sh"
+source "$SCRIPT_DIR/lib/system/privilege.sh"
+source "$SCRIPT_DIR/lib/system/resolver.sh"
+source "$SCRIPT_DIR/lib/security/verify.sh"
 detect_pkg_manager >/dev/null
+source "$SCRIPT_DIR/lib/data/tool_meta.sh"
 source "$SCRIPT_DIR/lib/data/tools.sh"
 source "$SCRIPT_DIR/lib/features/plugin_loader.sh"
 projectr_load_tool_plugins
@@ -41,45 +46,22 @@ source "$SCRIPT_DIR/lib/features/state.sh"
 source "$SCRIPT_DIR/lib/features/dry_run.sh"
 source "$SCRIPT_DIR/lib/features/doctor.sh"
 source "$SCRIPT_DIR/lib/features/profile_code.sh"
+source "$SCRIPT_DIR/lib/features/configurator.sh"
 source "$SCRIPT_DIR/lib/features/tool_audit.sh"
 source "$SCRIPT_DIR/lib/features/profile_manager.sh"
 source "$SCRIPT_DIR/lib/features/undo_engine.sh"
+source "$SCRIPT_DIR/lib/system/scheduler.sh"
 source "$SCRIPT_DIR/lib/sub_menus/presets_menu.sh"
 source "$SCRIPT_DIR/lib/sub_menus/uninstall_menu.sh"
 # -- source CLI helpers, then use flags.sh as the single command/flag dispatcher --
 source "$SCRIPT_DIR/lib/core/cli.sh"
 source "$SCRIPT_DIR/lib/flags/flags.sh"
 trap 'graceful_exit' SIGINT SIGTERM SIGHUP
-parse_flags "$@"
-# -- lock file location --
-LOCK_FILE="${HOME}/.config/projectr/tmp/project.lock"
-# -- Ensure directory exists --
-mkdir -p "$(dirname "$LOCK_FILE")" || {
-    echo -e "${ERROR}[!] Failed to create lock directory${RST}"
-    log_error "Failed to create lock directory: $(dirname "$LOCK_FILE")" "startup"
-    exit 1
-}
-# -- Acquire lock (redirect after directory exists) --
-exec 9>"$LOCK_FILE"
-flock -n 9 || {
-    echo -e "${ERROR}WARRN:${RST} projectr is already running."
-    log_warn "Lock acquisition failed; another ProjectR process is running (lock=$LOCK_FILE)" "startup"
-    exit 1
-}
-# -- Separate log by session --
-log START "━━━━━━ Session started at: $(date '+%Y-%m-%d %H:%M') ━━━━━━" "startup"
-projectr_log_environment
-# -- dependencies check -- 
-verify_dependencies
-# a call for startup internet check
-check_startup_connectivity
 # -- small helper function for when lolcat isn't around --
 rainbow() { command -v lolcat >/dev/null 2>&1 && lolcat || cat; }
-# -- Check background daemon for software updates silently --
-if [[ -f "$SCRIPT_DIR/lib/system/daemon_checker.sh" ]]; then
-    source "$SCRIPT_DIR/lib/system/daemon_checker.sh"
-    check_daemon_alerts
-fi
+projectr_runtime_prepare "$@" || exit $?
+projectr_scheduler_show_alert
+parse_flags "$@"
 PROJECTR_VISIBLE_TOOL_COUNT=${PROJECTR_VISIBLE_TOOL_COUNT:-${PROJECTR_TOOL_PAGE_SIZE_DEFAULT:-50}}
 # -- main installer menu  --
 show_main_menu() {
