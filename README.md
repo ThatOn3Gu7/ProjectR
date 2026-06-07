@@ -173,8 +173,9 @@ ProjectR supports both professional subcommands and the original flags. These co
 project install git
 project install --profile projectr.yml
 project install git --dry-run --json
+project diff --profile projectr.yml
 project list tools
-project doctor
+project doctor --json
 
 # Equivalent flag style
 project --install git
@@ -183,7 +184,8 @@ project --profile projectr.yml
 project --list tools
 project --list=tools
 project --dry-run git --json
-project --doctor
+project --diff-profile projectr.yml --json
+project --doctor --json
 project audit --strict
 ```
 
@@ -232,6 +234,13 @@ Install the profile with:
 project install --profile=projectr.yml
 ```
 
+Preview how a profile compares with the current machine before installing it:
+
+```bash
+project diff --profile projectr.yml
+project --diff-profile=projectr.yml --json
+```
+
 ### Dry-run simulation
 
 Use `project dry-run install <tool>` (or `project install <tool> --dry-run`) to get a planned change table without installing anything. Add `--json` for CI systems:
@@ -260,7 +269,7 @@ category = "Dev"
 
 ### Doctor and update
 
-`project doctor` checks PATH, core dependencies, package manager detection, state database support, and log writability. `project update` runs a fast-forward git update and prints a clean git-log summary of any commits that were applied; if nothing changed, it explains that the checkout was already current.
+`project doctor` checks PATH, core dependencies, package manager detection, state database support, and log writability. Add `--json` for CI or bug reports. `project update` runs a fast-forward git update and prints a clean git-log summary of any commits that were applied; if nothing changed, it explains that the checkout was already current.
 
 
 | Flag | What it does |
@@ -275,6 +284,8 @@ category = "Dev"
 | `--reset` | Clear saved ProjectR preferences. |
 | `--export` | Export a profile of currently installed ProjectR tools. |
 | `--import <file>`, `--import=<file>` | Install tools listed in an exported profile. |
+| `--diff-profile <file>`, `--diff-profile=<file>` | Compare a YAML/TOML profile with the current machine. |
+| `--doctor [--json]` | Run health checks, optionally as JSON for CI/bug reports. |
 | `--dry-run [tool\|all] [--json]` | Simulate package changes without installing anything. |
 | `--undo` | Undo the last recorded ProjectR install session. |
 
