@@ -1,0 +1,44 @@
+name: ProjectR CI
+
+on:
+  push:
+    branches: [master, main]
+  pull_request:
+    branches: [master, main]
+
+jobs:
+  shell:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Install test tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y bats shellcheck
+
+      - name: Bash syntax check
+        run: |
+          bash -n main.sh setup.sh $(find lib -name '*.sh' | sort)
+
+      - name: ShellCheck severe issues
+        continue-on-error: true
+        run: |
+          shellcheck -S error main.sh setup.sh $(find lib -name '*.sh' | sort)
+
+      - name: Registry audit
+        run: |
+          bash main.sh audit --strict
+
+      - name: CLI smoke tests
+        run: |
+          bash main.sh --help >/tmp/projectr-help.txt
+          bash main.sh --version
+          bash main.sh doctor --json
+          bash main.sh dry-run install git --json
+          bash main.sh dry-run repair --json
+
+      - name: Bats test suite
+        run: |
+          bats tests/suite.bats

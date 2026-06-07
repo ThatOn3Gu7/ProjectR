@@ -73,6 +73,33 @@ projectr_state_find_registry_entry() {
     return 1
 }
 
+
+projectr_state_remove_install() {
+    local name="${1:-}" package="${2:-}" tmp
+    [[ -n "$name" || -n "$package" ]] || return 1
+    projectr_state_init
+
+    if command -v sqlite3 >/dev/null 2>&1; then
+        if [[ -n "$name" && -n "$package" ]]; then
+            sqlite3 "$PROJECTR_STATE_DB" "DELETE FROM installs WHERE name=$(projectr_sql_quote "$name") OR package=$(projectr_sql_quote "$package");"
+        elif [[ -n "$name" ]]; then
+            sqlite3 "$PROJECTR_STATE_DB" "DELETE FROM installs WHERE name=$(projectr_sql_quote "$name");"
+        else
+            sqlite3 "$PROJECTR_STATE_DB" "DELETE FROM installs WHERE package=$(projectr_sql_quote "$package");"
+        fi
+    else
+        tmp=$(mktemp "${PROJECTR_STATE_TSV}.XXXXXX") || return 1
+        awk -F '	' -v name="$name" -v package="$package" '
+            NR == 1 { print; next }
+            (name != "" && $1 == name) { next }
+            (package != "" && $2 == package) { next }
+            { print }
+        ' "$PROJECTR_STATE_TSV" > "$tmp" 2>/dev/null || true
+        mv "$tmp" "$PROJECTR_STATE_TSV" || { rm -f "$tmp"; return 1; }
+    fi
+    log_info "Removed state record for name='$name' package='$package'" "state"
+}
+
 projectr_state_list() {
     projectr_state_init
     if command -v sqlite3 >/dev/null 2>&1; then
