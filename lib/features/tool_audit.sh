@@ -63,7 +63,7 @@ projectr_audit_tools() {
         fi
 
         case "$type" in
-            pkg|pip|pip3|pipx|cargo|gem|npm|yarn|special) ;;
+            pkg|pip|pip3|pipx|cargo|gem|npm|yarn|pnpm|bun|special) ;;
             *)
                 echo -e "${ERROR}[x] $name has unsupported type '$type'.${RST}"
                 log_error "Tool audit: $name has unsupported type '$type'" "audit"

@@ -20,7 +20,7 @@ projectr_uninstall_tool_by_fields() {
                 uninstall_pkg "$cmd" "$pkg" "$name"
             fi
             ;;
-        pip|pip3|pipx|cargo|gem|npm|yarn)
+        pip|pip3|pipx|cargo|gem|npm|yarn|pnpm|bun)
             uninstall_lang "$type" "$pkg" "$name" "$cmd"
             ;;
         *)
@@ -105,6 +105,7 @@ uninstall_lang() {
     if [[ $exit_code -eq 0 ]]; then
         stop_spinner "${OPTION}  [✓] Removed: $name successfully (via $pm)${RST}"
         log OK "$name removed successfully via $pm"
+        declare -f projectr_state_remove_install >/dev/null 2>&1 && projectr_state_remove_install "$name" "$pkg" || true
     else
         stop_spinner "${ERROR}  [!] $name removal reported errors (exit: $exit_code).${RST}"
         log FAIL "$name uninstall exited $exit_code on $pm"
@@ -192,6 +193,7 @@ uninstall_pkg() {
     if [[ $exit_code -eq 0 ]]; then
         stop_spinner "${OPTION}  [✓] Removed: $name successfully (via $PM).${RST}"
         log OK "$name removed successfully via $PM"
+        declare -f projectr_state_remove_install >/dev/null 2>&1 && projectr_state_remove_install "$name" "$pkg" || true
     else
         stop_spinner "${ERROR}  [!] $name removal reported errors (exit: $exit_code).${RST}"
         log FAIL "$name uninstall exited $exit_code on $PM"

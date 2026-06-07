@@ -185,3 +185,58 @@ SH
   [[ "$output" == *"Invalid search term"* ]]
   [[ " ${FAILED_PKGS[*]} " == *" bad;name "* ]]
 }
+
+@test "profile diff reports installed, missing, and unknown tools" {
+  source "$SCRIPT_DIR/lib/features/profile_code.sh"
+  TOOLS=("1|projectr-present|projectr-present|Present|desc|pkg|-|Test" "2|projectr-missing|projectr-missing|Missing|desc|pkg|-|Test")
+  cat >"$PROJECTR_TEST_ROOT/bin/projectr-present" <<'SH'
+#!/usr/bin/env bash
+exit 0
+SH
+  chmod +x "$PROJECTR_TEST_ROOT/bin/projectr-present"
+  cat >"$BATS_TEST_TMPDIR/profile.yml" <<'YML'
+tools:
+  - projectr-present
+  - projectr-missing
+  - projectr-unknown
+YML
+
+  run projectr_profile_diff --profile "$BATS_TEST_TMPDIR/profile.yml"
+  [ "$status" -eq 1 ]
+  [[ "$output" == *"Present"* ]]
+  [[ "$output" == *"installed"* ]]
+  [[ "$output" == *"Missing"* ]]
+  [[ "$output" == *"missing"* ]]
+  [[ "$output" == *"projectr-unknown"* ]]
+  [[ "$output" == *"unknown"* ]]
+}
+
+@test "state remove deletes TSV managed records" {
+  PROJECTR_STATE_DIR="$BATS_TEST_TMPDIR/state"
+  export PROJECTR_STATE_DIR
+  source "$SCRIPT_DIR/lib/features/state.sh"
+
+  projectr_state_record_install "Demo" "demo-pkg" "apt" "projectr-not-on-path"
+  run projectr_state_records
+  [ "$status" -eq 0 ]
+  [[ "$output" == *"Demo"* ]]
+
+  run projectr_state_remove_install "Demo" "demo-pkg"
+  [ "$status" -eq 0 ]
+
+  run projectr_state_records
+  [ "$status" -eq 0 ]
+  [[ "$output" != *"Demo"* ]]
+}
+
+@test "doctor supports JSON output" {
+  source "$SCRIPT_DIR/lib/features/doctor.sh"
+  source "$SCRIPT_DIR/lib/system/detect.sh"
+  detect_pkg_manager() { echo apt; }
+
+  run projectr_doctor --json
+  [ "$status" -eq 0 ]
+  [[ "$output" == *'"ok":true'* ]]
+  [[ "$output" == *'"checks"'* ]]
+  [[ "$output" == *'"package-manager"'* ]]
+}

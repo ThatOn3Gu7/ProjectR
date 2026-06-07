@@ -108,7 +108,7 @@ projectr_load_tool_plugin() {
     cat=${cat:-Plugin}
 
     case "$type" in
-        pkg|pip|pip3|pipx|cargo|gem|npm|yarn) ;;
+        pkg|pip|pip3|pipx|cargo|gem|npm|yarn|pnpm|bun) ;;
         special)
             projectr_plugin_reject "$file" "type 'special' is not allowed in plugins"
             return 0
