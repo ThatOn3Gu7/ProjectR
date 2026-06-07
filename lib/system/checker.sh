@@ -1,27 +1,28 @@
 #!/bin/bash
 
-# -- checks if a tool is installed --
 check_tool() {
-   local cmd="$1" # Tool name to check if its installed or not
-   local name="$2" # A name to show to user
-   local version=""
+   local cmd="$1"
+   local name="$2"
+   local manager="${3:-${PRIMARY_PKG_MANAGER:-$(detect_pkg_manager)}}"
+   local tool_id effective_cmd version=""
+   tool_id=$(projectr_tool_id "$cmd")
+   effective_cmd=$(projectr_effective_cmd "$tool_id" "$cmd" "$manager")
 
-  if command -v "$cmd" >/dev/null 2>&1; then
+  if command -v "$effective_cmd" >/dev/null 2>&1; then
     local _flag
     for _flag in --version -V --Version version; do
-       version=$("$cmd" "$_flag" 2>&1 | head -n1 | grep -oE '[0-9]+\.[0-9]+[.0-9]*' | head -n1)
+       version=$("$effective_cmd" "$_flag" 2>&1 | head -n1 | grep -oE '[0-9]+\.[0-9]+[.0-9]*' | head -n1)
        [[ -n "$version" ]] && break
     done
-    projectr_install_result_push found "$cmd"
-     echo -e "${OPTION}     [✓] "$name" is installed ${DIM}(v${version:--Unknown})${RST}"
+    projectr_install_result_push found "$effective_cmd"
+     echo -e "${OPTION}     [✓] \"$name\" is installed ${DIM}(v${version:--Unknown})${RST}"
    else
-    projectr_install_result_push missing "$cmd"
-     echo -e "${ERROR}     [✗] "$name" is NOT installed${RST}"
+    projectr_install_result_push missing "$effective_cmd"
+     echo -e "${ERROR}     [✗] \"$name\" is NOT installed${RST}"
   fi
 }
-# -- loops through ALL tools and checks each one --
+
 check_all_tools() {
-  # Local arrays prevent repeated submenu visits from contaminating later runs.
   local -a FOUND_PKGS=()
   local -a NOT_FOUND_PKGS=()
 

@@ -1,5 +1,21 @@
 #!/bin/bash
 
+projectr_record_successful_install() {
+    local tool_id="$1" display_name="$2" package="$3" manager="$4" install_type="$5" check_cmd="$6"
+    mkdir -p "$SCRIPT_DIR/log/"
+    echo "$(date '+%F %T')|$check_cmd|$package|$manager" >> "$SCRIPT_DIR/log/session_history.tmp" 2>/dev/null || true
+    declare -f projectr_state_record_install >/dev/null 2>&1 && \
+        projectr_state_record_install "$tool_id" "$display_name" "$package" "$manager" "$install_type" "$check_cmd" || true
+    declare -f projectr_state_record_action >/dev/null 2>&1 && \
+        projectr_state_record_action "$tool_id" "$display_name" "$package" "$manager" "$install_type" "$check_cmd" "installed" || true
+}
+
+projectr_record_failed_install() {
+    local tool_id="$1" display_name="$2" package="$3" manager="$4" install_type="$5" check_cmd="$6"
+    declare -f projectr_state_record_action >/dev/null 2>&1 && \
+        projectr_state_record_action "$tool_id" "$display_name" "$package" "$manager" "$install_type" "$check_cmd" "failed" || true
+}
+
 projectr_install_tool_by_fields() {
     local cmd="$1" pkg="$2" name="$3" type="$4" extra="${5:--}"
 
@@ -7,7 +23,7 @@ projectr_install_tool_by_fields() {
         pkg)
             install_pkg "$cmd" "$pkg" "$name"
             ;;
-        pip|pip3|pipx|cargo|gem|npm|yarn|pnpm|bun)
+        pip|pip3|pipx|cargo|gem|npm|yarn|pnpm|bun|go|composer)
             install_lang "$type" "$pkg" "$name" "$cmd"
             ;;
         special)
@@ -17,6 +33,7 @@ projectr_install_tool_by_fields() {
                 echo -e "${ERROR}  [!] Special installer '${extra}' not found — skipping ${name}.${RST}"
                 log_fail "Special installer '${extra}' not found for $name" "install"
                 projectr_install_result_push failed "$name"
+                projectr_record_failed_install "$cmd" "$name" "$pkg" special special "$cmd"
                 return 1
             fi
             ;;
@@ -24,6 +41,7 @@ projectr_install_tool_by_fields() {
             echo -e "${ERROR}  [!] Unsupported tool type '${type}' for ${name}.${RST}"
             log_fail "Unsupported tool type '${type}' for $name" "install"
             projectr_install_result_push failed "$name"
+            projectr_record_failed_install "$cmd" "$name" "$pkg" unknown "$type" "$cmd"
             return 1
             ;;
     esac
@@ -38,66 +56,6 @@ install_all() {
     printf "${DIM}  [press ENTER]${RST}"
     read -s; echo
     return 1
- # # For post-install summary detection
- #  local -a INSTALLED_PKGS=()
- #  local -a SKIPPED_PKGS=()
- #  local -a FAILED_PKGS=()
- #  log INSTALL "User chose to install all tools"
- #   # Checks for Internet before proceeding
- #   require_internet 
- #   # Update package lists
- #   echo ""
- #   progress_run "Syncing repositories" \
- #                 "Package lists updated" \
- #                 pkg_update
- #   sleep 0.1
- #   echo -e "${INFO}"
- #   local upgrade_choice
- #   upgrade_choice=$(config_get "skip_sys_upgrade")
- #
- #   if [ "$upgrade_choice" = "skip" ]; then
- #       print_box center "  [*] Skipping system upgrade (saved preference)"
- #       sleep 1
- #   elif [ "$upgrade_choice" = "do" ]; then
- #       progress_run "Upgrading system" \
- #                    "System upgrade complete" \
- #                    pkg_upgrade
- #   else
- #       if ask "  [!] Upgrade the system?" "n"; then
- #           config_set "skip_sys_upgrade" "do"
- #           progress_run "Upgrading system" \
- #                        "System upgrade complete" \
- #                        pkg_upgrade
- #       else
- #           config_set "skip_sys_upgrade" "skip"
- #           print_box center "  [*] Skipping system upgrade"
- #           sleep 2
- #       fi
- #   fi
- #   declare -f projectr_snapshot_pre_install >/dev/null 2>&1 && projectr_snapshot_pre_install "install_all"
- #   clear
- #   safe_tput civis
- #   show_install_wait
- #   echo -e "${OPTION}"
- #   print_box center "[*] Installing all tools"
- #   echo -e "${RST}"
- #
- #   for entry in "${TOOLS[@]}"; do
- #        IFS="|" read -r num cmd pkg name desc type extra cat <<< "$entry"
- #
- #        projectr_install_tool_by_fields "$cmd" "$pkg" "$name" "$type" "$extra"
- #    done
- #
- #    # -- post-install-summary
- #    echo ""
- #    post_install_summary
- #    echo -e "${OPTION}" 
- #    print_box center "[✓] installation Completed."
- #    echo -e "${RST}"
- #    printf "${DIM}  [press ENTER]${RST}"
- #    read -s; echo
- #    safe_tput cnorm
-
 }
 
 # For profile preset installation
@@ -135,13 +93,17 @@ install_preset_by_names() {
     echo ""
     post_install_summary
 }
-# -- main installer function --
-# install_pkg "git" "git" "Git: Version control"
+
 install_pkg() {
     local cmd="$1"
     local pkg="$2"
     local name="$3"
-    local PM="${PRIMARY_PKG_MANAGER:-$(detect_pkg_manager)}"
+    local requested_manager="${4:-${PROJECTR_INSTALL_MANAGER_OVERRIDE:-}}"
+    local PM="${requested_manager:-${PRIMARY_PKG_MANAGER:-$(detect_pkg_manager)}}"
+    local tool_id effective_pkg effective_cmd
+    tool_id=$(projectr_tool_id "$cmd")
+    effective_pkg=$(projectr_effective_package "$tool_id" "$pkg" "$PM")
+    effective_cmd=$(projectr_effective_cmd "$tool_id" "$cmd" "$PM")
 
     if [[ -z "$cmd" || -z "$pkg" || -z "$name" ]]; then
         echo -e "${ERROR}  [!] install_pkg: missing argument (cmd='$cmd' pkg='$pkg' name='$name')${RST}"
@@ -149,7 +111,7 @@ install_pkg() {
         return 1
     fi
 
-    if command -v "$cmd" >/dev/null 2>&1; then
+    if command -v "$effective_cmd" >/dev/null 2>&1; then
         echo -e "${OPTION}  [✓] $name is already installed - Skipping..${RST}"
         projectr_install_result_push skipped "$name"
         log SKIPPED "$name was already installed (Skipped)"
@@ -160,117 +122,122 @@ install_pkg() {
     start_spinner "  [*] Installing: $name (via $PM).."
 
     case "$PM" in
-        apt)
-            env DEBIAN_FRONTEND=noninteractive \
-            sudo apt-get install -y --no-install-recommends "$pkg" >/dev/null 2>&1
-         if [[ $? -ne 0 ]]; then
-            stop_spinner "${BOLD_YELLOW}  [!] apt install failed — refreshing package lists and retrying...${RST}"
-            start_spinner "  [*] Installing: $name (retry after apt-get update).."
-            sudo apt-get update >/dev/null 2>&1
-            env DEBIAN_FRONTEND=noninteractive \
-            sudo apt-get install -y --no-install-recommends "$pkg" >/dev/null 2>&1
-         fi
+        apt|apt-get)
+            DEBIAN_FRONTEND=noninteractive \
+            projectr_run_privileged "$PM" apt-get install -y --no-install-recommends "$effective_pkg" >/dev/null 2>&1
+            if [[ $? -ne 0 ]]; then
+                stop_spinner "${BOLD_YELLOW}  [!] apt install failed — refreshing package lists and retrying...${RST}"
+                start_spinner "  [*] Installing: $name (retry after apt-get update).."
+                projectr_run_privileged "$PM" apt-get update >/dev/null 2>&1
+                DEBIAN_FRONTEND=noninteractive \
+                projectr_run_privileged "$PM" apt-get install -y --no-install-recommends "$effective_pkg" >/dev/null 2>&1
+            fi
             ;;
         dnf|yum)
-             sudo "$PM" install -y "$pkg" >/dev/null 2>&1
+            projectr_run_privileged "$PM" "$PM" install -y "$effective_pkg" >/dev/null 2>&1
             ;;
         pacman)
-             sudo pacman -Sy --noconfirm --needed "$pkg" >/dev/null 2>&1
+            projectr_run_privileged "$PM" pacman -Sy --noconfirm --needed "$effective_pkg" >/dev/null 2>&1
             ;;
         zypper)
-             sudo zypper --non-interactive install "$pkg" >/dev/null 2>&1
+            projectr_run_privileged "$PM" zypper --non-interactive install "$effective_pkg" >/dev/null 2>&1
             ;;
         brew)
-             brew install "$pkg" >/dev/null 2>&1
+            brew install "$effective_pkg" >/dev/null 2>&1
             ;;
         apk)
-             sudo apk add --no-cache "$pkg" >/dev/null 2>&1
+            projectr_run_privileged "$PM" apk add --no-cache "$effective_pkg" >/dev/null 2>&1
             ;;
         emerge)
-             sudo emerge -av "$pkg" >/dev/null 2>&1
+            projectr_run_privileged "$PM" emerge -av "$effective_pkg" >/dev/null 2>&1
             ;;
         xbps)
-             sudo xbps-install -Sy "$pkg" >/dev/null 2>&1
+            projectr_run_privileged "$PM" xbps-install -Sy "$effective_pkg" >/dev/null 2>&1
             ;;
         nix)
-             nix-env -i "$pkg" >/dev/null 2>&1
+            nix-env -i "$effective_pkg" >/dev/null 2>&1
             ;;
         guix)
-             guix package --install "$pkg" >/dev/null 2>&1
+            guix package --install "$effective_pkg" >/dev/null 2>&1
             ;;
         eopkg)
-             sudo eopkg install -y "$pkg" >/dev/null 2>&1
+            projectr_run_privileged "$PM" eopkg install -y "$effective_pkg" >/dev/null 2>&1
             ;;
         urpmi)
-             sudo urpmi --auto "$pkg" >/dev/null 2>&1
+            projectr_run_privileged "$PM" urpmi --auto "$effective_pkg" >/dev/null 2>&1
             ;;
         slackpkg)
-             sudo slackpkg install "$pkg" >/dev/null 2>&1
+            projectr_run_privileged "$PM" slackpkg install "$effective_pkg" >/dev/null 2>&1
             ;;
         macports)
-             sudo port install "$pkg" >/dev/null 2>&1
+            projectr_run_privileged "$PM" port install "$effective_pkg" >/dev/null 2>&1
             ;;
         bsd-pkg)
-             sudo pkg install -y "$pkg" >/dev/null 2>&1
+            projectr_run_privileged "$PM" pkg install -y "$effective_pkg" >/dev/null 2>&1
             ;;
         pkg_add)
-             doas pkg_add "$pkg" >/dev/null 2>&1
+            projectr_run_privileged "$PM" pkg_add "$effective_pkg" >/dev/null 2>&1
             ;;
         flatpak)
-             flatpak install -y flathub "$pkg" >/dev/null 2>&1
+            flatpak install -y flathub "$effective_pkg" >/dev/null 2>&1
             ;;
         snap)
-             sudo snap install "$pkg" >/dev/null 2>&1
+            projectr_run_privileged "$PM" snap install "$effective_pkg" >/dev/null 2>&1
             ;;
         pkg)
-             pkg install -y "$pkg" >/dev/null 2>&1
+            pkg install -y "$effective_pkg" >/dev/null 2>&1
             ;;
         choco|chocolatey)
-             choco install -y "$pkg" >/dev/null 2>&1
+            choco install -y "$effective_pkg" >/dev/null 2>&1
             ;;
         scoop)
-             scoop install "$pkg" >/dev/null 2>&1
+            scoop install "$effective_pkg" >/dev/null 2>&1
             ;;
         winget)
-             winget install -e --id "$pkg" >/dev/null 2>&1
+            winget install -e --id "$effective_pkg" >/dev/null 2>&1
             ;;
         *)
             stop_spinner
             echo -e "${ERROR}  [x] Unsupported package manager: $PM${RST}"
             projectr_install_result_push failed "$name"
+            projectr_record_failed_install "$tool_id" "$name" "$effective_pkg" "$PM" pkg "$effective_cmd"
             log FAIL "$name — unsupported PM: $PM"
             return 1
             ;;
     esac
 
     local install_exit=$?
-    if [[ $install_exit -eq 0 ]]; then
-         # bookkeeping (was inside execute_pkg_command)
-        mkdir -p "$SCRIPT_DIR/log/"
-        echo "$(date '+%F %T')|$cmd|$pkg" >> "$SCRIPT_DIR/log/session_history.tmp" 2>/dev/null || true
-        declare -f projectr_state_record_install >/dev/null 2>&1 && \
-        projectr_state_record_install "$name" "$pkg" "${PRIMARY_PKG_MANAGER:-$(detect_pkg_manager)}" "$cmd" || true
+    if [[ $install_exit -eq 0 ]] && command -v "$effective_cmd" >/dev/null 2>&1; then
+        projectr_record_successful_install "$tool_id" "$name" "$effective_pkg" "$PM" pkg "$effective_cmd"
         projectr_install_result_push installed "$name"
         stop_spinner "${OPTION}  [✓] $name installed successfully (via $PM).${RST}"
         log INSTALLED "$name installed successfully (via $PM)"
     else
         projectr_install_result_push failed "$name"
+        projectr_record_failed_install "$tool_id" "$name" "$effective_pkg" "$PM" pkg "$effective_cmd"
         stop_spinner "${ERROR}  [x] Failed to install: $name.${RST}"
         log FAIL "$name failed to install (on $PM)"
+        install_exit=${install_exit:-1}
     fi
-    sleep 2
+    sleep 1
     return "$install_exit"
 }
+
 # Universal language package installer
-# install_lang "pip" "holehe" "Holehe" "holehe"
 install_lang() {
     local tool_type="$1"
     local pkg_name="$2"
     local display_name="${3:-$pkg_name}"
     local cmd="${4:-$pkg_name}"
-    local check_cmd="${cmd:-$pkg_name}"
-    local lang_pm
+    local override="${PROJECTR_INSTALL_MANAGER_OVERRIDE:-}"
+    local tool_id check_cmd lang_pm
+    tool_id=$(projectr_tool_id "$cmd")
     lang_pm=$(detect_pkg_for_tool "$tool_type")
+    if [[ -n "$override" ]]; then
+        lang_pm="$override"
+    fi
+    check_cmd=$(projectr_effective_cmd "$tool_id" "$cmd" "$lang_pm")
+    pkg_name=$(projectr_effective_package "$tool_id" "$pkg_name" "$lang_pm")
 
     if command -v "$check_cmd" >/dev/null 2>&1; then
         echo -e "${OPTION}  [✓] $display_name is already installed - Skipping..${RST}"
@@ -284,6 +251,7 @@ install_lang() {
         echo -e "${ERROR}  [✗] No $tool_type package manager found — cannot install $display_name${RST}"
         log_fail "No $tool_type package manager found for $display_name" "install-lang"
         projectr_install_result_push failed "$display_name"
+        projectr_record_failed_install "$tool_id" "$display_name" "$pkg_name" none "$tool_type" "$check_cmd"
         return 1
     fi
 
@@ -299,7 +267,7 @@ install_lang() {
         if (( attempt > 1 )); then
             stop_spinner
             echo -e "${BOLD_YELLOW}  [!] Retry $attempt/$max_attempts for $display_name...${RST}"
-            sleep 3
+            sleep 2
             start_spinner "  [*] Retrying: $display_name (via $lang_pm).."
         fi
 
@@ -312,11 +280,18 @@ install_lang() {
             bun)           install_cmd=(bun add -g "$pkg_name") ;;
             gem)           install_cmd=(gem install --silent "$pkg_name") ;;
             cargo)         install_cmd=(cargo install --quiet "$pkg_name") ;;
+            go)
+                install_cmd=(go install "$pkg_name@latest")
+                ;;
+            composer)
+                install_cmd=(composer global require "$pkg_name")
+                ;;
             *)
                 stop_spinner ""
                 echo -e "${ERROR}  [✗] Unknown language manager: $lang_pm${RST}"
                 log_fail "Unknown language manager '$lang_pm' for $display_name" "install-lang"
                 projectr_install_result_push failed "$display_name"
+                projectr_record_failed_install "$tool_id" "$display_name" "$pkg_name" "$lang_pm" "$tool_type" "$check_cmd"
                 unset install_method
                 rm -f "$err_tmp"
                 return 1
@@ -336,11 +311,7 @@ install_lang() {
     done
 
     if command -v "$check_cmd" >/dev/null 2>&1; then
-        # bookkeeping
-        mkdir -p "$SCRIPT_DIR/log/"
-        echo "$(date '+%F %T')|$cmd|$pkg_name" >> "$SCRIPT_DIR/log/session_history.tmp" 2>/dev/null || true
-        declare -f projectr_state_record_install >/dev/null 2>&1 && \
-        projectr_state_record_install "$display_name" "$pkg_name" "$lang_pm" "$check_cmd" || true
+        projectr_record_successful_install "$tool_id" "$display_name" "$pkg_name" "$lang_pm" "$tool_type" "$check_cmd"
         projectr_install_result_push installed "$display_name"
         stop_spinner "${OPTION}  [✓] $display_name installed successfully (via $lang_pm)${RST}"
         log INSTALLED "$display_name installed via $lang_pm"
@@ -352,11 +323,12 @@ install_lang() {
         local err_msg
         err_msg=$(grep -v '^\s*$' "$err_tmp" 2>/dev/null | tail -n1 | tr -cd '[:print:]')
         projectr_install_result_push failed "$display_name"
+        projectr_record_failed_install "$tool_id" "$display_name" "$pkg_name" "$lang_pm" "$tool_type" "$check_cmd"
         stop_spinner "${ERROR}  [✗] Failed: $display_name${err_msg:+ — ${err_msg}}${RST}"
         log FAIL "$display_name install failed${err_msg:+: $err_msg}"
         unset install_method
         rm -f "$err_tmp"
-        sleep 2
+        sleep 1
         return 1
     fi
 }
@@ -365,20 +337,36 @@ projectr_batch_command_for_group() {
     local manager="$1"
     shift
     case "$manager" in
-        apt)    env DEBIAN_FRONTEND=noninteractive sudo apt-get install -y --no-install-recommends "$@" ;;
-        pacman) sudo pacman -Sy --noconfirm --needed "$@" ;;
-        dnf|yum) sudo "$manager" install -y "$@" ;;
-        zypper) sudo zypper --non-interactive install "$@" ;;
-        brew)   brew install "$@" ;;
-        apk)    sudo apk add --no-cache "$@" ;;
-        pkg)    pkg install -y "$@" ;;
+        apt|apt-get) DEBIAN_FRONTEND=noninteractive projectr_run_privileged "$manager" apt-get install -y --no-install-recommends "$@" ;;
+        pacman)      projectr_run_privileged "$manager" pacman -Sy --noconfirm --needed "$@" ;;
+        dnf|yum)     projectr_run_privileged "$manager" "$manager" install -y "$@" ;;
+        zypper)      projectr_run_privileged "$manager" zypper --non-interactive install "$@" ;;
+        brew)        brew install "$@" ;;
+        apk)         projectr_run_privileged "$manager" apk add --no-cache "$@" ;;
+        xbps)        projectr_run_privileged "$manager" xbps-install -Sy "$@" ;;
+        nix)         nix-env -i "$@" ;;
+        guix)        guix package --install "$@" ;;
+        eopkg)       projectr_run_privileged "$manager" eopkg install -y "$@" ;;
+        urpmi)       projectr_run_privileged "$manager" urpmi --auto "$@" ;;
+        slackpkg)    projectr_run_privileged "$manager" slackpkg install "$@" ;;
+        macports)    projectr_run_privileged "$manager" port install "$@" ;;
+        bsd-pkg)     projectr_run_privileged "$manager" pkg install -y "$@" ;;
+        pkg_add)     projectr_run_privileged "$manager" pkg_add "$@" ;;
+        flatpak)     flatpak install -y flathub "$@" ;;
+        snap)        projectr_run_privileged "$manager" snap install "$@" ;;
+        pkg)         pkg install -y "$@" ;;
+        winget)      winget install -e --id "$@" ;;
+        choco)       choco install -y "$@" ;;
+        scoop)       scoop install "$@" ;;
         pip|pip3|pipx) "$manager" install --quiet "$@" ;;
-        npm)    npm install -g --quiet "$@" ;;
-        yarn)   yarn global add --silent "$@" ;;
-        pnpm)   pnpm add -g "$@" ;;
-        bun)    bun add -g "$@" ;;
-        gem)    gem install --silent "$@" ;;
-        cargo)  cargo install --quiet "$@" ;;
+        npm)         npm install -g --quiet "$@" ;;
+        yarn)        yarn global add --silent "$@" ;;
+        pnpm)        pnpm add -g "$@" ;;
+        bun)         bun add -g "$@" ;;
+        gem)         gem install --silent "$@" ;;
+        cargo)       cargo install --quiet "$@" ;;
+        go)          go install "$@" ;;
+        composer)    composer global require "$@" ;;
         *) return 2 ;;
     esac
 }
@@ -388,26 +376,30 @@ projectr_install_batch_by_entries() {
     local -a INSTALLED_PKGS=()
     local -a SKIPPED_PKGS=()
     local -a FAILED_PKGS=()
-    local PM="${PRIMARY_PKG_MANAGER:-$(detect_pkg_manager)}"
-    local entry num cmd pkg name desc type extra cat key
+    local PM="${PROJECTR_INSTALL_MANAGER_OVERRIDE:-${PRIMARY_PKG_MANAGER:-$(detect_pkg_manager)}}"
+    local entry num cmd pkg name desc type extra cat key tool_id effective_pkg effective_cmd
     local -a group_keys=()
 
     declare -f projectr_snapshot_pre_install >/dev/null 2>&1 && projectr_snapshot_pre_install "batch_install"
 
     for entry in "${entries[@]}"; do
         IFS="|" read -r num cmd pkg name desc type extra cat <<< "$entry"
-        if command -v "$cmd" >/dev/null 2>&1; then
+        tool_id=$(projectr_tool_id "$cmd")
+        case "$type" in
+            pkg) key="$PM" ;;
+            pip|pip3|pipx|cargo|gem|npm|yarn|pnpm|bun|go|composer) key="${PROJECTR_INSTALL_MANAGER_OVERRIDE:-$(detect_pkg_for_tool "$type")}" ;;
+            *) projectr_install_tool_by_fields "$cmd" "$pkg" "$name" "$type" "$extra"; continue ;;
+        esac
+        effective_cmd=$(projectr_effective_cmd "$tool_id" "$cmd" "$key")
+        effective_pkg=$(projectr_effective_package "$tool_id" "$pkg" "$key")
+        if command -v "$effective_cmd" >/dev/null 2>&1; then
             projectr_install_result_push skipped "$name"
             continue
         fi
-        case "$type" in
-            pkg) key="$PM" ;;
-            pip|pip3|pipx|cargo|gem|npm|yarn|pnpm|bun) key="$(detect_pkg_for_tool "$type")" ;;
-            *) projectr_install_tool_by_fields "$cmd" "$pkg" "$name" "$type" "$extra"; continue ;;
-        esac
-        [[ "$key" != "none" && -n "$key" ]] || { projectr_install_result_push failed "$name"; continue; }
-        eval "projectr_batch_pkgs_${key//[^A-Za-z0-9_]/_}+=(\"\$pkg\")"
-        eval "projectr_batch_names_${key//[^A-Za-z0-9_]/_}+=(\"\$name\")"
+        [[ "$key" != "none" && -n "$key" ]] || { projectr_install_result_push failed "$name"; projectr_record_failed_install "$tool_id" "$name" "$effective_pkg" none "$type" "$effective_cmd"; continue; }
+        local safe="${key//[^A-Za-z0-9_]/_}"
+        eval "projectr_batch_pkgs_${safe}+=(\"\$effective_pkg\")"
+        eval "projectr_batch_entries_${safe}+=(\"\$entry\")"
         case " ${group_keys[*]} " in *" $key "*) ;; *) group_keys+=("$key") ;; esac
     done
 
@@ -415,7 +407,7 @@ projectr_install_batch_by_entries() {
     for group in "${group_keys[@]}"; do
         safe=${group//[^A-Za-z0-9_]/_}
         eval 'local -a pkgs=("${projectr_batch_pkgs_'"$safe"'[@]}")'
-        eval 'local -a names=("${projectr_batch_names_'"$safe"'[@]}")'
+        eval 'local -a group_entries=("${projectr_batch_entries_'"$safe"'[@]}")'
         [[ ${#pkgs[@]} -gt 0 ]] || continue
 
         tmp=$(mktemp)
@@ -429,17 +421,25 @@ projectr_install_batch_by_entries() {
         fi
         if [[ $status -eq 0 ]]; then
             stop_spinner "${OPTION}  [✓] Batch installed ${#pkgs[@]} package(s) via $group.${RST}"
-            local n
-            for n in "${names[@]}"; do projectr_install_result_push installed "$n"; done
+            for entry in "${group_entries[@]}"; do
+                IFS="|" read -r num cmd pkg name desc type extra cat <<< "$entry"
+                tool_id=$(projectr_tool_id "$cmd")
+                effective_cmd=$(projectr_effective_cmd "$tool_id" "$cmd" "$group")
+                effective_pkg=$(projectr_effective_package "$tool_id" "$pkg" "$group")
+                if [[ "${DRY_RUN:-0}" == "1" ]] || command -v "$effective_cmd" >/dev/null 2>&1; then
+                    projectr_install_result_push installed "$name"
+                    [[ "${DRY_RUN:-0}" == "1" ]] || projectr_record_successful_install "$tool_id" "$name" "$effective_pkg" "$group" "$type" "$effective_cmd"
+                else
+                    projectr_install_result_push failed "$name"
+                    projectr_record_failed_install "$tool_id" "$name" "$effective_pkg" "$group" "$type" "$effective_cmd"
+                fi
+            done
         else
             stop_spinner "${ERROR}  [x] Batch install failed via $group; falling back to per-tool installs.${RST}"
             projectr_log_file_excerpt FAIL "$tmp" "batch-install" 30
-            for entry in "${entries[@]}"; do
+            for entry in "${group_entries[@]}"; do
                 IFS="|" read -r num cmd pkg name desc type extra cat <<< "$entry"
-                case "$type" in
-                    pkg) [[ "$group" == "$PM" ]] && projectr_install_tool_by_fields "$cmd" "$pkg" "$name" "$type" "$extra" ;;
-                    pip|pip3|pipx|cargo|gem|npm|yarn|pnpm|bun) [[ "$group" == "$(detect_pkg_for_tool "$type")" ]] && projectr_install_tool_by_fields "$cmd" "$pkg" "$name" "$type" "$extra" ;;
-                esac
+                projectr_install_tool_by_fields "$cmd" "$pkg" "$name" "$type" "$extra"
             done
         fi
         rm -f "$tmp"

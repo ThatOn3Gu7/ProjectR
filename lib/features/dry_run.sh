@@ -27,7 +27,7 @@ projectr_find_tool() {
 projectr_simulation_manager_for_type() {
     local type="${1:-pkg}"
     case "$type" in
-        pkg|special) printf '%s\n' "${PRIMARY_PKG_MANAGER:-$(detect_pkg_manager)}" ;;
+        pkg|special) printf '%s\n' "${PROJECTR_INSTALL_MANAGER_OVERRIDE:-${PRIMARY_PKG_MANAGER:-$(detect_pkg_manager)}}" ;;
         pip|pip3|pipx|cargo|gem|npm|yarn|pnpm|bun) detect_pkg_for_tool "$type" ;;
         *) printf '%s\n' "${PRIMARY_PKG_MANAGER:-$(detect_pkg_manager)}" ;;
     esac
@@ -62,13 +62,16 @@ projectr_dry_run_entries() {
     local tmp plan_count=0 native_limit="${PROJECTR_DRY_RUN_NATIVE_LIMIT:-20}"
     tmp=$(mktemp) || return 1
 
-    local entry cmd pkg name desc type extra cat status impact conflicts changes manager skip_native=0
+    local entry cmd pkg name desc type extra cat status impact conflicts changes manager skip_native=0 tool_id effective_cmd effective_pkg
     [[ ${#entries[@]} -gt $native_limit ]] && skip_native=1
     for entry in "${entries[@]}"; do
         IFS='|' read -r _ cmd pkg name desc type extra cat <<< "$entry"
         status="planned" impact="unknown" conflicts="none"
         manager=$(projectr_simulation_manager_for_type "$type")
-        if command -v "$cmd" >/dev/null 2>&1; then
+        tool_id=$(projectr_tool_id "$cmd")
+        effective_cmd=$(projectr_effective_cmd "$tool_id" "$cmd" "$manager")
+        effective_pkg=$(projectr_effective_package "$tool_id" "$pkg" "$manager")
+        if command -v "$effective_cmd" >/dev/null 2>&1; then
             status="already-installed"
             changes="none"
             impact="0B"
@@ -80,12 +83,13 @@ projectr_dry_run_entries() {
             changes="missing-manager:$type"
             conflicts="manager-unavailable"
         elif [[ $skip_native -eq 1 ]]; then
-            changes="install $pkg (native simulation skipped: ${#entries[@]} item plan exceeds limit ${native_limit})"
+            changes="install $effective_pkg (native simulation skipped: ${#entries[@]} item plan exceeds limit ${native_limit})"
         else
-            changes=$(projectr_package_simulation "$manager" "$pkg" "$type" | paste -sd ';' -)
-            [[ -n "$changes" ]] || changes="install $pkg"
+            changes=$(projectr_package_simulation "$manager" "$effective_pkg" "$type" | paste -sd ';' -)
+            [[ -n "$changes" ]] || changes="install $effective_pkg"
         fi
-        printf '%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n' "$name" "$cmd" "$pkg" "$type" "$manager" "$status" "$impact" "$conflicts" "$changes" >> "$tmp"
+        printf '%s	%s	%s	%s	%s	%s	%s	%s	%s
+' "$name" "$effective_cmd" "$effective_pkg" "$type" "$manager" "$status" "$impact" "$conflicts" "$changes" >> "$tmp"
         plan_count=$((plan_count + 1))
     done
 
@@ -169,7 +173,7 @@ projectr_dry_run_profile() {
 }
 
 projectr_dry_run_repair() {
-    local json=0 arg entries=() entry cmd record record_name record_package record_manager
+    local json=0 arg entries=() entry cmd record record_tool_id record_name record_package record_manager
     local -a records=()
     for arg in "$@"; do
         case "$arg" in
@@ -185,10 +189,10 @@ projectr_dry_run_repair() {
 
     mapfile -t records < <(projectr_state_records)
     for record in "${records[@]}"; do
-        IFS=$'	' read -r record_name record_package record_manager <<< "$record"
-        entry=$(projectr_state_find_registry_entry "$record_name" "$record_package") || continue
+        IFS=$'	' read -r record_tool_id record_name record_package record_manager <<< "$record"
+        entry=$(projectr_state_find_registry_entry "$record_tool_id" "$record_name" "$record_package") || continue
         IFS='|' read -r _ cmd _ _ _ _ _ _ <<< "$entry"
-        command -v "$cmd" >/dev/null 2>&1 || entries+=("$entry")
+        command -v "$(projectr_effective_cmd "$record_tool_id" "$cmd" "$record_manager")" >/dev/null 2>&1 || entries+=("$entry")
     done
 
     if [[ ${#entries[@]} -eq 0 ]]; then

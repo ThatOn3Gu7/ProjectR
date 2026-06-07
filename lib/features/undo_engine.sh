@@ -1,14 +1,15 @@
 #!/usr/bin/env bash
-# -- rollback last session function --
+
 rollback_last_session() {
-    if [[ -z "${SCRIPT_DIR:-}" ]]; then
-        echo -e "${ERROR} [✗] SCRIPT_DIR is not set — cannot locate session history.${RST}"
+    local transaction_id action action_id tool_id name package manager install_type command_name status rollback_status
+
+    if ! declare -f projectr_state_last_transaction_id >/dev/null 2>&1; then
+        echo -e "${ERROR} [✗] State tracking is not loaded — cannot locate rollback actions.${RST}"
         return 1
     fi
 
-    local history_file="$SCRIPT_DIR/log/session_history.tmp"
-
-    if [[ ! -f "$history_file" || ! -s "$history_file" ]]; then
+    transaction_id=$(projectr_state_last_transaction_id)
+    if [[ -z "$transaction_id" ]]; then
         echo -e "${OPTION} [!] No recent installations found to undo.${RST}"
         return 0
     fi
@@ -22,48 +23,39 @@ rollback_last_session() {
         return 1
     fi
 
-    echo -e "${ERROR} [!] WARNING: Reversing last session's installations...${RST}"
+    echo -e "${ERROR} [!] WARNING: Reversing last session's installations for transaction ${transaction_id}...${RST}"
     echo ""
 
-    # Safe reverse — no eval
-    local reversed
-    if command -v tac >/dev/null 2>&1; then
-        reversed=$(tac "$history_file")
-    else
-        reversed=$(awk '{lines[NR]=$0} END{for(i=NR;i>=1;i--) print lines[i]}' "$history_file")
-    fi
-
     local rolled=0 failed=0
-    while IFS="|" read -r timestamp cmd pkg method; do
-        if [[ -z "$cmd" || -z "$pkg" ]]; then
-            echo -e "${BOLD_YELLOW} [!] Skipping malformed history entry.${RST}"
-            continue
-        fi
+    while IFS=$'\t' read -r action_id tool_id name package manager install_type command_name status rollback_status; do
+        [[ -n "$action_id" ]] || continue
+        [[ "$status" == "installed" ]] || continue
+        [[ "$rollback_status" == "done" ]] && continue
 
-        method="${method:-pkg}"
-        echo -e "${INFO} [*] Rolling back: $cmd ($pkg) installed via $method...${RST}"
-
+        echo -e "${INFO} [*] Rolling back: $name ($package) installed via $manager...${RST}"
         export NON_INTERACTIVE=1
+        export PROJECTR_UNINSTALL_MANAGER_OVERRIDE="$manager"
         local ok=0
-        case "$method" in
-            pip|pip3|pipx|npm|yarn|gem|cargo)
-                uninstall_lang "$method" "$pkg" "$cmd" && ok=1
+        case "$install_type" in
+            pip|pip3|pipx|npm|yarn|pnpm|bun|gem|cargo|go|composer)
+                uninstall_lang "$manager" "$package" "$name" "$command_name" && ok=1
                 ;;
             *)
-                uninstall_pkg "$cmd" "$pkg" "$cmd" && ok=1
+                uninstall_pkg "$command_name" "$package" "$name" && ok=1
                 ;;
         esac
-        unset NON_INTERACTIVE
+        unset NON_INTERACTIVE PROJECTR_UNINSTALL_MANAGER_OVERRIDE
 
         if [[ $ok -eq 1 ]]; then
             ((rolled++))
+            projectr_state_mark_action_status "$action_id" done || true
         else
             ((failed++))
-            echo -e "${ERROR} [!] Failed to roll back: $cmd${RST}"
+            projectr_state_mark_action_status "$action_id" failed || true
+            echo -e "${ERROR} [!] Failed to roll back: $name${RST}"
         fi
-    done <<< "$reversed"
+    done < <(projectr_state_transaction_actions "$transaction_id")
 
-    > "$history_file"
     echo ""
     echo -e "${BOLD_GREEN} [✓] Rollback complete: ${rolled} removed, ${failed} failed.${RST}"
     [[ $failed -gt 0 ]] && return 1 || return 0
