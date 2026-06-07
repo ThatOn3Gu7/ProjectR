@@ -239,4 +239,5 @@ YML
   [[ "$output" == *'"ok":true'* ]]
   [[ "$output" == *'"checks"'* ]]
   [[ "$output" == *'"package-manager"'* ]]
+  [[ "$output" == *'"privilege"'* ]]
 }

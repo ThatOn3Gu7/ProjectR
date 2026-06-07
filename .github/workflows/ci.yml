@@ -8,24 +8,32 @@ on:
 
 jobs:
   shell:
-    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
 
-      - name: Install test tools
+      - name: Install test tools (Ubuntu)
+        if: runner.os == 'Linux'
         run: |
           sudo apt-get update
           sudo apt-get install -y bats shellcheck
+
+      - name: Install test tools (macOS)
+        if: runner.os == 'macOS'
+        run: |
+          brew install bats-core shellcheck
 
       - name: Bash syntax check
         run: |
           bash -n main.sh setup.sh $(find lib -name '*.sh' | sort)
 
-      - name: ShellCheck severe issues
-        continue-on-error: true
+      - name: ShellCheck
         run: |
-          shellcheck -S error main.sh setup.sh $(find lib -name '*.sh' | sort)
+          shellcheck -S warning main.sh setup.sh $(find lib -name '*.sh' | sort)
 
       - name: Registry audit
         run: |
@@ -38,7 +46,9 @@ jobs:
           bash main.sh doctor --json
           bash main.sh dry-run install git --json
           bash main.sh dry-run repair --json
+          bash main.sh scheduler status || true
 
       - name: Bats test suite
+        if: runner.os == 'Linux'
         run: |
           bats tests/suite.bats
