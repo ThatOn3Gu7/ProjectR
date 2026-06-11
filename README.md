@@ -24,6 +24,16 @@ ProjectR helps turn a fresh terminal into a usable workspace by combining:
 - **Structured logging and session history** for troubleshooting, including command starts, successes, failures, exit codes, and diagnostic output tails.
 - **Connectivity, dependency, and disk checks** before heavier install operations.
 - **Special setup helpers** for tools that need more than a package install, such as Neovim, Zsh/Oh My Zsh, and code-server.
+- **Doctor command** (`project doctor`) for health checks of the environment, package‑manager detection, and required privileges, with optional `--json` output.
+- **Verify and repair** (`project verify`, `project repair`) to check installed tools on `$PATH` and reinstall missing non‑special tools.
+- **State database** (`~/.local/state/projectr/state.db`) tracking installed tools; queryable via `project list state`.
+- **Self‑update** (`project --self-update` or `project update`) to refresh the hidden installed copy or update the git checkout.
+- **Scheduler integration** and background job handling via related flags.
+- **Plugin system** allowing custom tool definitions via TOML files placed in `tools.d/`.
+- **Undo** (`project --undo`) to roll back the last recorded install session.
+- **Log retrieval** (`project --log`, `project --log=N`) to view recent install logs.
+- **Lock file** (`~/.config/projectr/tmp/project.lock`) preventing concurrent runs.
+
 
 ---
 
