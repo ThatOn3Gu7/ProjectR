@@ -920,6 +920,309 @@ body::after {
 .section-alt { background: rgba(8,13,26,0.4); backdrop-filter: blur(4px); }
 
 /* ═══════════════════════════════════════════════════════════
+   🚀 ENHANCED ANIMATIONS — Making it ALIVE
+═══════════════════════════════════════════════════════════ */
+
+/* --- Page Load Reveal --- */
+@keyframes pageReveal {
+  from { opacity: 0; filter: blur(6px); }
+  to   { opacity: 1; filter: blur(0); }
+}
+body {
+  animation: pageReveal 0.8s ease-out;
+}
+
+/* --- Gradient Text Shimmer on Hero --- */
+@keyframes gradientShimmer {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+.hero h1 .line1 {
+  background: linear-gradient(90deg, #00e5ff, #b06aff, #ff5caa, #00ffb3, #ffc94d, #00e5ff) !important;
+  background-size: 300% 100% !important;
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+  -webkit-text-fill-color: transparent;
+  animation: gradientShimmer 6s ease-in-out infinite;
+}
+
+/* --- Pulsing Logo Glow --- */
+@keyframes logoPulse {
+  0%, 100% { box-shadow: 0 0 20px rgba(0,229,255,0.3), 0 0 40px rgba(0,229,255,0.1); }
+  50%      { box-shadow: 0 0 30px rgba(0,229,255,0.5), 0 0 60px rgba(0,229,255,0.2), 0 0 100px rgba(176,106,255,0.1); }
+}
+.logo-mark {
+  animation: logoPulse 3s ease-in-out infinite;
+}
+
+/* --- Animated Dividers --- */
+@keyframes dividerFlow {
+  0%   { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+.divider {
+  height: 1px !important; margin: 0;
+  background: linear-gradient(90deg, transparent 0%, var(--cyan) 25%, var(--violet) 50%, var(--pink) 75%, transparent 100%) !important;
+  background-size: 200% 100%;
+  animation: dividerFlow 4s ease-in-out infinite;
+  opacity: 0.5;
+}
+
+/* --- Button Shine Sweep --- */
+@keyframes btnShine {
+  0%   { left: -100%; }
+  100% { left: 200%; }
+}
+.btn-primary {
+  overflow: hidden;
+}
+.btn-primary::before {
+  content: '';
+  position: absolute; top: 0; left: -100%;
+  width: 50%; height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+  transform: skewX(-20deg);
+  z-index: 1;
+  pointer-events: none;
+}
+.btn-primary:hover::before {
+  animation: btnShine 0.7s ease-out;
+}
+
+/* --- Card Glow Border on Hover --- */
+.feature-card:hover,
+.category-card:hover {
+  border-color: transparent;
+  background-image: linear-gradient(rgba(8,13,26,0.6), rgba(8,13,26,0.6)),
+    linear-gradient(135deg, var(--cyan), var(--violet), var(--pink), var(--green));
+  background-origin: border-box;
+  background-clip: padding-box, border-box;
+}
+
+/* --- Stat Card Glow Ring --- */
+.stat-card {
+  position: relative;
+}
+.stat-card::after {
+  content: '';
+  position: absolute; inset: -2px;
+  border-radius: var(--radius);
+  background: linear-gradient(135deg, var(--cyan), var(--violet));
+  opacity: 0; z-index: -1;
+  transition: opacity 0.4s;
+  filter: blur(10px);
+}
+.stat-card:hover::after { opacity: 0.2; }
+
+/* --- Badge Glow Pulse --- */
+@keyframes badgePulse {
+  0%, 100% { opacity: 1; filter: brightness(1); }
+  50%      { opacity: 0.8; filter: brightness(1.2); }
+}
+.badge {
+  animation: badgePulse 2.5s ease-in-out infinite;
+}
+
+/* --- Code Block Ambient Shine --- */
+@keyframes codeShine {
+  0%   { transform: translateX(-200%) rotate(45deg); }
+  100% { transform: translateX(400%) rotate(45deg); }
+}
+.code-block {
+  position: relative;
+  overflow: hidden;
+}
+.code-block::after {
+  content: '';
+  position: absolute; top: -50%; left: -200%;
+  width: 30%; height: 200%;
+  background: linear-gradient(90deg, transparent, rgba(0,229,255,0.03), transparent);
+  transform: rotate(45deg);
+  animation: codeShine 8s ease-in-out infinite;
+  pointer-events: none;
+}
+
+/* --- Hero Eyebrow Float --- */
+@keyframes eyebrowFloat {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-5px); }
+}
+.hero-eyebrow {
+  animation: fadeSlideDown 0.8s var(--ease-out-expo) both, eyebrowFloat 4s ease-in-out 1.5s infinite;
+}
+
+/* --- Enhanced Reveal with Blur --- */
+.reveal {
+  opacity: 0;
+  transform: translateY(40px) scale(0.97);
+  transition: opacity 0.8s var(--ease-out-expo), transform 0.8s var(--ease-out-expo), filter 0.8s ease-out;
+  filter: blur(6px);
+  will-change: opacity, transform, filter;
+}
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  filter: blur(0);
+}
+
+/* --- Nav Active Dot Indicator --- */
+.sidebar nav a.active::after {
+  content: '';
+  position: absolute; right: 12px; top: 50%;
+  width: 5px; height: 5px;
+  border-radius: 50%;
+  background: var(--cyan);
+  box-shadow: 0 0 10px var(--cyan), 0 0 20px rgba(0,229,255,0.3);
+  transform: translateY(-50%);
+  animation: blink 1.5s ease-in-out infinite;
+}
+
+/* --- Footer Glow --- */
+.footer {
+  position: relative;
+  overflow: hidden;
+}
+.footer::after {
+  content: '';
+  position: absolute; bottom: 0; left: 0; right: 0;
+  height: 200px;
+  background: radial-gradient(ellipse 60% 100% at 50% 100%, rgba(0,229,255,0.04) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+/* --- Hero Terminal Breathing Glow --- */
+@keyframes terminalGlow {
+  0%, 100% { box-shadow: 0 0 0 1px rgba(0,229,255,0.04), 0 24px 80px rgba(0,0,0,0.6), 0 0 60px rgba(0,229,255,0.06); }
+  50%      { box-shadow: 0 0 0 1px rgba(0,229,255,0.1), 0 24px 80px rgba(0,0,0,0.6), 0 0 90px rgba(0,229,255,0.12), 0 0 140px rgba(176,106,255,0.06); }
+}
+.hero-terminal {
+  animation: fadeSlideUp 1.2s var(--ease-out-expo) 0.4s both, terminalGlow 5s ease-in-out 2s infinite;
+}
+
+/* --- Floating Code Symbols in Hero --- */
+.hero-symbols {
+  position: absolute; inset: 0;
+  overflow: hidden; pointer-events: none;
+  z-index: 0;
+}
+.hero-symbols span {
+  position: absolute;
+  font-family: var(--font-mono);
+  font-size: clamp(0.7rem, 1.2vw, 1rem);
+  opacity: 0;
+  color: var(--cyan);
+  animation: symbolFloat 20s linear infinite;
+}
+@keyframes symbolFloat {
+  0%   { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+  5%   { opacity: 0.06; }
+  95%  { opacity: 0.03; }
+  100% { transform: translateY(-100vh) rotate(360deg); opacity: 0; }
+}
+
+/* --- Ripple Effect on Click --- */
+.ripple {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(0, 229, 255, 0.12);
+  transform: scale(0);
+  animation: rippleExpand 0.6s ease-out forwards;
+  pointer-events: none;
+  z-index: 10;
+}
+@keyframes rippleExpand {
+  to { transform: scale(4); opacity: 0; }
+}
+
+/* --- Step Number Pulse on Hover --- */
+.step-num {
+  transition: transform 0.3s var(--ease-spring), box-shadow 0.3s;
+}
+.step:hover .step-num {
+  transform: scale(1.15);
+  box-shadow: 0 0 30px rgba(0,229,255,0.4), 0 0 60px rgba(0,229,255,0.15);
+}
+
+/* --- Tool Tag Lift --- */
+.tool-tag {
+  transition: all 0.2s var(--ease-spring) !important;
+}
+.tool-tag:hover {
+  transform: translateY(-3px) !important;
+  box-shadow: 0 6px 16px rgba(0,229,255,0.12) !important;
+}
+
+/* --- FAQ Open Glow --- */
+.faq-item.open {
+  box-shadow: 0 0 40px rgba(0,229,255,0.06), 0 8px 32px rgba(0,0,0,0.2);
+}
+
+/* --- Section Header Underline Reveal --- */
+.section-header h2 {
+  position: relative;
+  display: inline-block;
+}
+.section-header h2::after {
+  content: '';
+  position: absolute; bottom: -8px; left: 50%;
+  width: 0; height: 2px;
+  background: var(--g1);
+  transition: width 0.8s var(--ease-out-expo), left 0.8s var(--ease-out-expo);
+}
+.visible .section-header h2::after,
+.section-header.visible h2::after {
+  width: 60px; left: calc(50% - 30px);
+}
+
+/* --- Smooth Gradient Section Headers --- */
+.section-header h2 {
+  background: linear-gradient(135deg, var(--text-bright) 0%, var(--text-mid) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* --- Mgr Chip Stagger --- */
+.managers-wrap .mgr-chip {
+  transition-delay: calc(var(--i, 0) * 0.04s);
+}
+
+/* --- Magnetic Hover Utility --- */
+.magnetic-hover {
+  transition: transform 0.3s var(--ease-spring) !important;
+}
+
+/* --- Interactive Mouse Glow on Hero --- */
+.hero-mouse-glow {
+  position: fixed;
+  width: 400px; height: 400px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(0,229,255,0.06) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: 1;
+  transform: translate(-50%, -50%);
+  transition: opacity 0.3s;
+  mix-blend-mode: screen;
+}
+
+/* --- Copy Button Success Animation --- */
+@keyframes copySuccess {
+  0%   { transform: scale(1); }
+  50%  { transform: scale(1.1); }
+  100% { transform: scale(1); }
+}
+.copy-btn.copied {
+  border-color: var(--green) !important;
+  color: var(--green) !important;
+  animation: copySuccess 0.3s var(--ease-spring);
+}
+
+/* --- Terminal Dot Interaction --- */
+.term-dot { transition: transform 0.2s var(--ease-spring); }
+.term-dot:hover { transform: scale(1.3); }
+
+/* ═══════════════════════════════════════════════════════════
    RESPONSIVE
 ═══════════════════════════════════════════════════════════ */
 @media(max-width:1024px) {
@@ -934,6 +1237,8 @@ body::after {
   .stats-ribbon { padding: 0 24px; grid-template-columns: repeat(2, 1fr); }
   body { cursor: auto; }
   #cursor-dot, #cursor-ring { display: none; }
+  .hero-symbols { display: none; }
+  .hero-mouse-glow { display: none; }
 }
 @media(max-width:640px) {
   .features-grid { grid-template-columns: 1fr; }
@@ -943,6 +1248,110 @@ body::after {
   .btn { width: 100%; max-width: 300px; justify-content: center; }
   .flags-table { font-size: 0.78rem; }
   .flags-table th, .flags-table td { padding: 10px 12px; }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   INFO MODAL STYLES
+═══════════════════════════════════════════════════════════ */
+.modal-overlay {
+  position: fixed; inset: 0;
+  background: rgba(3, 5, 10, 0.7);
+  backdrop-filter: blur(8px);
+  z-index: 1000;
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.35s ease;
+  padding: 20px;
+}
+.modal-overlay.active {
+  opacity: 1; pointer-events: auto;
+}
+.modal-content {
+  background: rgba(8, 13, 26, 0.9);
+  backdrop-filter: blur(24px);
+  border: 1px solid var(--border-h);
+  border-radius: var(--radius);
+  width: 100%; max-width: 500px;
+  padding: 30px;
+  position: relative;
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.8), var(--glow-cyan);
+  transform: translateY(24px) scale(0.96);
+  transition: transform 0.4s var(--ease-spring);
+}
+.modal-overlay.active .modal-content {
+  transform: translateY(0) scale(1);
+}
+.modal-close {
+  position: absolute; top: 16px; right: 16px;
+  background: transparent; border: none;
+  color: var(--text-dim); font-size: 1.6rem; cursor: none;
+  width: 30px; height: 30px; display: flex; align-items: center; justify-content: center;
+  border-radius: 50%; border: 1px solid transparent;
+  transition: all 0.25s;
+}
+.modal-close:hover {
+  color: var(--cyan); border-color: var(--border-h);
+  background: rgba(0, 229, 255, 0.05);
+}
+.modal-header {
+  display: flex; align-items: center; gap: 14px; margin-bottom: 20px;
+}
+.modal-icon {
+  font-size: 2rem;
+  width: 50px; height: 50px;
+  background: rgba(0, 229, 255, 0.08);
+  border: 1px solid rgba(0, 229, 255, 0.2);
+  border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: var(--glow-cyan);
+  flex-shrink: 0;
+}
+.modal-title-wrapper {
+  display: flex; flex-direction: column; gap: 2px;
+}
+.modal-title {
+  font-family: var(--font-display);
+  font-size: 1.4rem; font-weight: 800;
+  color: var(--text-bright);
+  line-height: 1.2;
+}
+.modal-badge {
+  font-family: var(--font-mono); font-size: 0.68rem;
+  color: var(--cyan); text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.modal-body {
+  font-size: 0.88rem; line-height: 1.6;
+}
+.modal-desc {
+  color: var(--text-mid); margin-bottom: 20px;
+}
+.modal-meta {
+  background: rgba(13, 21, 38, 0.5);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 12px 16px;
+  display: flex; flex-direction: column; gap: 8px;
+  margin-bottom: 16px;
+}
+.meta-item {
+  display: flex; justify-content: space-between; font-size: 0.78rem;
+}
+.meta-label {
+  color: var(--text-dim); font-family: var(--font-mono);
+}
+.meta-val {
+  color: var(--text-bright); font-weight: 500;
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  .reveal { filter: none !important; }
 }
 </style>
 </head>
@@ -996,6 +1405,10 @@ body::after {
 
   <!-- ══ HERO ══ -->
   <section class="hero" id="hero">
+    <!-- Floating Code Symbols -->
+    <div class="hero-symbols" id="hero-symbols"></div>
+    <!-- Mouse Glow -->
+    <div class="hero-mouse-glow" id="hero-mouse-glow"></div>
     <div class="hero-eyebrow">
       <span class="dot"></span>
       Open Source Terminal Toolkit
@@ -1681,6 +2094,39 @@ body::after {
 
 </main>
 
+<!-- ═══════════════════════════════════════════════════════════
+   INFO MODAL OVERLAY
+═══════════════════════════════════════════════════════════ -->
+<div id="info-modal" class="modal-overlay" onclick="closeModal(event)">
+  <div class="modal-content" onclick="event.stopPropagation()">
+    <button class="modal-close" onclick="closeModal()">&times;</button>
+    <div class="modal-header">
+      <div id="modal-icon" class="modal-icon">💻</div>
+      <div class="modal-title-wrapper">
+        <h3 id="modal-title" class="modal-title">Git</h3>
+        <span id="modal-badge" class="modal-badge">Version Control</span>
+      </div>
+    </div>
+    <div class="modal-body">
+      <p id="modal-desc" class="modal-desc">Distributed version control system.</p>
+      <div class="modal-meta">
+        <div class="meta-item">
+          <span class="meta-label">Type / Category:</span>
+          <span id="modal-meta-type" class="meta-val">Development</span>
+        </div>
+        <div class="meta-item">
+          <span class="meta-label">Install command:</span>
+          <span id="modal-meta-cmd" class="meta-val"><code>project install git</code></span>
+        </div>
+      </div>
+      <div id="modal-code-block" class="code-block" style="margin-top:20px;margin-bottom:0">
+        <div class="code-header"><span id="modal-code-title">sample execution</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+        <div id="modal-code-content" class="code-content"><span class="fl">git</span> clone https://github.com/Thaton3gu7/ProjectR.git</div>
+      </div>
+    </div>
+  </div>
+</div>
+
 <script>
 // ═══════════════════════════════════════════════════════════
 // CURSOR
@@ -1702,9 +2148,16 @@ function animateCursor() {
 }
 animateCursor();
 
-document.querySelectorAll('a,button,.feature-card,.stat-card,.category-card,.mgr-chip,.tool-tag,.faq-q,.copy-btn,.sidebar nav a').forEach(el => {
-  el.addEventListener('mouseenter', () => document.body.classList.add('cursor-hover'));
-  el.addEventListener('mouseleave', () => document.body.classList.remove('cursor-hover'));
+// Dynamic Cursor Hover Delegation
+document.addEventListener('mouseover', e => {
+  if (e.target.closest('a,button,.feature-card,.stat-card,.category-card,.mgr-chip,.tool-tag,.faq-q,.copy-btn,.sidebar nav a,.modal-close')) {
+    document.body.classList.add('cursor-hover');
+  }
+});
+document.addEventListener('mouseout', e => {
+  if (e.target.closest('a,button,.feature-card,.stat-card,.category-card,.mgr-chip,.tool-tag,.faq-q,.copy-btn,.sidebar nav a,.modal-close')) {
+    document.body.classList.remove('cursor-hover');
+  }
 });
 
 // ═══════════════════════════════════════════════════════════
@@ -1952,6 +2405,1361 @@ document.querySelectorAll('.feature-card, .stat-card').forEach(card => {
   card.addEventListener('mouseleave', () => {
     card.style.transform = '';
   });
+});
+
+// ═══════════════════════════════════════════════════════════
+// FLOATING CODE SYMBOLS IN HERO
+// ═══════════════════════════════════════════════════════════
+const symbolContainer = document.getElementById('hero-symbols');
+if (symbolContainer) {
+  const symbols = ['{}', '/>', '()', '[]', '=>', '&&', '||', '#!/', '$_', '**', '::', '/*', '*/', ';;', '<<', '>>', '..', '+=', '!=', '~/'];
+  for (let i = 0; i < 18; i++) {
+    const span = document.createElement('span');
+    span.textContent = symbols[Math.floor(Math.random() * symbols.length)];
+    const hues = ['var(--cyan)', 'var(--violet)', 'var(--green)', 'var(--pink)', 'var(--gold)'];
+    span.style.cssText = `
+      left: ${Math.random() * 100}%;
+      color: ${hues[Math.floor(Math.random() * hues.length)]};
+      animation-duration: ${Math.random() * 15 + 18}s;
+      animation-delay: ${Math.random() * -20}s;
+      font-size: ${Math.random() * 0.6 + 0.6}rem;
+    `;
+    symbolContainer.appendChild(span);
+  }
+}
+
+// ═══════════════════════════════════════════════════════════
+// INTERACTIVE MOUSE GLOW (follows cursor in hero)
+// ═══════════════════════════════════════════════════════════
+const mouseGlow = document.getElementById('hero-mouse-glow');
+if (mouseGlow) {
+  document.addEventListener('mousemove', e => {
+    mouseGlow.style.left = e.clientX + 'px';
+    mouseGlow.style.top = e.clientY + 'px';
+  });
+}
+
+// ═══════════════════════════════════════════════════════════
+// RIPPLE CLICK EFFECT
+// ═══════════════════════════════════════════════════════════
+document.querySelectorAll('.btn, .feature-card, .stat-card, .category-card, .mgr-chip, .tool-tag').forEach(el => {
+  el.style.position = el.style.position || 'relative';
+  el.style.overflow = 'hidden';
+  el.addEventListener('click', function(e) {
+    const rect = this.getBoundingClientRect();
+    const ripple = document.createElement('div');
+    ripple.className = 'ripple';
+    const size = Math.max(rect.width, rect.height);
+    ripple.style.width = ripple.style.height = size + 'px';
+    ripple.style.left = (e.clientX - rect.left - size / 2) + 'px';
+    ripple.style.top = (e.clientY - rect.top - size / 2) + 'px';
+    this.appendChild(ripple);
+    ripple.addEventListener('animationend', () => ripple.remove());
+  });
+});
+
+// ═══════════════════════════════════════════════════════════
+// MAGNETIC HOVER ON BUTTONS
+// ═══════════════════════════════════════════════════════════
+document.querySelectorAll('.btn, .hamburger').forEach(btn => {
+  btn.classList.add('magnetic-hover');
+  btn.addEventListener('mousemove', e => {
+    const rect = btn.getBoundingClientRect();
+    const cx = rect.left + rect.width / 2;
+    const cy = rect.top + rect.height / 2;
+    const dx = (e.clientX - cx) * 0.15;
+    const dy = (e.clientY - cy) * 0.15;
+    btn.style.transform = `translate(${dx}px, ${dy}px)`;
+  });
+  btn.addEventListener('mouseleave', () => {
+    btn.style.transform = '';
+  });
+});
+
+// ═══════════════════════════════════════════════════════════
+// MANAGER CHIP STAGGER INDEX
+// ═══════════════════════════════════════════════════════════
+document.querySelectorAll('.managers-wrap .mgr-chip').forEach((chip, i) => {
+  chip.style.setProperty('--i', i);
+});
+
+// ═══════════════════════════════════════════════════════════
+// ENHANCED COPY BUTTON FEEDBACK
+// ═══════════════════════════════════════════════════════════
+// Enhance the existing copyCode function with visual feedback
+const _origCopyCode = window.copyCode;
+window.copyCode = function(btn) {
+  btn.classList.add('copied');
+  setTimeout(() => btn.classList.remove('copied'), 2000);
+  _origCopyCode(btn);
+};
+
+// ═══════════════════════════════════════════════════════════
+// PARALLAX SCROLLING ON HERO
+// ═══════════════════════════════════════════════════════════
+const heroEl = document.querySelector('.hero');
+const heroTitle = document.querySelector('.hero h1');
+const heroSub = document.querySelector('.hero-sub');
+const heroTerminal = document.querySelector('.hero-terminal');
+
+let ticking = false;
+window.addEventListener('scroll', () => {
+  if (!ticking) {
+    requestAnimationFrame(() => {
+      const scrollY = window.scrollY;
+      const heroH = heroEl ? heroEl.offsetHeight : 800;
+      if (scrollY < heroH) {
+        const ratio = scrollY / heroH;
+        if (heroTitle) heroTitle.style.transform = `translateY(${scrollY * 0.25}px) scale(${1 - ratio * 0.05})`;
+        if (heroSub) heroSub.style.transform = `translateY(${scrollY * 0.15}px)`;
+        if (heroTerminal) heroTerminal.style.transform = `translateY(${scrollY * -0.08}px)`;
+        if (heroEl) heroEl.style.opacity = 1 - ratio * 0.5;
+      }
+      ticking = false;
+    });
+    ticking = true;
+  }
+}, { passive: true });
+
+// ═══════════════════════════════════════════════════════════
+// SCROLL-VELOCITY PARTICLE BURST
+// ═══════════════════════════════════════════════════════════
+let lastScroll = 0;
+let scrollVelocity = 0;
+window.addEventListener('scroll', () => {
+  scrollVelocity = Math.abs(window.scrollY - lastScroll);
+  lastScroll = window.scrollY;
+  
+  if (scrollVelocity > 40 && Math.random() > 0.6) {
+    const burst = document.createElement('div');
+    burst.className = 'particle';
+    const size = Math.random() * 4 + 2;
+    const color = particleColors[Math.floor(Math.random() * particleColors.length)];
+    burst.style.cssText = `
+      width:${size}px; height:${size}px;
+      background:${color};
+      left:${Math.random() * 100}vw;
+      top:${window.scrollY + Math.random() * window.innerHeight}px;
+      position:absolute;
+      --drift:${(Math.random() - 0.5) * 300}px;
+      animation-duration:${Math.random() * 3 + 2}s;
+      box-shadow: 0 0 ${size * 4}px ${color};
+    `;
+    document.body.appendChild(burst);
+    setTimeout(() => burst.remove(), 5000);
+  }
+}, { passive: true });
+
+// ═══════════════════════════════════════════════════════════
+// SMOOTH SECTION ENTRANCE STAGGER
+// ═══════════════════════════════════════════════════════════
+document.querySelectorAll('.features-grid .feature-card').forEach((card, i) => {
+  card.style.transitionDelay = `${i * 0.06}s`;
+});
+document.querySelectorAll('.categories-grid .category-card').forEach((card, i) => {
+  card.style.transitionDelay = `${i * 0.08}s`;
+});
+document.querySelectorAll('.stats-ribbon .stat-card').forEach((card, i) => {
+  card.style.transitionDelay = `${i * 0.1}s`;
+});
+
+// ═══════════════════════════════════════════════════════════
+// DETAILS MODAL DATABASE
+// ═══════════════════════════════════════════════════════════
+const ITEM_DETAILS = {
+  // Tools
+  "git": {
+    name: "Git",
+    badge: "Version Control",
+    desc: "A fast, distributed version control system designed to handle everything from small to very large projects with speed and efficiency.",
+    type: "Dev / Version Control",
+    cmd: "project install git",
+    codeTitle: "sample execution",
+    codeContent: "git clone https://github.com/Thaton3gu7/ProjectR.git"
+  },
+  "neovim": {
+    name: "Neovim",
+    badge: "Text Editor",
+    desc: "Vim-fork focused on extensibility and usability. It provides a powerful API, Lua scripting, and a rich ecosystem of modern plugins.",
+    type: "Dev / Text Editors",
+    cmd: "project install neovim",
+    codeTitle: "sample execution",
+    codeContent: "nvim init.lua"
+  },
+  "tmux": {
+    name: "Tmux",
+    badge: "Terminal Multiplexer",
+    desc: "A terminal multiplexer that lets you switch easily between several programs in one terminal, detach them, and reattach them later.",
+    type: "Dev / Terminal Tools",
+    cmd: "project install tmux",
+    codeTitle: "sample execution",
+    codeContent: "tmux new -s dev"
+  },
+  "fzf": {
+    name: "fzf",
+    badge: "Fuzzy Finder",
+    desc: "An interactive command-line fuzzy finder for your terminal. Easily filter files, command history, git commits, processes, and more.",
+    type: "Dev / Search Tools",
+    cmd: "project install fzf",
+    codeTitle: "sample execution",
+    codeContent: "find . -type f | fzf"
+  },
+  "lazygit": {
+    name: "Lazygit",
+    badge: "Git Terminal UI",
+    desc: "A simple terminal UI for git commands, written in Go. Makes branching, staging, and cherry-picking simple and visual.",
+    type: "Dev / Git Tools",
+    cmd: "project install lazygit",
+    codeTitle: "sample execution",
+    codeContent: "lazygit"
+  },
+  "ripgrep": {
+    name: "ripgrep",
+    badge: "Search Utility",
+    desc: "A line-oriented search tool that recursively searches the current directory for a regex pattern, respecting gitignore and hidden files.",
+    type: "Dev / Search Tools",
+    cmd: "project install ripgrep",
+    codeTitle: "sample execution",
+    codeContent: "rg --type rust \"fn main\""
+  },
+  "node.js": {
+    name: "Node.js",
+    badge: "JS Runtime",
+    desc: "An open-source, cross-platform JavaScript runtime environment that executes JavaScript code outside a web browser.",
+    type: "Dev / Programming Languages",
+    cmd: "project install node",
+    codeTitle: "sample execution",
+    codeContent: "node -e 'console.log(\"Hello from Node.js!\")'"
+  },
+  "go": {
+    name: "Go",
+    badge: "Compiler / Language",
+    desc: "Google's open-source programming language designed for compiling simple, secure, scalable, and highly concurrent software.",
+    type: "Dev / Programming Languages",
+    cmd: "project install go",
+    codeTitle: "sample execution",
+    codeContent: "go run main.go"
+  },
+  "rust": {
+    name: "Rust",
+    badge: "Compiler / Language",
+    desc: "A systems programming language that empowers everyone to build reliable and efficient software with guaranteed memory safety.",
+    type: "Dev / Programming Languages",
+    cmd: "project install rust",
+    codeTitle: "sample execution",
+    codeContent: "cargo new hello_world && cd hello_world && cargo run"
+  },
+  "gcc": {
+    name: "GCC",
+    badge: "Compiler Collection",
+    desc: "GNU Compiler Collection. Includes industry-standard compilation frontends for C, C++, Objective-C, Fortran, Ada, Go, and D.",
+    type: "Dev / Compilers",
+    cmd: "project install gcc",
+    codeTitle: "sample execution",
+    codeContent: "gcc -O3 main.c -o program"
+  },
+  "gdb": {
+    name: "GDB",
+    badge: "Binary Debugger",
+    desc: "The GNU Project Debugger. Allows you to see what is going on inside a compiled program while it executes or inspect crash logs.",
+    type: "Dev / Debuggers",
+    cmd: "project install gdb",
+    codeTitle: "sample execution",
+    codeContent: "gdb --args ./program arg1 arg2"
+  },
+  "shellcheck": {
+    name: "ShellCheck",
+    badge: "Static Linter",
+    desc: "A static analysis tool for shell scripts. Gives warning messages and actionable optimization suggestions for bash/sh shell scripts.",
+    type: "Dev / Linters",
+    cmd: "project install shellcheck",
+    codeTitle: "sample execution",
+    codeContent: "shellcheck setup.sh"
+  },
+  "code-server": {
+    name: "code-server",
+    badge: "Web IDE",
+    desc: "Run VS Code on any machine and access it securely via a browser. Ideal for working on high-performance remote cloud servers.",
+    type: "Dev / Editors",
+    cmd: "project install code-server",
+    codeTitle: "sample execution",
+    codeContent: "code-server --bind-addr 127.0.0.1:8080"
+  },
+  "curl": {
+    name: "curl",
+    badge: "Data Transfer",
+    desc: "A command-line tool and library for transferring data with URLs. Supports HTTP, HTTPS, FTP, SFTP, and many other protocols.",
+    type: "Essentials / Network",
+    cmd: "project install curl",
+    codeTitle: "sample execution",
+    codeContent: "curl -fsSL https://icanhazip.com"
+  },
+  "wget": {
+    name: "Wget",
+    badge: "Downloader",
+    desc: "A network utility for retrieving files using HTTP, HTTPS, FTP and FTPS. Supports recursive downloads, retries, and resume options.",
+    type: "Essentials / Network",
+    cmd: "project install wget",
+    codeTitle: "sample execution",
+    codeContent: "wget -c http://speedtest.tele2.net/100MB.zip"
+  },
+  "htop": {
+    name: "htop",
+    badge: "Process Monitor",
+    desc: "An interactive system-monitor process-viewer and process-manager, designed as a beautiful modern alternative to the standard top.",
+    type: "Essentials / System Monitors",
+    cmd: "project install htop",
+    codeTitle: "sample execution",
+    codeContent: "htop"
+  },
+  "python": {
+    name: "Python",
+    badge: "Interpreter / Language",
+    desc: "An interpreted high-level general-purpose programming language. Emphasizes readability, portability, and robust package ecosystem.",
+    type: "Essentials / Programming Languages",
+    cmd: "project install python",
+    codeTitle: "sample execution",
+    codeContent: "python3 -c \"import sys; print(sys.version)\""
+  },
+  "nano": {
+    name: "Nano",
+    badge: "Text Editor",
+    desc: "GNU nano is a simple, modeless command-line text editor designed to be user-friendly and straightforward for config file edits.",
+    type: "Essentials / Text Editors",
+    cmd: "project install nano",
+    codeTitle: "sample execution",
+    codeContent: "nano ~/.bashrc"
+  },
+  "bat": {
+    name: "bat",
+    badge: "Cat Replacement",
+    desc: "A cat clone with syntax highlighting for a large number of programming and markup languages, git integration, and page layout.",
+    type: "Essentials / File Utilities",
+    cmd: "project install bat",
+    codeTitle: "sample execution",
+    codeContent: "bat --style=header,numbers src/main.rs"
+  },
+  "duf": {
+    name: "duf",
+    badge: "Disk Analyzer",
+    desc: "Disk Usage/Free Utility. A user-friendly and modern alternative to df with colorized charts, device sorting, and JSON export.",
+    type: "Essentials / System Utilities",
+    cmd: "project install duf",
+    codeTitle: "sample execution",
+    codeContent: "duf"
+  },
+  "lsd": {
+    name: "lsd",
+    badge: "LS Replacement",
+    desc: "A modern replacement for ls, written in Rust, with support for color themes, Nerd Font icons, tree layouts, and customization.",
+    type: "Essentials / Directory Utilities",
+    cmd: "project install lsd",
+    codeTitle: "sample execution",
+    codeContent: "lsd -la --tree --depth 2"
+  },
+  "eza": {
+    name: "eza",
+    badge: "LS Replacement",
+    desc: "A modern, maintained replacement for ls, built on top of the original exa codebase. Features git integration and directory trees.",
+    type: "Essentials / Directory Utilities",
+    cmd: "project install eza",
+    codeTitle: "sample execution",
+    codeContent: "eza -la --git --header"
+  },
+  "neofetch": {
+    name: "Neofetch",
+    badge: "System Info",
+    desc: "A command-line system information tool written in bash. It displays info about your operating system, software and hardware specs.",
+    type: "Essentials / System Utilities",
+    cmd: "project install neofetch",
+    codeTitle: "sample execution",
+    codeContent: "neofetch"
+  },
+  "broot": {
+    name: "broot",
+    badge: "Directory Navigator",
+    desc: "A new way to see and navigate directory trees, find files, and launch commands quickly from the terminal. Replaces deep cd/find.",
+    type: "Essentials / Directory Utilities",
+    cmd: "project install broot",
+    codeTitle: "sample execution",
+    codeContent: "broot"
+  },
+  "sl": {
+    name: "sl",
+    badge: "Joke Animation",
+    desc: "Steam Locomotive. A joke command that runs a train animation across your terminal screen when you accidentally type sl instead of ls.",
+    type: "Fun / Entertainment",
+    cmd: "project install sl",
+    codeTitle: "sample execution",
+    codeContent: "sl"
+  },
+  "cbonsai": {
+    name: "cbonsai",
+    badge: "Art / Screensaver",
+    desc: "A bonsai tree generator in your terminal, written in C using ncurses. It grows a beautiful digital tree step-by-step.",
+    type: "Fun / Art",
+    cmd: "project install cbonsai",
+    codeTitle: "sample execution",
+    codeContent: "cbonsai -l -m \"Welcome to ProjectR\""
+  },
+  "cmatrix": {
+    name: "cmatrix",
+    badge: "Screensaver",
+    desc: "A terminal screensaver displaying the digital rain falling down the terminal, inspired by the code stream in The Matrix.",
+    type: "Fun / Screensaver",
+    cmd: "project install cmatrix",
+    codeTitle: "sample execution",
+    codeContent: "cmatrix -abC cyan"
+  },
+  "pipes.sh": {
+    name: "pipes.sh",
+    badge: "Screensaver",
+    desc: "Animated terminal screensaver depicting randomly growing pipes of different shapes and colors in text mode.",
+    type: "Fun / Screensaver",
+    cmd: "project install pipes",
+    codeTitle: "sample execution",
+    codeContent: "pipes.sh -t 2 -c 5"
+  },
+  "cowsay": {
+    name: "cowsay",
+    badge: "Joke Utility",
+    desc: "Generates ASCII pictures of a thinking or speaking cow with text in a bubble. Custom characters like tux can be passed.",
+    type: "Fun / Entertainment",
+    cmd: "project install cowsay",
+    codeTitle: "sample execution",
+    codeContent: "cowsay -f tux \"Terminal customization rocks!\""
+  },
+  "figlet": {
+    name: "FIGlet",
+    badge: "Text Banner Generator",
+    desc: "A program that creates large letters out of ordinary screen characters, commonly used for writing banner text.",
+    type: "Fun / Utility",
+    cmd: "project install figlet",
+    codeTitle: "sample execution",
+    codeContent: "figlet -f slant \"TERMINAL\""
+  },
+  "lolcat": {
+    name: "lolcat",
+    badge: "Color Utility",
+    desc: "A tool that concatenates files or standard input, applying rainbow-colored gradients to the text output in real-time.",
+    type: "Fun / Utility",
+    cmd: "project install lolcat",
+    codeTitle: "sample execution",
+    codeContent: "neofetch | lolcat"
+  },
+  "nyancat": {
+    name: "nyancat",
+    badge: "Animation",
+    desc: "An ANSI text nyan cat animation with music (if supported) and timer, bringing a colorful pixelated cat to your shell.",
+    type: "Fun / Entertainment",
+    cmd: "project install nyancat",
+    codeTitle: "sample execution",
+    codeContent: "nyancat"
+  },
+  "2048": {
+    name: "2048",
+    badge: "Console Game",
+    desc: "Terminal edition of the sliding tile puzzle game 2048. Play directly within your console windows using arrow keys.",
+    type: "Fun / Games",
+    cmd: "project install 2048",
+    codeTitle: "sample execution",
+    codeContent: "2048"
+  },
+  "asciiquarium": {
+    name: "Asciiquarium",
+    badge: "Screensaver",
+    desc: "A complete digital aquarium screensaver rendered in your terminal using ASCII art, featuring fish, sharks, and bubbles.",
+    type: "Fun / Screensaver",
+    cmd: "project install asciiquarium",
+    codeTitle: "sample execution",
+    codeContent: "asciiquarium"
+  },
+  "nmap": {
+    name: "Nmap",
+    badge: "Port Scanner",
+    desc: "Network Mapper. A free and open-source utility for network discovery, security auditing, and port vulnerability checks.",
+    type: "Security / Scanner",
+    cmd: "project install nmap",
+    codeTitle: "sample execution",
+    codeContent: "nmap -A -v scanme.nmap.org"
+  },
+  "hydra": {
+    name: "Hydra",
+    badge: "Login Cracker",
+    desc: "A parallelized login cracker that supports numerous protocols to attack. It is very fast and flexible for password auditing.",
+    type: "Security / Cracker",
+    cmd: "project install hydra",
+    codeTitle: "sample execution",
+    codeContent: "hydra -l admin -P wordlist.txt localhost ssh"
+  },
+  "sqlmap": {
+    name: "sqlmap",
+    badge: "SQL Exploiter",
+    desc: "An open-source penetration testing tool that automates the process of detecting and exploiting SQL injection flaws.",
+    type: "Security / Exploitation",
+    cmd: "project install sqlmap",
+    codeTitle: "sample execution",
+    codeContent: "sqlmap -u \"http://testphp.vulnweb.com/listproducts.php?cat=1\" --dbs"
+  },
+  "nikto": {
+    name: "Nikto",
+    badge: "Web Scanner",
+    desc: "A web server scanner that performs comprehensive tests against web servers for multiple items, dangerous files, and outdated software.",
+    type: "Security / Web Scanners",
+    cmd: "project install nikto",
+    codeTitle: "sample execution",
+    codeContent: "nikto -h http://127.0.0.1/"
+  },
+  "john": {
+    name: "John the Ripper",
+    badge: "Hash Cracker",
+    desc: "A fast password cracker, currently available for many flavors of Unix, Windows, DOS, and OpenVMS. Detects weak encryption.",
+    type: "Security / Password Auditing",
+    cmd: "project install john",
+    codeTitle: "sample execution",
+    codeContent: "john --format=sha256 hash.txt"
+  },
+  "hashcat": {
+    name: "Hashcat",
+    badge: "GPU Hash Cracker",
+    desc: "The world's fastest and most advanced password recovery utility, leveraging GPU processing power to crack cryptographic hashes.",
+    type: "Security / Password Auditing",
+    cmd: "project install hashcat",
+    codeTitle: "sample execution",
+    codeContent: "hashcat -b -m 1000"
+  },
+  "gobuster": {
+    name: "Gobuster",
+    badge: "Directory Buster",
+    desc: "A tool used to brute-force URIs (directories and files) in web sites, DNS subdomains, Virtual Host names, and wildcards.",
+    type: "Security / Web Scanners",
+    cmd: "project install gobuster",
+    codeTitle: "sample execution",
+    codeContent: "gobuster dir -u http://127.0.0.1/ -w wordlist.txt"
+  },
+  "ffuf": {
+    name: "ffuf",
+    badge: "Web Fuzzer",
+    desc: "Fast web fuzzer written in Go. Ideal for fuzzing web applications, URL parameters, directory paths, and custom HTTP headers.",
+    type: "Security / Web Scanners",
+    cmd: "project install ffuf",
+    codeTitle: "sample execution",
+    codeContent: "ffuf -u http://127.0.0.1/FUZZ -w wordlist.txt -mc 200,301"
+  },
+  "lynis": {
+    name: "Lynis",
+    badge: "Security Auditor",
+    desc: "A security auditing tool for systems running Unix-based operating systems. It assists in system hardening and compliance checks.",
+    type: "Security / Audit Tools",
+    cmd: "project install lynis",
+    codeTitle: "sample execution",
+    codeContent: "lynis audit system"
+  },
+  "holehe": {
+    name: "holehe",
+    badge: "Email OSINT",
+    desc: "OSINT tool that checks if an email is used on 120+ sites. It allows checking site registrations without sending recovery emails.",
+    type: "OSINT / Intelligence Gathering",
+    cmd: "project install holehe",
+    codeTitle: "sample execution",
+    codeContent: "holehe test@gmail.com"
+  },
+  "sherlock": {
+    name: "Sherlock",
+    badge: "Username OSINT",
+    desc: "Hunt down social media accounts by username across 300+ major social networks and sites simultaneously.",
+    type: "OSINT / Intelligence Gathering",
+    cmd: "project install sherlock",
+    codeTitle: "sample execution",
+    codeContent: "sherlock john_doe"
+  },
+  "maigret": {
+    name: "maigret",
+    badge: "Username OSINT",
+    desc: "Advanced username search tool that builds a dossier of accounts, gathers email/phone metadata, and aggregates profile data.",
+    type: "OSINT / Intelligence Gathering",
+    cmd: "project install maigret",
+    codeTitle: "sample execution",
+    codeContent: "maigret john_doe"
+  },
+  "amass": {
+    name: "Amass",
+    badge: "Attack Surface OSINT",
+    desc: "OWASP Amass project. In-depth attack surface mapping and external asset discovery using active and passive information gathering.",
+    type: "OSINT / Intelligence Gathering",
+    cmd: "project install amass",
+    codeTitle: "sample execution",
+    codeContent: "amass enum -d example.com"
+  },
+  "theharvester": {
+    name: "theHarvester",
+    badge: "Info Harvester",
+    desc: "Tool for gathering emails, subdomains, hosts, employee names, open ports and banners from different public sources.",
+    type: "OSINT / Intelligence Gathering",
+    cmd: "project install theharvester",
+    codeTitle: "sample execution",
+    codeContent: "theHarvester -d example.com -l 500 -b google"
+  },
+  "subfinder": {
+    name: "subfinder",
+    badge: "Subdomain Finder",
+    desc: "A fast subdomain discovery tool that searches passive online sources to discover valid subdomains of websites.",
+    type: "OSINT / Intelligence Gathering",
+    cmd: "project install subfinder",
+    codeTitle: "sample execution",
+    codeContent: "subfinder -d example.com -o subdomains.txt"
+  },
+  "exiftool": {
+    name: "ExifTool",
+    badge: "Metadata Editor",
+    desc: "Read, write, and edit meta information (EXIF, IPTC, XMP) in a wide variety of files, particularly images and videos.",
+    type: "OSINT / File Analysis",
+    cmd: "project install exiftool",
+    codeTitle: "sample execution",
+    codeContent: "exiftool -all= photo.jpg"
+  },
+  "docker": {
+    name: "Docker",
+    badge: "Container Engine",
+    desc: "Package and run applications inside lightweight, isolated, and portable container environments with virtual networking.",
+    type: "Cloud / Containers",
+    cmd: "project install docker",
+    codeTitle: "sample execution",
+    codeContent: "docker build -t my-app . && docker run -p 80:80 my-app"
+  },
+  "podman": {
+    name: "Podman",
+    badge: "Container Engine",
+    desc: "A daemonless, open-source container engine designed to make it easy to find, run, build, and share containers securely without root.",
+    type: "Cloud / Containers",
+    cmd: "project install podman",
+    codeTitle: "sample execution",
+    codeContent: "podman run --name web -p 8080:80 -d nginx"
+  },
+  "kubectl": {
+    name: "kubectl",
+    badge: "K8s Controller",
+    desc: "The Kubernetes command-line tool, allowing you to run commands against Kubernetes clusters to inspect and manage workloads.",
+    type: "Cloud / Containers",
+    cmd: "project install kubectl",
+    codeTitle: "sample execution",
+    codeContent: "kubectl describe node minikube"
+  },
+  "helm": {
+    name: "Helm",
+    badge: "K8s Package Manager",
+    desc: "The package manager for Kubernetes. Helps you define, install, and upgrade even the most complex Kubernetes applications.",
+    type: "Cloud / Containers",
+    cmd: "project install helm",
+    codeTitle: "sample execution",
+    codeContent: "helm repo add bitnami https://charts.bitnami.com/bitnami"
+  },
+  "k9s": {
+    name: "K9s",
+    badge: "K8s Terminal UI",
+    desc: "A terminal-based UI to interact with your Kubernetes clusters. It makes it easier to navigate, observe, and manage workloads.",
+    type: "Cloud / Containers",
+    cmd: "project install k9s",
+    codeTitle: "sample execution",
+    codeContent: "k9s"
+  },
+  "terraform": {
+    name: "Terraform",
+    badge: "Infrastructure-as-Code",
+    desc: "An open-source infrastructure as code software tool that enables developers to build, change, and version cloud infrastructure safely.",
+    type: "Cloud / DevOps",
+    cmd: "project install terraform",
+    codeTitle: "sample execution",
+    codeContent: "terraform plan -out=tfplan"
+  },
+  "ansible": {
+    name: "Ansible",
+    badge: "Automation Engine",
+    desc: "An IT automation tool. It can configure systems, deploy software, and orchestrate more advanced IT tasks.",
+    type: "Cloud / DevOps",
+    cmd: "project install ansible",
+    codeTitle: "sample execution",
+    codeContent: "ansible all -m ping"
+  },
+  "aws cli": {
+    name: "AWS CLI",
+    badge: "Cloud Interface",
+    desc: "Unified tool to manage your Amazon Web Services from the terminal, enabling shell scripts to automate AWS services.",
+    type: "Cloud / DevOps",
+    cmd: "project install awscli",
+    codeTitle: "sample execution",
+    codeContent: "aws ec2 describe-instances --output table"
+  },
+  "postgresql": {
+    name: "PostgreSQL",
+    badge: "SQL Database",
+    desc: "A powerful, open-source object-relational database system with over 30 years of active development and proven reliability.",
+    type: "Database / Engines",
+    cmd: "project install postgresql",
+    codeTitle: "sample execution",
+    codeContent: "sudo -u postgres psql -c \"CREATE DATABASE dev;\""
+  },
+  "mysql": {
+    name: "MySQL",
+    badge: "SQL Database",
+    desc: "The world's most popular open-source relational database management system, powering millions of web applications and services.",
+    type: "Database / Engines",
+    cmd: "project install mysql",
+    codeTitle: "sample execution",
+    codeContent: "mysql -u root -e \"SHOW DATABASES;\""
+  },
+  "sqlite": {
+    name: "SQLite",
+    badge: "Embedded SQL Database",
+    desc: "A C-language library that implements a small, fast, self-contained, high-reliability, full-featured, SQL database engine.",
+    type: "Database / Engines",
+    cmd: "project install sqlite",
+    codeTitle: "sample execution",
+    codeContent: "sqlite3 database.db \".tables\""
+  },
+  "redis": {
+    name: "Redis",
+    badge: "In-Memory DB",
+    desc: "An open-source, in-memory data structure store used as a database, cache, message broker, and streaming engine.",
+    type: "Database / Key-Value Stores",
+    cmd: "project install redis",
+    codeTitle: "sample execution",
+    codeContent: "redis-cli set mykey \"Hello Redis\" && redis-cli get mykey"
+  },
+  "duckdb": {
+    name: "DuckDB",
+    badge: "Analytical DB",
+    desc: "An embedded, column-store SQL database management system designed for fast analytical queries and data science workloads.",
+    type: "Database / Engines",
+    cmd: "project install duckdb",
+    codeTitle: "sample execution",
+    codeContent: "duckdb -c \"SELECT * FROM read_csv_auto('data.csv') LIMIT 5;\""
+  },
+  "pgcli": {
+    name: "pgcli",
+    badge: "PostgreSQL Client",
+    desc: "A command-line interface for Postgres with auto-completion and syntax highlighting, built on top of prompt_toolkit.",
+    type: "Database / SQL Clients",
+    cmd: "project install pgcli",
+    codeTitle: "sample execution",
+    codeContent: "pgcli postgresql://localhost/mydb"
+  },
+  "mycli": {
+    name: "mycli",
+    badge: "MySQL Client",
+    desc: "A terminal client for MySQL, MariaDB, and Percona with auto-completion and syntax highlighting.",
+    type: "Database / SQL Clients",
+    cmd: "project install mycli",
+    codeTitle: "sample execution",
+    codeContent: "mycli -h localhost -u root"
+  },
+  "httpie": {
+    name: "HTTPie",
+    badge: "CLI HTTP Client",
+    desc: "A command-line HTTP client. Its goal is to make CLI interaction with web services as human-friendly as possible.",
+    type: "Web / Networking",
+    cmd: "project install httpie",
+    codeTitle: "sample execution",
+    codeContent: "http POST httpbin.org/post name=John email=john@doe.com"
+  },
+  "aria2": {
+    name: "aria2",
+    badge: "Download Utility",
+    desc: "A lightweight multi-protocol & multi-source command-line download utility. It supports HTTP/HTTPS, FTP, SFTP, BitTorrent and Metalink.",
+    type: "Web / Networking",
+    cmd: "project install aria2",
+    codeTitle: "sample execution",
+    codeContent: "aria2c -s 16 -x 16 magnet:?xt=urn:btih:..."
+  },
+  "mosh": {
+    name: "Mosh",
+    badge: "Mobile Shell",
+    desc: "Mobile Shell. A remote terminal application that allows roaming, supports intermittent connectivity, and provides intelligent local echo.",
+    type: "Web / Networking",
+    cmd: "project install mosh",
+    codeTitle: "sample execution",
+    codeContent: "mosh --ssh=\"ssh -p 2222\" user@domain.com"
+  },
+  "socat": {
+    name: "socat",
+    badge: "Data Relay",
+    desc: "Multipurpose relay tool (SOcket CAT). Establishes two bidirectional byte streams and transfers data between them.",
+    type: "Web / Networking",
+    cmd: "project install socat",
+    codeTitle: "sample execution",
+    codeContent: "socat -d -d - TCP4-LISTEN:80,fork TCP4:192.168.1.10:80"
+  },
+  "lynx": {
+    name: "Lynx",
+    badge: "Text Web Browser",
+    desc: "A highly configurable text-only web browser for use on cursor-addressable character cell terminals.",
+    type: "Web / Networking",
+    cmd: "project install lynx",
+    codeTitle: "sample execution",
+    codeContent: "lynx -dump https://google.com"
+  },
+  "tcpdump": {
+    name: "tcpdump",
+    badge: "Packet Analyzer",
+    desc: "A powerful command-line packet analyzer and network sniffer. It allows you to intercept and display TCP/IP packets.",
+    type: "Web / Networking",
+    cmd: "project install tcpdump",
+    codeTitle: "sample execution",
+    codeContent: "sudo tcpdump -i wlan0 port 80 -X"
+  },
+  "weechat": {
+    name: "WeeChat",
+    badge: "Terminal Chat Client",
+    desc: "A fast, light and extensible chat client. It is multi-protocol (IRC, Matrix, Slack), fully customizable and extensible with scripts.",
+    type: "Web / Networking",
+    cmd: "project install weechat",
+    codeTitle: "sample execution",
+    codeContent: "weechat"
+  },
+  "jq": {
+    name: "jq",
+    badge: "JSON Parser",
+    desc: "A lightweight and flexible command-line JSON processor. It is like sed/awk but specifically designed for structured JSON data.",
+    type: "Data / Parsing Tools",
+    cmd: "project install jq",
+    codeTitle: "sample execution",
+    codeContent: "echo '{\"name\":\"ProjectR\",\"version\":\"1.0\"}' | jq '.version'"
+  },
+  "yq": {
+    name: "yq",
+    badge: "YAML/JSON Parser",
+    desc: "A portable command-line YAML, JSON, XML, CSV, TOML and properties processor. It wraps jq and extends it to other formats.",
+    type: "Data / Parsing Tools",
+    cmd: "project install yq",
+    codeTitle: "sample execution",
+    codeContent: "yq eval '.database.port' config.yml"
+  },
+  "pandoc": {
+    name: "Pandoc",
+    badge: "Markup Converter",
+    desc: "The universal markup converter. Translates markup files between dozens of formats, including Markdown, HTML, LaTeX, PDF.",
+    type: "Data / Format Converters",
+    cmd: "project install pandoc",
+    codeTitle: "sample execution",
+    codeContent: "pandoc README.md -f markdown -t html -o index.html"
+  },
+  "hugo": {
+    name: "Hugo",
+    badge: "Static Site Generator",
+    desc: "The world's fastest framework for building websites. Written in Go, it compiles complex blogs and docs in milliseconds.",
+    type: "Data / Document Generators",
+    cmd: "project install hugo",
+    codeTitle: "sample execution",
+    codeContent: "hugo --minify"
+  },
+  "mkdocs": {
+    name: "MkDocs",
+    badge: "Documentation Generator",
+    desc: "A fast, simple and downright gorgeous static site generator geared towards building project documentation in Markdown.",
+    type: "Data / Document Generators",
+    cmd: "project install mkdocs",
+    codeTitle: "sample execution",
+    codeContent: "mkdocs build"
+  },
+  "glow": {
+    name: "Glow",
+    badge: "Markdown Reader",
+    desc: "A terminal-based markdown reader, rendering markdown files beautifully in your console with custom color styling.",
+    type: "Data / File Readers",
+    cmd: "project install glow",
+    codeTitle: "sample execution",
+    codeContent: "glow -p README.md"
+  },
+  "visidata": {
+    name: "VisiData",
+    badge: "Terminal Spreadsheet",
+    desc: "An interactive terminal tool for exploring, cleaning, and analyzing tabular data. Integrates with CSV, Excel, JSON, and SQLite.",
+    type: "Data / Spreadsheets",
+    cmd: "project install visidata",
+    codeTitle: "sample execution",
+    codeContent: "vd sales.csv"
+  },
+  "ollama": {
+    name: "Ollama",
+    badge: "Local AI Engine",
+    desc: "Run large language models (LLMs) locally on your system. Supports Llama 3, Mistral, Gemma, and other open-source models.",
+    type: "AI / Engines",
+    cmd: "project install ollama",
+    codeTitle: "sample execution",
+    codeContent: "ollama run llama3:8b \"Explain quantum computing in one sentence\""
+  },
+  "mods": {
+    name: "Mods",
+    badge: "AI Shell Pipeline",
+    desc: "A tool that brings LLMs into the terminal, designed to work seamlessly with pipes, redirects, and command-line automation.",
+    type: "AI / Pipelines",
+    cmd: "project install mods",
+    codeTitle: "sample execution",
+    codeContent: "git diff | mods \"Write a git commit message for this diff\""
+  },
+  "aichat": {
+    name: "AIChat",
+    badge: "AI Chat CLI",
+    desc: "An all-in-one CLI tool to chat with various AI models (OpenAI, Claude, Gemini, Local) with history and role-play capabilities.",
+    type: "AI / Chat Clients",
+    cmd: "project install aichat",
+    codeTitle: "sample execution",
+    codeContent: "aichat --role coder \"Write a quicksort in Rust\""
+  },
+  "tgpt": {
+    name: "tgpt",
+    badge: "Free AI Terminal",
+    desc: "Terminal GPT. Access ChatGPT-like models directly in your shell without configuring any API keys or logging in.",
+    type: "AI / Chat Clients",
+    cmd: "project install tgpt",
+    codeTitle: "sample execution",
+    codeContent: "tgpt \"Show me how to use tar command\""
+  },
+  "fabric": {
+    name: "Fabric",
+    badge: "AI Workflow Engine",
+    desc: "An open-source framework for crowd-sourcing AI prompts (called patterns) to solve everyday life and work problems.",
+    type: "AI / Workflows",
+    cmd: "project install fabric",
+    codeTitle: "sample execution",
+    codeContent: "pbpaste | fabric --pattern summarize"
+  },
+  "+more": {
+    name: "+200 More Tools",
+    badge: "Extended Registry",
+    desc: "ProjectR features over 240+ specialized command-line tools. Use the search commands below to explore the full catalog!",
+    type: "Tool Registry",
+    cmd: "project --list tools",
+    codeTitle: "search command",
+    codeContent: "project --search git"
+  },
+
+  // Package Managers
+  "apt": {
+    name: "apt",
+    badge: "Package Manager",
+    desc: "Advanced Package Tool. Native package management system used by Debian, Ubuntu, and their derivatives to manage deb packages.",
+    type: "OS Package Manager (Debian/Ubuntu)",
+    cmd: "project --list=manager",
+    codeTitle: "typical usage",
+    codeContent: "sudo apt update && sudo apt install git"
+  },
+  "pacman": {
+    name: "pacman",
+    badge: "Package Manager",
+    desc: "The package manager utility for Arch Linux. Combines a simple binary package format with an easy-to-use build system.",
+    type: "OS Package Manager (Arch Linux)",
+    cmd: "project --list=manager",
+    codeTitle: "typical usage",
+    codeContent: "sudo pacman -Syu git"
+  },
+  "dnf / yum": {
+    name: "dnf / yum",
+    badge: "Package Manager",
+    desc: "Dandified YUM (DNF) and Yellowdog Updater Modified (YUM). Modern package management utilities for RPM-based Linux distributions.",
+    type: "OS Package Manager (RHEL/Fedora)",
+    cmd: "project --list=manager",
+    codeTitle: "typical usage",
+    codeContent: "sudo dnf install git"
+  },
+  "zypper": {
+    name: "zypper",
+    badge: "Package Manager",
+    desc: "Command-line interface of the ZYpp package manager engine, native to openSUSE and SUSE Linux Enterprise.",
+    type: "OS Package Manager (openSUSE)",
+    cmd: "project --list=manager",
+    codeTitle: "typical usage",
+    codeContent: "sudo zypper install git"
+  },
+  "apk": {
+    name: "apk",
+    badge: "Package Manager",
+    desc: "Alpine Package Keeper. Lightweight, extremely fast package manager designed for Alpine Linux container environments.",
+    type: "OS Package Manager (Alpine)",
+    cmd: "project --list=manager",
+    codeTitle: "typical usage",
+    codeContent: "apk add git"
+  },
+  "brew": {
+    name: "Homebrew (brew)",
+    badge: "Package Manager",
+    desc: "The missing package manager for macOS and Linux. Installs tools to your user home directory, keeping the system clean.",
+    type: "Cross-Platform Package Manager",
+    cmd: "project --list=manager",
+    codeTitle: "typical usage",
+    codeContent: "brew install git"
+  },
+  "pkg (termux)": {
+    name: "pkg (Termux)",
+    badge: "Package Manager",
+    desc: "Termux utility wrapper that automates apt commands on Android, resolving repositories, architectures, and updates.",
+    type: "OS Package Manager (Android/Termux)",
+    cmd: "project --list=manager",
+    codeTitle: "typical usage",
+    codeContent: "pkg install git"
+  },
+  "xbps": {
+    name: "xbps",
+    badge: "Package Manager",
+    desc: "The Void Packages Collection. A fast, modular, and natively designed package manager written in C from scratch.",
+    type: "OS Package Manager (Void Linux)",
+    cmd: "project --list=manager",
+    codeTitle: "typical usage",
+    codeContent: "sudo xbps-install -S git"
+  },
+  "emerge": {
+    name: "emerge",
+    badge: "Source Package Manager",
+    desc: "The primary tool in the Portage software management system of Gentoo Linux, compiling applications directly from source code.",
+    type: "OS Package Manager (Gentoo)",
+    cmd: "project --list=manager",
+    codeTitle: "typical usage",
+    codeContent: "sudo emerge --ask dev-vcs/git"
+  },
+  "nix": {
+    name: "Nix",
+    badge: "Package Manager",
+    desc: "A purely functional package manager that installs packages into isolated paths in the Nix store, allowing atomic rollbacks.",
+    type: "Declarative Package Manager",
+    cmd: "project --list=manager",
+    codeTitle: "typical usage",
+    codeContent: "nix-env -iA nixpkgs.git"
+  },
+  "guix": {
+    name: "Guix",
+    badge: "Package Manager",
+    desc: "GNU Guix package manager. Based on Nix, it allows declarative, transactional, and reproducible software environments using Guile Scheme.",
+    type: "Declarative Package Manager",
+    cmd: "project --list=manager",
+    codeTitle: "typical usage",
+    codeContent: "guix install git"
+  },
+  "snap": {
+    name: "snap",
+    badge: "Universal Package Manager",
+    desc: "Canonical's universal package manager. Delivers sandboxed desktop and server software packaged with all their dependencies.",
+    type: "Containerized Package Manager",
+    cmd: "project --list=manager",
+    codeTitle: "typical usage",
+    codeContent: "sudo snap install git"
+  },
+  "flatpak": {
+    name: "flatpak",
+    badge: "Package Distributor",
+    desc: "Desktop utility for software deployment, package management, and application virtualization on Linux systems.",
+    type: "Desktop Sandboxed Apps",
+    cmd: "project --list=manager",
+    codeTitle: "typical usage",
+    codeContent: "flatpak install flathub org.gimp.GIMP"
+  },
+  "winget": {
+    name: "winget",
+    badge: "Windows Package Manager",
+    desc: "Microsoft's official package manager for Windows 10 and 11, allowing command-line application lookup and installation.",
+    type: "Windows Package Manager",
+    cmd: "project --list=manager",
+    codeTitle: "typical usage",
+    codeContent: "winget install Git.Git"
+  },
+  "choco": {
+    name: "Chocolatey (choco)",
+    badge: "Windows Package Manager",
+    desc: "A software management automation and package manager for Windows that wraps installers and configures programs.",
+    type: "Windows Package Manager",
+    cmd: "project --list=manager",
+    codeTitle: "typical usage",
+    codeContent: "choco install git"
+  },
+  "scoop": {
+    name: "scoop",
+    badge: "Windows Installer",
+    desc: "Command-line installer for Windows. Installs developer tools in a clean, isolated user directory without elevation prompts.",
+    type: "Windows Command-line Installer",
+    cmd: "project --list=manager",
+    codeTitle: "typical usage",
+    codeContent: "scoop install git"
+  },
+  "pip / pip3": {
+    name: "pip / pip3",
+    badge: "Python Package Installer",
+    desc: "The standard package manager for Python. Downloads and installs packages from the official Python Package Index (PyPI).",
+    type: "Language Package Manager (Python)",
+    cmd: "project --list=manager",
+    codeTitle: "typical usage",
+    codeContent: "pip3 install requests"
+  },
+  "pipx": {
+    name: "pipx",
+    badge: "Python Application Runner",
+    desc: "Install and run Python CLI applications in isolated virtual environments, avoiding dependency conflicts with system tools.",
+    type: "Language Package Manager (Python)",
+    cmd: "project --list=manager",
+    codeTitle: "typical usage",
+    codeContent: "pipx install black"
+  },
+  "npm": {
+    name: "npm",
+    badge: "Node Package Manager",
+    desc: "Node Package Manager. The default registry and installer for Node.js runtime environment packages and libraries.",
+    type: "Language Package Manager (Node.js)",
+    cmd: "project --list=manager",
+    codeTitle: "typical usage",
+    codeContent: "npm install -g git-cz"
+  },
+  "yarn / pnpm": {
+    name: "yarn / pnpm",
+    badge: "Node Package Managers",
+    desc: "Alternative fast, secure, and disk-space-efficient package managers for the Node.js ecosystem, featuring lockfile guarantees.",
+    type: "Language Package Manager (Node.js)",
+    cmd: "project --list=manager",
+    codeTitle: "typical usage",
+    codeContent: "pnpm add -g nodemon"
+  },
+  "cargo": {
+    name: "cargo",
+    badge: "Rust Build System & PM",
+    desc: "Rust's official build system and package manager. Automatically compiles and registers packages from crates.io.",
+    type: "Language Package Manager (Rust)",
+    cmd: "project --list=manager",
+    codeTitle: "typical usage",
+    codeContent: "cargo install ripgrep"
+  },
+  "gem": {
+    name: "RubyGems (gem)",
+    badge: "Ruby Package Manager",
+    desc: "Package manager for the Ruby programming language, handling download, installation, and dependency resolution of gem libraries.",
+    type: "Language Package Manager (Ruby)",
+    cmd: "project --list=manager",
+    codeTitle: "typical usage",
+    codeContent: "gem install rails"
+  },
+  "go install": {
+    name: "go install",
+    badge: "Go Binary Installer",
+    desc: "Part of the Go toolchain. Compiles and installs Go binary programs directly from remote repositories to your $GOPATH/bin.",
+    type: "Language Package Installer (Go)",
+    cmd: "project --list=manager",
+    codeTitle: "typical usage",
+    codeContent: "go install github.com/go-delve/delve/cmd/dlv@latest"
+  },
+  "composer": {
+    name: "Composer",
+    badge: "PHP Dependency Manager",
+    desc: "A dependency management tool for PHP. Declares the libraries your PHP project depends on and manages them for you.",
+    type: "Language Package Manager (PHP)",
+    cmd: "project --list=manager",
+    codeTitle: "typical usage",
+    codeContent: "composer global require phpunit/phpunit"
+  },
+
+  // Tool Categories
+  "dev": {
+    name: "Development Tools",
+    badge: "Compiler, Editors & Tooling",
+    desc: "The core development suite of ProjectR. Includes editors like Neovim, terminal multiplexers like Tmux, modern runtimes, compilers, and debuggers to set up a full-featured coding workspace.",
+    type: "ProjectR Category / Dev",
+    cmd: "project --list categories",
+    codeTitle: "install category",
+    codeContent: "project install --category dev"
+  },
+  "essentials": {
+    name: "Essentials",
+    badge: "Core System Utilities",
+    desc: "Essential CLI tools for navigating files, monitoring resources, downloading content, and quick text editing. These form the backbone of any productive command-line environment.",
+    type: "ProjectR Category / Essentials",
+    cmd: "project --list categories",
+    codeTitle: "install category",
+    codeContent: "project install --category essentials"
+  },
+  "fun": {
+    name: "Fun & Games",
+    badge: "Animations & Terminal Pastimes",
+    desc: "Entertain yourself in the shell! A selection of classic ASCII games, screensavers, animations, and joke commands like sl, pipes.sh, and asciiquarium.",
+    type: "ProjectR Category / Fun",
+    cmd: "project --list categories",
+    codeTitle: "install category",
+    codeContent: "project install --category fun"
+  },
+  "security": {
+    name: "Security Auditing",
+    badge: "Network Scanners & Security Tools",
+    desc: "Utilities for network analysis, vulnerability scanning, password audits, and penetration testing. Perfect for verifying and hardening server security.",
+    type: "ProjectR Category / Security",
+    cmd: "project --list categories",
+    codeTitle: "install category",
+    codeContent: "project install --category security"
+  },
+  "osint": {
+    name: "Open Source Intelligence (OSINT)",
+    badge: "Information Gathering & Profiling",
+    desc: "Tools for gathering intelligence from public sources. Perform username profiling, email verification, and domain/metadata analysis.",
+    type: "ProjectR Category / OSINT",
+    cmd: "project --list categories",
+    codeTitle: "install category",
+    codeContent: "project install --category osint"
+  },
+  "cloud & containers": {
+    name: "Cloud & Containers",
+    badge: "Infrastructure & Orchestration",
+    desc: "Setup and manage cloud infrastructure, containers, and orchestration pipelines. Includes Docker, Podman, Kubernetes tools, Terraform, and cloud CLIs.",
+    type: "ProjectR Category / Cloud",
+    cmd: "project --list categories",
+    codeTitle: "install category",
+    codeContent: "project install --category cloud"
+  },
+  "database": {
+    name: "Databases",
+    badge: "Databases & SQL Query Clients",
+    desc: "Install lightweight local database engines, caching systems, or interactive terminal clients with syntax highlighting and auto-completion for SQL scripting.",
+    type: "ProjectR Category / Database",
+    cmd: "project --list categories",
+    codeTitle: "install category",
+    codeContent: "project install --category database"
+  },
+  "web & network": {
+    name: "Web & Network",
+    badge: "APIs, Texts Browsers & Networking",
+    desc: "Command-line browsers, chat clients, download accelerators, and remote shells designed to operate efficiently over ssh and high-latency connections.",
+    type: "ProjectR Category / Web",
+    cmd: "project --list categories",
+    codeTitle: "install category",
+    codeContent: "project install --category web"
+  },
+  "data & docs": {
+    name: "Data & Documentation",
+    badge: "Parsers, Readers & Static Generators",
+    desc: "Tools for parsing data formats like JSON/YAML, reading markdown in terminal, converting documents, or generating documentation pages and static blogs.",
+    type: "ProjectR Category / Data",
+    cmd: "project --list categories",
+    codeTitle: "install category",
+    codeContent: "project install --category data"
+  },
+  "ai": {
+    name: "Artificial Intelligence",
+    badge: "LLMs & AI Shell Integration",
+    desc: "Integrate artificial intelligence directly into your terminal. Run local models with Ollama, run terminal prompts, or pipe CLI outputs to AI assistants.",
+    type: "ProjectR Category / AI",
+    cmd: "project --list categories",
+    codeTitle: "install category",
+    codeContent: "project install --category ai"
+  }
+};
+
+// Modal DOM Elements
+const modal = document.getElementById('info-modal');
+const modalIcon = document.getElementById('modal-icon');
+const modalTitle = document.getElementById('modal-title');
+const modalBadge = document.getElementById('modal-badge');
+const modalDesc = document.getElementById('modal-desc');
+const modalMetaType = document.getElementById('modal-meta-type');
+const modalMetaCmd = document.getElementById('modal-meta-cmd');
+const modalCodeTitle = document.getElementById('modal-code-title');
+const modalCodeContent = document.getElementById('modal-code-content');
+
+function showItemDetail(key, defaultIcon = "💻") {
+  const normKey = key.toLowerCase().trim();
+  const details = ITEM_DETAILS[normKey];
+  if (!details) return;
+
+  modalIcon.textContent = defaultIcon;
+  modalTitle.textContent = details.name;
+  modalBadge.textContent = details.badge;
+  modalDesc.textContent = details.desc;
+  modalMetaType.textContent = details.type;
+  modalMetaCmd.innerHTML = `<code>${details.cmd}</code>`;
+  
+  if (details.codeContent) {
+    modalCodeTitle.textContent = details.codeTitle || "sample execution";
+    let html = details.codeContent;
+    if (html.startsWith('#')) {
+      html = `<span class="cm">${html}</span>`;
+    } else {
+      const parts = html.split(' ');
+      const cmd = parts[0];
+      const rest = parts.slice(1).join(' ');
+      html = `<span class="fl">${cmd}</span> ${rest.replace(/("[^"]*")/g, '<span class="str">$1</span>').replace(/(--\S+)/g, '<span class="op">$1</span>')}`;
+    }
+    modalCodeContent.innerHTML = html;
+    document.getElementById('modal-code-block').style.display = 'block';
+  } else {
+    document.getElementById('modal-code-block').style.display = 'none';
+  }
+
+  modal.classList.add('active');
+}
+
+function closeModal(e) {
+  if (!e || e.target === modal || e.target.closest('.modal-close')) {
+    modal.classList.remove('active');
+  }
+}
+
+// Close on escape
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') {
+    modal.classList.remove('active');
+  }
+});
+
+// Click delegation for interactive items
+document.addEventListener('click', e => {
+  // Check if clicked inside a tool tag
+  const toolTag = e.target.closest('.tool-tag');
+  if (toolTag) {
+    e.stopPropagation();
+    const parentCard = toolTag.closest('.category-card');
+    const defaultIcon = parentCard ? parentCard.querySelector('.cat-icon').textContent.trim() : '💻';
+    showItemDetail(toolTag.textContent.trim(), defaultIcon);
+    return;
+  }
+
+  // Check if clicked inside a package manager chip
+  const mgrChip = e.target.closest('.mgr-chip');
+  if (mgrChip) {
+    e.stopPropagation();
+    showItemDetail(mgrChip.textContent.trim(), '📦');
+    return;
+  }
+
+  // Check if clicked inside a category card itself
+  const catCard = e.target.closest('.category-card');
+  if (catCard) {
+    e.stopPropagation();
+    const catName = catCard.querySelector('.cat-name').textContent.trim();
+    const catIcon = catCard.querySelector('.cat-icon').textContent.trim();
+    showItemDetail(catName, catIcon);
+    return;
+  }
+});
+
+// Dynamic Cursor Hover Delegation
+document.addEventListener('mouseover', e => {
+  if (e.target.closest('a,button,.feature-card,.stat-card,.category-card,.mgr-chip,.tool-tag,.faq-q,.copy-btn,.sidebar nav a,.modal-close')) {
+    document.body.classList.add('cursor-hover');
+  }
+});
+document.addEventListener('mouseout', e => {
+  if (e.target.closest('a,button,.feature-card,.stat-card,.category-card,.mgr-chip,.tool-tag,.faq-q,.copy-btn,.sidebar nav a,.modal-close')) {
+    document.body.classList.remove('cursor-hover');
+  }
+});
+
+// Cursor Click Animations
+document.addEventListener('mousedown', () => {
+  const dot = document.getElementById('cursor-dot');
+  const ring = document.getElementById('cursor-ring');
+  if (dot && ring) {
+    dot.style.transform = 'translate(-50%,-50%) scale(0.6)';
+    ring.style.transform = 'translate(-50%,-50%) scale(1.3)';
+  }
+});
+document.addEventListener('mouseup', () => {
+  const dot = document.getElementById('cursor-dot');
+  const ring = document.getElementById('cursor-ring');
+  if (dot && ring) {
+    dot.style.transform = 'translate(-50%,-50%)';
+    ring.style.transform = 'translate(-50%,-50%)';
+  }
 });
 </script>
 </body>
