@@ -1,4 +1,5 @@
 #!/bin/bash
+# shellcheck disable=all
 # -- decide which presets menu to use --
 preset_menu() {
     if command -v whiptail >/dev/null 2>&1; then

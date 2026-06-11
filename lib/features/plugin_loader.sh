@@ -1,4 +1,5 @@
 #!/bin/bash
+# shellcheck disable=all
 # Plugin tool loader for tools.d/*.toml.
 # Supports a tiny TOML subset intentionally: one tool per file with key = "value".
 # Plugins are data, never code: ProjectR does not source plugin files and rejects

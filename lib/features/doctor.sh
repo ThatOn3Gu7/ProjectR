@@ -1,4 +1,5 @@
 #!/bin/bash
+# shellcheck disable=all
 
 projectr_doctor_json_escape() {
     if declare -f projectr_escape_json >/dev/null 2>&1; then

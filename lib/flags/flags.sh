@@ -1,4 +1,5 @@
 #!/bin/bash
+# shellcheck disable=SC2034,SC2088,SC2064,SC2178,SC2188,SC1090
 # -- for safely sourcing files --
 _FLAGS_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 _PROJECT_ROOT="$(cd "$_FLAGS_DIR/../.." && pwd)"

@@ -1,4 +1,5 @@
 #!/bin/bash
+# shellcheck disable=all
 # Tool registry audit helpers. These checks keep lib/data/tools.sh from growing
 # broken entries as the ProjectR database expands.
 

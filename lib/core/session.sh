@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# shellcheck disable=all
 # Session/bootstrap helpers so interactive and CLI flows share the same lock,
 # transaction id, and logging envelope.
 

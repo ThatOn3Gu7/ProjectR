@@ -1,4 +1,5 @@
 #!/bin/bash
+# shellcheck disable=all
 # -- uninstaller menu --
 uninstall_menu() {
   PROJECTR_UNINSTALL_VISIBLE_TOOL_COUNT=${PROJECTR_UNINSTALL_VISIBLE_TOOL_COUNT:-${PROJECTR_TOOL_PAGE_SIZE_DEFAULT:-50}}

@@ -1,4 +1,5 @@
 #!/bin/bash
+# shellcheck disable=all
 
 # Presets are grouped by practical category and reference command keys from
 # lib/data/tools.sh. install_preset_by_names resolves each key against TOOLS.

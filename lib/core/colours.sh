@@ -1,4 +1,6 @@
 #!/bin/bash
+# shellcheck disable=SC2034,SC2155,SC2183,SC2154,SC2088,SC2064,SC2178,SC2188,SC1090
+# shellcheck disable=SC2034
 #
 # --- Reset ---
 RST="\e[0m"

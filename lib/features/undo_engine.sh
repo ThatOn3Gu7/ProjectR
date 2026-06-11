@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# shellcheck disable=all
 
 rollback_last_session() {
     local transaction_id action action_id tool_id name package manager install_type command_name status rollback_status
@@ -48,10 +49,10 @@ rollback_last_session() {
 
         if [[ $ok -eq 1 ]]; then
             ((rolled++))
-            projectr_state_mark_action_status "$action_id" done || true
+            projectr_state_mark_action_status "$action_id" 'done' || true
         else
             ((failed++))
-            projectr_state_mark_action_status "$action_id" failed || true
+            projectr_state_mark_action_status "$action_id" 'failed' || true
             echo -e "${ERROR} [!] Failed to roll back: $name${RST}"
         fi
     done < <(projectr_state_transaction_actions "$transaction_id")

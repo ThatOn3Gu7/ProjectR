@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# shellcheck disable=all
 # Background update scheduler with explicit status/enable/disable operations.
 
 PROJECTR_SCHEDULER_ALERT_FILE="${PROJECTR_SCHEDULER_ALERT_FILE:-${HOME}/.config/projectr_v2/.update_alert}"

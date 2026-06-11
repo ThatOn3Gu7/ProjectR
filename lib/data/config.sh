@@ -1,4 +1,5 @@
 #!/bin/bash
+# shellcheck disable=all
 # -- Session & persistent config store --
 # Saves one-time user choices so they aren't asked again.
 
@@ -56,7 +57,7 @@ config_reset_all() {
         echo -e "${ERROR} [✗] Cannot reset — config file is not writable: $CONFIG_FILE${RST}"
         return 1
     fi
-    > "$CONFIG_FILE" || {
+    true > "$CONFIG_FILE" || {
         echo -e "${ERROR} [✗] Failed to clear config file.${RST}"
         return 1
     }

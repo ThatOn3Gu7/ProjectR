@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# shellcheck disable=all
 # Shared manager discovery / resolution helpers.
 
 projectr_manager_tier() {

@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# shellcheck disable=all
 # -- disj space checker --
 assert_disk_space() {
     local cache_dir

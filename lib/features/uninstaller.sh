@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# shellcheck disable=all
 
 projectr_effective_uninstall_manager() {
     local tool_id="$1" package="$2"

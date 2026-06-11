@@ -1,4 +1,5 @@
 #!/bin/bash
+# shellcheck disable=all
 # Strict-mode helpers for ProjectR. The framework intentionally avoids global
 # `set -e` because optional probes and package-manager simulations often return
 # non-zero as expected data. Use these wrappers to make failure boundaries

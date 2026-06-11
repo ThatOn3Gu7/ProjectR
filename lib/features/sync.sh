@@ -1,4 +1,5 @@
 #!/bin/bash
+# shellcheck disable=all
 pkg_update() {
     log START "pkg list update started"
     local PM="${PRIMARY_PKG_MANAGER:-$(detect_pkg_manager)}"

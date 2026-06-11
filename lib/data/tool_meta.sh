@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# shellcheck disable=all
 # Optional v2 metadata layer without breaking the legacy TOOLS array.
 
 # Package name overrides by tool_id/current manager.

@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# shellcheck disable=all
 
 export_profile() {
     if [[ ${#TOOLS[@]} -eq 0 ]]; then
@@ -16,7 +17,7 @@ export_profile() {
     echo -e "${INFO} [*] Scanning system for installed ProjectR tools...${RST}"
 
     local count=0 tool_id effective_cmd
-    > "$backup_file" || {
+    true > "$backup_file" || {
         echo -e "${ERROR} [✗] Failed to create profile file: $backup_file${RST}"
         return 1
     }

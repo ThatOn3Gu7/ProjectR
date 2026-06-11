@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# shellcheck disable=all
 set -euo pipefail
 
 # ProjectR command installer
@@ -33,6 +34,7 @@ SELF_UPDATE_MODE=0
 FORCE_REMOTE_MODE=0
 
 #  Colours (self-contained)
+# shellcheck disable=SC2034,SC2088
 RST='\e[0m'
 BOLD='\e[1m'
 DIM='\e[2m'
@@ -110,24 +112,26 @@ fail() {
 # from /dev/tty directly so user keyboard input actually reaches us.
 _read_input() {
   local prompt_text="$1" var_name="$2"
+  local -n target=$var_name
   if [[ -t 0 ]]; then
     # stdin is a terminal — normal read
     printf "%b" "$prompt_text"
-    read -r "$var_name"
+    read -r target
   else
     # stdin is a pipe — read from /dev/tty
     printf "%b" "$prompt_text" >/dev/tty
-    read -r "$var_name" </dev/tty
+    read -r target </dev/tty
   fi
 }
 
 # Read a single character (for menu navigation)
 _read_char() {
   local var_name="$1"
+  local -n target=$var_name
   if [[ -t 0 ]]; then
-    read -r -n 1 "$var_name"
+    read -r -n 1 target
   else
-    read -r -n 1 "$var_name" </dev/tty
+    read -r -n 1 target </dev/tty
   fi
 }
 
@@ -265,10 +269,13 @@ _show_help_panel() {
 }
 expand_path() {
   local path="$1"
-  case "$path" in
-  '~') printf '%s\n' "$HOME" ;;
-  '~/'*) printf '%s/%s\n' "$HOME" "${path#~/}" ;;
-  *) printf '%s\n' "$path" ;;
+  case $path in
+    ~|~/*)
+      printf '%s\n' "${path/#\~/$HOME}"
+      ;;
+    *)
+      printf '%s\n' "$path"
+      ;;
   esac
 }
 
@@ -620,7 +627,7 @@ _clone_with_archive() {
 
   tmp_archive="$(mktemp "${TMPDIR:-/tmp}/projectr-archive.XXXXXX.tar.gz")"
   tmp_extract="$(mktemp -d "${TMPDIR:-/tmp}/projectr-extract.XXXXXX")"
-  trap "rm -rf '$tmp_archive' '$tmp_extract'" EXIT
+  trap 'rm -rf "$tmp_archive" "$tmp_extract"' EXIT
 
   info "Downloading $PROJECT_NAME archive ..."
   if command -v curl >/dev/null 2>&1; then
@@ -714,7 +721,8 @@ write_launcher() {
   local launcher="$BIN_DIR/$COMMAND_NAME"
 
   {
-    echo '#!/usr/bin/env bash'
+    echo '#!/usr/bin/env bash
+# shellcheck disable=all'
     echo 'set -euo pipefail'
     printf 'PROJECTR_HOME=%q\n' "$INSTALL_DIR"
     printf 'PROJECTR_SOURCE_DIR=%q\n' "$SOURCE_DIR"

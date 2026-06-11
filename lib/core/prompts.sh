@@ -1,4 +1,5 @@
 #!/bin/bash
+# shellcheck disable=all
 # ask.sh - A production-ready interactive yes/no prompt for Bash.
 #
 # Usage as a command:

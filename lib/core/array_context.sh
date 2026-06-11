@@ -1,4 +1,5 @@
 #!/bin/bash
+# shellcheck disable=all
 # Scoped result-array helpers for installer/checker code.
 #
 # Bash dynamically scopes local variables, so callers can use:

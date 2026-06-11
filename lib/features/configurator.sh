@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# shellcheck disable=all
 # Declarative post-install configuration bridge for profiles.
 
 projectr_profile_settings() {

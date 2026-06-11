@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# shellcheck disable=all
 # Light-weight trust helpers for update/bootstrap paths.
 
 PROJECTR_TRUSTED_REPO_REGEX="${PROJECTR_TRUSTED_REPO_REGEX:-^(https://github\.com/Thaton3gu7/ProjectR(\.git)?|git@github\.com:Thaton3gu7/ProjectR(\.git)?)$}"

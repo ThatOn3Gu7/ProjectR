@@ -1,4 +1,5 @@
 #!/bin/bash
+# shellcheck disable=all
 # Shared CLI helpers for ProjectR; dispatch lives in lib/flags/flags.sh.
 
 projectr_disable_color() {
@@ -333,7 +334,9 @@ projectr_cli_install_args() {
 
     if [[ -n "$profile" && "$profile" != "__NEXT__" ]]; then
         if [[ $dry -eq 1 ]]; then
-            projectr_dry_run_profile "$profile" $([[ $json -eq 1 ]] && printf -- '--json')
+            local args=("$profile")
+            [[ $json -eq 1 ]] && args+=("--json")
+            projectr_dry_run_profile "${args[@]}"
         else
             projectr_install_profile "$profile"
         fi

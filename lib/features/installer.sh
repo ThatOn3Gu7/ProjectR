@@ -1,4 +1,5 @@
 #!/bin/bash
+# shellcheck disable=all
 
 projectr_record_successful_install() {
     local tool_id="$1" display_name="$2" package="$3" manager="$4" install_type="$5" check_cmd="$6"

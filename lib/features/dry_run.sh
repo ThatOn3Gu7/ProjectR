@@ -1,4 +1,5 @@
 #!/bin/bash
+# shellcheck disable=all
 # Rich dry-run planner. It asks native package managers for simulations when possible
 # and falls back to a deterministic ProjectR plan when the manager cannot simulate.
 # This file must never execute mutating package-manager subcommands.

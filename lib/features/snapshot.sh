@@ -1,4 +1,5 @@
 #!/bin/bash
+# shellcheck disable=all
 # Filesystem snapshot hooks for rollback integration. The feature is opt-in for
 # safety: set PROJECTR_ENABLE_SNAPSHOTS=1 or pass an explicit call from a future
 # batch install path before structural changes.

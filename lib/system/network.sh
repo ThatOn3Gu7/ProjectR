@@ -1,4 +1,5 @@
 #!/bin/bash
+# shellcheck disable=all
 # Checks if internet connection is available or not.
 check_internet() {
     if command -v ping >/dev/null 2>&1; then

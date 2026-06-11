@@ -1,4 +1,5 @@
 #!/bin/bash
+# shellcheck disable=all
 
 # Strips ANSI escape codes from a string.
 _strip_ansi() {

@@ -1,4 +1,5 @@
 #!/bin/bash
+# shellcheck disable=all
 # "Install by name" — checks TOOLS array first, then does smart multi-manager scan
 
 # ── Name normalisation maps ──

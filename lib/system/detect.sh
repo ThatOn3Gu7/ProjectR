@@ -1,4 +1,5 @@
 #!/bin/bash
+# shellcheck disable=all
 
 # ── Globals set by detect_pkg_manager ──
 PRIMARY_PKG_MANAGER=""

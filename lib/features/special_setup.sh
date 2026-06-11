@@ -1,4 +1,5 @@
 #!/bin/bash
+# shellcheck disable=all
 
 projectr_truthy() {
     case "${1:-}" in

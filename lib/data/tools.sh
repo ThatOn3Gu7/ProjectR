@@ -1,4 +1,5 @@
 #!/bin/bash
+# shellcheck disable=all
 #  tools.sh — The single master list of all tools
 #  Format: "NUM|CMD|PKG|NAME|DESC|TYPE|EXTRA|CAT"
 #

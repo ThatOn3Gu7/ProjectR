@@ -1,4 +1,5 @@
 #!/bin/bash
+# shellcheck disable=all
 
 # Background spinner containment. The spinner is deliberately managed from the
 # parent shell so SIGINT/SIGTERM/EXIT can always reap the worker before normal

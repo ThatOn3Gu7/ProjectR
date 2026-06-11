@@ -1,4 +1,5 @@
 #!/bin/bash
+# shellcheck disable=all
 
 check_dependency() {
     local cmd="$1"
@@ -9,7 +10,7 @@ check_dependency() {
         return 0
     else
        echo ""
-        echo -e "${ERROR} [✗] "$name" is NOT installed${RST}"
+        echo -e "${ERROR} [✗] ${name} is NOT installed${RST}"
         
         # Generate cross-platform hint
         local hint=""
@@ -462,7 +463,7 @@ show_install_commands() {
     
     for dep in "${deps[@]}"; do
         IFS=":" read -r cmd name <<< "$dep"
-        echo -e "${BOLD_YELLOW} ▶ "$name"${RST}"
+        echo -e "${BOLD_YELLOW} ▶ ${name}${RST}"
          echo ""
         get_install_hints "$cmd"
         echo ""

@@ -1,0 +1,6 @@
+[2026-06-11 19:44:43+0545] [START] [session:20260611-194442-22578] [pid:22578] [startup] ━━━━━━ Session started at: 2026-06-11 19:44 ━━━━━━
+[2026-06-11 19:44:43+0545] [INFO] [session:20260611-194442-22578] [pid:22578] [startup] ProjectR root=/data/data/com.termux/files/home/ProjectR; shell=/data/data/com.termux/files/usr/bin/zsh; user=unknown; pwd=/data/data/com.termux/files/home/ProjectR; args=''
+[2026-06-11 19:44:43+0545] [INFO] [session:20260611-194442-22578] [pid:22578] [startup] Detected primary package manager: pkg; all=pkg apt apt-get bsd-pkg
+[2026-06-11 19:45:15+0545] [ENTER] [session:20260611-194442-22578] [pid:22578] [core] User entered sub-menu 'search-install'
+[2026-06-11 19:45:20+0545] [LEFT] [session:20260611-194442-22578] [pid:22578] [core] User exited sub-menu 'search-install'
+[2026-06-11 19:45:30+0545] [EXIT] [session:20260611-194442-22578] [pid:22578] [core] ━━━━━━ Exited script at: 2026-06-11 19:45 ━━━━━━

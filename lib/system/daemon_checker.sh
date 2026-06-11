@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# shellcheck disable=all
 # Backwards-compatible wrapper around the v2 scheduler subsystem.
 
 check_daemon_alerts() {

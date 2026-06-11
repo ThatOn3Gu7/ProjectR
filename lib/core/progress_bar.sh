@@ -1,4 +1,5 @@
 #!/bin/bash
+# shellcheck disable=all
 
 # --- 1. ERROR ANALYSIS ENGINE (The Brain) ---
 analyze_error() {

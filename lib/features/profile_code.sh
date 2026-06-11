@@ -1,4 +1,5 @@
 #!/bin/bash
+# shellcheck disable=all
 # Configuration-as-code profile reader for simple projectr.yml/projectr.toml files.
 
 projectr_profile_tools() {

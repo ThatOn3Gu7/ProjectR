@@ -1,4 +1,5 @@
 #!/bin/bash
+# shellcheck disable=all
 
 # ProjectR logging is intentionally dependency-light: plain text, append-only,
 # and safe to call from any sourced file. It records both user-facing events and

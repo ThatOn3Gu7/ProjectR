@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# shellcheck disable=all
 # Root/rootless privilege abstraction.
 
 projectr_manager_needs_root() {

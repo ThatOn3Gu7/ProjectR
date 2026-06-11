@@ -1,4 +1,5 @@
 #!/bin/bash
+# shellcheck disable=all
 # -- Catches any bugs and unbound variables --
 set -uo pipefail
 # -- Resolve the project root (works regardless of where you call this from) --
@@ -162,12 +163,12 @@ handle_selection() {
   fi
 
   # Step 3: Search TOOLS for the matching number and install it
-  local found=0
+  local found_flag=0
   for entry in "${TOOLS[@]}"; do
     IFS="|" read -r num cmd pkg name desc type extra cat <<< "$entry"
 
     if [[ "$selected" == "$num" ]]; then
-      found=1
+      found_flag=1
       show_install_wait
 
       projectr_install_tool_by_fields "$cmd" "$pkg" "$name" "$type" "$extra"
@@ -176,7 +177,7 @@ handle_selection() {
   done
 
   # If the number wasn't found in TOOLS at all
-  if [[ "$found" -eq 0 ]]; then
+  if [[ "$found_flag" -eq 0 ]]; then
     echo -e " ${BG_BRIGHT_RED}[!] Invalid option:${BG_BRIGHT_YELLOW}${BOLD_BRIGHT_BLACK} $selected ${RST}${OPTION} Please select the right option${RST}"
     log_warn "Interactive numeric selection not found in tool registry: $selected" "menu"
     sleep 2

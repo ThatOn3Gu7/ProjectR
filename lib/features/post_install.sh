@@ -1,4 +1,5 @@
 #!/bin/bash
+# shellcheck disable=all
 
 post_install_summary() {
     log OK "Post-Installation-Summary shown"

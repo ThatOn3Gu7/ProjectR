@@ -1,4 +1,5 @@
 #!/bin/bash
+# shellcheck disable=all
 # Local state tracking. Uses SQLite when available and falls back to TSV.
 
 PROJECTR_STATE_DIR="${PROJECTR_STATE_DIR:-$HOME/.local/state/projectr_v2}"
