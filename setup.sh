@@ -201,43 +201,33 @@ _show_help_panel() {
   echo -e "${BOLD_BRIGHT_CYAN}  │${RST}  ${BOLD_BRIGHT_WHITE}                      Help & Documentation                    ${RST}  ${BOLD_BRIGHT_CYAN}│${RST}" >&2
   echo -e "${BOLD_BRIGHT_CYAN}  ╰──────────────────────────────────────────────────────────────────╯${RST}" >&2
   echo "" >&2
-
   echo -e "${BARR}  ╭──────────────────────────────────────────────────────────────────╮${RST}" >&2
   echo -e "${BARR}  │${RST}  ${BOLD_BRIGHT_YELLOW}📖  Setup Options Reference${RST}                                     ${BARR}│${RST}" >&2
   echo -e "${BARR}  ├──────────────────────────────────────────────────────────────────┤${RST}" >&2
-
   # Option 1
   echo -e "${BARR}  ${RST}  ${OPTION}[${BOLD_BRIGHT_WHITE}1${OPTION}]${RST}  ${BOLD_WHITE}Change launcher command name${RST}" >&2
   echo -e "${BARR}  ${RST}      ${DIM}The command you'll type to run ProjectR${RST}" >&2
   echo -e "${BARR}  ${RST}      ${DIM}Example: 'project', 'pr', 'projectr'${RST}" >&2
   echo -e "${BARR}  ${RST}      ${BRIGHT_BLACK}→ Default: project${RST}" >&2
-
   echo -e "${BARR}  ├──────────────────────────────────────────────────────────────────┤${RST}" >&2
-
   # Option 2
   echo -e "${BARR}  ${RST}  ${OPTION}[${BOLD_BRIGHT_WHITE}2${OPTION}]${RST}  ${BOLD_WHITE}Change install directory${RST}" >&2
   echo -e "${BARR}  ${RST}      ${DIM}Where all ProjectR files (scripts, lib, tools.d) live${RST}" >&2
   echo -e "${BARR}  ${RST}      ${DIM}This is hidden storage, not meant for direct access${RST}" >&2
   echo -e "${BARR}  ${RST}      ${BRIGHT_BLACK}→ Default: ~/.local/share/projectr${RST}" >&2
-
   echo -e "${BARR}  ├──────────────────────────────────────────────────────────────────┤${RST}" >&2
-
   # Option 3
   echo -e "${BARR}  ${RST}  ${OPTION}[${BOLD_BRIGHT_WHITE}3${OPTION}]${RST}  ${BOLD_WHITE}Change bin directory${RST}" >&2
   echo -e "${BARR}  ${RST}      ${DIM}Where the launcher script gets placed${RST}" >&2
   echo -e "${BARR}  ${RST}      ${DIM}Must be in your PATH for the command to work${RST}" >&2
   echo -e "${BARR}  ${RST}      ${BRIGHT_BLACK}→ Default: ~/.local/bin${RST}" >&2
-
   echo -e "${BARR}  ├──────────────────────────────────────────────────────────────────┤${RST}" >&2
-
   # Option 4
   echo -e "${BARR}  ${RST}  ${OPTION}[${BOLD_BRIGHT_WHITE}4${OPTION}]${RST}  ${BOLD_WHITE}Toggle add-to-PATH${RST}" >&2
   echo -e "${BARR}  ${RST}      ${DIM}Automatically add bin dir to shell config files${RST}" >&2
   echo -e "${BARR}  ${RST}      ${DIM}Updates .bashrc, .zshrc, and .profile${RST}" >&2
   echo -e "${BARR}  ${RST}      ${BRIGHT_BLACK}→ Default: OFF${RST}" >&2
-
   echo -e "${BARR}  ├──────────────────────────────────────────────────────────────────┤${RST}" >&2
-
   # Option 5 (remote mode only)
   if ((REMOTE_MODE)); then
     echo -e "${BARR}  ${RST}  ${OPTION}[${BOLD_BRIGHT_WHITE}5${OPTION}]${RST}  ${BOLD_WHITE}Change repository URL${RST}" >&2
@@ -246,27 +236,20 @@ _show_help_panel() {
     echo -e "${BARR}  ${RST}      ${BRIGHT_BLACK}→ Default: https://github.com/Thaton3gu7/ProjectR.git${RST}" >&2
     echo -e "${BARR}  ├──────────────────────────────────────────────────────────────────┤${RST}" >&2
   fi
-
   # Option r
   echo -e "${BARR}  ${RST}  ${OPTION}[${BOLD_BRIGHT_WHITE}r${OPTION}]${RST}  ${BOLD_WHITE}Reset all to defaults${RST}" >&2
   echo -e "${BARR}  ${RST}      ${DIM}Reverts all settings to their default values${RST}" >&2
   echo -e "${BARR}  ${RST}      ${DIM}Useful if you've made changes you want to undo${RST}" >&2
-
   echo -e "${BARR}  ├──────────────────────────────────────────────────────────────────┤${RST}" >&2
-
   # Action options
   echo -e "${BARR}  ${RST}  ${ACCENT}[${BOLD_BRIGHT_WHITE}i${ACCENT}]${RST}  ${BOLD_WHITE}Install with current settings${RST}" >&2
   echo -e "${BARR}  ${RST}      ${DIM}Proceeds with the installation using your${RST}" >&2
   echo -e "${BARR}  ${RST}      ${DIM}currently configured options${RST}" >&2
-
   echo -e "${BARR}  ├──────────────────────────────────────────────────────────────────┤${RST}" >&2
-
   echo -e "${BARR}  ${RST}  ${ERROR}[${BOLD_BRIGHT_WHITE}q${ERROR}]${RST}  ${BOLD_WHITE}Quit without installing${RST}" >&2
   echo -e "${BARR}  ${RST}      ${DIM}Exits the setup wizard. No changes are made.${RST}" >&2
-
   echo -e "${BARR}  ╰──────────────────────────────────────────────────────────────────╯${RST}" >&2
   echo "" >&2
-
   echo -e "${BARR}  ╭──────────────────────────────────────────────────────────────────╮${RST}" >&2
   echo -e "${BARR}  │${RST}  ${BOLD_BRIGHT_CYAN}💡  Tips${RST}                                                        ${BARR}│${RST}" >&2
   echo -e "${BARR}  ├──────────────────────────────────────────────────────────────────┤${RST}" >&2
@@ -278,7 +261,6 @@ _show_help_panel() {
   echo -e "${BARR}  │${RST}  • ${OPTION}Update ProjectR${RST}: ${BOLD_WHITE}${COMMAND_NAME} --self-update                        ${BARR}│${RST}" >&2
   echo -e "${BARR}  ╰──────────────────────────────────────────────────────────────────╯${RST}" >&2
   echo "" >&2
-
   _read_input "  ${DIM}[press Enter to return to menu]${RST}" _discard
 }
 expand_path() {
@@ -802,11 +784,7 @@ maybe_add_path() {
 _show_success() {
   echo "" >&2
   echo -e "${BOLD_BRIGHT_CYAN}" >&2
-  echo "   ╭──────────────────────────────────────────────────────────╮" >&2
-  echo "   │                                                          │" >&2
-  echo "   │   ✓  ProjectR has been installed successfully!           │" >&2
-  echo "   │                                                          │" >&2
-  echo "   ╰──────────────────────────────────────────────────────────╯" >&2
+  echo "              ✓  ProjectR has been installed successfully!" >&2
   echo -e "${RST}" >&2
   echo "" >&2
   printf "  ${OPTION}  App files${RST} : %s\n" "$INSTALL_DIR" >&2
