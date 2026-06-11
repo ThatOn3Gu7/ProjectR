@@ -2,6 +2,12 @@
 # shellcheck disable=all
 
 check_tool() {
+   # Determine if a tool is available and record its status
+   # "$cmd" – the command to test
+   # "$name" – friendly name for display
+   # "$manager" – package manager (unused here but kept for compatibility)
+   # Return: prints status and populates global arrays FOUND_PKGS / NOT_FOUND_PKGS
+
    local cmd="$1"
    local name="$2"
    local manager="${3:-${PRIMARY_PKG_MANAGER:-$(detect_pkg_manager)}}"
@@ -24,8 +30,8 @@ check_tool() {
 }
 
 check_all_tools() {
-  local -a FOUND_PKGS=()
-  local -a NOT_FOUND_PKGS=()
+  FOUND_PKGS=()
+  NOT_FOUND_PKGS=()
 
   clear
   echo -e "${OPTION}"
@@ -53,4 +59,45 @@ check_all_tools() {
   printf "${DIM}  [press ENTER]${RST}"
   read -s; echo
   safe_tput cnorm
+
+  # After summary, offer to view detailed lists of installed and missing tools
+  view_tool_summary
+}
+
+view_tool_summary() {
+  while true; do
+    echo -e "${OPTION}"
+    print_box left "[?] Choose an option:"
+    echo -e "${RST}"
+    echo -e " ${OPTION}[1] View installed tools"
+    echo -e " ${OPTION}[2] View missing tools"
+    echo -e " ${OPTION}[b] Back"
+    read -p "Select: " opt
+    case "$opt" in
+      1)
+        clear
+        echo -e "${OPTION}Installed Tools:${RST}"
+        for tool in "${FOUND_PKGS[@]}"; do
+          echo "  $tool"
+        done
+        echo
+        read -p "Press ENTER to continue..." dummy
+        ;;
+      2)
+        clear
+        echo -e "${OPTION}Missing Tools:${RST}"
+        for tool in "${NOT_FOUND_PKGS[@]}"; do
+          echo "  $tool"
+        done
+        echo
+        read -p "Press ENTER to continue..." dummy
+        ;;
+      b|B)
+        break
+        ;;
+      *)
+        echo -e "${ERROR}Invalid option${RST}"
+        ;;
+    esac
+  done
 }
