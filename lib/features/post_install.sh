@@ -8,7 +8,7 @@ post_install_summary() {
     
     # -- TITLE BOX --
     print_titled_box --align center \
-        "  [*] Post-Installation-Summary" \
+        "Post-Installation Summary" \
         "Installation finished at $(date '+%H:%M:%S')"
     
     echo ""
@@ -22,7 +22,7 @@ post_install_summary() {
             installed_display+=("[→] $clean_pkg")
         done
         
-        print_list_box "center" "[✓] INSTALLED SUCCESSFULLY" "${installed_display[@]}"
+        print_list_box "center" "[✓] SUCCESSFULLY INSTALLED" "${installed_display[@]}"
         echo ""
     fi
     
@@ -48,7 +48,7 @@ post_install_summary() {
             failed_display+=("[→] $clean_pkg")
         done
         
-        print_list_box "center" "[✗] FAILED TO INSTALL" "${failed_display[@]}"
+        print_list_box "center" "[✗] INSTALLATION FAILED" "${failed_display[@]}"
         echo ""
     fi
     
@@ -56,7 +56,7 @@ post_install_summary() {
     local total=$(( ${#INSTALLED_PKGS[@]} + ${#SKIPPED_PKGS[@]} + ${#FAILED_PKGS[@]} ))
     
     print_titled_box --align center \
-        " [*] Installation Statistics" \
+        "Installation Statistics" \
         "" \
         "● Total packages processed: $total" \
         "● Successfully installed: ${#INSTALLED_PKGS[@]}" \

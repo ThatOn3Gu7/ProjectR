@@ -216,9 +216,11 @@ projectr_verify_state() {
     local -a records=()
     mapfile -t records < <(projectr_state_records)
 
-    echo -e "${OPTION}[*] Verifying ProjectR-managed tools${RST}"
-    if [[ ${#records[@]} -eq 0 ]]; then
-        echo -e "${DIM}[*] No ProjectR-managed installs have been recorded yet.${RST}"
+    echo -e "${OPTION}[*] Verifying ProjectR-managed installations...${RST}"
+    local -a installs=()
+    mapfile -t installs < <(projectr_state_records)
+    if [[ ${#installs[@]} -eq 0 ]]; then
+        echo -e "${DIM}[*] No ProjectR-managed installations have been recorded.${RST}"
         return 0
     fi
 
@@ -241,7 +243,7 @@ projectr_verify_state() {
         fi
     done
 
-    echo -e "${DIM}[*] Checked $checked recorded tool(s); missing=$missing; unknown=$unknown.${RST}"
+    echo -e "${DIM}[*] Verification complete. Inspected $checked recorded tool(s); missing=$missing; unknown=$unknown.${RST}"
     [[ $missing -eq 0 && $unknown -eq 0 ]]
 }
 
@@ -251,16 +253,16 @@ projectr_repair_state() {
     local -a records=()
     mapfile -t records < <(projectr_state_records)
 
-    echo -e "${OPTION}[*] Repairing missing ProjectR-managed tools${RST}"
+    echo -e "${OPTION}[*] Initiating repair process for missing ProjectR-managed tools...${RST}"
     if [[ ${#records[@]} -eq 0 ]]; then
-        echo -e "${DIM}[*] No recorded ProjectR-managed installs to repair.${RST}"
+        echo -e "${DIM}[*] No recorded ProjectR-managed installations require repair.${RST}"
         return 0
     fi
 
     for record in "${records[@]}"; do
         IFS=$'\t' read -r record_tool_id record_name record_package record_manager <<< "$record"
         entry=$(projectr_state_find_registry_entry "$record_tool_id" "$record_name" "$record_package") || {
-            echo -e "${BOLD_YELLOW:-}[!] Recorded tool '$record_name' is not in the current registry — skipping.${RST:-}"
+            echo -e "${BOLD_YELLOW:-}[!] Recorded tool '$record_name' is not in the current registry. Skipping...${RST:-}"
             failed=$((failed + 1))
             continue
         }
@@ -276,6 +278,6 @@ projectr_repair_state() {
         fi
     done
 
-    echo -e "${OPTION}[✓] Repair attempted for $repaired tool(s); failed/skipped unknown: $failed.${RST}"
+    echo -e "${OPTION}[✓] Repair operation completed for $repaired tool(s). Failed/skipped: $failed.${RST}"
     [[ $failed -eq 0 ]]
 }

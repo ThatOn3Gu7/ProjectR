@@ -15,7 +15,7 @@ projectr_audit_tools() {
     local errors=0 warnings=0 total=0
     local nums=" " cmds=" " names=" "
     echo ""
-    echo -e "${OPTION}[*] Auditing ProjectR tool database${RST}"
+    echo -e "${OPTION}[*] Commencing audit of the ProjectR tool database...${RST}"
     log_info "Starting tool database audit strict=$strict" "audit"
 
     for entry in "${TOOLS[@]}"; do
@@ -89,14 +89,14 @@ projectr_audit_tools() {
         fi
     done
 
-    echo -e "${INFO}[*] Checked ${BOLD_WHITE}$total${RST}${INFO} tool entries.${RST}"
-    echo -e "${INFO}[*] Errors: ${BOLD_WHITE}$errors${RST}${INFO}; warnings: ${BOLD_WHITE}$warnings${RST}${INFO}.${RST}"
+    echo -e "${INFO}[*] Inspection complete. Audited ${BOLD_WHITE}$total${RST}${INFO} tool entries.${RST}"
+    echo -e "${INFO}[*] Audit results: ${BOLD_WHITE}$errors${RST}${INFO} error(s), ${BOLD_WHITE}$warnings${RST}${INFO} warning(s).${RST}"
 
     if (( errors > 0 || (strict && warnings > 0) )); then
         log_fail "Tool database audit failed: errors=$errors warnings=$warnings strict=$strict" "audit"
         return 1
     fi
 
-    echo -e "${OPTION}[✓] Tool database audit passed.${RST}"
+    echo -e "${OPTION}[✓] Tool database audit completed successfully.${RST}"
     log_ok "Tool database audit passed: total=$total warnings=$warnings strict=$strict" "audit"
 }

@@ -167,7 +167,7 @@ projectr_update_refresh_installed_copy() {
 
 projectr_run_update() {
     if ! command -v git >/dev/null 2>&1; then
-        echo -e "${ERROR}[!] git is required for projectr update.${RST}"
+        msg_warning "Git is required for ProjectR update."
         log_error "projectr update failed: git command not found" "update"
         return 1
     fi

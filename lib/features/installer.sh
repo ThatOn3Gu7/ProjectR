@@ -31,7 +31,7 @@ projectr_install_tool_by_fields() {
             if declare -f "$extra" >/dev/null 2>&1; then
                 "$extra"
             else
-                echo -e "${ERROR}  [!] Special installer '${extra}' not found — skipping ${name}.${RST}"
+                echo -e "${ERROR}  [!] Special installer '${extra}' not found. Skipping ${name}.${RST}"
                 log_fail "Special installer '${extra}' not found for $name" "install"
                 projectr_install_result_push failed "$name"
                 projectr_record_failed_install "$cmd" "$name" "$pkg" special special "$cmd"
@@ -51,9 +51,9 @@ projectr_install_tool_by_fields() {
 # -- install function --
 install_all() {
     echo ""
-    echo -e "${ERROR}  [!] Bulk install of all tools is disabled.${RST}"
-    echo -e "${INFO}  [*] Use presets instead: ${BOLD_WHITE}project install --profile <file>.yml${RST}"
-    echo -e "${OPTION}  [*] If you still want to go with it, then open 'installer.sh' in your preferred editor and uncomment everything in the function ${RST}"
+    echo -e "${ERROR}  [!] Bulk installation of all tools is disabled by default.${RST}"
+    echo -e "${INFO}  [*] Please use configuration presets: ${BOLD_WHITE}project install --profile <file>.yml${RST}"
+    echo -e "${OPTION}  [*] To enable bulk installation, modify the 'install_all' function in 'installer.sh'.${RST}"
     printf "${DIM}  [press ENTER]${RST}"
     read -s; echo
     return 1
@@ -64,7 +64,7 @@ install_preset_by_names() {
     local names=("$@")
 
     if [[ ${#names[@]} -eq 0 ]]; then
-        echo -e "${ERROR}  [!] No tools provided to install_preset_by_names.${RST}"
+        echo -e "${ERROR}  [!] No tools specified for preset installation.${RST}"
         log_warn "install_preset_by_names called without tools" "preset"
         return 1
     fi
@@ -86,7 +86,7 @@ install_preset_by_names() {
             fi
         done
         if [[ $matched -eq 0 ]]; then
-            echo -e "${BOLD_YELLOW}  [!] '$name' not found in tool list — skipping.${RST}"
+            echo -e "${BOLD_YELLOW}  [!] Tool '$name' was not found in the tool registry. Skipping...${RST}"
             log_warn "Preset requested unknown tool '$name'" "preset"
         fi
     done
@@ -107,28 +107,28 @@ install_pkg() {
     effective_cmd=$(projectr_effective_cmd "$tool_id" "$cmd" "$PM")
 
     if [[ -z "$cmd" || -z "$pkg" || -z "$name" ]]; then
-        echo -e "${ERROR}  [!] install_pkg: missing argument (cmd='$cmd' pkg='$pkg' name='$name')${RST}"
+        echo -e "${ERROR}  [!] install_pkg: Missing required arguments (cmd='$cmd', pkg='$pkg', name='$name').${RST}"
         log_error "install_pkg missing argument cmd='$cmd' pkg='$pkg' name='$name'" "install"
         return 1
     fi
 
     if command -v "$effective_cmd" >/dev/null 2>&1; then
-        echo -e "${OPTION}  [✓] $name is already installed - Skipping..${RST}"
+        echo -e "${OPTION}  [✓] $name is already installed. Skipping...${RST}"
         projectr_install_result_push skipped "$name"
         log SKIPPED "$name was already installed (Skipped)"
         sleep 1
         return 0
     fi
 
-    start_spinner "  [*] Installing: $name (via $PM).."
+    start_spinner "  [*] Installing $name via $PM..."
 
     case "$PM" in
         apt|apt-get)
             DEBIAN_FRONTEND=noninteractive \
             projectr_run_privileged "$PM" apt-get install -y --no-install-recommends "$effective_pkg" >/dev/null 2>&1
             if [[ $? -ne 0 ]]; then
-                stop_spinner "${BOLD_YELLOW}  [!] apt install failed — refreshing package lists and retrying...${RST}"
-                start_spinner "  [*] Installing: $name (retry after apt-get update).."
+                stop_spinner "${BOLD_YELLOW}  [!] apt installation failed. Refreshing package cache and retrying...${RST}"
+                start_spinner "  [*] Retrying installation of $name..."
                 projectr_run_privileged "$PM" apt-get update >/dev/null 2>&1
                 DEBIAN_FRONTEND=noninteractive \
                 projectr_run_privileged "$PM" apt-get install -y --no-install-recommends "$effective_pkg" >/dev/null 2>&1
@@ -199,7 +199,7 @@ install_pkg() {
             ;;
         *)
             stop_spinner
-            echo -e "${ERROR}  [x] Unsupported package manager: $PM${RST}"
+            echo -e "${ERROR}  [x] Unsupported package manager: $PM.${RST}"
             projectr_install_result_push failed "$name"
             projectr_record_failed_install "$tool_id" "$name" "$effective_pkg" "$PM" pkg "$effective_cmd"
             log FAIL "$name — unsupported PM: $PM"
@@ -211,12 +211,12 @@ install_pkg() {
     if [[ $install_exit -eq 0 ]] && command -v "$effective_cmd" >/dev/null 2>&1; then
         projectr_record_successful_install "$tool_id" "$name" "$effective_pkg" "$PM" pkg "$effective_cmd"
         projectr_install_result_push installed "$name"
-        stop_spinner "${OPTION}  [✓] $name installed successfully (via $PM).${RST}"
+        stop_spinner "${OPTION}  [✓] $name has been successfully installed via $PM.${RST}"
         log INSTALLED "$name installed successfully (via $PM)"
     else
         projectr_install_result_push failed "$name"
         projectr_record_failed_install "$tool_id" "$name" "$effective_pkg" "$PM" pkg "$effective_cmd"
-        stop_spinner "${ERROR}  [x] Failed to install: $name.${RST}"
+        stop_spinner "${ERROR}  [x] Failed to install $name.${RST}"
         log FAIL "$name failed to install (on $PM)"
         install_exit=${install_exit:-1}
     fi
@@ -241,7 +241,7 @@ install_lang() {
     pkg_name=$(projectr_effective_package "$tool_id" "$pkg_name" "$lang_pm")
 
     if command -v "$check_cmd" >/dev/null 2>&1; then
-        echo -e "${OPTION}  [✓] $display_name is already installed - Skipping..${RST}"
+        echo -e "${OPTION}  [✓] $display_name is already installed. Skipping...${RST}"
         projectr_install_result_push skipped "$display_name"
         log SKIPPED "$display_name was already installed"
         sleep 1
@@ -249,7 +249,7 @@ install_lang() {
     fi
 
     if [[ "$lang_pm" == "none" ]]; then
-        echo -e "${ERROR}  [✗] No $tool_type package manager found — cannot install $display_name${RST}"
+        echo -e "${ERROR}  [✗] No $tool_type package manager detected. Unable to install $display_name.${RST}"
         log_fail "No $tool_type package manager found for $display_name" "install-lang"
         projectr_install_result_push failed "$display_name"
         projectr_record_failed_install "$tool_id" "$display_name" "$pkg_name" none "$tool_type" "$check_cmd"
@@ -262,14 +262,14 @@ install_lang() {
     err_tmp=$(mktemp)
     export install_method="$lang_pm"
 
-    start_spinner "  [*] Installing: $display_name (via $lang_pm).."
+    start_spinner "  [*] Installing $display_name via $lang_pm..."
 
     while (( attempt <= max_attempts )); do
         if (( attempt > 1 )); then
             stop_spinner
-            echo -e "${BOLD_YELLOW}  [!] Retry $attempt/$max_attempts for $display_name...${RST}"
+            echo -e "${BOLD_YELLOW}  [!] Attempt $attempt of $max_attempts failed. Retrying installation of $display_name...${RST}"
             sleep 2
-            start_spinner "  [*] Retrying: $display_name (via $lang_pm).."
+            start_spinner "  [*] Retrying installation of $display_name via $lang_pm..."
         fi
 
         local install_cmd=()
@@ -289,7 +289,7 @@ install_lang() {
                 ;;
             *)
                 stop_spinner ""
-                echo -e "${ERROR}  [✗] Unknown language manager: $lang_pm${RST}"
+                echo -e "${ERROR}  [✗] Unrecognized language package manager: $lang_pm.${RST}"
                 log_fail "Unknown language manager '$lang_pm' for $display_name" "install-lang"
                 projectr_install_result_push failed "$display_name"
                 projectr_record_failed_install "$tool_id" "$display_name" "$pkg_name" "$lang_pm" "$tool_type" "$check_cmd"
@@ -314,7 +314,7 @@ install_lang() {
     if command -v "$check_cmd" >/dev/null 2>&1; then
         projectr_record_successful_install "$tool_id" "$display_name" "$pkg_name" "$lang_pm" "$tool_type" "$check_cmd"
         projectr_install_result_push installed "$display_name"
-        stop_spinner "${OPTION}  [✓] $display_name installed successfully (via $lang_pm)${RST}"
+        stop_spinner "${OPTION}  [✓] $display_name has been successfully installed via $lang_pm.${RST}"
         log INSTALLED "$display_name installed via $lang_pm"
         unset install_method
         rm -f "$err_tmp"
@@ -325,7 +325,7 @@ install_lang() {
         err_msg=$(grep -v '^\s*$' "$err_tmp" 2>/dev/null | tail -n1 | tr -cd '[:print:]')
         projectr_install_result_push failed "$display_name"
         projectr_record_failed_install "$tool_id" "$display_name" "$pkg_name" "$lang_pm" "$tool_type" "$check_cmd"
-        stop_spinner "${ERROR}  [✗] Failed: $display_name${err_msg:+ — ${err_msg}}${RST}"
+        stop_spinner "${ERROR}  [✗] Failed to install $display_name${err_msg:+: ${err_msg}}.${RST}"
         log FAIL "$display_name install failed${err_msg:+: $err_msg}"
         unset install_method
         rm -f "$err_tmp"
@@ -412,7 +412,7 @@ projectr_install_batch_by_entries() {
         [[ ${#pkgs[@]} -gt 0 ]] || continue
 
         tmp=$(mktemp)
-        start_spinner "  [*] Batch installing ${#pkgs[@]} package(s) via $group.."
+        start_spinner "  [*] Batch installing ${#pkgs[@]} package(s) via $group..."
         if [[ "${DRY_RUN:-0}" == "1" ]]; then
             printf '[DRY-RUN] %s install payload: %s\n' "$group" "${pkgs[*]}" >"$tmp"
             status=0
@@ -421,7 +421,7 @@ projectr_install_batch_by_entries() {
             status=$?
         fi
         if [[ $status -eq 0 ]]; then
-            stop_spinner "${OPTION}  [✓] Batch installed ${#pkgs[@]} package(s) via $group.${RST}"
+            stop_spinner "${OPTION}  [✓] Batch installation of ${#pkgs[@]} package(s) via $group completed successfully.${RST}"
             for entry in "${group_entries[@]}"; do
                 IFS="|" read -r num cmd pkg name desc type extra cat <<< "$entry"
                 tool_id=$(projectr_tool_id "$cmd")
@@ -436,7 +436,7 @@ projectr_install_batch_by_entries() {
                 fi
             done
         else
-            stop_spinner "${ERROR}  [x] Batch install failed via $group; falling back to per-tool installs.${RST}"
+            stop_spinner "${ERROR}  [x] Batch installation failed via $group. Falling back to individual tool installations.${RST}"
             projectr_log_file_excerpt FAIL "$tmp" "batch-install" 30
             for entry in "${group_entries[@]}"; do
                 IFS="|" read -r num cmd pkg name desc type extra cat <<< "$entry"

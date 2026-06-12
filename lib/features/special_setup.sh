@@ -50,7 +50,7 @@ setup_nvim() {
 
     local STANDARD_PATH="$HOME/.config/nvim"
     if [[ -d "$STANDARD_PATH" && -z "$desired" ]]; then
-        echo -e "${OPTION}  [✓] A Neovim config is already installed!${RST}"
+        echo -e "${OPTION}  [✓] A Neovim configuration is already present.${RST}"
         sleep 1
         return 0
     fi
@@ -74,48 +74,45 @@ setup_nvim() {
 prompt_nvim_config() {
 
     if ! command -v git >/dev/null 2>&1; then
-        echo -e "${ERROR}  [!] git is not installed — cannot clone a Neovim config.${RST}"
+        echo -e "${ERROR}  [!] Git is not installed. Unable to clone the Neovim configuration.${RST}"
         return 1
     fi
-
-    local forced_choice="${1:-}" config_choice repo url
-    if [[ -z "$forced_choice" ]]; then
-        echo -e "${INFO}  [*] Which config would you like to install? ${RST}"
+    local repo=""
+    while true; do
+        echo -e "${INFO}  [*] Please select the configuration to install:${RST}"
         echo ""
         echo -e "${OPTION}   [1] NvChad ${RST}"
         echo -e "${OPTION}   [2] LazyVim ${RST}"
         echo -e "${OPTION}   [3] AstroNvim ${RST}"
         echo -e "${OPTION}   [4] Skip ${RST}"
         echo ""
-        echo -ne "${INFO}  [*] Select option (1-4): ${RST}"
+        echo -ne "${INFO}  [*] Enter selection (1-4): ${RST}"
+        local config_choice
         read -r config_choice
-    else
-        config_choice="$forced_choice"
-    fi
-
-    IFS='|' read -r repo url < <(projectr_nvim_config_repo "$config_choice") || {
-        echo -e "${ERROR}  [!] Invalid option: '$config_choice'${RST}"
+        case "$config_choice" in
+            1) repo="https://github.com/NvChad/starter" ; break ;;
+            2) repo="https://github.com/LazyVim/starter" ; break ;;
+            3) repo="https://github.com/AstroNvim/template" ; break ;;
+            4)
+                echo -e "${INFO}  [*] Skipping Neovim configuration installation...${RST}"
+                return 0
+                ;;
+            *)
+                echo -e "${ERROR}  [!] Invalid selection: '$config_choice'.${RST}"
+                ;;
+        esac
+    done
+    echo -e "${OPTION}  [*] Cloning repository: $repo...${RST}"
+    git clone --depth 1 "$repo" "$HOME/.config/nvim" >/dev/null 2>&1
+    if [[ $? -ne 0 ]]; then
+        echo -e "${ERROR}  [!] Failed to clone repository: $repo. Please verify network connectivity.${RST}"
         return 1
-    }
-    if [[ "$repo" == "skip" ]]; then
-        echo -e "${INFO}  [*] Skipping Neovim config installation...${RST}"
-        return 0
     fi
-
-    echo -e "${OPTION}  [*] Cloning $repo...${RST}"
-    rm -rf ~/.config/nvim 2>/dev/null || true
-    if ! git clone --depth 1 "$url" ~/.config/nvim >/dev/null 2>&1; then
-        echo -e "${ERROR}  [!] Failed to clone $repo — check your internet connection.${RST}"
-        log FAIL "git clone failed for $repo ($url)"
-        return 1
-    fi
-
-    echo -e "${OPTION}  [✓] $repo cloned successfully.${RST}"
-    log INSTALL "$repo Neovim config cloned"
-
-    if [[ -n "$forced_choice" ]] || ask "  [*] Remove .git folder?" "y"; then
-        rm -rf ~/.config/nvim/.git
-        echo -e "${OPTION}  [✓] .git folder removed.${RST}"
+    echo -e "${OPTION}  [✓] Repository $repo cloned successfully.${RST}"
+    log INSTALL "Neovim config cloned successfully"
+    if [[ -d "$HOME/.config/nvim/.git" ]]; then
+        rm -rf "$HOME/.config/nvim/.git"
+        echo -e "${OPTION}  [✓] The .git directory has been successfully removed.${RST}"
     fi
 }
 
@@ -136,15 +133,15 @@ setup_zsh() {
 
     if [[ -d "$HOME/.oh-my-zsh" ]]; then
         echo -e "${OPTION}  [✓] Oh-My-Zsh already exists. Skipping...${RST}"
-        sleep 1
     else
         if ! command -v git >/dev/null 2>&1; then
-            echo -e "${ERROR}  [!] git is not installed — cannot clone oh-my-zsh safely.${RST}"
+            echo -e "${ERROR}  [!] Git is not installed. Unable to safely clone Oh-My-Zsh.${RST}"
             return 1
         fi
-        echo -e "${INFO}  [*] Cloning oh-my-zsh repository instead of executing a remote installer...${RST}"
-        if ! git clone --depth=1 https://github.com/ohmyzsh/ohmyzsh.git "$HOME/.oh-my-zsh" >/dev/null 2>&1; then
-            echo -e "${ERROR}  [!] Failed to clone oh-my-zsh repository.${RST}"
+        echo -e "${INFO}  [*] Cloning the Oh-My-Zsh repository directly...${RST}"
+        git clone --depth 1 https://github.com/ohmyzsh/ohmyzsh.git "$HOME/.oh-my-zsh" >/dev/null 2>&1
+        if [[ $? -ne 0 ]]; then
+            echo -e "${ERROR}  [!] Failed to clone the Oh-My-Zsh repository.${RST}"
             return 1
         fi
         if [[ ! -f "$HOME/.zshrc" && -f "$HOME/.oh-my-zsh/templates/zshrc.zsh-template" ]]; then
@@ -164,21 +161,20 @@ setup_zsh() {
 
     if [[ -d "$HOME/.oh-my-zsh/custom/themes/powerlevel10k" ]]; then
         echo -e "${OPTION}  [✓] Powerlevel10k already installed — skipping.${RST}"
-        sleep 1
-        return 0
+    else
+        if ! command -v git >/dev/null 2>&1; then
+            echo -e "${ERROR}  [!] Git is not installed. Unable to clone Powerlevel10k.${RST}"
+            return 1
+        fi
     fi
-
-    if ! command -v git >/dev/null 2>&1; then
-        echo -e "${ERROR}  [!] git is not installed — cannot clone Powerlevel10k.${RST}"
+    echo -e "${INFO}  [*] Cloning the Powerlevel10k repository...${RST}"
+    git clone --depth=1 https://github.com/romkatv/powerlevel10k.git "${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k" >/dev/null 2>&1
+    if [[ $? -ne 0 ]]; then
+        echo -e "${ERROR}  [!] Failed to clone Powerlevel10k. Please verify network connectivity.${RST}"
         return 1
     fi
-
-    echo -e "${INFO}  [*] Cloning Powerlevel10k...${RST}"
-    if ! git clone --depth=1 https://github.com/romkatv/powerlevel10k.git             "${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k" >/dev/null 2>&1; then
-        echo -e "${ERROR}  [!] Failed to clone Powerlevel10k — check your connection.${RST}"
-        log FAIL "git clone failed for Powerlevel10k"
-        return 1
-    fi
+    echo ""
+    echo -e "${OPTION} [✓] Powerlevel10k installation complete. Run 'p10k configure' to set up.${RST}"
 
     projectr_zsh_set_theme "powerlevel10k/powerlevel10k" || true
     echo ""
@@ -188,23 +184,22 @@ setup_zsh() {
 #  install_code_server — special installer for code-server
 install_code_server() {
     if [[ "${PRIMARY_PKG_MANAGER:-}" != "pkg" ]]; then
-        echo -e "${ERROR}  [!] code-server via tur-repo is only supported on Termux.${RST}"
+        echo -e "${ERROR}  [!] Installation of code-server via tur-repo is only supported on Termux environment.${RST}"
         return 1
     fi
     echo -e "${OPTION}"
-    if ask "[*] tur-repo is required for code-server. Install it?" "y"; then
-        echo -e "${RST}"
-        if ! progress_run "Installing tur-repo" \
-                          "tur-repo ready" \
-                          pkg install -y tur-repo; then
-            echo -e "${ERROR}  [!] tur-repo failed to install — aborting code-server.${RST}"
-            log FAIL "tur-repo install failed; code-server aborted"
-            return 1
-        fi
-        echo ""
-        install_pkg "code-server" "code-server" "Code-Server: VSCode on Android"
-    else
+    print_box center "Code-server requires tur-repo. Setting it up now."
+    echo -e "${RST}"
+    pkg install -y tur-repo >/dev/null 2>&1
+    if [[ $? -ne 0 ]]; then
+        echo -e "${ERROR}  [!] Failed to install tur-repo. Installation of code-server has been aborted.${RST}"
+        return 1
+    fi
+    echo ""
+    pkg install -y code-server >/dev/null 2>&1
+    if [[ $? -ne 0 ]]; then
         echo -e "${INFO}  [→] Skipping code-server installation.${RST}"
+        return 1
     fi
 }
 
@@ -212,15 +207,13 @@ install_code_server() {
 setup_golang() {
     install_pkg go golang "Go: Programming language and toolchain"
     if command -v go >/dev/null 2>&1; then
-        echo -e "${INFO}  [*] Tip: add \"$(go env GOPATH 2>/dev/null)/bin\" to PATH for Go-installed CLIs.${RST}"
+        echo -e "${INFO}  [*] Recommended: Append \"\$(go env GOPATH 2>/dev/null)/bin\" to your PATH to enable Go binaries.${RST}"
     fi
 }
 
 setup_rustup() {
     install_pkg rustup rustup "Rustup: Rust toolchain manager"
-    if command -v rustup >/dev/null 2>&1; then
-        echo -e "${INFO}  [*] Run 'rustup default stable' if no Rust toolchain is active yet.${RST}"
-    fi
+    post_rust
 }
 
 setup_docker() {
@@ -232,36 +225,57 @@ setup_docker() {
     esac
 
     install_pkg docker "$docker_pkg" "Docker: Container engine and CLI"
-    if command -v docker >/dev/null 2>&1; then
-        echo -e "${INFO}  [*] If Docker needs rootless access, add your user to the docker group and re-login.${RST}"
-    fi
+    post_docker
 }
 
 setup_kubectl() {
     install_pkg kubectl kubectl "Kubectl: Kubernetes command-line tool"
-    if command -v kubectl >/dev/null 2>&1; then
-        echo -e "${INFO}  [*] Configure clusters with kubeconfig before running kubectl commands.${RST}"
-    fi
+    post_kubectl
 }
 
 setup_postgres() {
     install_pkg postgres postgresql "PostgreSQL: Advanced relational database"
-    if command -v postgres >/dev/null 2>&1 || command -v psql >/dev/null 2>&1; then
-        echo -e "${INFO}  [*] Start or initialize PostgreSQL using your distro's service instructions.${RST}"
-    fi
+    post_postgres
 }
 
 setup_mysql() {
     install_pkg mysql mysql "MySQL: Database server and client"
-    if command -v mysql >/dev/null 2>&1; then
-        echo -e "${INFO}  [*] Run your distro's secure-installation flow before exposing MySQL services.${RST}"
-    fi
+    post_mysql
 }
 
 setup_android_tools() {
     install_pkg adb android-tools "Android tools: adb and fastboot utilities"
+    post_adb
+}
+
+post_rust() {
+    if command -v rustc >/dev/null 2>&1; then
+        echo -e "${INFO}  [*] Execute 'rustup default stable' to activate the default Rust toolchain.${RST}"
+    fi
+}
+post_docker() {
+    if command -v docker >/dev/null 2>&1; then
+        echo -e "${INFO}  [*] For rootless access, add your user account to the 'docker' group and re-establish the session.${RST}"
+    fi
+}
+post_kubectl() {
+    if command -v kubectl >/dev/null 2>&1; then
+        echo -e "${INFO}  [*] Please configure cluster credentials via kubeconfig before running kubectl commands.${RST}"
+    fi
+}
+post_postgres() {
+    if command -v psql >/dev/null 2>&1; then
+        echo -e "${INFO}  [*] Initialize and start the PostgreSQL service using the system service manager instructions.${RST}"
+    fi
+}
+post_mysql() {
+    if command -v mysql >/dev/null 2>&1; then
+        echo -e "${INFO}  [*] Execute the system database secure-installation utility prior to exposing MySQL services.${RST}"
+    fi
+}
+post_adb() {
     if command -v adb >/dev/null 2>&1; then
-        echo -e "${INFO}  [*] Enable USB debugging on your Android device before using adb.${RST}"
+        echo -e "${INFO}  [*] Please ensure USB debugging is enabled on your Android device before utilizing adb.${RST}"
     fi
 }
 
@@ -284,15 +298,19 @@ uninstall_nvim_special() {
     uninstall_pkg nvim neovim "Neovim"
     if [[ -d "$HOME/.config/nvim" ]] && ask "   [*] Also remove Neovim config files?" "y"; then
         rm -rf "$HOME/.config/nvim"
-        echo -e "${OPTION}   [✓] Neovim config removed${RST}"
+        echo -e "${OPTION}   [✓] Neovim configuration has been removed.${RST}"
     fi
 }
 
 uninstall_zsh_special() {
     uninstall_pkg zsh zsh "Zsh"
-    if [[ -d "$HOME/.oh-my-zsh" ]] && ask "   [*] Also remove Oh-My-Zsh files?" "n"; then
+    projectr_uninstall_omz
+}
+
+projectr_uninstall_omz() {
+    if [[ -d "$HOME/.oh-my-zsh" ]]; then
         rm -rf "$HOME/.oh-my-zsh"
-        echo -e "${OPTION}   [✓] Oh-My-Zsh files removed${RST}"
+        echo -e "${OPTION}   [✓] Oh-My-Zsh directories and files have been removed.${RST}"
     fi
 }
 

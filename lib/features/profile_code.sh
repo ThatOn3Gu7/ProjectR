@@ -4,7 +4,7 @@
 
 projectr_profile_tools() {
     local file="$1"
-    [[ -f "$file" ]] || { echo -e "${ERROR}[!] Profile not found: $file${RST}" >&2; log_error "Profile not found: $file" "profile"; return 1; }
+    [[ -f "$file" ]] || { echo -e "${ERROR}[!] Profile file not found: $file${RST}" >&2; log_error "Profile not found: $file" "profile"; return 1; }
     case "$file" in
         *.yml|*.yaml)
             awk '
@@ -37,21 +37,21 @@ projectr_profile_tools() {
                    }
                ' "$file"
                ;;
-        *) echo -e "${ERROR}[!] Unsupported profile format: $file${RST}" >&2; log_error "Unsupported profile format: $file" "profile"; return 1 ;;
+        *) echo -e "${ERROR}[!] Unsupported profile file format: $file${RST}" >&2; log_error "Unsupported profile format: $file" "profile"; return 1 ;;
     esac
 }
 
 projectr_install_profile() {
     local file="$1" tool
     mapfile -t _projectr_profile_tools < <(projectr_profile_tools "$file")
-    [[ ${#_projectr_profile_tools[@]} -gt 0 ]] || { echo -e "${ERROR}[!] No tools found in $file${RST}"; log_warn "No tools found in profile: $file" "profile"; return 1; }
+    [[ ${#_projectr_profile_tools[@]} -gt 0 ]] || { echo -e "${ERROR}[!] No tool definitions found in $file${RST}"; log_warn "No tools found in profile: $file" "profile"; return 1; }
     local _old_nvim="${PROJECTR_NVIM_CONFIG-}" _old_omz="${PROJECTR_ZSH_INSTALL_OMZ-}" _old_theme="${PROJECTR_ZSH_THEME-}" _old_p10k="${PROJECTR_ZSH_INSTALL_P10K-}"
     declare -f projectr_profile_export_settings >/dev/null 2>&1 && projectr_profile_export_settings "$file" || true
     log_info "Installing profile $file with ${#_projectr_profile_tools[@]} tool(s)" "profile"
     local status=0 rc entry cmd pkg name desc type extra cat
     for tool in "${_projectr_profile_tools[@]}"; do
         entry=$(projectr_profile_find_entry "$tool") || {
-            echo -e "${ERROR}[!] Unknown tool in profile: $tool${RST}"
+            echo -e "${ERROR}[!] Unrecognized tool in profile definition: $tool${RST}"
             status=1
             continue
         }
@@ -97,21 +97,21 @@ projectr_profile_diff() {
             --profile=*) file="${arg#--profile=}" ;;
             --profile) file="__NEXT__" ;;
             --json) json=1 ;;
-            --*) echo -e "${ERROR}[!] Unknown diff option: $arg${RST}" >&2; return 2 ;;
+            --*) echo -e "${ERROR}[!] Unrecognized difference-comparison parameter: $arg${RST}" >&2; return 2 ;;
             *)
                 if [[ "$file" == "__NEXT__" ]]; then
                     file="$arg"
                 elif [[ -z "$file" ]]; then
                     file="$arg"
                 else
-                    echo -e "${ERROR}[!] Unexpected diff argument: $arg${RST}" >&2
+                    echo -e "${ERROR}[!] Unexpected comparison argument: $arg${RST}" >&2
                     return 2
                 fi
                 ;;
         esac
     done
 
-    [[ -n "$file" && "$file" != "__NEXT__" ]] || { echo -e "${ERROR}[!] diff requires --profile <file>.${RST}" >&2; return 1; }
+    [[ -n "$file" && "$file" != "__NEXT__" ]] || { echo -e "${ERROR}[!] The diff operation requires --profile <file>.${RST}" >&2; return 1; }
     [[ -f "$file" ]] || { projectr_profile_tools "$file" >/dev/null; return 1; }
     case "$file" in
         *.yml|*.yaml|*.toml) ;;
@@ -140,7 +140,7 @@ projectr_profile_diff() {
 
     if [[ ! -s "$tmp" ]]; then
         rm -f "$tmp"
-        echo -e "${ERROR}[!] No tools found in $file${RST}" >&2
+        echo -e "${ERROR}[!] No tool definitions found in $file${RST}" >&2
         return 1
     fi
 

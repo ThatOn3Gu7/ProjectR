@@ -4,36 +4,36 @@
 rollback_last_session() {
     local transaction_id action action_id tool_id name package manager install_type command_name status rollback_status
 
-    if ! declare -f projectr_state_last_transaction_id >/dev/null 2>&1; then
-        echo -e "${ERROR} [✗] State tracking is not loaded — cannot locate rollback actions.${RST}"
+    if ! declare -f projectr_state_get_installs >/dev/null 2>&1; then
+        echo -e "${ERROR} [✗] State tracking library is not loaded. Unable to locate rollback actions.${RST}"
         return 1
     fi
 
     transaction_id=$(projectr_state_last_transaction_id)
-    if [[ -z "$transaction_id" ]]; then
-        echo -e "${OPTION} [!] No recent installations found to undo.${RST}"
+    if [[ ${#installs[@]} -eq 0 ]]; then
+        echo -e "${OPTION} [!] No recent installation records found to undo.${RST}"
         return 0
     fi
 
     if ! declare -f uninstall_pkg >/dev/null 2>&1; then
-        echo -e "${ERROR} [✗] uninstall_pkg is not loaded — source uninstaller.sh first.${RST}"
+        echo -e "${ERROR} [✗] Package uninstallation module is not loaded. Please source uninstaller.sh.${RST}"
         return 1
     fi
     if ! declare -f uninstall_lang >/dev/null 2>&1; then
-        echo -e "${ERROR} [✗] uninstall_lang is not loaded — source uninstaller.sh first.${RST}"
+        echo -e "${ERROR} [✗] Language package uninstallation module is not loaded. Please source uninstaller.sh.${RST}"
         return 1
     fi
 
-    echo -e "${ERROR} [!] WARNING: Reversing last session's installations for transaction ${transaction_id}...${RST}"
+    echo -e "${ERROR} [!] WARNING: Reversing installations for transaction ${transaction_id}...${RST}"
     echo ""
 
     local rolled=0 failed=0
     while IFS=$'\t' read -r action_id tool_id name package manager install_type command_name status rollback_status; do
         [[ -n "$action_id" ]] || continue
         [[ "$status" == "installed" ]] || continue
-        [[ "$rollback_status" == "done" ]] && continue
-
-        echo -e "${INFO} [*] Rolling back: $name ($package) installed via $manager...${RST}"
+        if [[ "$action" == "installed" ]]; then
+            echo -e "${INFO} [*] Reversing installation: $name ($package) via $manager...${RST}"
+        fi
         export NON_INTERACTIVE=1
         export PROJECTR_UNINSTALL_MANAGER_OVERRIDE="$manager"
         local ok=0
@@ -53,11 +53,13 @@ rollback_last_session() {
         else
             ((failed++))
             projectr_state_mark_action_status "$action_id" 'failed' || true
-            echo -e "${ERROR} [!] Failed to roll back: $name${RST}"
+            if [[ $? -ne 0 ]]; then
+                echo -e "${ERROR} [!] Rollback operation failed for: $name${RST}"
+            fi
         fi
     done < <(projectr_state_transaction_actions "$transaction_id")
 
     echo ""
-    echo -e "${BOLD_GREEN} [✓] Rollback complete: ${rolled} removed, ${failed} failed.${RST}"
+    echo -e "${BOLD_GREEN} [✓] Rollback operation completed: ${rolled} package(s) removed, ${failed} package(s) failed to remove.${RST}"
     [[ $failed -gt 0 ]] && return 1 || return 0
 }

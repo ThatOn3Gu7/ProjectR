@@ -629,7 +629,7 @@ ask() {
             printf '%s %s (auto: %s in %ds): ' "$prompt" "$yn_hint" "$default" "$timeout"
             if ! read -t "$timeout" -r reply; then
                 echo ""
-                echo "  [*] Timed out — using default: $default"
+                echo "  [*] Interactive prompt session timed out. Utilizing the default value: $default"
                 reply="$default"
             fi
         else
@@ -643,7 +643,7 @@ ask() {
         case "$reply" in
             y|yes|yeah|yep|ya|ye|true|1) return 0 ;;
             n|no|nope|nah|na|false|0)    return 1 ;;
-            *) echo -e "${ERROR:-}  [!] Invalid: '$reply' — please enter y or n.${RST:-}" ;;
+            *) echo -e "${ERROR:-}  [!] Invalid input: '$reply'. Please enter 'y' or 'n'.${RST:-}" ;;
         esac
     done
 }

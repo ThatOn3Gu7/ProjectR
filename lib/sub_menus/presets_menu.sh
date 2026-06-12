@@ -36,7 +36,7 @@ projectr_tool_summary_by_cmd() {
 projectr_install_preset_id() {
     local selected_id="$1" preset_id preset_title preset_desc preset_array
     if ! projectr_get_preset_fields "$selected_id"; then
-        echo -e "  ${BG_RED}[x] Invalid choice:${BOLD_WHITE} '$selected_id',${BOLD_GREEN} Please select the right option.${RST}"
+        echo -e "  ${BG_RED}[x] Invalid choice:${BOLD_WHITE} '$selected_id',${BOLD_GREEN} Please select a valid option.${RST}"
         sleep 3
         return 1
     fi
@@ -60,7 +60,7 @@ _fallback_text_preset_menu() {
                 ░▀░░░▀░▀░▀▀▀░▀▀▀░▀▀▀░░▀░░▀▀▀░▀░░▀▀▀░▀░▀
 BANNER
  echo ""
-  echo -e "${OPTION} [*] Choose the preset you want to install!${OPTION}"
+  echo -e "${OPTION} [*] Select the configuration preset to install:${OPTION}"
    echo ""
   local item preset_id preset_title preset_desc preset_array
   for item in "${PRESET_MENU_ITEMS[@]}"; do
@@ -69,9 +69,9 @@ BANNER
           "$preset_id" "$preset_title" "$preset_desc"
   done
    echo ""
-  echo -e "${ERROR} [b]ack to main menu ${RST}"
+  echo -e "${ERROR} [b]ack to main menu${RST}"
    echo ""
-  echo -ne "${INFO}  ◇ Choose an option: ${RST}"
+  echo -ne "${INFO}  ◇ Select an option: ${RST}"
    read -r profile_choice
   echo ""
   case "$profile_choice" in
@@ -128,7 +128,7 @@ prompt_preset_install() {
     preview_preset "$preset_name" "${preset_items[@]}"
     
     # Ask for confirmation
-    echo -e "${BOLD_BLUE}  [?] Do you want to install this preset? ${RST}"
+    echo -e "${BOLD_BLUE}  [?] Do you want to proceed with installing this preset? ${RST}"
     echo ""
     echo -e "${BOLD_GREEN}   [y] Yes${RST} - Install all ${BOLD_WHITE}${#preset_items[@]}${RST} tools ${RST}"
     echo -e "${BOLD_RED}   [n] No${RST}  - Cancel and return to menu ${RST}"
@@ -142,7 +142,7 @@ prompt_preset_install() {
         y|Y)
             assert_disk_space
             sleep 1
-            echo -e "${OPTION}  [✓] Starting installation of $preset_name preset...${RST}"
+            echo -e "${OPTION}  [✓] Initiating installation of the '$preset_name' preset...${RST}"
             sleep 1
             return 0
             ;;

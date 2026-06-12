@@ -13,7 +13,7 @@ safe_tput() { command -v tput >/dev/null 2>&1 && tput "$@" 2>/dev/null; }
 show_install_wait() {
     clear
     echo -e "${OPTION}"
-    print_box center "[*] Installation may take a while, Please be patient"
+    print_box center "[*] The installation process is in progress. Please wait."
     echo -e "${INFO}"
 }
 
@@ -142,8 +142,8 @@ graceful_exit() {
     fi
     echo ""
     echo -e "${INFO}"
-    print_box center " Thanks for using the script
-     See you next time "
+    print_box center " Thank you for using ProjectR.
+      The session has terminated successfully. "
     echo -e "${RST}"
     # Only call stop_spinner if loaded — spinner.sh is sourced after display.sh
     if declare -f stop_spinner >/dev/null 2>&1; then
@@ -274,4 +274,33 @@ print_header_box() {
     done
 
     echo "${indent}┗$(printf '━%.0s' $(seq 1 $box_width))┛"
+}
+
+# ----------------------------------------------------------------------------
+# Professional messaging helpers (single‑character Unicode symbols)
+# Usage examples:
+#   msg_success "Operation completed successfully."
+#   msg_error   "An error occurred while updating."
+#   msg_info    "Information: process started."
+#   msg_warning "Warning: low disk space."
+
+msg_success() {
+    # ${OPTION} is the colour variable for success/option messages
+    echo -e "${OPTION}[✓] $1${RST}"
+}
+
+msg_error() {
+    # ${ERROR} is the colour variable for error messages
+    echo -e "${ERROR}[✖] $1${RST}"
+}
+
+msg_info() {
+    # ${INFO} is the colour variable for informational messages
+    echo -e "${INFO}[ℹ] $1${RST}"
+}
+
+msg_warning() {
+    # ${WARNING} is the colour variable for warning messages (fallback to ${ERROR} if undefined)
+    local warn_color="${WARNING:-$ERROR}"
+    echo -e "${warn_color}[⚠] $1${RST}"
 }

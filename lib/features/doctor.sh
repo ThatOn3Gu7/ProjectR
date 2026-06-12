@@ -118,10 +118,10 @@ projectr_doctor_print_table() {
     printf '  %s\n' '─────────────────────────────'
     echo ""
     if [[ $failures -eq 0 ]]; then
-        echo -e "${OPTION}[✓] Doctor found no blocking issues.${RST}"
+        echo -e "${OPTION}[✓] System diagnostics completed. No blocking issues were identified.${RST}"
         echo ""
     else
-        echo -e "${ERROR}[!] Doctor found $failures issue(s).${RST}"
+        echo -e "${ERROR}[!] System diagnostics completed. Identified $failures issue(s).${RST}"
         echo ""
     fi
 }
@@ -132,11 +132,10 @@ projectr_doctor() {
         case "$arg" in
             --json) json=1 ;;
             --no-color) declare -f projectr_disable_color >/dev/null 2>&1 && projectr_disable_color ;;
-            *) echo -e "${ERROR}[!] Unknown doctor option: $arg${RST}" >&2; return 2 ;;
+            *) echo -e "${ERROR}[!] Unknown diagnostic option: $arg${RST}" >&2; return 2 ;;
         esac
     done
-
-    tmp=$(mktemp) || { echo -e "${ERROR}[!] Could not create doctor temp file.${RST}" >&2; return 1; }
+    tmp=$(mktemp) || { echo -e "${ERROR}[!] Unable to create temporary file for diagnostic logs.${RST}" >&2; return 1; }
     log_info "Starting doctor checks json=$json" "doctor"
     projectr_doctor_collect "$tmp"
     failures=$?

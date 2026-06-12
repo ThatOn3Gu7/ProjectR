@@ -408,7 +408,7 @@ _prompt_change_command() {
       echo -e "  ${OPTION}[✓] Command name set to: ${BOLD_WHITE}${COMMAND_NAME}${RST}" >&2
     fi
   else
-    echo -e "  ${DIM}[*] Keeping: ${COMMAND_NAME}${RST}" >&2
+    echo -e "  ${DIM}[*] Retaining current value: ${COMMAND_NAME}${RST}" >&2
   fi
   sleep 1
 }
@@ -424,7 +424,7 @@ _prompt_change_install_dir() {
     INSTALL_DIR="$validated"
     echo -e "  ${OPTION}[✓] Install directory set to: ${BOLD_WHITE}${INSTALL_DIR}${RST}" >&2
   else
-    echo -e "  ${DIM}[*] Keeping: ${INSTALL_DIR}${RST}" >&2
+    echo -e "  ${DIM}[*] Retaining current value: ${INSTALL_DIR}${RST}" >&2
   fi
   sleep 1
 }
@@ -440,7 +440,7 @@ _prompt_change_bin_dir() {
     BIN_DIR="$validated"
     echo -e "  ${OPTION}[✓] Bin directory set to: ${BOLD_WHITE}${BIN_DIR}${RST}" >&2
   else
-    echo -e "  ${DIM}[*] Keeping: ${BIN_DIR}${RST}" >&2
+    echo -e "  ${DIM}[*] Retaining current value: ${BIN_DIR}${RST}" >&2
   fi
   sleep 1
 }
@@ -471,7 +471,7 @@ _prompt_change_repo_url() {
     PROJECTR_REPO_URL="$new_url"
     echo -e "  ${OPTION}[✓] Repo URL set to: ${BOLD_WHITE}${PROJECTR_REPO_URL}${RST}" >&2
   else
-    echo -e "  ${DIM}[*] Keeping: ${PROJECTR_REPO_URL}${RST}" >&2
+    echo -e "  ${DIM}[*] Retaining current value: ${PROJECTR_REPO_URL}${RST}" >&2
   fi
   sleep 1
 }
@@ -482,7 +482,7 @@ _reset_defaults() {
   BIN_DIR="${PROJECTR_BIN_DIR:-$DEFAULT_BIN_DIR}"
   ADD_PATH=0
   PROJECTR_REPO_URL="${PROJECTR_REPO_URL_ORIGINAL:-https://github.com/Thaton3gu7/ProjectR.git}"
-  echo -e "  ${OPTION}[✓] All settings reset to defaults.${RST}" >&2
+  echo -e "  ${OPTION}[✓] All settings have been successfully reset to defaults.${RST}" >&2
   sleep 1
 }
 
@@ -543,19 +543,19 @@ _run_setup_menu() {
     r | R) _reset_defaults ;;
     i | I)
       if _confirm_install; then
-        echo -e "  ${OPTION}[✓] Starting installation...${RST}" >&2
+        echo -e "  ${OPTION}[✓] Initiating installation process...${RST}" >&2
         sleep 1
         return 0
       else
-        echo -e "  ${INFO}[*] Installation cancelled. Returning to menu...${RST}" >&2
+        echo -e "  ${INFO}[*] Installation cancelled. Returning to the configuration menu...${RST}" >&2
         sleep 1
       fi
       ;;
     q | Q)
       echo -e "  ${INFO}" >&2
       echo -e "  ╭──────────────────────────────────────────────╮" >&2
-      echo -e "  │  Setup cancelled. No changes were made.      │" >&2
-      echo -e "  │  Run setup.sh again when you're ready.       │" >&2
+      echo -e "  │  Setup has been cancelled. No changes made.  │" >&2
+      echo -e "  │  Execute setup.sh to restart configuration.  │" >&2
       echo -e "  ╰──────────────────────────────────────────────╯" >&2
       echo -e "  ${RST}" >&2
       exit 0
@@ -567,7 +567,7 @@ _run_setup_menu() {
       _read_input "  ${DIM}[press Enter to return to menu]${RST}" _discard
       ;;
     *)
-      echo -e "  ${ERROR}[!] Invalid option: '$choice'. Please select a valid option.${RST}" >&2
+      echo -e "  ${ERROR}[!] Invalid selection: '$choice'. Please choose a valid option.${RST}" >&2
       sleep 1
       ;;
     esac
@@ -792,7 +792,7 @@ maybe_add_path() {
 _show_success() {
   echo "" >&2
   echo -e "${BOLD_BRIGHT_CYAN}" >&2
-  echo "              ✓  ProjectR has been installed successfully!" >&2
+  echo "              ✓  ProjectR has been successfully installed!" >&2
   echo -e "${RST}" >&2
   echo "" >&2
   printf "  ${OPTION}  App files${RST} : %s\n" "$INSTALL_DIR" >&2
@@ -888,7 +888,7 @@ if ((REMOTE_MODE)); then
   clone_project_remote
 
   if [[ ! -f "$SOURCE_DIR/main.sh" || ! -d "$SOURCE_DIR/lib" ]]; then
-    fail "Clone succeeded but the repository doesn't look like a valid ProjectR checkout."
+    fail "Repository cloned successfully, but it does not appear to contain a valid ProjectR installation."
   fi
 
   chmod +x "$SOURCE_DIR/main.sh" 2>/dev/null || true
@@ -896,7 +896,7 @@ if ((REMOTE_MODE)); then
   write_launcher
   maybe_add_path
   if ((SELF_UPDATE_MODE)); then
-    success "$PROJECT_NAME files refreshed successfully."
+    success "$PROJECT_NAME files have been successfully refreshed."
   else
     _show_success
   fi
@@ -906,7 +906,7 @@ fi
 
 # ======================= Local mode ========================================
 if [[ ! -f "$SOURCE_DIR/main.sh" || ! -d "$SOURCE_DIR/lib" ]]; then
-  fail "setup.sh must be run from a valid ProjectR checkout."
+  fail "setup.sh must be executed from a valid ProjectR installation directory."
 fi
 
 INSTALL_PARENT="$(dirname "$INSTALL_DIR")"
@@ -918,12 +918,12 @@ fi
 BIN_DIR="$(ensure_dir_with_fallback "$BIN_DIR" "$HOME/bin" "launcher bin")"
 
 copy_project
-chmod +x "$INSTALL_DIR/main.sh" 2>/dev/null || warn "Could not mark main.sh executable; launcher will still run it with bash."
+chmod +x "$INSTALL_DIR/main.sh" 2>/dev/null || warn "Unable to set execution permissions on main.sh. The launcher will execute the script via bash."
 write_metadata
 write_launcher
 maybe_add_path
 if ((SELF_UPDATE_MODE)); then
-  success "$PROJECT_NAME files refreshed successfully."
+  success "$PROJECT_NAME files have been successfully refreshed."
 else
   _show_success
 fi

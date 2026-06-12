@@ -109,13 +109,14 @@ projectr_dry_run_entries() {
             END { printf "]}\n" }
         ' "$tmp"
     else
-        echo -e "${OPTION}[*] ProjectR dry-run plan (no changes will be made)${RST}"
-        printf '  %-18s %-10s %-12s %-18s %-18s %s\n' Tool Type Manager Package Status Changes
-        printf '  %s\n' '────────────────────────────────────────────────────────────────────────────────────'
+        echo -e "${OPTION}[*] ProjectR dry-run simulation plan (no modifications will be performed)${RST}"
+        printf '  %-20s | %-12s | %-10s | %-15s\n' "Tool" "Package" "Manager" "Type"
+        printf '  %s\n' '─────────────────────────────────────────────────────────────'
         while IFS=$'\t' read -r name cmd pkg type manager status impact conflicts changes; do
-            printf '  %-18s %-10s %-12s %-18s %-18s %s\n' "$name" "$type" "$manager" "$pkg" "$status" "$changes"
+            printf '  %-20s | %-12s | %-10s | %-15s\n' "$cmd" "$pkg" "$manager" "$type"
         done < "$tmp"
-        echo -e "${DIM}[*] No changes were made. Use --json for CI output.${RST}"
+        printf '  %s\n' '─────────────────────────────────────────────────────────────'
+        echo -e "${DIM}[*] No changes were applied. Utilize --json for structured output.${RST}"
     fi
     log_ok "Dry-run generated $plan_count plan item(s)" "dry-run"
     rm -f "$tmp"
@@ -129,7 +130,7 @@ projectr_dry_run_install() {
             --json) json=1 ;;
             --no-color) projectr_disable_color ;;
             --dry-run|install) ;;
-            --*) echo -e "${ERROR}[!] Unknown dry-run option: $arg${RST}" >&2; return 2 ;;
+            --*) echo -e "${ERROR}[!] Unrecognized dry-run parameter: $arg${RST}" >&2; return 2 ;;
             *) targets+=("$arg") ;;
         esac
     done
@@ -142,7 +143,7 @@ projectr_dry_run_install() {
     else
         for target in "${targets[@]}"; do
             entry=$(projectr_find_tool "$target") || {
-                echo -e "${ERROR}[!] Unknown tool: $target${RST}" >&2
+                echo -e "${ERROR}[!] Unrecognized tool: $target${RST}" >&2
                 log_error "Dry-run requested unknown tool: $target" "dry-run"
                 return 1
             }
@@ -159,18 +160,19 @@ projectr_dry_run_profile() {
     for arg in "$@"; do
         case "$arg" in
             --json) json=1 ;;
-            --*) echo -e "${ERROR}[!] Unknown profile dry-run option: $arg${RST}" >&2; return 2 ;;
+            --*) echo -e "${ERROR}[!] Unrecognized profile dry-run parameter: $arg${RST}" >&2; return 2 ;;
         esac
     done
-    [[ -n "$file" ]] || { echo -e "${ERROR}[!] dry-run --profile requires a file path.${RST}" >&2; return 1; }
-    declare -f projectr_profile_tools >/dev/null 2>&1 || { echo -e "${ERROR}[!] Profile parser is not loaded.${RST}" >&2; return 1; }
-    while IFS= read -r tool; do
-        [[ -n "$tool" ]] || continue
-        entry=$(projectr_find_tool "$tool") || { echo -e "${ERROR}[!] Unknown tool in profile: $tool${RST}" >&2; return 1; }
-        entries+=("$entry")
-    done < <(projectr_profile_tools "$file")
-    [[ ${#entries[@]} -gt 0 ]] || { echo -e "${ERROR}[!] No tools found in $file${RST}" >&2; return 1; }
-    projectr_dry_run_entries "$json" "${entries[@]}"
+    [[ -n "$file" ]] || { echo -e "${ERROR}[!] The --profile option requires a valid file path.${RST}" >&2; return 1; }
+    declare -f projectr_profile_tools >/dev/null 2>&1 || { echo -e "${ERROR}[!] The profile parser library is not initialized.${RST}" >&2; return 1; }
+    local -a profile_list=()
+    projectr_profile_tools "$file" || return 1
+    for tool in "${_projectr_profile_tools[@]}"; do
+        entry=$(projectr_find_tool "$tool") || { echo -e "${ERROR}[!] Unrecognized tool entry in profile: $tool${RST}" >&2; return 1; }
+        profile_list+=("$entry")
+    done
+    [[ ${#profile_list[@]} -gt 0 ]] || { echo -e "${ERROR}[!] No valid tool definitions found in $file${RST}" >&2; return 1; }
+    projectr_dry_run_entries "$json" "${profile_list[@]}"
 }
 
 projectr_dry_run_repair() {
@@ -179,14 +181,13 @@ projectr_dry_run_repair() {
     for arg in "$@"; do
         case "$arg" in
             --json) json=1 ;;
-            --*) echo -e "${ERROR}[!] Unknown repair dry-run option: $arg${RST}" >&2; return 2 ;;
+            --*) echo -e "${ERROR}[!] Unrecognized repair dry-run parameter: $arg${RST}" >&2; return 2 ;;
         esac
     done
-
-    if ! declare -f projectr_state_records >/dev/null 2>&1 || ! declare -f projectr_state_find_registry_entry >/dev/null 2>&1; then
-        echo -e "${ERROR}[!] State helpers are not loaded; cannot plan repair safely.${RST}" >&2
+    declare -f projectr_state_get_installs >/dev/null 2>&1 || {
+        echo -e "${ERROR}[!] State management components are not loaded; unable to safely formulate repair plan.${RST}" >&2
         return 1
-    fi
+    }
 
     mapfile -t records < <(projectr_state_records)
     for record in "${records[@]}"; do
@@ -197,7 +198,7 @@ projectr_dry_run_repair() {
     done
 
     if [[ ${#entries[@]} -eq 0 ]]; then
-        [[ $json -eq 1 ]] && printf '{"dry_run":true,"plan":[]}\n' || echo -e "${OPTION}[✓] Dry-run repair: no missing recorded ProjectR-managed tools detected.${RST}"
+        [[ $json -eq 1 ]] && printf '{"dry_run":true,"plan":[]}\n' || echo -e "${OPTION}[✓] Dry-run repair: No missing ProjectR-managed tools were detected.${RST}"
         return 0
     fi
     projectr_dry_run_entries "$json" "${entries[@]}"

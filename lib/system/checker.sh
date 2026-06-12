@@ -22,10 +22,10 @@ check_tool() {
        [[ -n "$version" ]] && break
     done
     projectr_install_result_push found "$effective_cmd"
-     echo -e "${OPTION}     [✓] \"$name\" is installed ${DIM}(v${version:--Unknown})${RST}"
+     echo -e "${OPTION}     [✓] \"$name\" is installed ${DIM}(v${version:--unknown})${RST}"
    else
     projectr_install_result_push missing "$effective_cmd"
-     echo -e "${ERROR}     [✗] \"$name\" is NOT installed${RST}"
+     echo -e "${ERROR}     [✗] \"$name\" is not installed${RST}"
   fi
 }
 
@@ -35,7 +35,7 @@ check_all_tools() {
 
   clear
   echo -e "${OPTION}"
-  print_box left "[*] Checking if any tools are installed:"
+  print_box left "[*] Verification of installed tools in progress:"
   echo -e "${RST}"
   safe_tput civis
 
@@ -47,14 +47,14 @@ check_all_tools() {
   echo ""
   local total=$(( ${#FOUND_PKGS[@]} + ${#NOT_FOUND_PKGS[@]} ))
   echo -e "${BLUE}"
-  print_titled_box --align center " [ ANALYSIS RESULTS ] " \
+  print_titled_box --align center "Analysis Results" \
                                 "● Total checked: $total" \
                                 "● Installed:     ${#FOUND_PKGS[@]}" \
                                 "● Not found:     ${#NOT_FOUND_PKGS[@]}"
   echo -e "${RST}"
 
   echo -e "${OPTION}"
-  print_box center " [✓] Task complete."
+  print_box center "[✓] Verification process completed."
   echo -e "${RST}"
   printf "${DIM}  [press ENTER]${RST}"
   read -s; echo
@@ -96,7 +96,7 @@ view_tool_summary() {
         break
         ;;
       *)
-        echo -e "${ERROR}Invalid option${RST}"
+        echo -e "${ERROR}Invalid selection.${RST}"
         ;;
     esac
   done
