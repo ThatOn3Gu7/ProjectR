@@ -270,12 +270,12 @@ _show_help_panel() {
 expand_path() {
   local path="$1"
   case $path in
-    ~|~/*)
-      printf '%s\n' "${path/#\~/$HOME}"
-      ;;
-    *)
-      printf '%s\n' "$path"
-      ;;
+  ~ | ~/*)
+    printf '%s\n' "${path/#\~/$HOME}"
+    ;;
+  *)
+    printf '%s\n' "$path"
+    ;;
   esac
 }
 

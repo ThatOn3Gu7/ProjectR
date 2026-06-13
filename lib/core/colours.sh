@@ -80,17 +80,16 @@ BOLD="\e[1m"
 DIM="\e[2m"
 ITALIC="\e[3m"
 UNDERLINE="\e[4m"
-BLINK="\e[5m"          # use sparingly
-REVERSE="\e[7m"        # swap foreground/background
+BLINK="\e[5m"   # use sparingly
+REVERSE="\e[7m" # swap foreground/background
 HIDDEN="\e[8m"
 STRIKETHROUGH="\e[9m"
 
 # BRIGHT_MAGENTA
-BRIGHT_MAGENTA="\e[0;95m"   # purple/bright magenta
+BRIGHT_MAGENTA="\e[0;95m" # purple/bright magenta
 
 # --- Semantic aliases (makes scripts readable) ---
 INFO="${BOLD_BRIGHT_YELLOW}"
 OPTION="${BOLD_BRIGHT_GREEN}"
 ERROR="${BOLD_BRIGHT_RED}"
 BARR="${BRIGHT_MAGENTA}"
-

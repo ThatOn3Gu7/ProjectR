@@ -66,7 +66,7 @@ parse_flags "$@"
 PROJECTR_VISIBLE_TOOL_COUNT=${PROJECTR_VISIBLE_TOOL_COUNT:-${PROJECTR_TOOL_PAGE_SIZE_DEFAULT:-50}}
 # -- main installer menu  --
 show_main_menu() {
- clear
+  clear
   # cool LOGO with colors
   rainbow <<"EOF"
 
@@ -84,8 +84,8 @@ show_main_menu() {
 EOF
 
   echo -e "${OPTION}"
-  print_box left "◇ Select the pkg/tool you want to install:" 
-  echo -e "${RST}" 
+  print_box left "◇ Select the pkg/tool you want to install:"
+  echo -e "${RST}"
   echo -e "${BARR}  ┌────────────────────┐ ${RST}"
   echo -e "${BARR}  │${RST} ${BOLD_BRIGHT_GREEN}☰ Available Tool   ${BARR}│ ${RST}"
   echo -e "${BARR}  ├─────────────────────────────────────────────┐${RST}"
@@ -93,32 +93,32 @@ EOF
   # The full registry is large, so the menu starts at 50 tools and can load more.
   local total_tools=${#TOOLS[@]}
   local visible_count=${PROJECTR_VISIBLE_TOOL_COUNT:-${PROJECTR_TOOL_PAGE_SIZE_DEFAULT:-50}}
-  (( visible_count > total_tools )) && visible_count=$total_tools
+  ((visible_count > total_tools)) && visible_count=$total_tools
   PROJECTR_VISIBLE_TOOL_COUNT=$visible_count
 
   local idx entry
-  for ((idx=0; idx<visible_count; idx++)); do
+  for ((idx = 0; idx < visible_count; idx++)); do
     entry="${TOOLS[$idx]}"
-    IFS="|" read -r num cmd pkg name desc type extra cat <<< "$entry"
+    IFS="|" read -r num cmd pkg name desc type extra cat <<<"$entry"
     printf "${BARR}  │${RST}${OPTION} [${BRIGHT_WHITE}%03d${OPTION}] %-13s ${INFO}- %s ${OPTION}(%s)${RST}\n" \
       "$num" "$name" "$desc" "$cat"
   done
   echo -e "${BARR}  ╰─────────────────────────────────────────────╯${RST}"
-if (( PROJECTR_VISIBLE_TOOL_COUNT < ${#TOOLS[@]} )); then
-  echo -e "${INFO}    ◇ Showing ${BOLD_WHITE}${visible_count}${INFO}/${BOLD_WHITE}${total_tools}${INFO} tools ${BOLD_WHITE}-${DIM} type 'l' to load more tools${RST}"
-fi
-echo ""
+  if ((PROJECTR_VISIBLE_TOOL_COUNT < ${#TOOLS[@]})); then
+    echo -e "${INFO}    ◇ Showing ${BOLD_WHITE}${visible_count}${INFO}/${BOLD_WHITE}${total_tools}${INFO} tools ${BOLD_WHITE}-${DIM} type 'l' to load more tools${RST}"
+  fi
+  echo ""
 
-echo -e "${BARR}  ╭─────────────────────╮${RST}"
-echo -e "${BARR}  │${RST} ${BOLD_BRIGHT_GREEN}⚙  Other Options${RST}    ${BARR}│${RST}"
-echo -e "${BARR}  ├────────────────────────────────╮${RST}"
-echo -e "${BARR}  │${RST}  ${OPTION}[${BOLD_BRIGHT_WHITE}s${OPTION}]${RST}  ${BOLD_BRIGHT_GREEN}Search & install by name ${BARR}│${RST}"
-echo -e "${BARR}  │${RST}  ${OPTION}[${BOLD_BRIGHT_WHITE}p${OPTION}]${RST}  ${BOLD_BRIGHT_GREEN}Install by preset        ${BARR}│${RST}"
-echo -e "${BARR}  │${RST}  ${OPTION}[${BOLD_BRIGHT_WHITE}i${OPTION}]${RST}  ${BOLD_BRIGHT_GREEN}Inspect installed        ${BARR}│${RST}"
-echo -e "${BARR}  │${RST}  ${OPTION}[${BOLD_BRIGHT_WHITE}u${OPTION}]${RST}  ${BOLD_BRIGHT_GREEN}Uninstall tools          ${BARR}│${RST}"
-echo -e "${BARR}  │${RST}  ${OPTION}[${BOLD_BRIGHT_WHITE}r${OPTION}]${RST}  ${BOLD_BRIGHT_GREEN}Reset saved preferences  ${BARR}│${RST}"
-echo -e "${BARR}  │${RST}  ${ERROR}[${BOLD_BRIGHT_WHITE}e${ERROR}]${RST}  ${BOLD_BRIGHT_RED}Exit the script          ${BARR}│${RST}"
-echo -e "${BARR}  ╰────────────────────────────────╯${RST}"
+  echo -e "${BARR}  ╭─────────────────────╮${RST}"
+  echo -e "${BARR}  │${RST} ${BOLD_BRIGHT_GREEN}⚙  Other Options${RST}    ${BARR}│${RST}"
+  echo -e "${BARR}  ├────────────────────────────────╮${RST}"
+  echo -e "${BARR}  │${RST}  ${OPTION}[${BOLD_BRIGHT_WHITE}s${OPTION}]${RST}  ${BOLD_BRIGHT_GREEN}Search & install by name ${BARR}│${RST}"
+  echo -e "${BARR}  │${RST}  ${OPTION}[${BOLD_BRIGHT_WHITE}p${OPTION}]${RST}  ${BOLD_BRIGHT_GREEN}Install by preset        ${BARR}│${RST}"
+  echo -e "${BARR}  │${RST}  ${OPTION}[${BOLD_BRIGHT_WHITE}i${OPTION}]${RST}  ${BOLD_BRIGHT_GREEN}Inspect installed        ${BARR}│${RST}"
+  echo -e "${BARR}  │${RST}  ${OPTION}[${BOLD_BRIGHT_WHITE}u${OPTION}]${RST}  ${BOLD_BRIGHT_GREEN}Uninstall tools          ${BARR}│${RST}"
+  echo -e "${BARR}  │${RST}  ${OPTION}[${BOLD_BRIGHT_WHITE}r${OPTION}]${RST}  ${BOLD_BRIGHT_GREEN}Reset saved preferences  ${BARR}│${RST}"
+  echo -e "${BARR}  │${RST}  ${ERROR}[${BOLD_BRIGHT_WHITE}e${ERROR}]${RST}  ${BOLD_BRIGHT_RED}Exit the script          ${BARR}│${RST}"
+  echo -e "${BARR}  ╰────────────────────────────────╯${RST}"
   echo ""
   echo ""
   echo -ne " ${BG_GREEN} ◇ Enter the tool numbers ${RST} ${BOLD_BRIGHT_GREEN}(separate by spaces)${RST} : "
@@ -140,18 +140,37 @@ handle_selection() {
 
   # Step 1: Handle the special non-number options first
   case "$selected" in
-    s|S) clear; install_by_name_menu; return ;;
-    p|P) preset_menu; return ;;
-    l|L)
-      PROJECTR_VISIBLE_TOOL_COUNT=$(( ${PROJECTR_VISIBLE_TOOL_COUNT:-${PROJECTR_TOOL_PAGE_SIZE_DEFAULT:-50}} + ${PROJECTR_TOOL_PAGE_STEP:-50} ))
-      (( PROJECTR_VISIBLE_TOOL_COUNT > ${#TOOLS[@]} )) && PROJECTR_VISIBLE_TOOL_COUNT=${#TOOLS[@]}
-      log_info "Loaded more tools in main menu: visible=$PROJECTR_VISIBLE_TOOL_COUNT" "menu"
-      return
-      ;;
-    i|I) clear; check_all_tools; return ;;
-    u|U) clear; uninstall_menu; return ;;
-    r|R) config_reset_all; sleep 1; return ;;
-    e|E) graceful_exit ;;
+  s | S)
+    clear
+    install_by_name_menu
+    return
+    ;;
+  p | P)
+    preset_menu
+    return
+    ;;
+  l | L)
+    PROJECTR_VISIBLE_TOOL_COUNT=$((${PROJECTR_VISIBLE_TOOL_COUNT:-${PROJECTR_TOOL_PAGE_SIZE_DEFAULT:-50}} + ${PROJECTR_TOOL_PAGE_STEP:-50}))
+    ((PROJECTR_VISIBLE_TOOL_COUNT > ${#TOOLS[@]})) && PROJECTR_VISIBLE_TOOL_COUNT=${#TOOLS[@]}
+    log_info "Loaded more tools in main menu: visible=$PROJECTR_VISIBLE_TOOL_COUNT" "menu"
+    return
+    ;;
+  i | I)
+    clear
+    check_all_tools
+    return
+    ;;
+  u | U)
+    clear
+    uninstall_menu
+    return
+    ;;
+  r | R)
+    config_reset_all
+    sleep 1
+    return
+    ;;
+  e | E) graceful_exit ;;
   esac
 
   # Step 2: If it's not a number, reject it
@@ -165,7 +184,7 @@ handle_selection() {
   # Step 3: Search TOOLS for the matching number and install it
   local found_flag=0
   for entry in "${TOOLS[@]}"; do
-    IFS="|" read -r num cmd pkg name desc type extra cat <<< "$entry"
+    IFS="|" read -r num cmd pkg name desc type extra cat <<<"$entry"
 
     if [[ "$selected" == "$num" ]]; then
       found_flag=1
