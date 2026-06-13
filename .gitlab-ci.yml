@@ -1,0 +1,45 @@
+# GitLab CI/CD Pipeline for ProjectR
+# Runs shellcheck linting, bats tests, and script validation.
+
+default:
+  image: ubuntu:22.04
+  before_script:
+    - apt-get update -qq && apt-get install -y -qq shellcheck bats git bash
+
+stages:
+  - lint
+  - test
+  - validate
+
+# ── Lint ────────────────────────────────────────────────────────────────────
+shellcheck:
+  stage: lint
+  script:
+    - echo "Running shellcheck on all shell scripts..."
+    - find . -name '*.sh' -not -path './.git/*' | xargs shellcheck --severity=warning
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+    - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH'
+
+# ── Test ─────────────────────────────────────────────────────────────────────
+bats:
+  stage: test
+  script:
+    - echo "Running bats test suite..."
+    - bats tests/suite.bats
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+    - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH'
+
+# ── Validate ─────────────────────────────────────────────────────────────────
+validate-scripts:
+  stage: validate
+  script:
+    - echo "Checking main.sh and setup.sh are executable and syntax-valid..."
+    - test -x main.sh   || (echo "ERROR: main.sh is not executable"  && exit 1)
+    - test -x setup.sh  || (echo "ERROR: setup.sh is not executable" && exit 1)
+    - bash -n main.sh   && echo "main.sh  syntax OK"
+    - bash -n setup.sh  && echo "setup.sh syntax OK"
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+    - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH'
