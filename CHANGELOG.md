@@ -4,6 +4,8 @@ All notable changes to ProjectR are documented here.
 
 This project adheres to [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+ProjectR is available on [GitHub](https://github.com/ThatOn3Gu7/ProjectR) and [GitLab](https://gitlab.com/Thaton3gu7/ProjectR).
+
 ---
 
 ## [Unreleased]
@@ -22,6 +24,9 @@ This project adheres to [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 - Improved update and refresh flow supporting both git checkouts and installed launcher copies.
 - Improved search install resolution using the shared manager resolver.
 - MIT License.
+- GitLab CI pipeline (`.gitlab-ci.yml`) with shellcheck, bats, and script validation stages.
+- `CONTRIBUTING.md` with setup, testing, and contribution guidelines for both GitHub and GitLab.
+- `docs/modules.md` per-module reference for all scripts under `lib/`.
 
 ### Changed
 

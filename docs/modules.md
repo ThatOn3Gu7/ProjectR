@@ -2,6 +2,8 @@
 
 This document describes every module under `lib/` and its purpose.
 
+ProjectR is available on [GitHub](https://github.com/ThatOn3Gu7/ProjectR) and [GitLab](https://gitlab.com/Thaton3gu7/ProjectR).
+
 ---
 
 ## `lib/core/` — Core Utilities

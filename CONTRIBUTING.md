@@ -1,6 +1,6 @@
 # Contributing to ProjectR
 
-Thank you for your interest in contributing! This document explains how to get started, run tests, and submit changes.
+Thank you for your interest in contributing! ProjectR is available on both **GitHub** and **GitLab** — contributions are welcome from either platform.
 
 ---
 
@@ -11,15 +11,17 @@ Thank you for your interest in contributing! This document explains how to get s
 - [Linting](#linting)
 - [Commit Convention](#commit-convention)
 - [Branch Naming](#branch-naming)
-- [Opening a Merge Request](#opening-a-merge-request)
+- [Opening a Pull / Merge Request](#opening-a-pull--merge-request)
 - [Code Style](#code-style)
 
 ---
 
 ## Getting Started
 
-1. **Fork** the repository and clone your fork:
+1. **Fork** the repository on [GitHub](https://github.com/ThatOn3Gu7/ProjectR) or [GitLab](https://gitlab.com/Thaton3gu7/ProjectR) and clone your fork:
    ```bash
+   git clone https://github.com/<your-username>/ProjectR.git
+   # or
    git clone https://gitlab.com/<your-username>/ProjectR.git
    cd ProjectR
    ```
@@ -44,7 +46,7 @@ ProjectR uses [bats-core](https://github.com/bats-core/bats-core) for testing.
 bats tests/suite.bats
 ```
 
-All tests must pass before a merge request can be accepted.
+All tests must pass before a pull/merge request can be accepted.
 
 ---
 
@@ -96,13 +98,17 @@ chore/update-dependencies
 
 ---
 
-## Opening a Merge Request
+## Opening a Pull / Merge Request
+
+ProjectR accepts contributions via **GitHub Pull Requests** and **GitLab Merge Requests**.
 
 1. Push your branch to your fork.
-2. Open a Merge Request against the `main` (or default) branch of this repository.
-3. Fill in the MR description explaining **what** changed and **why**.
-4. Ensure the GitLab CI pipeline passes (shellcheck, bats, validate).
+2. Open a Pull Request (GitHub) or Merge Request (GitLab) against the `master` branch.
+3. Fill in the description explaining **what** changed and **why**.
+4. Ensure CI passes — GitHub Actions and GitLab CI both run shellcheck, bats, and script validation.
 5. Request a review if needed.
+
+> **Note:** Both platforms mirror the same codebase. You only need to submit on one.
 
 ---
 
