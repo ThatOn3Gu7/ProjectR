@@ -66,8 +66,8 @@ Fix any reported warnings before submitting your changes.
 
 ProjectR follows the [Conventional Commits](https://www.conventionalcommits.org/) specification.
 
-| Type       | When to use                                      |
-|------------|--------------------------------------------------|
+| Type     | When to use                                      |
+|----------|--------------------------------------------------|
 | `feat`     | A new feature                                    |
 | `fix`      | A bug fix                                        |
 | `docs`     | Documentation changes only                       |
