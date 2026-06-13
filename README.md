@@ -490,4 +490,4 @@ When installed globally, runtime app files live under the chosen hidden install 
 
 ## License
 
-No license file is currently included. Add one before distributing ProjectR broadly.
+Released under the MIT License.
