@@ -4,11 +4,20 @@
 # ── Globals set by detect_pkg_manager ──
 PRIMARY_PKG_MANAGER=""
 DETECTED_PKG_MANAGERS=()
+PROJECTR_PKG_MANAGER_DETECTED=0
+
+projectr_clear_pkg_manager_cache() {
+  PRIMARY_PKG_MANAGER=""
+  DETECTED_PKG_MANAGERS=()
+  PROJECTR_PKG_MANAGER_DETECTED=0
+}
 
 # ── detect_pkg_manager ───
 detect_pkg_manager() {
-  # Return cached result if already detected
-  if [[ -n "${PRIMARY_PKG_MANAGER:-}" && "${PRIMARY_PKG_MANAGER}" != "unknown" ]]; then
+  # Return cached result if already detected. Cache the "unknown" result too;
+  # otherwise systems without a supported package manager rescan PATH on every
+  # caller and make read-only commands noticeably slower.
+  if [[ "${PROJECTR_PKG_MANAGER_DETECTED:-0}" == "1" && -n "${PRIMARY_PKG_MANAGER:-}" ]]; then
     echo "$PRIMARY_PKG_MANAGER"
     return 0
   fi
@@ -152,6 +161,7 @@ detect_pkg_manager() {
   if [[ ${#DETECTED_PKG_MANAGERS[@]} -eq 0 ]]; then
     PRIMARY_PKG_MANAGER="unknown"
     DETECTED_PKG_MANAGERS+=("unknown")
+    PROJECTR_PKG_MANAGER_DETECTED=1
     echo "$PRIMARY_PKG_MANAGER"
     return
   fi
@@ -174,6 +184,7 @@ detect_pkg_manager() {
     PRIMARY_PKG_MANAGER="${DETECTED_PKG_MANAGERS[0]}"
   fi
 
+  PROJECTR_PKG_MANAGER_DETECTED=1
   echo "$PRIMARY_PKG_MANAGER"
 }
 

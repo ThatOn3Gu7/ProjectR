@@ -10,6 +10,52 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 export SCRIPT_DIR
 printf -v PROJECTR_ORIGINAL_ARGS '%q ' "$@"
 export PROJECTR_ORIGINAL_ARGS="${PROJECTR_ORIGINAL_ARGS% }"
+
+# Fast-path the read-only help/version commands before loading the complete
+# installer stack. This keeps common CLI discovery commands responsive on slow
+# shells while preserving the full runtime path for every mutating action.
+_projectr_fast_cli() {
+  [[ $# -gt 0 ]] || return 0
+  local arg no_color=0 source_next=0 action=""
+  for arg in "$@"; do
+    if [[ $source_next -eq 1 ]]; then
+      source_next=0
+      continue
+    fi
+    case "$arg" in
+    --no-color) no_color=1 ;;
+    --quiet) ;;
+    --source) source_next=1 ;;
+    --source=*) ;;
+    *)
+      action="$arg"
+      break
+      ;;
+    esac
+  done
+
+  case "$action" in
+  --version | -v | version)
+    source "$SCRIPT_DIR/lib/data/config.sh"
+    source "$SCRIPT_DIR/lib/core/colours.sh"
+    if [[ $no_color -eq 1 ]]; then
+      RST="" OPTION="" BOLD_WHITE=""
+    fi
+    echo -e "${OPTION}projectr ${BOLD_WHITE}v1.4${RST}"
+    exit 0
+    ;;
+  --help | -h | help)
+    source "$SCRIPT_DIR/lib/data/config.sh"
+    source "$SCRIPT_DIR/lib/core/colours.sh"
+    source "$SCRIPT_DIR/lib/core/cli.sh"
+    [[ $no_color -eq 1 ]] && projectr_disable_color
+    projectr_cli_help
+    exit 0
+    ;;
+  esac
+}
+_projectr_fast_cli "$@"
+
 # -- Now source everything using $SCRIPT_DIR as the anchor --
 # -- source conf first (flags need colours/display) --
 source "$SCRIPT_DIR/lib/data/config.sh"

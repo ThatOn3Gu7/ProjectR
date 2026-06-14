@@ -249,3 +249,68 @@ TOOLS=(
   "239|tgpt|tgpt|Tgpt|Terminal GPT client|pkg|-|AI"
   "240|fabric|fabric-ai|Fabric|AI prompt pattern toolkit|pkg|-|AI"
 )
+
+# Registry lookup cache ------------------------------------------------------
+#
+# Several commands need to resolve a user-supplied target against cmd, package,
+# or display name. Historically each lookup scanned the full TOOLS array. The
+# lazy index below keeps the legacy array as the source of truth, preserves the
+# first-match behaviour for duplicate aliases, and automatically rebuilds when
+# plugins append new entries.
+declare -gA PROJECTR_TOOL_INDEX_BY_CMD=()
+declare -gA PROJECTR_TOOL_INDEX_BY_PKG=()
+declare -gA PROJECTR_TOOL_INDEX_BY_NAME=()
+PROJECTR_TOOL_INDEX_SIZE=-1
+
+projectr_tools_index_invalidate() {
+  PROJECTR_TOOL_INDEX_BY_CMD=()
+  PROJECTR_TOOL_INDEX_BY_PKG=()
+  PROJECTR_TOOL_INDEX_BY_NAME=()
+  PROJECTR_TOOL_INDEX_SIZE=-1
+}
+
+projectr_tools_index_build() {
+  [[ "${PROJECTR_TOOL_INDEX_SIZE:--1}" == "${#TOOLS[@]}" ]] && return 0
+
+  PROJECTR_TOOL_INDEX_BY_CMD=()
+  PROJECTR_TOOL_INDEX_BY_PKG=()
+  PROJECTR_TOOL_INDEX_BY_NAME=()
+
+  local entry num cmd pkg name desc type extra cat cmd_key pkg_key name_key
+  for entry in "${TOOLS[@]}"; do
+    IFS='|' read -r num cmd pkg name desc type extra cat <<<"$entry"
+    cmd_key="${cmd,,}"
+    pkg_key="${pkg,,}"
+    name_key="${name,,}"
+    [[ -n "$cmd_key" && -z "${PROJECTR_TOOL_INDEX_BY_CMD[$cmd_key]+set}" ]] && PROJECTR_TOOL_INDEX_BY_CMD[$cmd_key]="$entry"
+    [[ -n "$pkg_key" && -z "${PROJECTR_TOOL_INDEX_BY_PKG[$pkg_key]+set}" ]] && PROJECTR_TOOL_INDEX_BY_PKG[$pkg_key]="$entry"
+    [[ -n "$name_key" && -z "${PROJECTR_TOOL_INDEX_BY_NAME[$name_key]+set}" ]] && PROJECTR_TOOL_INDEX_BY_NAME[$name_key]="$entry"
+  done
+
+  PROJECTR_TOOL_INDEX_SIZE=${#TOOLS[@]}
+}
+
+projectr_tool_lookup_entry() {
+  local target="${1:-}" key
+  [[ -n "$target" ]] || return 1
+  projectr_tools_index_build
+  key="${target,,}"
+  if [[ -n "${PROJECTR_TOOL_INDEX_BY_CMD[$key]+set}" ]]; then
+    printf '%s\n' "${PROJECTR_TOOL_INDEX_BY_CMD[$key]}"
+  elif [[ -n "${PROJECTR_TOOL_INDEX_BY_PKG[$key]+set}" ]]; then
+    printf '%s\n' "${PROJECTR_TOOL_INDEX_BY_PKG[$key]}"
+  elif [[ -n "${PROJECTR_TOOL_INDEX_BY_NAME[$key]+set}" ]]; then
+    printf '%s\n' "${PROJECTR_TOOL_INDEX_BY_NAME[$key]}"
+  else
+    return 1
+  fi
+}
+
+projectr_tool_lookup_cmd_entry() {
+  local target="${1:-}" key
+  [[ -n "$target" ]] || return 1
+  projectr_tools_index_build
+  key="${target,,}"
+  [[ -n "${PROJECTR_TOOL_INDEX_BY_CMD[$key]+set}" ]] || return 1
+  printf '%s\n' "${PROJECTR_TOOL_INDEX_BY_CMD[$key]}"
+}
