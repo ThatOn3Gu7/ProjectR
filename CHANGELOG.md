@@ -12,6 +12,11 @@ ProjectR is available on [GitHub](https://github.com/ThatOn3Gu7/ProjectR) and [G
 
 ### Added
 
+- Performance optimization documentation in `docs/performance_optimization.md`, including validation commands, benchmark snapshot, and maintenance notes.
+- Fast read-only startup path in `main.sh` for `--help`, `-h`, `help`, `--version`, `-v`, and `version`.
+- Lazy tool registry lookup index in `lib/data/tools.sh` for command/package/display-name resolution.
+- Process-local command lookup cache helpers in `lib/core/strict_mode.sh`: `projectr_command_exists`, `projectr_command_path`, and `projectr_command_cache_clear`.
+- Loop-friendly `*_into` metadata helpers in `lib/data/tool_meta.sh` to avoid repeated command substitutions during registry scans.
 - `view_tool_summary()` function in `lib/system/checker.sh` to display installed and missing tools at a glance after inspection.
 - Interactive info modals and tactile cursor animations to `docs/index.html`.
 - Separate `_show_help_panel()` function in `setup.sh` for the interactive menu help overlay.
@@ -30,6 +35,10 @@ ProjectR is available on [GitHub](https://github.com/ThatOn3Gu7/ProjectR) and [G
 
 ### Changed
 
+- Optimized `project list categories` to group category rows in a single registry pass instead of rescanning all tools once per category.
+- Updated tool lookup flows in CLI, dry-run, install, uninstall, profile, search, checker, and state modules to use indexed registry helpers where available.
+- Updated read-only installed-tool/version checks to use cached command probes and lighter Bash-native version parsing where practical.
+- Updated `detect_pkg_manager` to cache completed detection, including `unknown`, avoiding repeated scans on unsupported systems.
 - Refactored user-facing messages to formal wording and introduced messaging helpers.
 - Expanded README and docs with new capabilities (update, self-update, profile-related changes).
 - Redesigned `docs/index.html` interface.

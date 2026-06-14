@@ -61,6 +61,30 @@ ProjectR is intended to work in minimal environments too, including Termux-style
 
 ---
 
+## Performance notes
+
+This build includes a focused performance pass for read-only and lookup-heavy paths:
+
+- `project --help` and `project --version` use an early fast path in `main.sh`, so they no longer load every installer, scheduler, profile, and TUI module before printing static information.
+- Tool lookup by command, package name, or display name is backed by a lazy registry index in `lib/data/tools.sh`. The pipe-delimited `TOOLS` array remains the source of truth, and the index is rebuilt automatically when plugin tools are appended.
+- Repeated command availability probes in list, dry-run, checker, state verification, and profile export flows use a process-local command lookup cache from `lib/core/strict_mode.sh` where safe.
+- Manager-specific command/package overrides can now be resolved through `*_into` helper functions in `lib/data/tool_meta.sh`, reducing subshell command substitutions inside loops.
+- `project list categories` groups rows in one pass instead of rescanning the full registry once per category.
+- Version parsing in read-only inspection paths now uses Bash pattern matching instead of spawning extra `grep`, `head`, and `cut` processes.
+
+Approximate median timings from the review sandbox, 7 fresh processes per command:
+
+| Command | Original | Optimized | Notes |
+|---|---:|---:|---|
+| `bash main.sh --version` | 0.064s | 0.006s | Early fast path. |
+| `bash main.sh --help` | 0.068s | 0.010s | Early fast path. |
+| `bash main.sh --list=categories` | 0.589s | 0.322s | Single-pass grouping and cached command checks. |
+| `bash main.sh --list=installed` | 0.690s | 0.496s | Cached command checks and cheaper version parsing. |
+
+Timings vary by shell, filesystem, installed tools, and terminal environment; use them as directional validation rather than absolute guarantees.
+
+---
+
 ## Quick start
 
 Clone the repo and run ProjectR directly:
