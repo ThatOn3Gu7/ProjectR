@@ -13,8 +13,21 @@ projectr_escape_json() {
   value=${value//$'\n'/\\n}
   printf '%s' "$value"
 }
+
+projectr_dry_run_command_exists() {
+  if declare -f projectr_command_exists >/dev/null 2>&1; then
+    projectr_command_exists "$1"
+  else
+    command -v "$1" >/dev/null 2>&1
+  fi
+}
+
 projectr_find_tool() {
-  local target="$1" entry
+  local target="$1" entry cmd pkg name desc type extra cat
+  if declare -f projectr_tool_lookup_entry >/dev/null 2>&1; then
+    projectr_tool_lookup_entry "$target"
+    return $?
+  fi
   for entry in "${TOOLS[@]}"; do
     IFS='|' read -r _ cmd pkg name desc type extra cat <<<"$entry"
     if [[ "${cmd,,}" == "${target,,}" || "${pkg,,}" == "${target,,}" || "${name,,}" == "${target,,}" ]]; then
@@ -69,10 +82,10 @@ projectr_dry_run_entries() {
     IFS='|' read -r _ cmd pkg name desc type extra cat <<<"$entry"
     status="planned" impact="unknown" conflicts="none"
     manager=$(projectr_simulation_manager_for_type "$type")
-    tool_id=$(projectr_tool_id "$cmd")
-    effective_cmd=$(projectr_effective_cmd "$tool_id" "$cmd" "$manager")
-    effective_pkg=$(projectr_effective_package "$tool_id" "$pkg" "$manager")
-    if command -v "$effective_cmd" >/dev/null 2>&1; then
+    projectr_tool_id_into tool_id "$cmd"
+    projectr_effective_cmd_into effective_cmd "$tool_id" "$cmd" "$manager"
+    projectr_effective_package_into effective_pkg "$tool_id" "$pkg" "$manager"
+    if projectr_dry_run_command_exists "$effective_cmd"; then
       status="already-installed"
       changes="none"
       impact="0B"
@@ -215,7 +228,9 @@ projectr_dry_run_repair() {
     IFS=$'	' read -r record_tool_id record_name record_package record_manager <<<"$record"
     entry=$(projectr_state_find_registry_entry "$record_tool_id" "$record_name" "$record_package") || continue
     IFS='|' read -r _ cmd _ _ _ _ _ _ <<<"$entry"
-    command -v "$(projectr_effective_cmd "$record_tool_id" "$cmd" "$record_manager")" >/dev/null 2>&1 || entries+=("$entry")
+    local effective_cmd
+    projectr_effective_cmd_into effective_cmd "$record_tool_id" "$cmd" "$record_manager"
+    projectr_dry_run_command_exists "$effective_cmd" || entries+=("$entry")
   done
 
   if [[ ${#entries[@]} -eq 0 ]]; then

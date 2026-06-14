@@ -68,9 +68,9 @@ uninstall_lang() {
   local name="$3"
   local cmd="${4:-$pkg}"
   local tool_id effective_cmd
-  tool_id=$(projectr_tool_id "$cmd")
-  effective_cmd=$(projectr_effective_cmd "$tool_id" "$cmd" "$pm")
-  pkg=$(projectr_effective_package "$tool_id" "$pkg" "$pm")
+  projectr_tool_id_into tool_id "$cmd"
+  projectr_effective_cmd_into effective_cmd "$tool_id" "$cmd" "$pm"
+  projectr_effective_package_into pkg "$tool_id" "$pkg" "$pm"
 
   if [[ -z "$pm" || -z "$pkg" || -z "$name" ]]; then
     echo -e "${ERROR}  [!] uninstall_lang: Missing required arguments.${RST}"
@@ -138,10 +138,10 @@ uninstall_pkg() {
   local pkg="$2"
   local name="$3"
   local tool_id PM effective_cmd effective_pkg
-  tool_id=$(projectr_tool_id "$cmd")
+  projectr_tool_id_into tool_id "$cmd"
   PM=$(projectr_effective_uninstall_manager "$tool_id" "$pkg")
-  effective_cmd=$(projectr_effective_cmd "$tool_id" "$cmd" "$PM")
-  effective_pkg=$(projectr_effective_package "$tool_id" "$pkg" "$PM")
+  projectr_effective_cmd_into effective_cmd "$tool_id" "$cmd" "$PM"
+  projectr_effective_package_into effective_pkg "$tool_id" "$pkg" "$PM"
 
   if [[ -z "$cmd" || -z "$pkg" || -z "$name" ]]; then
     echo -e "${ERROR}  [!] uninstall_pkg: Missing required arguments.${RST}"

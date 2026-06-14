@@ -7,6 +7,22 @@ PROJECTR_STATE_DB="$PROJECTR_STATE_DIR/state.db"
 PROJECTR_STATE_TSV="$PROJECTR_STATE_DIR/state.tsv"
 PROJECTR_ACTIONS_TSV="$PROJECTR_STATE_DIR/actions.tsv"
 
+projectr_state_command_exists() {
+  if declare -f projectr_command_exists >/dev/null 2>&1; then
+    projectr_command_exists "$1"
+  else
+    command -v "$1" >/dev/null 2>&1
+  fi
+}
+
+projectr_state_command_path() {
+  if declare -f projectr_command_path >/dev/null 2>&1; then
+    projectr_command_path "$1"
+  else
+    command -v "$1" 2>/dev/null
+  fi
+}
+
 projectr_state_init() {
   mkdir -p "$PROJECTR_STATE_DIR"
   if command -v sqlite3 >/dev/null 2>&1; then
@@ -56,9 +72,11 @@ projectr_sql_quote() {
 }
 
 projectr_tool_version() {
-  local cmd="$1"
-  command -v "$cmd" >/dev/null 2>&1 || return 0
-  "$cmd" --version 2>/dev/null | head -n1 | tr '\t' ' ' | cut -c1-120 || true
+  local cmd="$1" version_line
+  projectr_state_command_exists "$cmd" || return 0
+  IFS= read -r version_line < <("$cmd" --version 2>/dev/null || true)
+  version_line=${version_line//$'\t'/ }
+  printf '%s\n' "${version_line:0:120}"
 }
 
 projectr_state_record_install() {
@@ -84,7 +102,7 @@ projectr_state_record_install() {
   now=$(date -u '+%Y-%m-%dT%H:%M:%SZ')
   source="${SCRIPT_DIR:-unknown}"
   verification=missing
-  command -v "$cmd" >/dev/null 2>&1 && verification=verified
+  projectr_state_command_exists "$cmd" && verification=verified
   transaction_id="${PROJECTR_TRANSACTION_ID:-${PROJECTR_SESSION_ID:-manual}}"
 
   if command -v sqlite3 >/dev/null 2>&1; then
@@ -166,6 +184,15 @@ projectr_state_records() {
 
 projectr_state_find_registry_entry() {
   local record_tool_id="$1" record_name="${2:-}" record_package="${3:-}" entry num cmd pkg name desc type extra cat
+  if declare -f projectr_tool_lookup_entry >/dev/null 2>&1; then
+    entry=$(projectr_tool_lookup_entry "$record_tool_id" 2>/dev/null || true)
+    [[ -z "$entry" && -n "$record_package" ]] && entry=$(projectr_tool_lookup_entry "$record_package" 2>/dev/null || true)
+    [[ -z "$entry" && -n "$record_name" ]] && entry=$(projectr_tool_lookup_entry "$record_name" 2>/dev/null || true)
+    if [[ -n "$entry" ]]; then
+      printf '%s\n' "$entry"
+      return 0
+    fi
+  fi
   for entry in "${TOOLS[@]}"; do
     IFS='|' read -r num cmd pkg name desc type extra cat <<<"$entry"
     if [[ "$cmd" == "$record_tool_id" || "$name" == "$record_name" || (-n "$record_package" && "$pkg" == "$record_package") ]]; then
@@ -254,11 +281,11 @@ projectr_verify_state() {
       continue
     }
     IFS='|' read -r _ cmd pkg name _ _ _ _ <<<"$entry"
-    tool_id=$(projectr_tool_id "$cmd")
-    effective_cmd=$(projectr_effective_cmd "$tool_id" "$cmd" "$record_manager")
+    projectr_tool_id_into tool_id "$cmd"
+    projectr_effective_cmd_into effective_cmd "$tool_id" "$cmd" "$record_manager"
     checked=$((checked + 1))
-    if command -v "$effective_cmd" >/dev/null 2>&1; then
-      printf '  %s %-18s %s\n' '✓' "$name" "$(command -v "$effective_cmd")"
+    if projectr_state_command_exists "$effective_cmd"; then
+      printf '  %s %-18s %s\n' '✓' "$name" "$(projectr_state_command_path "$effective_cmd")"
     else
       printf '  %s %-18s %s\n' '!' "$name" "missing from PATH (package: $record_package, manager: $record_manager)"
       missing=$((missing + 1))
@@ -289,8 +316,8 @@ projectr_repair_state() {
       continue
     }
     IFS='|' read -r _ cmd pkg name _ type extra _ <<<"$entry"
-    tool_id=$(projectr_tool_id "$cmd")
-    effective_cmd=$(projectr_effective_cmd "$tool_id" "$cmd" "$record_manager")
+    projectr_tool_id_into tool_id "$cmd"
+    projectr_effective_cmd_into effective_cmd "$tool_id" "$cmd" "$record_manager"
     command -v "$effective_cmd" >/dev/null 2>&1 && continue
     PROJECTR_INSTALL_MANAGER_OVERRIDE="$record_manager" projectr_install_tool_by_fields "$cmd" "$pkg" "$name" "$type" "$extra"
     if [[ $? -eq 0 ]]; then

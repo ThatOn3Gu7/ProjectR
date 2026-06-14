@@ -122,6 +122,10 @@ EOF_EXAMPLES
 projectr_cli_find_tool_entry() {
   local target="${1:-}" entry cmd pkg name desc type extra cat
   [[ -n "$target" ]] || return 1
+  if declare -f projectr_tool_lookup_entry >/dev/null 2>&1; then
+    projectr_tool_lookup_entry "$target"
+    return $?
+  fi
   for entry in "${TOOLS[@]}"; do
     IFS="|" read -r _ cmd pkg name desc type extra cat <<<"$entry"
     if [[ "${cmd,,}" == "${target,,}" || "${pkg,,}" == "${target,,}" || "${name,,}" == "${target,,}" ]]; then

@@ -307,13 +307,16 @@ _flag_list_tools() {
   # ── Table ───
   printf "  ${BOLD_WHITE}%-4s  %-16s  %-40s${RST}\n" \
     "Num" "Name" "Description"
-  # Separator
-  printf "  ${DIM}%s${RST}\n" "$(printf '─%.0s' $(seq 1 66))"
+  local sep
+  printf -v sep '%*s' 66 ''
+  sep=${sep// /─}
+  printf "  ${DIM}%s${RST}\n" "$sep"
 
   # Data
+  local entry num cmd pkg name desc type extra cat disp_desc
   for entry in "${TOOLS[@]}"; do
     IFS="|" read -r num cmd pkg name desc type extra cat <<<"$entry"
-    local disp_desc="$desc"
+    disp_desc="$desc"
     ((${#disp_desc} > 40)) && disp_desc="${disp_desc:0:37}..."
     printf "  ${BARR}%-4s${RST}  ${OPTION}%-16s${RST}  ${DIM}%-40s${RST}\n" \
       "$num" "$name" "$disp_desc"
@@ -321,7 +324,7 @@ _flag_list_tools() {
 
   # ── Summary ───
   echo ""
-  echo -e "  ${DIM}────────────────────────────────────────────────────────────────────${RST}"
+  printf "  ${DIM}%s${RST}\n" "$sep"
   echo -e "  ${DIM}Total:${RST}  ${BOLD_WHITE}${#TOOLS[@]}${RST} tools available"
   echo ""
 }
@@ -329,16 +332,17 @@ _flag_list_tools() {
 _flag_list_manager() {
   # ── OS/platform detection ───
   local detected_os="Unknown"
-  local detected_pm
+  local detected_pm uname_s
   detected_pm="${PRIMARY_PKG_MANAGER:-$(detect_pkg_manager)}"
+  uname_s=$(uname -s 2>/dev/null || printf 'Unknown')
 
   if [ -n "${PREFIX:-}" ] && [[ "$PREFIX" == *termux* ]]; then
     detected_os="Termux (Android)"
-  elif [[ "$(uname -s)" == "Darwin" ]]; then
+  elif [[ "$uname_s" == "Darwin" ]]; then
     detected_os="macOS"
   elif [[ -f /etc/os-release ]]; then
     detected_os=$(. /etc/os-release && echo "${PRETTY_NAME:-Linux}")
-  elif [[ "$(uname -s)" == *"MINGW"* ]] || [[ "$(uname -s)" == *"CYGWIN"* ]]; then
+  elif [[ "$uname_s" == *"MINGW"* ]] || [[ "$uname_s" == *"CYGWIN"* ]]; then
     detected_os="Windows (WSL/Cygwin)"
   else
     detected_os="Linux"
@@ -383,6 +387,7 @@ _flag_list_manager() {
   # ── Dynamic column widths ───
   local max_name=15 # "Package Manager"
   local max_os=12   # "Platform"
+  local entry id display platform check_cmd
   for entry in "${managers[@]}"; do
     IFS="|" read -r id display platform _ <<<"$entry"
     ((${#display} > max_name)) && max_name=${#display}
@@ -395,11 +400,10 @@ _flag_list_manager() {
   printf "  %b%-${max_name}s  %-6s  %-${max_os}s%b\n" \
     "$BOLD_WHITE" "Package Manager" "Avail" "Platform" "$RST"
 
-  # Separator (FIXED)
-  printf "  %b%s%b\n" \
-    "$DIM" \
-    "$(printf '─%.0s' $(seq 1 $((max_name + 7 + max_os + 2))))" \
-    "$RST"
+  local sep
+  printf -v sep '%*s' $((max_name + 7 + max_os + 2)) ''
+  sep=${sep// /─}
+  printf "  %b%s%b\n" "$DIM" "$sep" "$RST"
 
   # ── Table rows ───
   local available_list=()
@@ -414,7 +418,7 @@ _flag_list_manager() {
     if ((force_unavailable)); then
       icon="✘"
       icon_color="${ERROR}"
-    elif command -v "$check_cmd" >/dev/null 2>&1; then
+    elif projectr_command_exists "$check_cmd"; then
       icon="✔"
       icon_color="${OPTION}"
       available_list+=("$display")
@@ -435,11 +439,7 @@ _flag_list_manager() {
 
   # ── Footer ───
   echo ""
-  # Separator again (FIXED)
-  printf "  %b%s%b\n" \
-    "$DIM" \
-    "$(printf '─%.0s' $(seq 1 $((max_name + 7 + max_os + 2))))" \
-    "$RST"
+  printf "  %b%s%b\n" "$DIM" "$sep" "$RST"
 
   # Footer lines (echo -e already safe)
   echo -e "  ${INFO}Detected OS :${RST}  ${BOLD_WHITE}${detected_os}${RST}"
@@ -462,17 +462,21 @@ _flag_list_installed() {
 
   local found=()
   local not_found=()
+  local manager="${PRIMARY_PKG_MANAGER:-$(detect_pkg_manager)}"
+  local entry num cmd pkg name desc type extra cat tool_id effective_cmd version version_line
 
   for entry in "${TOOLS[@]}"; do
     IFS="|" read -r num cmd pkg name desc type extra cat <<<"$entry"
-    local tool_id effective_cmd
-    tool_id=$(projectr_tool_id "$cmd")
-    effective_cmd=$(projectr_effective_cmd "$tool_id" "$cmd" "${PRIMARY_PKG_MANAGER:-$(detect_pkg_manager)}")
-    if command -v "$effective_cmd" >/dev/null 2>&1; then
-      local version
-      version=$("$effective_cmd" --version 2>/dev/null | head -n1 |
-        grep -oE '[0-9]+\.[0-9]+[.0-9]*' | head -n1)
-      found+=("$num|$name|$cat|${version:--}")
+    projectr_tool_id_into tool_id "$cmd"
+    projectr_effective_cmd_into effective_cmd "$tool_id" "$cmd" "$manager"
+    if projectr_command_exists "$effective_cmd"; then
+      version="-"
+      version_line=""
+      IFS= read -r version_line < <("$effective_cmd" --version 2>/dev/null || true)
+      if [[ "$version_line" =~ ([0-9]+([.][0-9]+)+) ]]; then
+        version="${BASH_REMATCH[1]}"
+      fi
+      found+=("$num|$name|$cat|$version")
     else
       not_found+=("$name")
     fi
@@ -486,7 +490,10 @@ _flag_list_installed() {
 
   printf "  ${BOLD_WHITE}%-4s  %-16s  %-10s  %-10s${RST}\n" \
     "Num" "Name" "Category" "Version"
-  printf "  ${DIM}%s${RST}\n" "$(printf '─%.0s' $(seq 1 46))"
+  local sep
+  printf -v sep '%*s' 46 ''
+  sep=${sep// /─}
+  printf "  ${DIM}%s${RST}\n" "$sep"
 
   for entry in "${found[@]}"; do
     IFS="|" read -r num name cat version <<<"$entry"
@@ -495,7 +502,7 @@ _flag_list_installed() {
   done
 
   echo ""
-  printf "  ${DIM}%s${RST}\n" "$(printf '─%.0s' $(seq 1 46))"
+  printf "  ${DIM}%s${RST}\n" "$sep"
   echo -e "  ${OPTION}[*] Installed : ${BOLD_WHITE}${#found[@]}${RST} / ${#TOOLS[@]}${RST}"
   echo -e "  ${ERROR}[*] Missing   : ${BOLD_WHITE}${#not_found[@]}${RST} / ${#TOOLS[@]}${RST}"
   echo ""
@@ -508,33 +515,42 @@ _flag_list_categories() {
   echo ""
   echo -e "${DIM}  Status:${RST}${GREEN} ✔ ${RST}= installed,${RED} ✘ ${RST}= not found"
   echo ""
-  # Collect unique categories in insertion order
-  local cats=()
+
+  local manager="${PRIMARY_PKG_MANAGER:-$(detect_pkg_manager)}"
+  local -a cats=()
+  local -A seen_cats=()
+  local -A category_rows=()
+  local entry num cmd pkg name desc type extra cat status_icon status_color tool_id effective_cmd row
+
+  # Single-pass grouping: this replaces the previous category loop that scanned
+  # the entire registry once per category.
   for entry in "${TOOLS[@]}"; do
     IFS="|" read -r num cmd pkg name desc type extra cat <<<"$entry"
-    local found=0
-    for c in "${cats[@]:-}"; do [[ "$c" == "$cat" ]] && found=1 && break; done
-    ((found)) || cats+=("$cat")
+    if [[ -z "${seen_cats[$cat]+set}" ]]; then
+      seen_cats[$cat]=1
+      cats+=("$cat")
+      category_rows[$cat]=""
+    fi
+
+    projectr_tool_id_into tool_id "$cmd"
+    projectr_effective_cmd_into effective_cmd "$tool_id" "$cmd" "$manager"
+    if projectr_command_exists "$effective_cmd"; then
+      status_icon="✔" status_color="${OPTION}"
+    else
+      status_icon="✘" status_color="${ERROR}"
+    fi
+    printf -v row "  ${BARR}[%02d]${RST}  ${status_color}%s${RST}  ${BOLD_WHITE}%-14s${RST}  ${DIM}%s${RST}\n" \
+      "$num" "$status_icon" "$name" "$desc"
+    category_rows[$cat]+="$row"
   done
 
+  local category sep
+  printf -v sep '%*s' 50 ''
+  sep=${sep// /─}
   for category in "${cats[@]}"; do
     echo -e "  ${BOLD_WHITE}${category}${RST}"
-    printf "  ${DIM}%s${RST}\n" "$(printf '─%.0s' $(seq 1 50))"
-    for entry in "${TOOLS[@]}"; do
-      IFS="|" read -r num cmd pkg name desc type extra cat <<<"$entry"
-      [[ "$cat" != "$category" ]] && continue
-      # Show install status inline
-      local status_icon status_color tool_id effective_cmd
-      tool_id=$(projectr_tool_id "$cmd")
-      effective_cmd=$(projectr_effective_cmd "$tool_id" "$cmd" "${PRIMARY_PKG_MANAGER:-$(detect_pkg_manager)}")
-      if command -v "$effective_cmd" >/dev/null 2>&1; then
-        status_icon="✔" status_color="${OPTION}"
-      else
-        status_icon="✘" status_color="${ERROR}"
-      fi
-      printf "  ${BARR}[%02d]${RST}  ${status_color}%s${RST}  ${BOLD_WHITE}%-14s${RST}  ${DIM}%s${RST}\n" \
-        "$num" "$status_icon" "$name" "$desc"
-    done
+    printf "  ${DIM}%s${RST}\n" "$sep"
+    printf '%b' "${category_rows[$category]}"
     echo ""
   done
 }
@@ -643,18 +659,9 @@ _flag_install() {
   echo -e "${OPTION} [*] Non-interactive install: ${BOLD_WHITE}${target}${RST}"
   echo ""
 
-  # Find the matching tool entry
+  # Find the matching tool entry using the lazy registry index.
   local matched_entry=""
-  for entry in "${TOOLS[@]}"; do
-    IFS="|" read -r num cmd pkg name desc type extra cat <<<"$entry"
-    # Match against cmd, pkg name, or display name (case-insensitive)
-    if [[ "${cmd,,}" == "${target,,}" ||
-      "${pkg,,}" == "${target,,}" ||
-      "${name,,}" == "${target,,}" ]]; then
-      matched_entry="$entry"
-      break
-    fi
-  done
+  matched_entry=$(projectr_tool_lookup_entry "$target" 2>/dev/null || true)
 
   if [ -z "$matched_entry" ]; then
     echo -e "  ${ERROR}[!] No tool named '${target}' found in the list.${RST}"
@@ -664,9 +671,10 @@ _flag_install() {
   fi
 
   IFS="|" read -r num cmd pkg name desc type extra cat <<<"$matched_entry"
-  local tool_id effective_cmd
-  tool_id=$(projectr_tool_id "$cmd")
-  effective_cmd=$(projectr_effective_cmd "$tool_id" "$cmd" "${PROJECTR_INSTALL_MANAGER_OVERRIDE:-${PRIMARY_PKG_MANAGER:-$(detect_pkg_manager)}}")
+  local tool_id effective_cmd manager
+  manager="${PROJECTR_INSTALL_MANAGER_OVERRIDE:-${PRIMARY_PKG_MANAGER:-$(detect_pkg_manager)}}"
+  projectr_tool_id_into tool_id "$cmd"
+  projectr_effective_cmd_into effective_cmd "$tool_id" "$cmd" "$manager"
 
   # Already installed?
   if command -v "$effective_cmd" >/dev/null 2>&1; then
@@ -717,15 +725,7 @@ _flag_uninstall() {
   echo ""
 
   local matched_entry=""
-  for entry in "${TOOLS[@]}"; do
-    IFS="|" read -r num cmd pkg name desc type extra cat <<<"$entry"
-    if [[ "${cmd,,}" == "${target,,}" ||
-      "${pkg,,}" == "${target,,}" ||
-      "${name,,}" == "${target,,}" ]]; then
-      matched_entry="$entry"
-      break
-    fi
-  done
+  matched_entry=$(projectr_tool_lookup_entry "$target" 2>/dev/null || true)
 
   if [ -z "$matched_entry" ]; then
     echo -e "  ${ERROR}[!] No tool named '${target}' found in the list.${RST}"
@@ -735,10 +735,11 @@ _flag_uninstall() {
   fi
 
   IFS="|" read -r num cmd pkg name desc type extra cat <<<"$matched_entry"
-  local tool_id effective_cmd uninstall_manager
-  tool_id=$(projectr_tool_id "$cmd")
+  local tool_id effective_cmd uninstall_manager manager
+  projectr_tool_id_into tool_id "$cmd"
   uninstall_manager="${PROJECTR_UNINSTALL_MANAGER_OVERRIDE:-$(projectr_state_lookup_manager "$tool_id" "$pkg")}"
-  effective_cmd=$(projectr_effective_cmd "$tool_id" "$cmd" "${uninstall_manager:-${PRIMARY_PKG_MANAGER:-$(detect_pkg_manager)}}")
+  manager="${uninstall_manager:-${PRIMARY_PKG_MANAGER:-$(detect_pkg_manager)}}"
+  projectr_effective_cmd_into effective_cmd "$tool_id" "$cmd" "$manager"
 
   if ! command -v "$effective_cmd" >/dev/null 2>&1; then
     echo -e "  ${DIM}[*] ${name} is not installed — nothing to do.${RST}"

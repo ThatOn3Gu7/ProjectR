@@ -130,7 +130,11 @@ _si_check_avail() {
 }
 
 _si_find_in_tools() {
-    local query="${1,,}"
+    local query="${1,,}" entry num cmd pkg name desc type extra cat
+    if declare -f projectr_tool_lookup_entry >/dev/null 2>&1; then
+        projectr_tool_lookup_entry "$query"
+        return $?
+    fi
     for entry in "${TOOLS[@]}"; do
         IFS="|" read -r num cmd pkg name desc type extra cat <<< "$entry"
         if [[ "${cmd,,}" == "$query" || "${pkg,,}" == "$query" || "${name,,}" == "$query" ]]; then
@@ -270,9 +274,9 @@ search_and_install() {
         IFS="|" read -r num cmd pkg name desc type extra cat <<< "$matched"
         local found_manager="${PROJECTR_INSTALL_MANAGER_OVERRIDE:-${PRIMARY_PKG_MANAGER:-$(detect_pkg_manager)}}"
         local found_tool_id found_cmd found_pkg
-        found_tool_id=$(projectr_tool_id "$cmd")
-        found_cmd=$(projectr_effective_cmd "$found_tool_id" "$cmd" "$found_manager")
-        found_pkg=$(projectr_effective_package "$found_tool_id" "$pkg" "$found_manager")
+        projectr_tool_id_into found_tool_id "$cmd"
+        projectr_effective_cmd_into found_cmd "$found_tool_id" "$cmd" "$found_manager"
+        projectr_effective_package_into found_pkg "$found_tool_id" "$pkg" "$found_manager"
         echo -e "${OPTION}  [✓] Found in tool list: ${BOLD_WHITE}$name${RST} ${DIM}(#$num – $cat)${RST}"
         sleep 1
         echo ""

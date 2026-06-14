@@ -2,6 +2,14 @@
 # shellcheck disable=all
 # Configuration-as-code profile reader for simple projectr.yml/projectr.toml files.
 
+projectr_profile_code_command_exists() {
+  if declare -f projectr_command_exists >/dev/null 2>&1; then
+    projectr_command_exists "$1"
+  else
+    command -v "$1" >/dev/null 2>&1
+  fi
+}
+
 projectr_profile_tools() {
   local file="$1"
   [[ -f "$file" ]] || {
@@ -141,8 +149,9 @@ projectr_profile_diff() {
     ;;
   esac
 
-  local tmp tool entry cmd pkg name desc type extra cat status installed=0 missing=0 unknown=0 first=1
+  local tmp tool entry cmd pkg name desc type extra cat status installed=0 missing=0 unknown=0 first=1 manager tool_id effective_cmd
   tmp=$(mktemp) || return 1
+  manager="${PRIMARY_PKG_MANAGER:-$(detect_pkg_manager)}"
   while IFS= read -r tool; do
     [[ -n "$tool" ]] || continue
     entry=$(projectr_profile_find_entry "$tool") || {
@@ -151,7 +160,9 @@ projectr_profile_diff() {
       continue
     }
     IFS='|' read -r _ cmd pkg name desc type extra cat <<<"$entry"
-    if command -v "$cmd" >/dev/null 2>&1; then
+    projectr_tool_id_into tool_id "$cmd"
+    projectr_effective_cmd_into effective_cmd "$tool_id" "$cmd" "$manager"
+    if projectr_profile_code_command_exists "$effective_cmd"; then
       status="installed"
       installed=$((installed + 1))
     else

@@ -1,6 +1,14 @@
 #!/bin/bash
 # shellcheck disable=all
 
+projectr_checker_command_exists() {
+  if declare -f projectr_command_exists >/dev/null 2>&1; then
+    projectr_command_exists "$1"
+  else
+    command -v "$1" >/dev/null 2>&1
+  fi
+}
+
 check_tool() {
   # Determine if a tool is available and record its status
   # "$cmd" – the command to test
@@ -11,15 +19,19 @@ check_tool() {
   local cmd="$1"
   local name="$2"
   local manager="${3:-${PRIMARY_PKG_MANAGER:-$(detect_pkg_manager)}}"
-  local tool_id effective_cmd version=""
-  tool_id=$(projectr_tool_id "$cmd")
-  effective_cmd=$(projectr_effective_cmd "$tool_id" "$cmd" "$manager")
+  local tool_id effective_cmd version="" version_line=""
+  projectr_tool_id_into tool_id "$cmd"
+  projectr_effective_cmd_into effective_cmd "$tool_id" "$cmd" "$manager"
 
-  if command -v "$effective_cmd" >/dev/null 2>&1; then
+  if projectr_checker_command_exists "$effective_cmd"; then
     local _flag
     for _flag in --version -V --Version version; do
-      version=$("$effective_cmd" "$_flag" 2>&1 | head -n1 | grep -oE '[0-9]+\.[0-9]+[.0-9]*' | head -n1)
-      [[ -n "$version" ]] && break
+      version_line=""
+      IFS= read -r version_line < <("$effective_cmd" "$_flag" 2>&1 || true)
+      if [[ "$version_line" =~ ([0-9]+([.][0-9]+)+) ]]; then
+        version="${BASH_REMATCH[1]}"
+        break
+      fi
     done
     projectr_install_result_push found "$effective_cmd"
     echo -e "${OPTION}     [✓] \"$name\" is installed ${DIM}(v${version:--unknown})${RST}"
@@ -39,9 +51,10 @@ check_all_tools() {
   echo -e "${RST}"
   safe_tput civis
 
+  local manager="${PRIMARY_PKG_MANAGER:-$(detect_pkg_manager)}"
   for entry in "${TOOLS[@]}"; do
     IFS="|" read -r num cmd pkg name desc type extra cat <<<"$entry"
-    check_tool "$cmd" "$name"
+    check_tool "$cmd" "$name" "$manager"
   done
 
   echo ""
@@ -66,44 +79,119 @@ check_all_tools() {
 }
 
 view_tool_summary() {
-  while true; do
-    if ! ask "  [!] View tools inspection summary" "n"; then
-      msg_info "Skipped summary"
-      sleep 2
-      return 1
-    fi
+
+  if ! ask "  [!] View tools inspection summary" "n"; then
+    msg_info "Skipped summary"
+    sleep 2
+    return 1
+  fi
+
+  # Dynamic interactive menu using arrow keys and highlighted selection
+  local options=("View installed tools" "View missing tools" "Back")
+  local selected=0 # 0-based index
+  local key input
+
+  # Save cursor and hide it during menu interaction
+  safe_tput civis
+  trap 'safe_tput cnorm; exit' INT TERM
+
+  # Helper: draw the menu box and options
+  draw_menu() {
+    clear
     echo -e "${OPTION}"
-    print_titled_box --align left " [ℹ] Choose an option: " \
-      "[1] View installed tools" \
-      "[2] View missing tools" \
-      "[b] Back"
-    read -p "    [ℹ] Select: " opt
-    case "$opt" in
-    1)
-      clear
-      echo -e "${OPTION} [✓] Installed Tools:${RST}"
-      for tool in "${FOUND_PKGS[@]}"; do
-        echo "  $tool"
-      done
-      echo
-      read -p "Press ENTER to continue..." dummy
+    print_box center " [*] Tool Summary Menu"
+    echo -e "${RST}"
+
+    # Print each option, highlighting the current selection
+    for i in "${!options[@]}"; do
+      if [[ $i -eq $selected ]]; then
+        # Highlighted selection: invert colors or use bright background
+        echo -e "  ${BLUE}${REVERSE:-}▶ ${options[$i]} ${RST}"
+      else
+        echo -e "  ${DIM}  ${options[$i]}${RST}"
+      fi
+    done
+
+    echo -e "\n${DIM} Use  ↑/↓ : navigate • ENTER : select • b : back${RST}"
+  }
+
+  # Read a single key and handle arrow sequences
+  read_key() {
+    local key
+    IFS= read -rsn1 key
+    if [[ $key == $'\e' ]]; then
+      read -rsn2 -t 0.01 key
+      case "$key" in
+      '[A') echo "UP" ;;
+      '[B') echo "DOWN" ;;
+      *) echo "OTHER" ;;
+      esac
+    else
+      case "$key" in
+      '') echo "ENTER" ;;
+      b | B) echo "BACK" ;;
+      *) echo "OTHER" ;;
+      esac
+    fi
+  }
+
+  # Main loop
+  while true; do
+    draw_menu
+    input=$(read_key)
+
+    case "$input" in
+    UP)
+      ((selected--))
+      [[ $selected -lt 0 ]] && selected=$((${#options[@]} - 1))
       ;;
-    2)
-      clear
-      echo -e "${OPTION} [¡] Missing Tools:${RST}"
-      for tool in "${NOT_FOUND_PKGS[@]}"; do
-        echo "  $tool"
-      done
-      echo
-      read -p "Press ENTER to continue..." dummy
+    DOWN)
+      ((selected++))
+      [[ $selected -ge ${#options[@]} ]] && selected=0
       ;;
-    b | B)
+    ENTER)
+      case $selected in
+      0) # View installed tools
+        clear
+        echo -e "${OPTION}Installed Tools:${RST}"
+        if [[ ${#FOUND_PKGS[@]} -eq 0 ]]; then
+          echo -e "  ${DIM}(none)${RST}"
+        else
+          for tool in "${FOUND_PKGS[@]}"; do
+            echo -e "  ${BLUE}✓${RST} $tool"
+          done
+        fi
+        echo -e "\n${DIM}Press ENTER to continue...${RST}"
+        read -s
+        ;;
+      1) # View missing tools
+        clear
+        echo -e "${OPTION}Missing Tools:${RST}"
+        if [[ ${#NOT_FOUND_PKGS[@]} -eq 0 ]]; then
+          echo -e "  ${DIM}(none)${RST}"
+        else
+          for tool in "${NOT_FOUND_PKGS[@]}"; do
+            echo -e "  ${ERROR}✗${RST} $tool"
+          done
+        fi
+        echo -e "\n${DIM}Press ENTER to continue...${RST}"
+        read -s
+        ;;
+      2) # Back
+        break
+        ;;
+      esac
+      ;;
+    BACK)
       break
       ;;
-    *)
-      msg_warning "Invalid selection: ${opt}. Select 1/2"
-      sleep 1
+    OTHER)
+      # Ignore any other key press
       ;;
     esac
   done
+
+  # Restore cursor when exiting the menu
+  safe_tput cnorm
+  trap - INT TERM
 }

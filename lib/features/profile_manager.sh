@@ -1,6 +1,14 @@
 #!/usr/bin/env bash
 # shellcheck disable=all
 
+projectr_profile_command_exists() {
+  if declare -f projectr_command_exists >/dev/null 2>&1; then
+    projectr_command_exists "$1"
+  else
+    command -v "$1" >/dev/null 2>&1
+  fi
+}
+
 export_profile() {
   if [[ ${#TOOLS[@]} -eq 0 ]]; then
     echo -e "${ERROR} [✗] The tools registry is empty. Export operation aborted.${RST}"
@@ -20,13 +28,14 @@ export_profile() {
     return 1
   fi
 
-  local count=0 tool_id effective_cmd
+  local count=0 tool_id effective_cmd manager
+  manager="${PRIMARY_PKG_MANAGER:-$(detect_pkg_manager)}"
 
   for entry in "${TOOLS[@]}"; do
     IFS="|" read -r num cmd pkg name desc type extra cat <<<"$entry"
-    tool_id=$(projectr_tool_id "$cmd")
-    effective_cmd=$(projectr_effective_cmd "$tool_id" "$cmd" "${PRIMARY_PKG_MANAGER:-$(detect_pkg_manager)}")
-    if command -v "$effective_cmd" >/dev/null 2>&1; then
+    projectr_tool_id_into tool_id "$cmd"
+    projectr_effective_cmd_into effective_cmd "$tool_id" "$cmd" "$manager"
+    if projectr_profile_command_exists "$effective_cmd"; then
       echo "$cmd" >>"$backup_file"
       ((count++))
     fi
@@ -95,13 +104,12 @@ import_profile() {
     fi
 
     local matched=0
-    for entry in "${TOOLS[@]}"; do
+    entry=$(projectr_tool_lookup_cmd_entry "$target_cmd" 2>/dev/null || true)
+    if [[ -n "$entry" ]]; then
+      matched=1
       IFS="|" read -r num cmd pkg name desc type extra cat <<<"$entry"
-      if [[ "$target_cmd" == "$cmd" ]]; then
-        matched=1
-        command -v "$cmd" >/dev/null 2>&1 || tools_to_install+=("$entry")
-      fi
-    done
+      command -v "$cmd" >/dev/null 2>&1 || tools_to_install+=("$entry")
+    fi
 
     if [[ $matched -eq 0 ]]; then
       echo -e "${BOLD_YELLOW} [!] Line $line_num: '$target_cmd' is not present in the tool registry. Entry skipped.${RST}"

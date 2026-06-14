@@ -212,5 +212,6 @@ projectr_load_tool_plugin() {
 
   num=$((${#TOOLS[@]} + 1))
   TOOLS+=("$num|$cmd|$pkg|$name|$desc|$type|$extra|$cat")
+  declare -f projectr_tools_index_invalidate >/dev/null 2>&1 && projectr_tools_index_invalidate
   log_info "Loaded tool plugin '$name' from $file as #$num type=$type homepage=${homepage:-n/a}" "plugin"
 }

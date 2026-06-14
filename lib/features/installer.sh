@@ -76,15 +76,13 @@ install_preset_by_names() {
   declare -f projectr_snapshot_pre_install >/dev/null 2>&1 && projectr_snapshot_pre_install "install_preset"
 
   for name in "${names[@]}"; do
-    local matched=0
-    for entry in "${TOOLS[@]}"; do
+    local matched=0 entry
+    entry=$(projectr_tool_lookup_cmd_entry "$name" 2>/dev/null || true)
+    if [[ -n "$entry" ]]; then
       IFS="|" read -r num cmd pkg display desc type extra cat <<<"$entry"
-      if [[ "$cmd" == "$name" ]]; then
-        matched=1
-        projectr_install_tool_by_fields "$cmd" "$pkg" "$display" "$type" "$extra"
-        break
-      fi
-    done
+      matched=1
+      projectr_install_tool_by_fields "$cmd" "$pkg" "$display" "$type" "$extra"
+    fi
     if [[ $matched -eq 0 ]]; then
       echo -e "${BOLD_YELLOW}  [!] Tool '$name' was not found in the tool registry. Skipping...${RST}"
       log_warn "Preset requested unknown tool '$name'" "preset"
@@ -102,9 +100,9 @@ install_pkg() {
   local requested_manager="${4:-${PROJECTR_INSTALL_MANAGER_OVERRIDE:-}}"
   local PM="${requested_manager:-${PRIMARY_PKG_MANAGER:-$(detect_pkg_manager)}}"
   local tool_id effective_pkg effective_cmd
-  tool_id=$(projectr_tool_id "$cmd")
-  effective_pkg=$(projectr_effective_package "$tool_id" "$pkg" "$PM")
-  effective_cmd=$(projectr_effective_cmd "$tool_id" "$cmd" "$PM")
+  projectr_tool_id_into tool_id "$cmd"
+  projectr_effective_package_into effective_pkg "$tool_id" "$pkg" "$PM"
+  projectr_effective_cmd_into effective_cmd "$tool_id" "$cmd" "$PM"
 
   if [[ -z "$cmd" || -z "$pkg" || -z "$name" ]]; then
     echo -e "${ERROR}  [!] install_pkg: Missing required arguments (cmd='$cmd', pkg='$pkg', name='$name').${RST}"
@@ -232,13 +230,13 @@ install_lang() {
   local cmd="${4:-$pkg_name}"
   local override="${PROJECTR_INSTALL_MANAGER_OVERRIDE:-}"
   local tool_id check_cmd lang_pm
-  tool_id=$(projectr_tool_id "$cmd")
+  projectr_tool_id_into tool_id "$cmd"
   lang_pm=$(detect_pkg_for_tool "$tool_type")
   if [[ -n "$override" ]]; then
     lang_pm="$override"
   fi
-  check_cmd=$(projectr_effective_cmd "$tool_id" "$cmd" "$lang_pm")
-  pkg_name=$(projectr_effective_package "$tool_id" "$pkg_name" "$lang_pm")
+  projectr_effective_cmd_into check_cmd "$tool_id" "$cmd" "$lang_pm"
+  projectr_effective_package_into pkg_name "$tool_id" "$pkg_name" "$lang_pm"
 
   if command -v "$check_cmd" >/dev/null 2>&1; then
     echo -e "${OPTION} [✓] $display_name is already installed. Skipping...${RST}"
@@ -385,7 +383,7 @@ projectr_install_batch_by_entries() {
 
   for entry in "${entries[@]}"; do
     IFS="|" read -r num cmd pkg name desc type extra cat <<<"$entry"
-    tool_id=$(projectr_tool_id "$cmd")
+    projectr_tool_id_into tool_id "$cmd"
     case "$type" in
     pkg) key="$PM" ;;
     pip | pip3 | pipx | cargo | gem | npm | yarn | pnpm | bun | go | composer) key="${PROJECTR_INSTALL_MANAGER_OVERRIDE:-$(detect_pkg_for_tool "$type")}" ;;
@@ -394,8 +392,8 @@ projectr_install_batch_by_entries() {
       continue
       ;;
     esac
-    effective_cmd=$(projectr_effective_cmd "$tool_id" "$cmd" "$key")
-    effective_pkg=$(projectr_effective_package "$tool_id" "$pkg" "$key")
+    projectr_effective_cmd_into effective_cmd "$tool_id" "$cmd" "$key"
+    projectr_effective_package_into effective_pkg "$tool_id" "$pkg" "$key"
     if command -v "$effective_cmd" >/dev/null 2>&1; then
       projectr_install_result_push skipped "$name"
       continue
@@ -431,9 +429,9 @@ projectr_install_batch_by_entries() {
       stop_spinner "${OPTION}  [✓] Batch installation of ${#pkgs[@]} package(s) via $group completed successfully.${RST}"
       for entry in "${group_entries[@]}"; do
         IFS="|" read -r num cmd pkg name desc type extra cat <<<"$entry"
-        tool_id=$(projectr_tool_id "$cmd")
-        effective_cmd=$(projectr_effective_cmd "$tool_id" "$cmd" "$group")
-        effective_pkg=$(projectr_effective_package "$tool_id" "$pkg" "$group")
+        projectr_tool_id_into tool_id "$cmd"
+        projectr_effective_cmd_into effective_cmd "$tool_id" "$cmd" "$group"
+        projectr_effective_package_into effective_pkg "$tool_id" "$pkg" "$group"
         if [[ "${DRY_RUN:-0}" == "1" ]] || command -v "$effective_cmd" >/dev/null 2>&1; then
           projectr_install_result_push installed "$name"
           [[ "${DRY_RUN:-0}" == "1" ]] || projectr_record_successful_install "$tool_id" "$name" "$effective_pkg" "$group" "$type" "$effective_cmd"
