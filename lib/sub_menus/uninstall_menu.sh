@@ -5,6 +5,7 @@ uninstall_menu() {
   PROJECTR_UNINSTALL_VISIBLE_TOOL_COUNT=${PROJECTR_UNINSTALL_VISIBLE_TOOL_COUNT:-${PROJECTR_TOOL_PAGE_SIZE_DEFAULT:-50}}
 
   while true; do
+  sleep 0.1
     clear
     cat <<"BANNER" | rainbow
 

@@ -99,6 +99,7 @@ progress_run() {
   local pid=$!
 
   while kill -0 "$pid" 2>/dev/null; do
+  sleep 0.1
     if [ "$interrupted" -eq 1 ]; then
       kill "$pid" 2>/dev/null
       break
