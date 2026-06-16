@@ -349,68 +349,103 @@ _flag_list_manager() {
   fi
 
   # ── Manager registry ───
+  # Format: id|display|scope|platform/ecosystem|command-to-check
+  #
+  # Native managers are used as ProjectR's PRIMARY_PKG_MANAGER. Universal app
+  # managers and language/ecosystem managers are also listed because ProjectR can
+  # use several of them for search/install flows, but they are intentionally not
+  # promoted to primary system manager status.
   local managers=(
-    "apt|apt|Linux (Debian/Ubuntu)|apt"
-    "apt-get|apt-get|Linux (Debian/Ubuntu)|apt-get"
-    "pacman|pacman|Linux (Arch)|pacman"
-    "dnf|dnf|Linux (Fedora/RHEL)|dnf"
-    "yum|yum|Linux (CentOS/RHEL)|yum"
-    "zypper|zypper|Linux (openSUSE)|zypper"
-    "apk|apk|Linux (Alpine)|apk"
-    "emerge|emerge|Linux (Gentoo)|emerge"
-    "xbps|xbps-install|Linux (Void)|xbps-install"
-    "nix|nix|Linux/macOS (NixOS)|nix"
-    "guix|guix|Linux (GNU Guix)|guix"
-    "eopkg|eopkg|Linux (Solus)|eopkg"
-    "urpmi|urpmi|Linux (Mageia)|urpmi"
-    "slackpkg|slackpkg|Linux (Slackware)|pkgtool"
-    "pkg|pkg (Termux)|Termux (Android)|pkg"
-    "brew|brew|macOS / Linux|brew"
-    "macports|port|macOS|port"
-    "bsd-pkg|pkg (FreeBSD)|FreeBSD|pkg"
-    "pkg_add|pkg_add|OpenBSD|pkg_add"
-    "winget|winget|Windows|winget.exe"
-    "choco|choco|Windows|choco.exe"
-    "scoop|scoop|Windows|scoop"
-    "flatpak|flatpak|Linux|flatpak"
-    "snap|snap|Linux|snap"
+    "apt|apt|Native|Linux (Debian/Ubuntu)|apt"
+    "apt-get|apt-get|Native|Linux (Debian/Ubuntu)|apt-get"
+    "pacman|pacman|Native|Linux (Arch)|pacman"
+    "dnf|dnf|Native|Linux (Fedora/RHEL)|dnf"
+    "yum|yum|Native|Linux (CentOS/RHEL)|yum"
+    "zypper|zypper|Native|Linux (openSUSE)|zypper"
+    "apk|apk|Native|Linux (Alpine)|apk"
+    "emerge|emerge|Native|Linux (Gentoo)|emerge"
+    "xbps|xbps-install|Native|Linux (Void)|xbps-install"
+    "nix|nix|Native|Linux/macOS (NixOS)|nix"
+    "guix|guix|Native|Linux (GNU Guix)|guix"
+    "eopkg|eopkg|Native|Linux (Solus)|eopkg"
+    "urpmi|urpmi|Native|Linux (Mageia)|urpmi"
+    "slackpkg|slackpkg|Native|Linux (Slackware)|pkgtool"
+    "pkg|pkg (Termux)|Native|Termux (Android)|pkg"
+    "brew|brew|Native|macOS / Linux|brew"
+    "macports|port|Native|macOS|port"
+    "bsd-pkg|pkg (FreeBSD)|Native|FreeBSD|pkg"
+    "pkg_add|pkg_add|Native|OpenBSD|pkg_add"
+    "winget|winget|Native|Windows|winget.exe"
+    "choco|choco|Native|Windows|choco.exe"
+    "scoop|scoop|Native|Windows|scoop"
+    "flatpak|flatpak|Universal|Linux desktop apps|flatpak"
+    "snap|snap|Universal|Linux app packages|snap"
+    "pipx|pipx|Language|Python CLI apps|pipx"
+    "pip3|pip3|Language|Python packages|pip3"
+    "pip|pip|Language|Python packages|pip"
+    "npm|npm|Language|Node.js packages|npm"
+    "yarn|yarn|Language|Node.js packages|yarn"
+    "pnpm|pnpm|Language|Node.js packages|pnpm"
+    "bun|bun|Language|Bun/JavaScript packages|bun"
+    "gem|gem|Language|Ruby gems|gem"
+    "cargo|cargo|Language|Rust crates|cargo"
+    "go|go|Language|Go modules|go"
+    "composer|composer|Language|PHP packages|composer"
+    "uv|uv|Language|Python packages/projects|uv"
+    "poetry|poetry|Language|Python projects|poetry"
+    "pipenv|pipenv|Language|Python virtualenvs|pipenv"
+    "conda|conda|Language|Conda environments|conda"
+    "mamba|mamba|Language|Conda environments|mamba"
+    "bundler|bundler|Language|Ruby bundle manager|bundle"
+    "luarocks|luarocks|Language|Lua rocks|luarocks"
+    "dotnet|dotnet|Language|.NET packages|dotnet"
+    "nuget|nuget|Language|.NET/NuGet packages|nuget"
+    "opam|opam|Language|OCaml packages|opam"
+    "cabal|cabal|Language|Haskell packages|cabal"
+    "stack|stack|Language|Haskell projects|stack"
+    "mix|mix|Language|Elixir projects|mix"
+    "rebar3|rebar3|Language|Erlang projects|rebar3"
   )
 
-  # ── Header (using echo -e, already safe) ───
+  # ── Header ───
   echo ""
-  echo -e "${OPTION} [*] ProjectR — Supported Package Managers ${RST}"
+  echo -e "${OPTION} [*] ProjectR — Package and Ecosystem Managers ${RST}"
   echo ""
-  echo -e "  ${DIM}List of all package managers known to ProjectR."
-  echo -e "  Legend:  ${OPTION}✔${RST} = available, ${ERROR}✘${RST} = not found,  ${OPTION}★${RST} = primary${RST}"
+  echo -e "  ${DIM}Native system managers, universal app managers, and language ecosystem managers known to ProjectR."
+  echo -e "  Legend:  ${OPTION}✔${RST} = available, ${ERROR}✘${RST} = not found,  ${OPTION}★${RST} = primary native manager${RST}"
   echo ""
 
   # ── Dynamic column widths ───
   local max_name=15 # "Package Manager"
-  local max_os=12   # "Platform"
-  local entry id display platform check_cmd
+  local max_scope=9 # "Scope"
+  local max_platform=12 # "Platform / Ecosystem"
+  local entry id display scope platform check_cmd
   for entry in "${managers[@]}"; do
-    IFS="|" read -r id display platform _ <<<"$entry"
+    IFS="|" read -r id display scope platform _ <<<"$entry"
     ((${#display} > max_name)) && max_name=${#display}
-    ((${#platform} > max_os)) && max_os=${#platform}
+    ((${#scope} > max_scope)) && max_scope=${#scope}
+    ((${#platform} > max_platform)) && max_platform=${#platform}
   done
   ((max_name < 15)) && max_name=15
-  ((max_os < 12)) && max_os=12
+  ((max_scope < 9)) && max_scope=9
+  ((max_platform < 20)) && max_platform=20
 
-  # ── Table header (FIXED: colors as %b arguments) ───
-  printf "  %b%-${max_name}s  %-6s  %-${max_os}s%b\n" \
-    "$BOLD_WHITE" "Package Manager" "Avail" "Platform" "$RST"
+  printf "  %b%-${max_name}s  %-6s  %-${max_scope}s  %-${max_platform}s%b\n" \
+    "$BOLD_WHITE" "Package Manager" "Avail" "Scope" "Platform / Ecosystem" "$RST"
 
   local sep
-  printf -v sep '%*s' $((max_name + 7 + max_os + 2)) ''
+  printf -v sep '%*s' $((max_name + 8 + max_scope + 2 + max_platform + 2)) ''
   sep=${sep// /─}
   printf "  %b%s%b\n" "$DIM" "$sep" "$RST"
 
   # ── Table rows ───
   local available_list=()
+  local available_native=0 available_universal=0 available_language=0 total_available=0 total_known=${#managers[@]}
   for entry in "${managers[@]}"; do
-    IFS="|" read -r id display platform check_cmd <<<"$entry"
+    IFS="|" read -r id display scope platform check_cmd <<<"$entry"
 
-    # Force FreeBSD pkg to be unavailable on Termux
+    # Force FreeBSD pkg to be unavailable on Termux so Termux's pkg executable
+    # is not double-counted as the FreeBSD manager.
     local force_unavailable=0
     [[ "$detected_os" == "Termux (Android)" && "$id" == "bsd-pkg" ]] && force_unavailable=1
 
@@ -422,17 +457,23 @@ _flag_list_manager() {
       icon="✔"
       icon_color="${OPTION}"
       available_list+=("$display")
-      # Mark the primary (active) one
-      [[ "$id" == "$detected_pm" ]] && marker=" ${OPTION}★${RST}"
+      total_available=$((total_available + 1))
+      case "$scope" in
+      Native) available_native=$((available_native + 1)) ;;
+      Universal) available_universal=$((available_universal + 1)) ;;
+      Language) available_language=$((available_language + 1)) ;;
+      esac
+      # Mark only the primary native package manager, not language managers.
+      [[ "$scope" == "Native" && "$id" == "$detected_pm" ]] && marker=" ${OPTION}★${RST}"
     else
       icon="✘"
       icon_color="${ERROR}"
     fi
 
-    # FIXED: all colour variables moved to %b arguments
-    printf "  %b%-${max_name}s%b  %b%-6s%b  %b%-${max_os}s%b%b\n" \
+    printf "  %b%-${max_name}s%b  %b%-6s%b  %b%-${max_scope}s%b  %b%-${max_platform}s%b%b\n" \
       "$BOLD_WHITE" "$display" "$RST" \
       "$icon_color" "$icon" "$RST" \
+      "$INFO" "$scope" "$RST" \
       "$DIM" "$platform" "$RST" \
       "$marker"
   done
@@ -440,17 +481,12 @@ _flag_list_manager() {
   # ── Footer ───
   echo ""
   printf "  %b%s%b\n" "$DIM" "$sep" "$RST"
-
-  # Footer lines (echo -e already safe)
   echo -e "  ${INFO}Detected OS :${RST}  ${BOLD_WHITE}${detected_os}${RST}"
   echo -e "  ${INFO}Primary PM  :${RST} ${OPTION} ${detected_pm}${RST}"
+  echo -e "  ${INFO}Available   :${RST}  ${BOLD_WHITE}${total_available}${RST}${DIM}/${total_known}${RST} ${DIM}(native=${available_native}, universal=${available_universal}, language=${available_language})${RST}"
 
-  local extra=()
-  for m in "${available_list[@]}"; do
-    [[ "$m" != "$detected_pm" ]] && extra+=("$m")
-  done
-  if [ ${#extra[@]} -gt 0 ]; then
-    echo -e "  ${INFO}Also found  :${RST}  ${BOLD_WHITE}${extra[*]}${RST}"
+  if [ ${#available_list[@]} -gt 0 ]; then
+    echo -e "  ${INFO}Found       :${RST}  ${BOLD_WHITE}${available_list[*]}${RST}"
   fi
   echo ""
 }

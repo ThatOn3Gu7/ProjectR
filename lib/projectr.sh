@@ -369,8 +369,11 @@ projectr_json_escape() {
 projectr_detect_manager() { detect_pkg_manager; }
 
 projectr_detect_managers() {
-  detect_pkg_manager >/dev/null 2>&1 || true
-  printf '%s\n' "${DETECTED_PKG_MANAGERS[@]}"
+  # Return every manager ProjectR can currently discover for this machine,
+  # including native managers plus language/ecosystem managers such as pipx,
+  # pip3, npm, cargo, gem, go, and composer.
+  projectr_library_load resolver || return $?
+  projectr_candidate_managers
 }
 
 projectr_detect_language_manager() {

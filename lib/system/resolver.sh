@@ -2,6 +2,14 @@
 # shellcheck disable=all
 # Shared manager discovery / resolution helpers.
 
+projectr_resolver_command_exists() {
+  if declare -f projectr_command_exists >/dev/null 2>&1; then
+    projectr_command_exists "$1"
+  else
+    command -v "$1" >/dev/null 2>&1
+  fi
+}
+
 projectr_manager_tier() {
   case "$1" in
   apt | apt-get | pacman | dnf | yum | zypper | apk | emerge | xbps | nix | guix | brew | macports | bsd-pkg | pkg_add | pkg | winget | choco | scoop) printf '1\n' ;;
@@ -19,8 +27,8 @@ projectr_candidate_managers() {
     [[ -n "$m" && "$m" != "unknown" ]] || continue
     case " ${items[*]} " in *" $m "*) ;; *) items+=("$m") ;; esac
   done
-  for m in pipx pip pip3 npm yarn pnpm bun gem cargo go composer; do
-    command -v "$m" >/dev/null 2>&1 || continue
+  for m in pipx pip3 pip npm yarn pnpm bun gem cargo go composer; do
+    projectr_resolver_command_exists "$m" || continue
     case " ${items[*]} " in *" $m "*) ;; *) items+=("$m") ;; esac
   done
   printf '%s\n' "${items[@]}"
