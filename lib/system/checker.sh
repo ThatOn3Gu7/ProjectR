@@ -9,6 +9,23 @@ projectr_checker_command_exists() {
   fi
 }
 
+projectr_checker_tool_version() {
+  # Best-effort version extraction used by the interactive inspection flow.
+  # Many terminal tools support --version, but some prefer -V or "version".
+  # We only read the first output line and parse the first x.y style token so
+  # the inspection summary remains fast and resilient.
+  local cmd="$1" flag version_line
+  for flag in --version -V --Version version; do
+    version_line=""
+    IFS= read -r version_line < <("$cmd" "$flag" 2>&1 || true) || true
+    if [[ "$version_line" =~ ([0-9]+([.][0-9]+)+) ]]; then
+      printf '%s\n' "${BASH_REMATCH[1]}"
+      return 0
+    fi
+  done
+  printf 'unknown\n'
+}
+
 check_tool() {
   # Determine if a tool is available and record its status
   # "$cmd" – the command to test
@@ -19,24 +36,16 @@ check_tool() {
   local cmd="$1"
   local name="$2"
   local manager="${3:-${PRIMARY_PKG_MANAGER:-$(detect_pkg_manager)}}"
-  local tool_id effective_cmd version="" version_line=""
+  local tool_id effective_cmd version=""
   projectr_tool_id_into tool_id "$cmd"
   projectr_effective_cmd_into effective_cmd "$tool_id" "$cmd" "$manager"
 
   if projectr_checker_command_exists "$effective_cmd"; then
-    local _flag
-    for _flag in --version -V --Version version; do
-      version_line=""
-      IFS= read -r version_line < <("$effective_cmd" "$_flag" 2>&1 || true) || true
-      if [[ "$version_line" =~ ([0-9]+([.][0-9]+)+) ]]; then
-        version="${BASH_REMATCH[1]}"
-        break
-      fi
-    done
-    projectr_install_result_push found "$effective_cmd"
+    version=$(projectr_checker_tool_version "$effective_cmd")
+    projectr_install_result_push found "$name"$'\t'"$effective_cmd"$'\t'"$version"
     echo -e "${OPTION}     [✓] \"$name\" is installed ${DIM}(v${version:--unknown})${RST}"
   else
-    projectr_install_result_push missing "$effective_cmd"
+    projectr_install_result_push missing "$name"$'\t'"$effective_cmd"
     echo -e "${ERROR}     [✗] \"$name\" is not installed${RST}"
   fi
 }
@@ -157,8 +166,19 @@ view_tool_summary() {
         if [[ ${#FOUND_PKGS[@]} -eq 0 ]]; then
           echo -e "  ${DIM}(none)${RST}"
         else
-          for tool in "${FOUND_PKGS[@]}"; do
-            echo -e "  ${BLUE}✓${RST} $tool"
+          printf "  ${BOLD_WHITE}%-22s  %-18s  %-12s${RST}\n" "Tool" "Command" "Version"
+          printf "  ${DIM}%s${RST}\n" "$(printf '─%.0s' $(seq 1 58))"
+          local record display_name command_name version
+          for record in "${FOUND_PKGS[@]}"; do
+            IFS=$'\t' read -r display_name command_name version <<<"$record"
+            # Backward compatibility for any caller that still stores only a
+            # command name in FOUND_PKGS.
+            if [[ -z "$command_name" ]]; then
+              command_name="$display_name"
+              version="unknown"
+            fi
+            printf "  ${BLUE}✓${RST} %-22s  %-18s  ${DIM}v%-11s${RST}\n" \
+              "$display_name" "$command_name" "${version:-unknown}"
           done
         fi
         echo -e "\n${DIM}Press ENTER to continue...${RST}"
@@ -170,8 +190,13 @@ view_tool_summary() {
         if [[ ${#NOT_FOUND_PKGS[@]} -eq 0 ]]; then
           echo -e "  ${DIM}(none)${RST}"
         else
-          for tool in "${NOT_FOUND_PKGS[@]}"; do
-            echo -e "  ${ERROR}✗${RST} $tool"
+          printf "  ${BOLD_WHITE}%-22s  %-18s${RST}\n" "Tool" "Expected command"
+          printf "  ${DIM}%s${RST}\n" "$(printf '─%.0s' $(seq 1 43))"
+          local record display_name command_name
+          for record in "${NOT_FOUND_PKGS[@]}"; do
+            IFS=$'\t' read -r display_name command_name <<<"$record"
+            [[ -z "$command_name" ]] && command_name="$display_name"
+            printf "  ${ERROR}✗${RST} %-22s  %-18s\n" "$display_name" "$command_name"
           done
         fi
         echo -e "\n${DIM}Press ENTER to continue...${RST}"
