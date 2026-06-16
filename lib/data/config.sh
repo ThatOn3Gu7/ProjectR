@@ -77,4 +77,10 @@ config_reset_all() {
   }
   echo -e "${OPTION} [✓] All saved preferences cleared.${RST}"
 }
-config_init
+
+# CLI mode keeps the historical behavior of creating the config file as soon as
+# config.sh is sourced. Library mode can suppress this with
+# PROJECTR_CONFIG_AUTO_INIT=0 so `source lib/projectr.sh` stays side-effect free.
+if [[ "${PROJECTR_CONFIG_AUTO_INIT:-1}" == "1" ]]; then
+  config_init
+fi
