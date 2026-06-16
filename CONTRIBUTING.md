@@ -40,11 +40,14 @@ Thank you for your interest in contributing! ProjectR is available on both **Git
 
 ## Running Tests
 
-ProjectR uses [bats-core](https://github.com/bats-core/bats-core) for testing.
+ProjectR uses [bats-core](https://github.com/bats-core/bats-core) for the main test suite and also includes a plain Bash smoke test for the source-safe library API.
 
 ```bash
 bats tests/suite.bats
+bash tests/library_smoke.sh
 ```
+
+If your change touches `lib/projectr.sh`, registry lookup, plugin loading, dry-run planning, or source-time behavior, always run `tests/library_smoke.sh` even if `bats` is not installed locally.
 
 All tests must pass before a pull/merge request can be accepted.
 

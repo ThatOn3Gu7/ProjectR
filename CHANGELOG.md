@@ -12,6 +12,11 @@ ProjectR is available on [GitHub](https://github.com/ThatOn3Gu7/ProjectR) and [G
 
 ### Added
 
+- Source-safe Bash library entrypoint at `lib/projectr.sh`, exposing ProjectR as a reusable API without starting the CLI or mutating user files at source time.
+- Public library APIs for registry lookup, package-manager detection, manager-aware command/package resolution, install planning, profile diffing, state verification, and explicit install/uninstall wrappers.
+- Library documentation in `docs/api.md` and a staged design roadmap in `docs/library_roadmap.md`.
+- Runnable library examples in `examples/library_list_tools.sh` and `examples/library_dry_run.sh`.
+- `tests/library_smoke.sh` to verify source safety, JSON output, plugin index invalidation, and dry-run planning from the library API.
 - Performance optimization documentation in `docs/performance_optimization.md`, including validation commands, benchmark snapshot, and maintenance notes.
 - Fast read-only startup path in `main.sh` for `--help`, `-h`, `help`, `--version`, `-v`, and `version`.
 - Lazy tool registry lookup index in `lib/data/tools.sh` for command/package/display-name resolution.

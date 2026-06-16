@@ -4,9 +4,19 @@ This document describes every module under `lib/` and its purpose.
 
 ProjectR is available on [GitHub](https://github.com/ThatOn3Gu7/ProjectR) and [GitLab](https://gitlab.com/Thaton3gu7/ProjectR).
 
-Additional documentation added by the performance pass:
+Additional documentation added by recent architecture work:
 
+- [`api.md`](api.md) documents the source-safe Bash library API exposed through `lib/projectr.sh`.
+- [`library_roadmap.md`](library_roadmap.md) explains the roadmap and design rules for making ProjectR usable as a library.
 - [`performance_optimization.md`](performance_optimization.md) documents the startup, registry-indexing, command-cache, and validation changes.
+
+---
+
+## `lib/projectr.sh` — Source-safe library entrypoint
+
+`lib/projectr.sh` exposes ProjectR as a reusable Bash library. It is safe to source from external scripts and loads only the minimal read-only registry/detection layer by default. Optional modules such as plugins, dry-run planning, profile parsing, state, installer, and uninstaller support are lazy-loaded through `projectr_library_load` or public wrapper functions.
+
+The public API includes registry helpers (`projectr_tool_lookup`, `projectr_tool_list`, `projectr_tool_get`), manager helpers (`projectr_detect_manager`, `projectr_tool_effective_package`), planning helpers (`projectr_plan_install`), state wrappers, and explicit mutating wrappers (`projectr_install_tool`, `projectr_uninstall_tool`). See [`api.md`](api.md) for complete usage.
 
 ---
 

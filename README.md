@@ -85,6 +85,44 @@ Timings vary by shell, filesystem, installed tools, and terminal environment; us
 
 ---
 
+## Use ProjectR as a Bash library
+
+ProjectR can now be sourced by other Bash scripts through a stable, source-safe API:
+
+```bash
+source "/path/to/ProjectR/lib/projectr.sh"
+
+projectr_init --no-plugins
+projectr_detect_manager
+projectr_tool_lookup git
+projectr_tool_get git name
+projectr_tool_status git || true
+projectr_plan_install git --json
+```
+
+The library entrypoint is intentionally different from `main.sh`:
+
+- `main.sh` is the CLI application and may dispatch commands or enter the interactive menu.
+- `lib/projectr.sh` is the reusable API layer and does not parse your script arguments, start the menu, install packages, acquire locks, or create config/state/log files just by being sourced.
+
+Useful API areas include:
+
+- registry lookups: `projectr_tool_lookup`, `projectr_tool_get`, `projectr_tool_list`, `projectr_tool_json`;
+- package-manager detection: `projectr_detect_manager`, `projectr_detect_managers`, `projectr_detect_language_manager`;
+- manager-aware metadata: `projectr_tool_effective_cmd`, `projectr_tool_effective_package`, `projectr_tool_installed`;
+- planning: `projectr_plan_install`, `projectr_plan_profile`;
+- explicit mutating wrappers: `projectr_install_tool`, `projectr_uninstall_tool`.
+
+Full documentation is available in [`docs/api.md`](docs/api.md), and runnable examples live in `examples/`:
+
+```bash
+bash examples/library_list_tools.sh
+bash examples/library_dry_run.sh git curl jq
+bash tests/library_smoke.sh
+```
+
+---
+
 ## Quick start
 
 Clone the repo and run ProjectR directly:
