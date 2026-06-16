@@ -27,7 +27,7 @@ check_tool() {
     local _flag
     for _flag in --version -V --Version version; do
       version_line=""
-      IFS= read -r version_line < <("$effective_cmd" "$_flag" 2>&1 || true)
+      IFS= read -r version_line < <("$effective_cmd" "$_flag" 2>&1 || true) || true
       if [[ "$version_line" =~ ([0-9]+([.][0-9]+)+) ]]; then
         version="${BASH_REMATCH[1]}"
         break

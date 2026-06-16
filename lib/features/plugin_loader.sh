@@ -173,11 +173,11 @@ projectr_load_tool_plugin() {
   case "$type" in
   pkg | pip | pip3 | pipx | cargo | gem | npm | yarn | pnpm | bun | go | composer) ;;
   special)
-    projectr_plugin_reject "$file" "type 'special' is not allowed in plugins"
+    projectr_plugin_reject "$file" "type 'special' is not allowed in plugins" || true
     return 0
     ;;
   *)
-    projectr_plugin_reject "$file" "unsupported plugin type '$type'"
+    projectr_plugin_reject "$file" "unsupported plugin type '$type'" || true
     return 0
     ;;
   esac

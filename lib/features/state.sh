@@ -23,9 +23,15 @@ projectr_state_command_path() {
   fi
 }
 
+projectr_state_sqlite_available() {
+  [[ "${PROJECTR_STATE_BACKEND:-}" == "tsv" ]] && return 1
+  command -v sqlite3 >/dev/null 2>&1 || return 1
+  sqlite3 -version >/dev/null 2>&1
+}
+
 projectr_state_init() {
   mkdir -p "$PROJECTR_STATE_DIR"
-  if command -v sqlite3 >/dev/null 2>&1; then
+  if projectr_state_sqlite_available; then
     sqlite3 "$PROJECTR_STATE_DB" <<'SQL'
 CREATE TABLE IF NOT EXISTS installs (
   tool_id TEXT PRIMARY KEY,
@@ -105,7 +111,7 @@ projectr_state_record_install() {
   projectr_state_command_exists "$cmd" && verification=verified
   transaction_id="${PROJECTR_TRANSACTION_ID:-${PROJECTR_SESSION_ID:-manual}}"
 
-  if command -v sqlite3 >/dev/null 2>&1; then
+  if projectr_state_sqlite_available; then
     sqlite3 "$PROJECTR_STATE_DB" "INSERT OR REPLACE INTO installs(tool_id,name,package,manager,install_type,version,installed_at,source,verification_status,transaction_id) VALUES($(projectr_sql_quote "$tool_id"),$(projectr_sql_quote "$name"),$(projectr_sql_quote "$package"),$(projectr_sql_quote "$manager"),$(projectr_sql_quote "$install_type"),$(projectr_sql_quote "$version"),$(projectr_sql_quote "$now"),$(projectr_sql_quote "$source"),$(projectr_sql_quote "$verification"),$(projectr_sql_quote "$transaction_id"));"
   else
     tmp=$(mktemp "${PROJECTR_STATE_TSV}.XXXXXX") || return 1
@@ -126,7 +132,7 @@ projectr_state_record_action() {
   now=$(date -u '+%Y-%m-%dT%H:%M:%SZ')
   action_id="${transaction_id}:${tool_id}:${now}:${status}:${RANDOM}"
 
-  if command -v sqlite3 >/dev/null 2>&1; then
+  if projectr_state_sqlite_available; then
     sqlite3 "$PROJECTR_STATE_DB" "INSERT OR REPLACE INTO actions(action_id,transaction_id,tool_id,name,package,manager,install_type,command_name,status,created_at,rollback_status) VALUES($(projectr_sql_quote "$action_id"),$(projectr_sql_quote "$transaction_id"),$(projectr_sql_quote "$tool_id"),$(projectr_sql_quote "$name"),$(projectr_sql_quote "$package"),$(projectr_sql_quote "$manager"),$(projectr_sql_quote "$install_type"),$(projectr_sql_quote "$command_name"),$(projectr_sql_quote "$status"),$(projectr_sql_quote "$now"),'pending');"
   else
     tmp=$(mktemp "${PROJECTR_ACTIONS_TSV}.XXXXXX") || return 1
@@ -141,7 +147,7 @@ projectr_state_record_action() {
 
 projectr_state_last_transaction_id() {
   projectr_state_init
-  if command -v sqlite3 >/dev/null 2>&1; then
+  if projectr_state_sqlite_available; then
     sqlite3 "$PROJECTR_STATE_DB" 'SELECT transaction_id FROM actions ORDER BY created_at DESC LIMIT 1;' 2>/dev/null
   else
     awk -F '\t' 'NR>1 { last=$2 } END { print last }' "$PROJECTR_ACTIONS_TSV" 2>/dev/null
@@ -151,7 +157,7 @@ projectr_state_last_transaction_id() {
 projectr_state_transaction_actions() {
   local transaction_id="$1"
   projectr_state_init
-  if command -v sqlite3 >/dev/null 2>&1; then
+  if projectr_state_sqlite_available; then
     sqlite3 -separator $'\t' "$PROJECTR_STATE_DB" "SELECT action_id, tool_id, name, package, manager, install_type, command_name, status, rollback_status FROM actions WHERE transaction_id=$(projectr_sql_quote "$transaction_id") ORDER BY created_at DESC;" 2>/dev/null
   else
     awk -F '\t' -v tx="$transaction_id" 'NR>1 && $2==tx { print $1 "\t" $3 "\t" $4 "\t" $5 "\t" $6 "\t" $7 "\t" $8 "\t" $9 "\t" $11 }' "$PROJECTR_ACTIONS_TSV" 2>/dev/null
@@ -161,7 +167,7 @@ projectr_state_transaction_actions() {
 projectr_state_mark_action_status() {
   local action_id="$1" rollback_status="$2" tmp
   projectr_state_init
-  if command -v sqlite3 >/dev/null 2>&1; then
+  if projectr_state_sqlite_available; then
     sqlite3 "$PROJECTR_STATE_DB" "UPDATE actions SET rollback_status=$(projectr_sql_quote "$rollback_status") WHERE action_id=$(projectr_sql_quote "$action_id");"
   else
     tmp=$(mktemp "${PROJECTR_ACTIONS_TSV}.XXXXXX") || return 1
@@ -175,7 +181,7 @@ projectr_state_mark_action_status() {
 
 projectr_state_records() {
   projectr_state_init
-  if command -v sqlite3 >/dev/null 2>&1; then
+  if projectr_state_sqlite_available; then
     sqlite3 -separator $'\t' "$PROJECTR_STATE_DB" 'SELECT tool_id, name, package, manager FROM installs ORDER BY name;' 2>/dev/null
   else
     awk -F '\t' 'NR > 1 && NF >= 4 { print $1 "\t" $2 "\t" $3 "\t" $4 }' "$PROJECTR_STATE_TSV" 2>/dev/null
@@ -206,7 +212,7 @@ projectr_state_find_registry_entry() {
 projectr_state_lookup_manager() {
   local tool_id="$1" package="${2:-}"
   projectr_state_init
-  if command -v sqlite3 >/dev/null 2>&1; then
+  if projectr_state_sqlite_available; then
     if [[ -n "$package" ]]; then
       sqlite3 "$PROJECTR_STATE_DB" "SELECT manager FROM installs WHERE tool_id=$(projectr_sql_quote "$tool_id") OR package=$(projectr_sql_quote "$package") LIMIT 1;" 2>/dev/null
     else
@@ -226,7 +232,7 @@ projectr_state_remove_install() {
   [[ -n "$tool_id" || -n "$package" ]] || return 1
   projectr_state_init
 
-  if command -v sqlite3 >/dev/null 2>&1; then
+  if projectr_state_sqlite_available; then
     if [[ -n "$tool_id" && -n "$package" ]]; then
       sqlite3 "$PROJECTR_STATE_DB" "DELETE FROM installs WHERE tool_id=$(projectr_sql_quote "$tool_id") AND package=$(projectr_sql_quote "$package");"
     elif [[ -n "$tool_id" ]]; then
@@ -252,7 +258,7 @@ projectr_state_remove_install() {
 
 projectr_state_list() {
   projectr_state_init
-  if command -v sqlite3 >/dev/null 2>&1; then
+  if projectr_state_sqlite_available; then
     sqlite3 -header -column "$PROJECTR_STATE_DB" 'SELECT tool_id, name, package, manager, install_type, version, installed_at, verification_status FROM installs ORDER BY name;'
   else
     column -t -s $'\t' "$PROJECTR_STATE_TSV" 2>/dev/null || cat "$PROJECTR_STATE_TSV"

@@ -90,7 +90,9 @@ install_preset_by_names() {
   done
 
   echo ""
-  post_install_summary
+  if declare -f post_install_summary >/dev/null 2>&1; then
+    post_install_summary
+  fi
 }
 
 install_pkg() {
@@ -451,5 +453,7 @@ projectr_install_batch_by_entries() {
     rm -f "$tmp"
   done
 
-  post_install_summary
+  if declare -f post_install_summary >/dev/null 2>&1; then
+    post_install_summary
+  fi
 }

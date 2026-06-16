@@ -193,8 +193,8 @@ TOML
         "2|fake-cmd-b|fake-pkg-b|Fake B|desc|pkg|-|Test"
     )
 
-    run projectr_install_batch_by_entries "${entries[@]}"
-    [ "$status" -eq 0 ]
+    projectr_install_batch_by_entries "${entries[@]}"
+    [ "$?" -eq 0 ]
 }
 
 # ---------------------------------------------------------------------------
@@ -286,10 +286,13 @@ TOML
     PRIMARY_PKG_MANAGER=apt
     export PRIMARY_PKG_MANAGER
 
-    # 'definitely-not-a-real-cmd' won't be on PATH, so install_pkg will attempt install
-    run install_pkg "definitely-not-a-real-cmd" "definitely-not-a-real-pkg" "Fake Pkg"
+    # 'definitely-not-a-real-cmd' won't be on PATH, so install_pkg will attempt install.
+    # Call directly instead of through `run` so scoped result arrays remain visible
+    # in this test shell.
+    local install_status=0
+    install_pkg "definitely-not-a-real-cmd" "definitely-not-a-real-pkg" "Fake Pkg" || install_status=$?
     # Should fail (non-zero) because the PM stub returns 42
-    [ "$status" -ne 0 ]
+    [ "$install_status" -ne 0 ]
     # The tool should be recorded as failed
     [[ " ${FAILED_PKGS[*]} " == *" Fake Pkg "* ]]
 }
