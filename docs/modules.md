@@ -111,11 +111,11 @@ Low-level system detection, dependency management, and scheduling.
 
 | Script | Description |
 |---|---|
-| `checker.sh` | Checks which tools are installed or missing, using cached command lookups during full scans, and exposes `view_tool_summary()` for a consolidated report. |
+| `checker.sh` | Checks which tools are installed or missing, using cached command lookups during full scans, and exposes `view_tool_summary()` with installed-tool versions plus missing-tool command names. |
 | `daemon_checker.sh` | Detects and reports on background daemons or services required by managed tools. |
 | `dependencies.sh` | Resolves and installs system-level dependencies required before a tool can be set up. |
 | `detect.sh` | Detects the current OS, distribution, architecture, shell environment, and package manager; caches completed detection including `unknown` results. |
 | `network.sh` | Checks network connectivity and validates reachability of required remote endpoints. |
 | `privilege.sh` | Handles privilege escalation (sudo/doas) and checks for required permissions before operations. |
-| `resolver.sh` | Resolves the appropriate package manager (apt, brew, dnf, pacman, etc.) for the current system. |
+| `resolver.sh` | Resolves the appropriate package manager for the current system and exposes candidate native/language managers for search, library, and manager-list features. |
 | `scheduler.sh` | Manages scheduled tasks (cron/systemd timers) for automated tool updates and health checks. |

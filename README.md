@@ -469,13 +469,15 @@ Known manager families include:
 - macOS/BSD: `brew`, `port`, BSD package tools
 - Windows-style managers: `winget`, `choco`, `scoop`
 - Universal app sources: `flatpak`, `snap`
-- Language ecosystems: `pip`, `pip3`, `pipx`, `npm`, `yarn`, `pnpm`, `bun`, `gem`, `cargo`, `go`, `composer`
+- Language ecosystems: `pip`, `pip3`, `pipx`, `npm`, `yarn`, `pnpm`, `bun`, `gem`, `cargo`, `go`, `composer`, plus recognized ecosystem tools such as `uv`, `poetry`, `pipenv`, `conda`, `mamba`, `bundler`, `luarocks`, `dotnet`, `nuget`, `opam`, `cabal`, `stack`, `mix`, and `rebar3`
 
 Check your current system with:
 
 ```bash
 project --list=manager
 ```
+
+The manager list now shows native system managers, universal app managers, and language ecosystem managers in one table. That means commands such as `pip3`, `pipx`, `npm`, `cargo`, `gem`, `go`, and `composer` are visible when present, even though ProjectR still keeps the OS-native manager as the primary install source for normal system packages. Some extra ecosystem tools are listed for environment visibility even when they are not yet first-class ProjectR install sources.
 
 ---
 

@@ -183,7 +183,7 @@ apt
 
 ### `projectr_detect_managers`
 
-Prints all detected package managers, one per line.
+Prints every manager ProjectR can currently use as a resolver/search candidate on the machine, one per line. This includes native system managers plus supported language/ecosystem managers such as `pipx`, `pip3`, `npm`, `cargo`, `gem`, `go`, and `composer` when they are available.
 
 ```bash
 projectr_detect_managers

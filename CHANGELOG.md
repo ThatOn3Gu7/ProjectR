@@ -40,6 +40,9 @@ ProjectR is available on [GitHub](https://github.com/ThatOn3Gu7/ProjectR) and [G
 
 ### Changed
 
+- Expanded `project --list=manager` / `project list manager` to show native, universal, and language ecosystem managers such as `pipx`, `pip3`, `npm`, `cargo`, `gem`, `go`, and `composer` in one table.
+- Updated the library `projectr_detect_managers` helper to report all ProjectR-discoverable managers, including language ecosystem managers, instead of only native package managers.
+- Enhanced the interactive tool inspection summary so installed tools are shown with display name, expected command, and detected version.
 - Optimized `project list categories` to group category rows in a single registry pass instead of rescanning all tools once per category.
 - Updated tool lookup flows in CLI, dry-run, install, uninstall, profile, search, checker, and state modules to use indexed registry helpers where available.
 - Updated read-only installed-tool/version checks to use cached command probes and lighter Bash-native version parsing where practical.
