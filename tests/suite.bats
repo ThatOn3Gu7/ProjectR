@@ -83,6 +83,10 @@ _source_core() {
     # sh should be found; projectr-present should be missing
     [[ "${#FOUND_PKGS[@]}" -ge 1 ]]
     [[ "${#NOT_FOUND_PKGS[@]}" -ge 1 ]]
+    # Installed summary records now carry display name, command, and version.
+    [[ "${FOUND_PKGS[0]}" == *$'\t'* ]]
+    # Missing summary records carry display name and expected command.
+    [[ "${NOT_FOUND_PKGS[0]}" == *$'\t'* ]]
 }
 
 # ---------------------------------------------------------------------------
@@ -447,4 +451,18 @@ TOML
 
     # The apt package override should now be registered
     [[ "${PROJECTR_TOOL_PKG_OVERRIDES[fd:apt]:-}" == "fd-find" ]]
+}
+
+# ---------------------------------------------------------------------------
+# 16. list manager – includes language ecosystem managers
+# ---------------------------------------------------------------------------
+@test "list manager includes language ecosystem managers" {
+    run bash "$SCRIPT_DIR/main.sh" --no-color --list=manager
+    [ "$status" -eq 0 ]
+    [[ "$output" == *'Package and Ecosystem Managers'* ]]
+    [[ "$output" == *'Language'* ]]
+    [[ "$output" == *'pipx'* ]]
+    [[ "$output" == *'pip3'* ]]
+    [[ "$output" == *'npm'* ]]
+    [[ "$output" == *'cargo'* ]]
 }
