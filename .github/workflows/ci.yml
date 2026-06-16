@@ -29,7 +29,7 @@ jobs:
 
       - name: Bash syntax check
         run: |
-          bash -n main.sh setup.sh $(find lib -name '*.sh' | sort)
+          bash -n main.sh setup.sh $(find lib examples tests -name '*.sh' | sort)
 
       - name: ShellCheck
         run: |
@@ -52,3 +52,7 @@ jobs:
         if: runner.os == 'Linux'
         run: |
           bats tests/suite.bats
+
+      - name: Library smoke test
+        run: |
+          bash tests/library_smoke.sh

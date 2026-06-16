@@ -27,6 +27,8 @@ bats:
   script:
     - echo "Running bats test suite..."
     - bats tests/suite.bats
+    - echo "Running ProjectR library smoke test..."
+    - bash tests/library_smoke.sh
   rules:
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
     - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH'
