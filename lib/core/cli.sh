@@ -222,7 +222,7 @@ projectr_run_update() {
     after=$(git -C "$update_dir" rev-parse HEAD 2>/dev/null || printf '%s' "$before")
 
     if [[ $status -ne 0 ]]; then
-      echo -e "${ERROR}[!] Update failed.${RST}"
+      echo -e "${ERROR}[ℹ] Update failed.${RST}"
       echo "$output"
       log_fail "ProjectR update failed: $output" "update"
       return $status
@@ -283,7 +283,7 @@ projectr_cli_upgrade_args() {
     --dry-run) dry=1 ;;
     --json) json=1 ;;
     --*)
-      echo -e "${ERROR}[!] Unknown upgrade option: $arg${RST}"
+      echo -e "${ERROR}[ℹ] Unknown upgrade option: $arg${RST}"
       log_error "Unknown upgrade option: $arg" "cli"
       return 2
       ;;
@@ -322,7 +322,7 @@ projectr_cli_install_args() {
     --profile=*) profile="${arg#--profile=}" ;;
     --profile) profile="__NEXT__" ;;
     --*)
-      echo -e "${ERROR}[!] Unknown install option: $arg${RST}"
+      echo -e "${ERROR}[ℹ] Unknown install option: $arg${RST}"
       log_error "Unknown install option: $arg" "cli"
       return 2
       ;;
@@ -339,7 +339,7 @@ projectr_cli_install_args() {
   done
 
   [[ "$source_manager" != "__NEXT__" ]] || {
-    echo -e "${ERROR}[!] --source requires a manager name.${RST}"
+    echo -e "${ERROR}[ℹ] --source requires a manager name.${RST}"
     return 1
   }
 
@@ -353,7 +353,7 @@ projectr_cli_install_args() {
     fi
     return $?
   elif [[ "$profile" == "__NEXT__" ]]; then
-    echo -e "${ERROR}[!] --profile requires a file path.${RST}"
+    echo -e "${ERROR}[ℹ] --profile requires a file path.${RST}"
     log_error "install --profile missing path" "cli"
     return 1
   fi
@@ -382,7 +382,7 @@ projectr_cli_install_args() {
     for arg in "${targets[@]}"; do
       local entry
       entry=$(projectr_cli_find_tool_entry "$arg") || {
-        echo -e "${ERROR}[!] No tool named '$arg' found in the list.${RST}"
+        echo -e "${ERROR}[ℹ] No tool named '$arg' found in the list.${RST}"
         unset PROJECTR_INSTALL_MANAGER_OVERRIDE
         return 1
       }
@@ -407,11 +407,11 @@ projectr_cli_uninstall_args() {
   for arg in "$@"; do
     case "$arg" in
     --dry-run)
-      echo -e "${ERROR}[!] Dry-run uninstall is not implemented; no changes were made.${RST}"
+      echo -e "${ERROR}[ℹ] Dry-run uninstall is not implemented; no changes were made.${RST}"
       return 2
       ;;
     --*)
-      echo -e "${ERROR}[!] Unknown uninstall option: $arg${RST}"
+      echo -e "${ERROR}[ℹ] Unknown uninstall option: $arg${RST}"
       log_error "Unknown uninstall option: $arg" "cli"
       return 2
       ;;
@@ -419,7 +419,7 @@ projectr_cli_uninstall_args() {
     esac
   done
   [[ ${#targets[@]} -gt 0 ]] || {
-    echo -e "${ERROR}[!] uninstall requires a tool name.${RST}"
+    echo -e "${ERROR}[ℹ] uninstall requires a tool name.${RST}"
     log_error "uninstall command missing target" "cli"
     return 1
   }
@@ -445,7 +445,7 @@ projectr_cli_list_arg() {
   manager | managers) _flag_list_manager ;;
   state) projectr_state_list ;;
   *)
-    echo -e "${ERROR}[!] Unknown list target: $target${RST}"
+    echo -e "${ERROR}[ℹ] Unknown list target: $target${RST}"
     log_error "Unknown list target: $target" "cli"
     return 1
     ;;

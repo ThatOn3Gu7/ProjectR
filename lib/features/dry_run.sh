@@ -144,7 +144,7 @@ projectr_dry_run_install() {
     --no-color) projectr_disable_color ;;
     --dry-run | install) ;;
     --*)
-      echo -e "${ERROR}[!] Unrecognized dry-run parameter: $arg${RST}" >&2
+      echo -e "${ERROR}[ℹ] Unrecognized dry-run parameter: $arg${RST}" >&2
       return 2
       ;;
     *) targets+=("$arg") ;;
@@ -159,7 +159,7 @@ projectr_dry_run_install() {
   else
     for target in "${targets[@]}"; do
       entry=$(projectr_find_tool "$target") || {
-        echo -e "${ERROR}[!] Unrecognized tool: $target${RST}" >&2
+        echo -e "${ERROR}[ℹ] Unrecognized tool: $target${RST}" >&2
         log_error "Dry-run requested unknown tool: $target" "dry-run"
         return 1
       }
@@ -177,30 +177,30 @@ projectr_dry_run_profile() {
     case "$arg" in
     --json) json=1 ;;
     --*)
-      echo -e "${ERROR}[!] Unrecognized profile dry-run parameter: $arg${RST}" >&2
+      echo -e "${ERROR}[ℹ] Unrecognized profile dry-run parameter: $arg${RST}" >&2
       return 2
       ;;
     esac
   done
   [[ -n "$file" ]] || {
-    echo -e "${ERROR}[!] The --profile option requires a valid file path.${RST}" >&2
+    echo -e "${ERROR}[ℹ] The --profile option requires a valid file path.${RST}" >&2
     return 1
   }
   declare -f projectr_profile_tools >/dev/null 2>&1 || {
-    echo -e "${ERROR}[!] The profile parser library is not initialized.${RST}" >&2
+    echo -e "${ERROR}[ℹ] The profile parser library is not initialized.${RST}" >&2
     return 1
   }
   local -a profile_list=()
   projectr_profile_tools "$file" || return 1
   for tool in "${_projectr_profile_tools[@]}"; do
     entry=$(projectr_find_tool "$tool") || {
-      echo -e "${ERROR}[!] Unrecognized tool entry in profile: $tool${RST}" >&2
+      echo -e "${ERROR}[ℹ] Unrecognized tool entry in profile: $tool${RST}" >&2
       return 1
     }
     profile_list+=("$entry")
   done
   [[ ${#profile_list[@]} -gt 0 ]] || {
-    echo -e "${ERROR}[!] No valid tool definitions found in $file${RST}" >&2
+    echo -e "${ERROR}[ℹ] No valid tool definitions found in $file${RST}" >&2
     return 1
   }
   projectr_dry_run_entries "$json" "${profile_list[@]}"
@@ -213,13 +213,13 @@ projectr_dry_run_repair() {
     case "$arg" in
     --json) json=1 ;;
     --*)
-      echo -e "${ERROR}[!] Unrecognized repair dry-run parameter: $arg${RST}" >&2
+      echo -e "${ERROR}[ℹ] Unrecognized repair dry-run parameter: $arg${RST}" >&2
       return 2
       ;;
     esac
   done
   declare -f projectr_state_get_installs >/dev/null 2>&1 || {
-    echo -e "${ERROR}[!] State management components are not loaded; unable to safely formulate repair plan.${RST}" >&2
+    echo -e "${ERROR}[ℹ] State management components are not loaded; unable to safely formulate repair plan.${RST}" >&2
     return 1
   }
 

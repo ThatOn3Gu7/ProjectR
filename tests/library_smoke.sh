@@ -65,7 +65,7 @@ else
   pass "sourcing lib/projectr.sh does not create config"
 fi
 
-if [[ -e "$HOME/.local/state/projectr_v2" ]]; then
+if [[ -e "$HOME/.local/state/projectr" ]]; then
   fail "sourcing lib/projectr.sh created state unexpectedly"
 else
   pass "sourcing lib/projectr.sh does not create state"
@@ -76,16 +76,16 @@ assert_eq "fd-find" "$(projectr_tool_effective_package fd apt)" "manager package
 assert_eq "fdfind" "$(projectr_tool_effective_cmd fd apt)" "manager command override works"
 
 if command -v python3 >/dev/null 2>&1; then
-  projectr_tool_json git | python3 -m json.tool >/dev/null 2>&1 \
-    && pass "projectr_tool_json emits valid JSON" \
-    || fail "projectr_tool_json emits invalid JSON"
-  projectr_tool_list --format=json --category=Dev | python3 -m json.tool >/dev/null 2>&1 \
-    && pass "projectr_tool_list --format=json emits valid JSON" \
-    || fail "projectr_tool_list --format=json emits invalid JSON"
+  projectr_tool_json git | python3 -m json.tool >/dev/null 2>&1 &&
+    pass "projectr_tool_json emits valid JSON" ||
+    fail "projectr_tool_json emits invalid JSON"
+  projectr_tool_list --format=json --category=Dev | python3 -m json.tool >/dev/null 2>&1 &&
+    pass "projectr_tool_list --format=json emits valid JSON" ||
+    fail "projectr_tool_list --format=json emits invalid JSON"
 else
-  projectr_tool_json git | grep -q '"cmd":"git"' \
-    && pass "projectr_tool_json contains git command" \
-    || fail "projectr_tool_json missing git command"
+  projectr_tool_json git | grep -q '"cmd":"git"' &&
+    pass "projectr_tool_json contains git command" ||
+    fail "projectr_tool_json missing git command"
 fi
 
 # Plugin loading should append to the registry and invalidate/rebuild the lazy
@@ -105,7 +105,7 @@ assert_eq "Demo Tool" "$(projectr_tool_get demo-tool name)" "plugin tool is inde
 
 # projectr_init should be explicit and safe. This call loads no storage modules.
 projectr_init --no-plugins --no-detect
-if [[ -e "$HOME/.config/projectr/session.conf" || -e "$HOME/.local/state/projectr_v2" ]]; then
+if [[ -e "$HOME/.config/projectr/session.conf" || -e "$HOME/.local/state/projectr" ]]; then
   fail "projectr_init --no-plugins --no-detect created storage unexpectedly"
 else
   pass "projectr_init without storage options is side-effect free"
@@ -115,13 +115,13 @@ fi
 # the base registry and normally present in development/test environments.
 if command -v git >/dev/null 2>&1; then
   if command -v python3 >/dev/null 2>&1; then
-    projectr_plan_install git --json | python3 -m json.tool >/dev/null 2>&1 \
-      && pass "projectr_plan_install emits valid JSON" \
-      || fail "projectr_plan_install emits invalid JSON"
+    projectr_plan_install git --json | python3 -m json.tool >/dev/null 2>&1 &&
+      pass "projectr_plan_install emits valid JSON" ||
+      fail "projectr_plan_install emits invalid JSON"
   else
-    projectr_plan_install git --json | grep -q '"dry_run":true' \
-      && pass "projectr_plan_install emits dry-run JSON marker" \
-      || fail "projectr_plan_install missing dry-run JSON marker"
+    projectr_plan_install git --json | grep -q '"dry_run":true' &&
+      pass "projectr_plan_install emits dry-run JSON marker" ||
+      fail "projectr_plan_install missing dry-run JSON marker"
   fi
 else
   printf '[SKIP] git not present; skipping projectr_plan_install smoke\n'

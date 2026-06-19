@@ -20,7 +20,7 @@ projectr_verify_repo_url() {
 projectr_require_trusted_repo() {
   local url="$1" context="${2:-update}"
   if ! projectr_verify_repo_url "$url"; then
-    echo -e "${ERROR:-}[!] Refusing $context from untrusted repository: $url${RST:-}" >&2
+    echo -e "${ERROR:-}[ℹ] Refusing $context from untrusted repository: $url${RST:-}" >&2
     echo -e "${INFO:-}[*] Set PROJECTR_ALLOW_ANY_REMOTE=1 to override if you trust this remote.${RST:-}" >&2
     return 1
   fi

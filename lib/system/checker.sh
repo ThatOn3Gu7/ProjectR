@@ -23,7 +23,7 @@ projectr_checker_tool_version() {
       return 0
     fi
   done
-  printf 'unknown\n'
+  printf 'Unknown\n'
 }
 
 check_tool() {
@@ -89,7 +89,7 @@ check_all_tools() {
 
 view_tool_summary() {
 
-  if ! ask "  [!] View tools inspection summary" "n"; then
+  if ! ask "  [ℹ] View tools inspection summary" "n"; then
     msg_info "Skipped summary"
     sleep 2
     return 1
@@ -196,7 +196,7 @@ view_tool_summary() {
           for record in "${NOT_FOUND_PKGS[@]}"; do
             IFS=$'\t' read -r display_name command_name <<<"$record"
             [[ -z "$command_name" ]] && command_name="$display_name"
-            printf "  ${ERROR}✗${RST} %-22s  %-18s\n" "$display_name" "$command_name"
+            printf "  ${ERROR}✖${RST} %-22s  %-18s\n" "$display_name" "$command_name"
           done
         fi
         echo -e "\n${DIM}Press ENTER to continue...${RST}"

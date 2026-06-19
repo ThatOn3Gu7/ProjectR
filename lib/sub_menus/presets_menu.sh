@@ -71,7 +71,7 @@ BANNER
     echo ""
     echo -e "${ERROR} [b]ack to main menu${RST}"
     echo ""
-    echo -ne "${INFO}  ◇ Select an option: ${RST}"
+    echo -ne "${INFO}  ▶ Select an option: ${RST}"
     read -r profile_choice
     echo ""
     case "$profile_choice" in

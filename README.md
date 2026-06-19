@@ -1,4 +1,12 @@
 # ProjectR
+<div align="center">
+  
+![Bash](https://img.shields.io/badge/Bash-4.4%2B-4EAA25?style=flat-square&logo=gnubash&logoColor=white)
+![Platform](https://img.shields.io/badge/Platform-Linux%20%7C%20macOS%20%7C%20Termux-0078D4?style=flat-square)
+![License](https://img.shields.io/badge/License-MIT-yellow?style=flat-square)
+![Tools](https://img.shields.io/badge/Tools-240%2B-a855f7?style=flat-square)
+
+</div>
 
 ProjectR is a modular Bash terminal setup assistant. It gives you an interactive menu and command-line flags for installing, uninstalling, inspecting, and backing up common terminal tools across many Linux-style environments.
 

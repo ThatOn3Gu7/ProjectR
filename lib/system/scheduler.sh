@@ -2,12 +2,12 @@
 # shellcheck disable=all
 # Background update scheduler with explicit status/enable/disable operations.
 
-PROJECTR_SCHEDULER_ALERT_FILE="${PROJECTR_SCHEDULER_ALERT_FILE:-${HOME}/.config/projectr_v2/.update_alert}"
+PROJECTR_SCHEDULER_ALERT_FILE="${PROJECTR_SCHEDULER_ALERT_FILE:-${HOME}/.config/projectr/.update_alert}"
 PROJECTR_SCHEDULER_CRON_TAG="# projectr-scheduler"
 
 projectr_scheduler_show_alert() {
   if [[ -f "$PROJECTR_SCHEDULER_ALERT_FILE" ]]; then
-    echo -e "${BOLD_YELLOW:-} 🔔 [NOTIFICATION] ProjectR found package updates available.${RST:-}"
+    echo -e "${BOLD_YELLOW:-} [NOTIFICATION] ProjectR found package updates available.${RST:-}"
     echo -e "${DIM:-}    Run 'project upgrade' or your preferred package manager.${RST:-}\n"
     rm -f "$PROJECTR_SCHEDULER_ALERT_FILE"
   fi
@@ -106,7 +106,7 @@ EOF
     return 0
   fi
 
-  echo -e "${ERROR:-}[!] No supported scheduler backend found (systemd --user or crontab).${RST:-}" >&2
+  echo -e "${ERROR:-} [ℹ] No supported scheduler backend found (systemd --user or crontab).${RST:-}" >&2
   return 1
 }
 

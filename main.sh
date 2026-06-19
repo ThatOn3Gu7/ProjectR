@@ -167,7 +167,7 @@ EOF
   echo -e "${BARR}  ╰────────────────────────────────╯${RST}"
   echo ""
   echo ""
-  echo -ne " ${BG_GREEN} ◇ Enter the tool numbers ${RST} ${BOLD_BRIGHT_GREEN}(separate by spaces)${RST} : "
+  echo -ne " ${BG_GREEN} ▶ Enter the tool numbers ${RST} ${BOLD_BRIGHT_GREEN}(separate by spaces)${RST} : "
   if ! read -ra selections; then
     echo ""
     log_info "Interactive input stream closed; exiting gracefully" "menu"
@@ -221,7 +221,7 @@ handle_selection() {
 
   # Step 2: If it's not a number, reject it
   if ! [[ "$selected" =~ ^[0-9]+$ ]]; then
-    echo -e " ${BG_BRIGHT_RED}[!] Invalid option:${BG_BRIGHT_YELLOW}${BOLD_BRIGHT_BLACK} $selected ${RST}${OPTION} Please select a valid option${RST}"
+    echo -e " ${BG_BRIGHT_RED}[ℹ] Invalid option:${BG_BRIGHT_YELLOW}${BOLD_BRIGHT_BLACK} $selected ${RST}${OPTION} Please select a valid option${RST}"
     log_warn "Invalid interactive selection: $selected" "menu"
     sleep 2
     return
@@ -243,7 +243,7 @@ handle_selection() {
 
   # If the number wasn't found in TOOLS at all
   if [[ "$found_flag" -eq 0 ]]; then
-    echo -e " ${BG_BRIGHT_RED}[!] Invalid option:${BG_BRIGHT_YELLOW}${BOLD_BRIGHT_BLACK} $selected ${RST}${OPTION} Please select the right option${RST}"
+    echo -e " ${BG_BRIGHT_RED}[ℹ] Invalid option:${BG_BRIGHT_YELLOW}${BOLD_BRIGHT_BLACK} $selected ${RST}${OPTION} Please select the right option${RST}"
     log_warn "Interactive numeric selection not found in tool registry: $selected" "menu"
     sleep 2
   fi

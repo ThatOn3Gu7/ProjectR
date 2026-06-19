@@ -4,7 +4,7 @@
 # transaction id, and logging envelope.
 
 PROJECTR_LOCK_FD="${PROJECTR_LOCK_FD:-9}"
-PROJECTR_LOCK_FILE="${PROJECTR_LOCK_FILE:-${HOME}/.config/projectr_v2/tmp/project.lock}"
+PROJECTR_LOCK_FILE="${PROJECTR_LOCK_FILE:-${HOME}/.config/projectr/tmp/project.lock}"
 PROJECTR_RUNTIME_PREPARED="${PROJECTR_RUNTIME_PREPARED:-0}"
 PROJECTR_READ_ONLY_ACTION="${PROJECTR_READ_ONLY_ACTION:-0}"
 PROJECTR_NEEDS_NETWORK="${PROJECTR_NEEDS_NETWORK:-0}"
@@ -85,7 +85,7 @@ projectr_runtime_prepare() {
 
   projectr_classify_cli_action "$@"
   if ! projectr_acquire_lock; then
-    echo -e "${ERROR:-}[!] ProjectR is already running in another session.${RST:-}"
+    echo -e "${ERROR:-}[ℹ] ProjectR is already running in another session.${RST:-}"
     declare -f log_warn >/dev/null 2>&1 && log_warn "Lock acquisition failed for $PROJECTR_LOCK_FILE" "startup"
     return 1
   fi
@@ -103,7 +103,7 @@ projectr_runtime_prepare() {
     declare -f check_startup_connectivity >/dev/null 2>&1 && check_startup_connectivity || true
   elif [[ "${PROJECTR_NEEDS_NETWORK:-0}" == "1" ]]; then
     if declare -f check_internet >/dev/null 2>&1 && ! check_internet; then
-      echo -e "${ERROR:-}[!] Network access looks unavailable for this operation.${RST:-}"
+      echo -e "${ERROR:-}[ℹ] Network access looks unavailable for this operation.${RST:-}"
       declare -f log_warn >/dev/null 2>&1 && log_warn "Network unavailable during CLI preflight: $*" "startup"
       return 1
     fi

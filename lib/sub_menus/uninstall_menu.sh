@@ -44,7 +44,7 @@ BANNER
     echo -e "${INFO}  [b] Back to main menu${RST}"
     echo -e "${ERROR}  [e] Exit script${RST}"
     echo ""
-    echo -ne " ${BG_CYAN} ◇ Select tool numbers ${RST} ${OPTION}(separated by spaces)${RST} : "
+    echo -ne " ${BG_CYAN} ▶ Select tool numbers ${RST} ${OPTION}(separated by spaces)${RST} : "
     read -a choices
     for choice in "${choices[@]}"; do
       # --- Special menu options ---
@@ -66,7 +66,7 @@ BANNER
 
       # --- Check it's a number ---
       if ! [[ "$choice" =~ ^[0-9]+$ ]]; then
-        echo -e " ${BG_BRIGHT_RED}[!] Invalid selection:${BG_BRIGHT_YELLOW}${BOLD_BRIGHT_BLACK} $choice ${RST}${OPTION} Please enter a valid number.${RST}"
+        echo -e " ${BG_BRIGHT_RED}[ℹ] Invalid selection:${BG_BRIGHT_YELLOW}${BOLD_BRIGHT_BLACK} $choice ${RST}${OPTION} Please enter a valid number.${RST}"
         sleep 2
         continue
       fi
@@ -85,7 +85,7 @@ BANNER
       done
 
       if [[ "$found" -eq 0 ]]; then
-        echo -e " ${BG_BRIGHT_RED}[!] Invalid selection:${BG_BRIGHT_YELLOW}${BOLD_BRIGHT_BLACK} $choice ${RST}${OPTION} Please make a valid selection.${RST}"
+        echo -e " ${BG_BRIGHT_RED}[ℹ] Invalid selection:${BG_BRIGHT_YELLOW}${BOLD_BRIGHT_BLACK} $choice ${RST}${OPTION} Please make a valid selection.${RST}"
         sleep 2
       fi
     done

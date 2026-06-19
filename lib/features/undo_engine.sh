@@ -11,7 +11,7 @@ rollback_last_session() {
 
   transaction_id=$(projectr_state_last_transaction_id)
   if [[ ${#installs[@]} -eq 0 ]]; then
-    echo -e "${OPTION} [!] No recent installation records found to undo.${RST}"
+    echo -e "${OPTION} [ℹ] No recent installation records found to undo.${RST}"
     return 0
   fi
 
@@ -24,7 +24,7 @@ rollback_last_session() {
     return 1
   fi
 
-  echo -e "${ERROR} [!] WARNING: Reversing installations for transaction ${transaction_id}...${RST}"
+  echo -e "${ERROR} [ℹ] WARNING: Reversing installations for transaction ${transaction_id}...${RST}"
   echo ""
 
   local rolled=0 failed=0
@@ -54,7 +54,7 @@ rollback_last_session() {
       ((failed++))
       projectr_state_mark_action_status "$action_id" 'failed' || true
       if [[ $? -ne 0 ]]; then
-        echo -e "${ERROR} [!] Rollback operation failed for: $name${RST}"
+        echo -e "${ERROR} [ℹ] Rollback operation failed for: $name${RST}"
       fi
     fi
   done < <(projectr_state_transaction_actions "$transaction_id")

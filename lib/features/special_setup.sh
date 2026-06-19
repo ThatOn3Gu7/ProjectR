@@ -74,7 +74,7 @@ setup_nvim() {
 prompt_nvim_config() {
 
   if ! command -v git >/dev/null 2>&1; then
-    echo -e "${ERROR}  [!] Git is not installed. Unable to clone the Neovim configuration.${RST}"
+    echo -e "${ERROR}  [ℹ] Git is not installed. Unable to clone the Neovim configuration.${RST}"
     return 1
   fi
   local repo=""
@@ -107,14 +107,14 @@ prompt_nvim_config() {
       return 0
       ;;
     *)
-      echo -e "${ERROR}  [!] Invalid selection: '$config_choice'.${RST}"
+      echo -e "${ERROR}  [ℹ] Invalid selection: '$config_choice'.${RST}"
       ;;
     esac
   done
   echo -e "${OPTION}  [*] Cloning repository: $repo...${RST}"
   git clone --depth 1 "$repo" "$HOME/.config/nvim" >/dev/null 2>&1
   if [[ $? -ne 0 ]]; then
-    echo -e "${ERROR}  [!] Failed to clone repository: $repo. Please verify network connectivity.${RST}"
+    echo -e "${ERROR}  [ℹ] Failed to clone repository: $repo. Please verify network connectivity.${RST}"
     return 1
   fi
   echo -e "${OPTION}  [✓] Repository $repo cloned successfully.${RST}"
@@ -144,13 +144,13 @@ setup_zsh() {
     echo -e "${OPTION}  [✓] Oh-My-Zsh already exists. Skipping...${RST}"
   else
     if ! command -v git >/dev/null 2>&1; then
-      echo -e "${ERROR}  [!] Git is not installed. Unable to safely clone Oh-My-Zsh.${RST}"
+      echo -e "${ERROR}  [ℹ] Git is not installed. Unable to safely clone Oh-My-Zsh.${RST}"
       return 1
     fi
     echo -e "${INFO}  [*] Cloning the Oh-My-Zsh repository directly...${RST}"
     git clone --depth 1 https://github.com/ohmyzsh/ohmyzsh.git "$HOME/.oh-my-zsh" >/dev/null 2>&1
     if [[ $? -ne 0 ]]; then
-      echo -e "${ERROR}  [!] Failed to clone the Oh-My-Zsh repository.${RST}"
+      echo -e "${ERROR}  [ℹ] Failed to clone the Oh-My-Zsh repository.${RST}"
       return 1
     fi
     if [[ ! -f "$HOME/.zshrc" && -f "$HOME/.oh-my-zsh/templates/zshrc.zsh-template" ]]; then
@@ -172,14 +172,14 @@ setup_zsh() {
     echo -e "${OPTION}  [✓] Powerlevel10k already installed — skipping.${RST}"
   else
     if ! command -v git >/dev/null 2>&1; then
-      echo -e "${ERROR}  [!] Git is not installed. Unable to clone Powerlevel10k.${RST}"
+      echo -e "${ERROR}  [ℹ] Git is not installed. Unable to clone Powerlevel10k.${RST}"
       return 1
     fi
   fi
   echo -e "${INFO}  [*] Cloning the Powerlevel10k repository...${RST}"
   git clone --depth=1 https://github.com/romkatv/powerlevel10k.git "${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k" >/dev/null 2>&1
   if [[ $? -ne 0 ]]; then
-    echo -e "${ERROR}  [!] Failed to clone Powerlevel10k. Please verify network connectivity.${RST}"
+    echo -e "${ERROR}  [ℹ] Failed to clone Powerlevel10k. Please verify network connectivity.${RST}"
     return 1
   fi
   echo ""
@@ -193,7 +193,7 @@ setup_zsh() {
 #  install_code_server — special installer for code-server
 install_code_server() {
   if [[ "${PRIMARY_PKG_MANAGER:-}" != "pkg" ]]; then
-    echo -e "${ERROR}  [!] Installation of code-server via tur-repo is only supported on Termux environment.${RST}"
+    echo -e "${ERROR}  [ℹ] Installation of code-server via tur-repo is only supported on Termux environment.${RST}"
     return 1
   fi
   if ! [ -f "$PREFIX/etc/apt/sources.list.d/tur.list" ]; then

@@ -42,7 +42,7 @@ export_profile() {
   done
 
   if [[ $count -eq 0 ]]; then
-    echo -e "${BOLD_YELLOW} [!] No tools are currently installed. Profile generation skipped.${RST}"
+    echo -e "${BOLD_YELLOW} [ℹ] No tools are currently installed. Profile generation skipped.${RST}"
     rm -f "$backup_file"
     return 0
   fi
@@ -58,7 +58,7 @@ export_profile_lock() {
   mapfile -t records < <(projectr_state_records)
 
   if [[ ${#records[@]} -eq 0 ]]; then
-    echo -e "${BOLD_YELLOW} [!] No recorded ProjectR-managed tools found to export as a lockfile.${RST}"
+    echo -e "${BOLD_YELLOW} [ℹ] No recorded ProjectR-managed tools found to export as a lockfile.${RST}"
     return 1
   fi
 
@@ -98,7 +98,7 @@ import_profile() {
   while read -r target_cmd || [[ -n "$target_cmd" ]]; do
     ((line_num++))
     if [[ -z "$target_cmd" ]]; then
-      echo -e "${BOLD_YELLOW} [!] Line $line_num: Invalid entry '$target_cmd' skipped.${RST}"
+      echo -e "${BOLD_YELLOW} [ℹ] Line $line_num: Invalid entry '$target_cmd' skipped.${RST}"
       ((skipped++))
       continue
     fi
@@ -112,13 +112,13 @@ import_profile() {
     fi
 
     if [[ $matched -eq 0 ]]; then
-      echo -e "${BOLD_YELLOW} [!] Line $line_num: '$target_cmd' is not present in the tool registry. Entry skipped.${RST}"
+      echo -e "${BOLD_YELLOW} [ℹ] Line $line_num: '$target_cmd' is not present in the tool registry. Entry skipped.${RST}"
       ((skipped++))
       continue
     fi
   done <"$file"
 
-  [[ $skipped -gt 0 ]] && echo -e "${BOLD_YELLOW} [!] $skipped line(s) skipped due to being unknown or invalid.${RST}"
+  [[ $skipped -gt 0 ]] && echo -e "${BOLD_YELLOW} [ℹ] $skipped line(s) skipped due to being unknown or invalid.${RST}"
 
   if [[ ${#tools_to_install[@]} -eq 0 ]]; then
     echo -e "${BOLD_GREEN} [✓] All tools specified in the profile are already installed.${RST}"
@@ -132,6 +132,6 @@ import_profile() {
     projectr_install_tool_by_fields "$cmd" "$pkg" "$name" "$type" "$extra" || ((failed++))
   done
 
-  [[ $failed -gt 0 ]] && echo -e "${ERROR} [!] $failed tool(s) failed to install successfully.${RST}" && return 1
+  [[ $failed -gt 0 ]] && echo -e "${ERROR} [ℹ] $failed tool(s) failed to install successfully.${RST}" && return 1
   return 0
 }

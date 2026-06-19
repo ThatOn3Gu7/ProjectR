@@ -48,7 +48,7 @@ projectr_audit_tools() {
     fi
 
     if [[ "$cmds" == *" ${cmd,,} "* ]]; then
-      echo -e "${BOLD_YELLOW}[!] Duplicate command key: $cmd ($name).${RST}"
+      echo -e "${BOLD_YELLOW}[ℹ] Duplicate command key: $cmd ($name).${RST}"
       log_warn "Tool audit: duplicate command key $cmd for $name" "audit"
       warnings=$((warnings + 1))
     else
@@ -56,7 +56,7 @@ projectr_audit_tools() {
     fi
 
     if [[ "$names" == *" ${name,,} "* ]]; then
-      echo -e "${BOLD_YELLOW}[!] Duplicate display name: $name.${RST}"
+      echo -e "${BOLD_YELLOW}[ℹ] Duplicate display name: $name.${RST}"
       log_warn "Tool audit: duplicate display name $name" "audit"
       warnings=$((warnings + 1))
     else
@@ -83,7 +83,7 @@ projectr_audit_tools() {
         errors=$((errors + 1))
       fi
     elif [[ "$extra" != "-" ]]; then
-      echo -e "${BOLD_YELLOW}[!] $name has unused extra field '$extra' for type '$type'.${RST}"
+      echo -e "${BOLD_YELLOW}[ℹ] $name has unused extra field '$extra' for type '$type'.${RST}"
       log_warn "Tool audit: $name has unused extra '$extra' for type '$type'" "audit"
       warnings=$((warnings + 1))
     fi

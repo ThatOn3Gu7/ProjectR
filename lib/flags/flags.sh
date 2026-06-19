@@ -86,7 +86,7 @@ parse_flags() {
   search | --search)
     shift
     [[ -n "${1:-}" ]] || {
-      echo -e "${ERROR}[!] search requires a name.${RST}"
+      echo -e "${ERROR}[ℹ] search requires a name.${RST}"
       log_error "search command missing required name" "cli"
       exit 1
     }
@@ -189,7 +189,7 @@ parse_flags() {
   import | --import)
     shift
     [[ -n "${1:-}" ]] || {
-      echo -e "${ERROR}[!] import requires a file path.${RST}"
+      echo -e "${ERROR}[ℹ] import requires a file path.${RST}"
       log_error "import command missing file path" "cli"
       exit 1
     }
@@ -282,14 +282,14 @@ parse_flags() {
     ;;
 
   --* | -*)
-    echo -e "${ERROR}[!] Unknown flag: ${BOLD_WHITE}$1${RST}"
+    echo -e "${ERROR}[ℹ] Unknown flag: ${BOLD_WHITE}$1${RST}"
     log_error "Unknown flag: $1" "cli"
     echo -e "${INFO}[*] Run ${BOLD_WHITE}${PROJECTR_LAUNCHER_NAME:-./main.sh} --help or -h${RST}${INFO} to see available flags.${RST}"
     exit 1
     ;;
 
   *)
-    echo -e "${ERROR}[!] Unknown command: ${BOLD_WHITE}$1${RST}"
+    echo -e "${ERROR}[ℹ] Unknown command: ${BOLD_WHITE}$1${RST}"
     log_error "Unknown command: $1" "cli"
     echo -e "${INFO}[*] Run ${BOLD_WHITE}${PROJECTR_LAUNCHER_NAME:-./main.sh} --help or -h${RST}${INFO} to see available commands.${RST}"
     exit 1
@@ -412,12 +412,12 @@ _flag_list_manager() {
   echo -e "${OPTION} [*] ProjectR — Package and Ecosystem Managers ${RST}"
   echo ""
   echo -e "  ${DIM}Native system managers, universal app managers, and language ecosystem managers known to ProjectR."
-  echo -e "  Legend:  ${OPTION}✔${RST} = available, ${ERROR}✘${RST} = not found,  ${OPTION}★${RST} = primary native manager${RST}"
+  echo -e "  Legend:  ${OPTION}✔${RST} = available, ${ERROR}✖${RST} = not found,  ${OPTION}★${RST} = primary native manager${RST}"
   echo ""
 
   # ── Dynamic column widths ───
-  local max_name=15 # "Package Manager"
-  local max_scope=9 # "Scope"
+  local max_name=15     # "Package Manager"
+  local max_scope=9     # "Scope"
   local max_platform=12 # "Platform / Ecosystem"
   local entry id display scope platform check_cmd
   for entry in "${managers[@]}"; do
@@ -451,7 +451,7 @@ _flag_list_manager() {
 
     local icon icon_color marker=""
     if ((force_unavailable)); then
-      icon="✘"
+      icon="✖"
       icon_color="${ERROR}"
     elif projectr_command_exists "$check_cmd"; then
       icon="✔"
@@ -466,7 +466,7 @@ _flag_list_manager() {
       # Mark only the primary native package manager, not language managers.
       [[ "$scope" == "Native" && "$id" == "$detected_pm" ]] && marker=" ${OPTION}★${RST}"
     else
-      icon="✘"
+      icon="✖"
       icon_color="${ERROR}"
     fi
 
@@ -506,7 +506,7 @@ _flag_list_installed() {
     projectr_tool_id_into tool_id "$cmd"
     projectr_effective_cmd_into effective_cmd "$tool_id" "$cmd" "$manager"
     if projectr_command_exists "$effective_cmd"; then
-      version="-"
+      version="--"
       version_line=""
       IFS= read -r version_line < <("$effective_cmd" --version 2>/dev/null || true)
       if [[ "$version_line" =~ ([0-9]+([.][0-9]+)+) ]]; then
@@ -519,7 +519,7 @@ _flag_list_installed() {
   done
 
   if [ ${#found[@]} -eq 0 ]; then
-    echo -e "  ${ERROR}[!] No tools from the list are currently installed.${RST}"
+    echo -e "  ${ERROR}[ℹ] No tools from the list are currently installed.${RST}"
     echo ""
     return
   fi
@@ -549,7 +549,7 @@ _flag_list_categories() {
   echo ""
   echo -e "${BOLD}${OPTION} [*] Tools listed by Category ${RST}"
   echo ""
-  echo -e "${DIM}  Status:${RST}${GREEN} ✔ ${RST}= installed,${RED} ✘ ${RST}= not found"
+  echo -e "${DIM}  Status:${RST}${GREEN} ✔ ${RST}= installed,${RED} ✖ ${RST}= not found"
   echo ""
 
   local manager="${PRIMARY_PKG_MANAGER:-$(detect_pkg_manager)}"
@@ -573,7 +573,7 @@ _flag_list_categories() {
     if projectr_command_exists "$effective_cmd"; then
       status_icon="✔" status_color="${OPTION}"
     else
-      status_icon="✘" status_color="${ERROR}"
+      status_icon="✖" status_color="${ERROR}"
     fi
     printf -v row "  ${BARR}[%02d]${RST}  ${status_color}%s${RST}  ${BOLD_WHITE}%-14s${RST}  ${DIM}%s${RST}\n" \
       "$num" "$status_icon" "$name" "$desc"
@@ -597,7 +597,7 @@ _flag_log() {
 
   # Validate: must be a positive integer
   if [[ ! "$lines" =~ ^[0-9]+$ ]] || ((lines < 1)); then
-    echo -e "  ${ERROR}[!] Invalid value for --log: '${lines}' — must be a positive integer.${RST}"
+    echo -e "  ${ERROR}[ℹ] Invalid value for --log: '${lines}' — must be a positive integer.${RST}"
     echo -e "  ${DIM}Example: ./main.sh --log=50${RST}"
     return 1
   fi
@@ -611,7 +611,7 @@ _flag_log() {
   echo ""
 
   if [ ! -f "$log_path" ]; then
-    echo -e "  ${ERROR}[!] No log file found at: ${BOLD_WHITE}${log_path}${RST}"
+    echo -e "  ${ERROR}[ℹ] No log file found at: ${BOLD_WHITE}${log_path}${RST}"
     echo -e "  ${DIM}Run the script interactively at least once to generate it.${RST}"
     echo ""
     return
@@ -645,7 +645,7 @@ _flag_reset() {
     case "$arg" in
     --dry-run) dry=1 ;;
     *)
-      echo -e "${ERROR}[!] Unknown reset option: $arg${RST}"
+      echo -e "${ERROR}[ℹ] Unknown reset option: $arg${RST}"
       return 2
       ;;
     esac
@@ -675,7 +675,7 @@ _flag_reset() {
   echo -e "${INFO} [*] Clearing ${BOLD_WHITE}${line_count}${RST}${INFO} saved preference(s):${RST}"
   echo ""
   while IFS= read -r line; do
-    echo -e "    ${DIM}✘  ${line}${RST}"
+    echo -e "    ${DIM}✖  ${line}${RST}"
   done <"$config_path"
   echo ""
 
@@ -700,7 +700,7 @@ _flag_install() {
   matched_entry=$(projectr_tool_lookup_entry "$target" 2>/dev/null || true)
 
   if [ -z "$matched_entry" ]; then
-    echo -e "  ${ERROR}[!] No tool named '${target}' found in the list.${RST}"
+    echo -e "  ${ERROR}[ℹ] No tool named '${target}' found in the list.${RST}"
     echo -e "  ${DIM}Run ${BOLD_WHITE}./main.sh --list=tools${RST}${DIM} to see valid names.${RST}"
     echo ""
     return 1
@@ -721,7 +721,7 @@ _flag_install() {
 
   # special type tools can't run non-interactively (they prompt the user)
   if [[ "$type" == "special" ]]; then
-    echo -e "  ${ERROR}[!] '${name}' uses an interactive installer and can't be run via flag.${RST}"
+    echo -e "  ${ERROR}[ℹ] '${name}' uses an interactive installer and can't be run via flag.${RST}"
     echo -e "  ${DIM}Launch the script normally and select [${num}] from the menu.${RST}"
     echo ""
     return 1
@@ -735,7 +735,7 @@ _flag_install() {
   )
   for _f in "${_required[@]}"; do
     if [[ ! -f "$_f" ]]; then
-      echo -e "  ${ERROR}[!] Required file missing: $_f${RST}"
+      echo -e "  ${ERROR}[ℹ] Required file missing: $_f${RST}"
       echo -e "  ${DIM}Check that \$_PROJECT_ROOT is correct: $_PROJECT_ROOT${RST}"
       return 1
     fi
@@ -764,7 +764,7 @@ _flag_uninstall() {
   matched_entry=$(projectr_tool_lookup_entry "$target" 2>/dev/null || true)
 
   if [ -z "$matched_entry" ]; then
-    echo -e "  ${ERROR}[!] No tool named '${target}' found in the list.${RST}"
+    echo -e "  ${ERROR}[ℹ] No tool named '${target}' found in the list.${RST}"
     echo -e "  ${DIM}Run ${BOLD_WHITE}./main.sh --list=tools${RST}${DIM} to see valid names.${RST}"
     echo ""
     return 1
@@ -789,7 +789,7 @@ _flag_uninstall() {
   )
   for _f in "${_required[@]}"; do
     if [[ ! -f "$_f" ]]; then
-      echo -e "  ${ERROR}[!] Required file missing: $_f${RST}"
+      echo -e "  ${ERROR}[ℹ] Required file missing: $_f${RST}"
       echo -e "  ${DIM}Check that \$_PROJECT_ROOT is correct: $_PROJECT_ROOT${RST}"
       return 1
     fi
@@ -820,7 +820,7 @@ _flag_search() {
   )
   for _f in "${_required[@]}"; do
     if [[ ! -f "$_f" ]]; then
-      echo -e "  ${ERROR}[!] Required file missing: $_f${RST}"
+      echo -e "  ${ERROR}[ℹ] Required file missing: $_f${RST}"
       echo -e "  ${DIM}Check that \$_PROJECT_ROOT is correct: $_PROJECT_ROOT${RST}"
       return 1
     fi

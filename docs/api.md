@@ -25,7 +25,7 @@ Sourcing `lib/projectr.sh` must not:
 - install, uninstall, update, repair, or upgrade anything;
 - acquire the normal ProjectR runtime lock;
 - create `~/.config/projectr/session.conf`;
-- create `~/.local/state/projectr_v2`;
+- create `~/.local/state/projectr`;
 - create or append runtime logs by default.
 
 It does set these variables for compatibility with existing ProjectR modules:
@@ -81,7 +81,7 @@ Options:
 | `--no-detect` | Skip package-manager detection. |
 | `--plugins` | Load `tools.d/*.toml` plugins. This is the default. |
 | `--no-plugins` | Do not load plugins. |
-| `--state` | Load the state module and initialize state storage. This can create files under `~/.local/state/projectr_v2`. |
+| `--state` | Load the state module and initialize state storage. This can create files under `~/.local/state/projectr`. |
 | `--config` | Load the config module and initialize config storage. This can create `~/.config/projectr/session.conf`. |
 | `--logging` | Load the real logging module. Without this, log functions are no-op fallbacks in library mode. |
 | `--no-color` | Keep ProjectR color variables empty/plain. |

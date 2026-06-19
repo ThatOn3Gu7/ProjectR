@@ -29,7 +29,7 @@ pkg_update() {
     scoop) scoop update '*' >/dev/null 2>&1 && success=1 ;;
     *)
       echo -e "${ERROR}"
-      print_box center "[!] No supported package manager detected. Skipping update."
+      print_box center "[ℹ] No supported package manager detected. Skipping update."
       echo -e "${RST}"
       stop_spinner ""
       return 1
@@ -41,7 +41,7 @@ pkg_update() {
   done
 
   if [[ $success -eq 0 ]]; then
-    echo -e "${ERROR}  [!] Package list synchronization failed after $max_attempts attempts via $PM.${RST}"
+    echo -e "${ERROR}  [ℹ] Package list synchronization failed after $max_attempts attempts via $PM.${RST}"
     log FAIL "pkg_update failed after $max_attempts attempts on $PM"
     return 1
   fi
@@ -105,14 +105,14 @@ pkg_upgrade() {
     ;;
   *)
     echo -e "${ERROR}"
-    print_box center "[!] System upgrade operation is not supported for: $PM"
+    print_box center "[ℹ] System upgrade operation is not supported for: $PM"
     echo -e "${RST}"
     return 1
     ;;
   esac
 
   if [[ $exit_code -ne 0 ]]; then
-    echo -e "${ERROR}  [!] System upgrade failed via $PM (exit code: $exit_code).${RST}"
+    echo -e "${ERROR}  [ℹ] System upgrade failed via $PM (exit code: $exit_code).${RST}"
     log FAIL "pkg_upgrade failed on $PM with exit code $exit_code"
     return 1
   else

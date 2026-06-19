@@ -33,7 +33,7 @@ SHOW_MENU=1
 SELF_UPDATE_MODE=0
 FORCE_REMOTE_MODE=0
 
-#  Colours (self-contained)
+# Colours (self-contained)
 # shellcheck disable=SC2034,SC2088
 RST='\e[0m'
 BOLD='\e[1m'
@@ -102,7 +102,7 @@ _detect_source_dir
 # Helpers
 info() { printf "${ACCENT}[*]${RST} %s\n" "$*"; }
 success() { printf "${OPTION}[✓]${RST} %s\n" "$*"; }
-warn() { printf "${INFO}[!]${RST} %s\n" "$*" >&2; }
+warn() { printf "${INFO}[ℹ]${RST} %s\n" "$*" >&2; }
 fail() {
   printf "${ERROR}[✗]${RST} %s\n" "$*" >&2
   exit 1
@@ -369,7 +369,7 @@ _show_menu_options() {
   echo -e "${BARR}  │${RST}  ${OPTION}[${BOLD_BRIGHT_WHITE}r${OPTION}]${RST}  Reset all to defaults           ${DIM}(setup with defaults)      ${BARR}│${RST}" >&2
   echo -e "${BARR}  ├──────────────────────────────────────────────────────────────────┤${RST}" >&2
   echo -e "${BARR}  │${RST}  ${ACCENT}[${BOLD_BRIGHT_WHITE}i${ACCENT}]${RST}  ${BOLD_BRIGHT_GREEN}✓  Install${RST} with current settings                           ${BARR}│${RST}" >&2
-  echo -e "${BARR}  │${RST}  ${ERROR}[${BOLD_BRIGHT_WHITE}q${ERROR}]${RST}  ${BOLD_BRIGHT_RED}✗  Quit${RST}    without installing                              ${BARR}│${RST}" >&2
+  echo -e "${BARR}  │${RST}  ${ERROR}[${BOLD_BRIGHT_WHITE}q${ERROR}]${RST}  ${BOLD_BRIGHT_RED}✖  Quit${RST}    without installing                              ${BARR}│${RST}" >&2
   echo -e "${BARR}  │${RST}  ${ACCENT}[${BOLD_BRIGHT_WHITE}h${ACCENT}]${RST}  ${BOLD_BRIGHT_GREEN}?  help${RST}    with setup options                              ${BARR}│${RST}" >&2
   echo -e "${BARR}  ╰──────────────────────────────────────────────────────────────────╯${RST}" >&2
   echo "" >&2
@@ -536,7 +536,7 @@ _run_setup_menu() {
       if ((REMOTE_MODE)); then
         _prompt_change_repo_url
       else
-        echo -e "  ${ERROR}[!] Invalid option: $choice${RST}" >&2
+        echo -e "  ${ERROR}[ℹ] Invalid option: $choice${RST}" >&2
         sleep 1
       fi
       ;;
@@ -567,7 +567,7 @@ _run_setup_menu() {
       _read_input "  ${DIM}[press Enter to return to menu]${RST}" _discard
       ;;
     *)
-      echo -e "  ${ERROR}[!] Invalid selection: '$choice'. Please choose a valid option.${RST}" >&2
+      echo -e "  ${ERROR}[ℹ] Invalid selection: '$choice'. Please choose a valid option.${RST}" >&2
       sleep 1
       ;;
     esac
@@ -745,7 +745,7 @@ write_launcher() {
     echo '    if [[ -f "$PROJECTR_HOME/setup.sh" ]]; then'
     echo '      exec env PROJECTR_REPO_URL="$PROJECTR_REPO_URL" bash "$PROJECTR_HOME/setup.sh" --no-menu --self-update-mode --force-remote --command="$PROJECTR_COMMAND_NAME" --install-dir="$PROJECTR_HOME" --bin-dir="$PROJECTR_BIN_DIR"'
     echo '    fi'
-    echo '    echo "[!] Could not locate a refreshable ProjectR checkout." >&2'
+    echo '    echo "[ℹ] Could not locate a refreshable ProjectR checkout." >&2'
     echo '    exit 1'
     echo '    ;;'
     echo '  --setup-info|--projectr-info)'
@@ -792,7 +792,7 @@ maybe_add_path() {
 _show_success() {
   echo "" >&2
   echo -e "${BOLD_BRIGHT_CYAN}" >&2
-  echo "              ✓  ProjectR has been successfully installed!" >&2
+  echo "              [✓]  ProjectR has been successfully installed!" >&2
   echo -e "${RST}" >&2
   echo "" >&2
   printf "  ${OPTION}  App files${RST} : %s\n" "$INSTALL_DIR" >&2
@@ -801,14 +801,14 @@ _show_success() {
   echo "" >&2
   echo -e "  ${INFO}Run:${RST}" >&2
   echo -e "      ${BOLD_WHITE}${COMMAND_NAME}${RST}                  ${DIM}# Launch interactive menu${RST}" >&2
-  echo -e "      ${BOLD_WHITE}${COMMAND_NAME} --help${RST}            ${DIM}# Show all flags${RST}" >&2
-  echo -e "      ${BOLD_WHITE}${COMMAND_NAME} --install=git${RST}     ${DIM}# Install a tool non-interactively${RST}" >&2
-  echo -e "      ${BOLD_WHITE}${COMMAND_NAME} --self-update${RST}     ${DIM}# Pull latest changes and refresh${RST}" >&2
-  echo -e "      ${BOLD_WHITE}${COMMAND_NAME} --setup-info${RST}      ${DIM}# Show install/source paths${RST}" >&2
+  echo -e "      ${BOLD_WHITE}${COMMAND_NAME} --help${RST}           ${DIM}# Show all flags${RST}" >&2
+  echo -e "      ${BOLD_WHITE}${COMMAND_NAME} --install=git${RST}    ${DIM}# Install a tool non-interactively${RST}" >&2
+  echo -e "      ${BOLD_WHITE}${COMMAND_NAME} --self-update${RST}    ${DIM}# Pull latest changes and refresh${RST}" >&2
+  echo -e "      ${BOLD_WHITE}${COMMAND_NAME} --setup-info${RST}     ${DIM}# Show install/source paths${RST}" >&2
   echo "" >&2
 
   if [[ ":$PATH:" != *":$BIN_DIR:"* ]]; then
-    echo -e "  ${INFO}[!] ${BOLD_WHITE}$BIN_DIR${INFO} is not currently in PATH for this shell.${RST}" >&2
+    echo -e "  ${INFO}[ℹ] ${BOLD_WHITE}$BIN_DIR${INFO} is not currently in PATH for this shell.${RST}" >&2
     echo -e "      Run this once now:" >&2
     echo -e "          ${BOLD_WHITE}export PATH=\"$BIN_DIR:\$PATH\"${RST}" >&2
     echo "" >&2

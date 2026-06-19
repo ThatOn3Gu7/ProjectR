@@ -41,7 +41,7 @@ projectr_uninstall_tool_by_fields() {
     uninstall_lang "$type" "$pkg" "$name" "$cmd"
     ;;
   *)
-    echo -e "${ERROR} [!] Unsupported tool type for uninstallation: ${type}${RST}"
+    echo -e "${ERROR} [ℹ] Unsupported tool type for uninstallation: ${type}${RST}"
     log_fail "Unsupported tool type '$type' for uninstall of $name" "uninstall"
     return 1
     ;;
@@ -73,7 +73,7 @@ uninstall_lang() {
   projectr_effective_package_into pkg "$tool_id" "$pkg" "$pm"
 
   if [[ -z "$pm" || -z "$pkg" || -z "$name" ]]; then
-    echo -e "${ERROR}  [!] uninstall_lang: Missing required arguments.${RST}"
+    echo -e "${ERROR}  [ℹ] uninstall_lang: Missing required arguments.${RST}"
     log_error "uninstall_lang missing arguments pm='$pm' pkg='$pkg' name='$name'" "uninstall-lang"
     return 1
   fi
@@ -87,7 +87,7 @@ uninstall_lang() {
   fi
 
   if ! command -v "$effective_cmd" >/dev/null 2>&1; then
-    echo -e "${ERROR}  [!] Package $name was not found via $pm.${RST}"
+    echo -e "${ERROR}  [ℹ] Package $name was not found via $pm.${RST}"
     log_warn "$name not found on PATH before language uninstall (cmd=$effective_cmd pm=$pm pkg=$pkg)" "uninstall-lang"
     sleep 1
     return 1
@@ -107,7 +107,7 @@ uninstall_lang() {
   composer) projectr_run_uninstall_command "uninstall-lang" "remove $name via composer" composer global remove "$pkg" ;;
   *)
     stop_spinner
-    echo -e "${ERROR} [!] Unsupported language package manager: $pm.${RST}"
+    echo -e "${ERROR} [ℹ] Unsupported language package manager: $pm.${RST}"
     log_fail "Unsupported language package manager '$pm' while removing $name" "uninstall-lang"
     return 1
     ;;
@@ -116,7 +116,7 @@ uninstall_lang() {
   local exit_code=$?
 
   if command -v "$effective_cmd" >/dev/null 2>&1; then
-    stop_spinner "${ERROR}  [!] $name remains present after the removal process. Manual cleanup may be required.${RST}"
+    stop_spinner "${ERROR}  [ℹ] $name remains present after the removal process. Manual cleanup may be required.${RST}"
     log FAIL "$name (lang): binary still present after $pm removal"
     return 1
   fi
@@ -127,7 +127,7 @@ uninstall_lang() {
     declare -f projectr_state_remove_install >/dev/null 2>&1 && projectr_state_remove_install "$tool_id" "$name" "$pkg" || true
     declare -f projectr_state_record_action >/dev/null 2>&1 && projectr_state_record_action "$tool_id" "$name" "$pkg" "$pm" "$pm" "$effective_cmd" removed || true
   else
-    stop_spinner "${ERROR}  [!] $name removal completed with errors (exit code: $exit_code).${RST}"
+    stop_spinner "${ERROR}  [ℹ] $name removal completed with errors (exit code: $exit_code).${RST}"
     log FAIL "$name uninstall exited $exit_code on $pm"
     return 1
   fi
@@ -144,7 +144,7 @@ uninstall_pkg() {
   projectr_effective_package_into effective_pkg "$tool_id" "$pkg" "$PM"
 
   if [[ -z "$cmd" || -z "$pkg" || -z "$name" ]]; then
-    echo -e "${ERROR}  [!] uninstall_pkg: Missing required arguments.${RST}"
+    echo -e "${ERROR}  [ℹ] uninstall_pkg: Missing required arguments.${RST}"
     log_error "uninstall_pkg missing arguments cmd='$cmd' pkg='$pkg' name='$name'" "uninstall-pkg"
     return 1
   fi
@@ -157,7 +157,7 @@ uninstall_pkg() {
   fi
 
   if ! command -v "$effective_cmd" >/dev/null 2>&1; then
-    echo -e "${ERROR}  [!] Package $name was not found on $PM.${RST}"
+    echo -e "${ERROR}  [ℹ] Package $name was not found on $PM.${RST}"
     log_warn "$name not found on PATH before package uninstall (cmd=$effective_cmd pm=$PM pkg=$effective_pkg)" "uninstall-pkg"
     sleep 1
     return 1
@@ -191,7 +191,7 @@ uninstall_pkg() {
   snap) projectr_run_uninstall_command "uninstall-pkg" "remove $name via snap" projectr_run_privileged "$PM" snap remove "$effective_pkg" ;;
   *)
     stop_spinner
-    echo -e "${ERROR} [!] Unsupported package manager: $PM.${RST}"
+    echo -e "${ERROR} [ℹ] Unsupported package manager: $PM.${RST}"
     log_fail "Unsupported package manager '$PM' while removing $name" "uninstall-pkg"
     return 1
     ;;
@@ -200,7 +200,7 @@ uninstall_pkg() {
   local exit_code=$?
 
   if command -v "$effective_cmd" >/dev/null 2>&1; then
-    stop_spinner "${ERROR}  [!] $name remains present after the removal process. Manual cleanup may be required.${RST}"
+    stop_spinner "${ERROR}  [ℹ] $name remains present after the removal process. Manual cleanup may be required.${RST}"
     log FAIL "$name: binary still present after $PM removal"
     return 1
   fi
@@ -211,7 +211,7 @@ uninstall_pkg() {
     declare -f projectr_state_remove_install >/dev/null 2>&1 && projectr_state_remove_install "$tool_id" "$name" "$effective_pkg" || true
     declare -f projectr_state_record_action >/dev/null 2>&1 && projectr_state_record_action "$tool_id" "$name" "$effective_pkg" "$PM" pkg "$effective_cmd" removed || true
   else
-    stop_spinner "${ERROR}  [!] $name removal completed with errors (exit code: $exit_code).${RST}"
+    stop_spinner "${ERROR}  [ℹ] $name removal completed with errors (exit code: $exit_code).${RST}"
     log FAIL "$name uninstall exited $exit_code on $PM"
     return 1
   fi

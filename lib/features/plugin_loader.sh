@@ -32,7 +32,7 @@ projectr_toml_value() {
 
 projectr_plugin_reject() {
   local file="$1" reason="$2"
-  echo -e "${BOLD_YELLOW:-}[!] Skipping plugin '$file': $reason${RST:-}" >&2
+  echo -e "${BOLD_YELLOW:-}[ℹ] Skipping plugin '$file': $reason${RST:-}" >&2
   log_warn "Skipping plugin '$file': $reason" "plugin"
   return 1
 }

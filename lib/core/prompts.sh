@@ -920,7 +920,7 @@ ask() {
     case "$reply" in
     y | yes | yeah | yep | ya | ye | true | 1) return 0 ;;
     n | no | nope | nah | na | false | 0) return 1 ;;
-    *) echo -e "${ERROR:-}  [!] Invalid input: '$reply'. Please enter 'y' or 'n'.${RST:-}" ;;
+    *) echo -e "${ERROR:-}  [ℹ] Invalid input: '$reply'. Please enter 'y' or 'n'.${RST:-}" ;;
     esac
   done
 }

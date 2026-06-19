@@ -10,7 +10,7 @@ check_dependency() {
     return 0
   else
     echo ""
-    echo -e "${ERROR} [✗] ${name} is NOT installed${RST}"
+    echo -e "${ERROR} [✖] ${name} is NOT installed${RST}"
 
     # Generate cross-platform hint
     local hint=""
@@ -138,7 +138,7 @@ check_dependency() {
     # ── fallback ───────────────────────────────────────
     *) hint="Install $cmd using your package manager" ;;
     esac
-    echo -e "${INFO} [!] Try: $hint${RST}"
+    echo -e "${INFO} [ℹ] Try: $hint${RST}"
     return 1
   fi
 }
@@ -173,7 +173,7 @@ verify_dependencies() {
   fi
 
   echo ""
-  echo -e "${ERROR} [!] $missing_count dependency(ies) missing!${RST}"
+  echo -e "${ERROR} [ℹ] $missing_count dependency(ies) missing!${RST}"
   echo ""
 
   # Tell user what to do
@@ -187,7 +187,7 @@ verify_dependencies() {
 
   local choice
   while true; do
-    echo -ne " ${BRIGHT_MAGENTA}[*] Select option [1-4]: ${RST}"
+    echo -ne " ${BRIGHT_MAGENTA}▶ Select option [1-4]: ${RST}"
     read -r choice
 
     case $choice in
@@ -213,7 +213,7 @@ verify_dependencies() {
       graceful_exit
       ;;
     *)
-      echo -e "${BOLD_RED} [!] Invalid input: '${choice}' — enter 1, 2, 3 or 4.${RST}"
+      echo -e "${BOLD_RED} [ℹ] Invalid input: '${choice}' — enter 1, 2, 3 or 4.${RST}"
       sleep 1
       ;;
     esac
@@ -231,13 +231,13 @@ auto_install_dependencies() {
 
   if ((needs_sudo)) && [[ $EUID -ne 0 ]]; then
     if ! command -v sudo >/dev/null 2>&1; then
-      echo -e "${ERROR} [!] This system requires root to install packages and sudo is not available.${RST}"
+      echo -e "${ERROR} [ℹ] This system requires root to install packages and sudo is not available.${RST}"
       echo -e "${INFO} [*] Re-run the script as root, or install dependencies manually.${RST}"
       return 1
     fi
     # Verify sudo works right now (cached credential or password prompt)
     if ! sudo -v 2>/dev/null; then
-      echo -e "${ERROR} [!] sudo authentication failed — cannot auto-install.${RST}"
+      echo -e "${ERROR} [ℹ] sudo authentication failed — cannot auto-install.${RST}"
       return 1
     fi
   fi
@@ -255,7 +255,7 @@ auto_install_dependencies() {
       if install_lolcat >/dev/null 2>&1; then
         stop_spinner "${OPTION} [✓] Installed: $name${RST}"
       else
-        stop_spinner "${ERROR} [✗] Failed: $name${RST}"
+        stop_spinner "${ERROR} [✖] Failed: $name${RST}"
         failed+=("$name")
       fi
       ;;
@@ -271,7 +271,7 @@ auto_install_dependencies() {
       brew) install_arr=(brew install "$cmd") ;;
       nix) install_arr=(nix-env -i "$cmd") ;;
       *)
-        stop_spinner "${ERROR} [✗] No auto-install rule for PM: $pm${RST}"
+        stop_spinner "${ERROR} [✖] No auto-install rule for PM: $pm${RST}"
         failed+=("$name")
         continue
         ;;
@@ -279,12 +279,12 @@ auto_install_dependencies() {
       if "${install_arr[@]}" >/dev/null 2>&1; then
         stop_spinner "${OPTION}  [✓] Installed: $cmd${RST}"
       else
-        stop_spinner "${ERROR}  [✗] Failed: $cmd${RST}"
+        stop_spinner "${ERROR}  [✖] Failed: $cmd${RST}"
         failed+=("$name")
       fi
       ;;
     *)
-      stop_spinner "${ERROR}  [✗] No install rule for: $cmd${RST}"
+      stop_spinner "${ERROR}  [✖] No install rule for: $cmd${RST}"
       failed+=("$name")
       ;;
     esac
@@ -294,7 +294,7 @@ auto_install_dependencies() {
   if [[ ${#failed[@]} -eq 0 ]]; then
     echo -e "${OPTION} [✓] All missing dependencies installed!${RST}"
   else
-    echo -e "${ERROR} [✗] Failed to install: ${failed[*]}${RST}"
+    echo -e "${ERROR} [✖] Failed to install: ${failed[*]}${RST}"
     sleep 2
     show_install_commands "${deps[@]}"
   fi

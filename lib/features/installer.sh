@@ -31,7 +31,7 @@ projectr_install_tool_by_fields() {
     if declare -f "$extra" >/dev/null 2>&1; then
       "$extra"
     else
-      echo -e "${ERROR}  [!] Special installer '${extra}' not found. Skipping ${name}.${RST}"
+      echo -e "${ERROR}  [ℹ] Special installer '${extra}' not found. Skipping ${name}.${RST}"
       log_fail "Special installer '${extra}' not found for $name" "install"
       projectr_install_result_push failed "$name"
       projectr_record_failed_install "$cmd" "$name" "$pkg" special special "$cmd"
@@ -39,7 +39,7 @@ projectr_install_tool_by_fields() {
     fi
     ;;
   *)
-    echo -e "${ERROR}  [!] Unsupported tool type '${type}' for ${name}.${RST}"
+    echo -e "${ERROR}  [ℹ] Unsupported tool type '${type}' for ${name}.${RST}"
     log_fail "Unsupported tool type '${type}' for $name" "install"
     projectr_install_result_push failed "$name"
     projectr_record_failed_install "$cmd" "$name" "$pkg" unknown "$type" "$cmd"
@@ -51,7 +51,7 @@ projectr_install_tool_by_fields() {
 # -- install function --
 install_all() {
   echo ""
-  echo -e "${ERROR}  [!] Bulk installation of all tools is disabled by default.${RST}"
+  echo -e "${ERROR}  [ℹ] Bulk installation of all tools is disabled by default.${RST}"
   echo -e "${INFO}  [*] Please use configuration presets: ${BOLD_WHITE}project install --profile <file>.yml${RST}"
   printf "${DIM}  [press ENTER]${RST}"
   read -s
@@ -64,7 +64,7 @@ install_preset_by_names() {
   local names=("$@")
 
   if [[ ${#names[@]} -eq 0 ]]; then
-    echo -e "${ERROR}  [!] No tools specified for preset installation.${RST}"
+    echo -e "${ERROR}  [ℹ] No tools specified for preset installation.${RST}"
     log_warn "install_preset_by_names called without tools" "preset"
     return 1
   fi
@@ -84,7 +84,7 @@ install_preset_by_names() {
       projectr_install_tool_by_fields "$cmd" "$pkg" "$display" "$type" "$extra"
     fi
     if [[ $matched -eq 0 ]]; then
-      echo -e "${BOLD_YELLOW}  [!] Tool '$name' was not found in the tool registry. Skipping...${RST}"
+      echo -e "${BOLD_YELLOW}  [ℹ] Tool '$name' was not found in the tool registry. Skipping...${RST}"
       log_warn "Preset requested unknown tool '$name'" "preset"
     fi
   done
@@ -107,7 +107,7 @@ install_pkg() {
   projectr_effective_cmd_into effective_cmd "$tool_id" "$cmd" "$PM"
 
   if [[ -z "$cmd" || -z "$pkg" || -z "$name" ]]; then
-    echo -e "${ERROR}  [!] install_pkg: Missing required arguments (cmd='$cmd', pkg='$pkg', name='$name').${RST}"
+    echo -e "${ERROR}  [ℹ] install_pkg: Missing required arguments (cmd='$cmd', pkg='$pkg', name='$name').${RST}"
     log_error "install_pkg missing argument cmd='$cmd' pkg='$pkg' name='$name'" "install"
     return 1
   fi
@@ -127,7 +127,7 @@ install_pkg() {
     DEBIAN_FRONTEND=noninteractive \
       projectr_run_privileged "$PM" apt-get install -y --no-install-recommends "$effective_pkg" >/dev/null 2>&1
     if [[ $? -ne 0 ]]; then
-      stop_spinner "${BOLD_YELLOW}  [!] apt installation failed. Refreshing package cache and retrying...${RST}"
+      stop_spinner "${BOLD_YELLOW}  [ℹ] apt installation failed. Refreshing package cache and retrying...${RST}"
       start_spinner "  [*] Retrying installation of $name..."
       projectr_run_privileged "$PM" apt-get update >/dev/null 2>&1
       DEBIAN_FRONTEND=noninteractive \
@@ -267,7 +267,7 @@ install_lang() {
   while ((attempt <= max_attempts)); do
     if ((attempt > 1)); then
       stop_spinner
-      echo -e "${BOLD_YELLOW}  [!] Attempt $attempt of $max_attempts failed. Retrying installation of $display_name...${RST}"
+      echo -e "${BOLD_YELLOW}  [ℹ] Attempt $attempt of $max_attempts failed. Retrying installation of $display_name...${RST}"
       sleep 2
       start_spinner "  [*] Retrying installation of $display_name via $lang_pm..."
     fi

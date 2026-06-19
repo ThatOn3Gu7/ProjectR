@@ -314,7 +314,7 @@ search_and_install() {
     suggestions=$(_si_get_suggestions "$input")
     if [[ -n "$suggestions" ]]; then
         echo ""
-        echo -e "  ${ERROR}[!]${RST} '${BOLD_WHITE}$input${RST}' not found — perhaps you meant:"
+        echo -e "  ${ERROR}[ℹ]${RST} '${BOLD_WHITE}$input${RST}' not found — perhaps you meant:"
         echo ""
 
         local suggestion_array=()

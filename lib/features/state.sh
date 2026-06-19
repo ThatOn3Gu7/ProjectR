@@ -2,7 +2,7 @@
 # shellcheck disable=all
 # Local state tracking. Uses SQLite when available and falls back to TSV.
 
-PROJECTR_STATE_DIR="${PROJECTR_STATE_DIR:-$HOME/.local/state/projectr_v2}"
+PROJECTR_STATE_DIR="${PROJECTR_STATE_DIR:-$HOME/.local/state/projectr}"
 PROJECTR_STATE_DB="$PROJECTR_STATE_DIR/state.db"
 PROJECTR_STATE_TSV="$PROJECTR_STATE_DIR/state.tsv"
 PROJECTR_ACTIONS_TSV="$PROJECTR_STATE_DIR/actions.tsv"
@@ -317,7 +317,7 @@ projectr_repair_state() {
   for record in "${records[@]}"; do
     IFS=$'\t' read -r record_tool_id record_name record_package record_manager <<<"$record"
     entry=$(projectr_state_find_registry_entry "$record_tool_id" "$record_name" "$record_package") || {
-      echo -e "${BOLD_YELLOW:-}[!] Recorded tool '$record_name' is not in the current registry. Skipping...${RST:-}"
+      echo -e "${BOLD_YELLOW:-}[ℹ] Recorded tool '$record_name' is not in the current registry. Skipping...${RST:-}"
       failed=$((failed + 1))
       continue
     }

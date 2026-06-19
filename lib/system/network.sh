@@ -27,7 +27,7 @@ check_startup_connectivity() {
     print_box center "        It seems that you are not online
 Please make sure to turn on WI-FI to continue :)"
     echo -e "${OPTION}"
-    print_box center " [!] Continue Anyways? [y/N]"
+    print_box center " [ℹ] Continue Anyways? [y/N]"
     echo -e "${RST}"
     safe_tput civis   # hide cursor
     read -rsn 1 reply # read silently, no echo
@@ -64,7 +64,7 @@ require_internet() {
 
     log ERROR "No internet connection (attempt $attempt/$max_attempts)"
     echo -e "${ERROR}"
-    print_box center "[!] No internet — attempt $attempt of $max_attempts"
+    print_box center "[ℹ] No internet — attempt $attempt of $max_attempts"
     echo -e "${RST}"
 
     if ((attempt < max_attempts)); then
@@ -75,7 +75,7 @@ require_internet() {
   done
 
   echo -e "${ERROR}"
-  print_box center "[!] No internet after $max_attempts attempts. Cannot continue."
+  print_box center "[ℹ] No internet after $max_attempts attempts. Cannot continue."
   echo -e "${RST}"
   exit 1
 }

@@ -64,7 +64,7 @@ projectr_run_privileged() {
   sudo) sudo "$@" ;;
   doas) doas "$@" ;;
   *)
-    echo -e "${ERROR:-}[!] This action needs elevated privileges for manager '$manager', but no sudo/doas helper is available.${RST:-}" >&2
+    echo -e " ${ERROR:-}[ℹ] This action needs elevated privileges for manager '$manager', but no sudo/doas helper is available.${RST:-}" >&2
     return 1
     ;;
   esac
