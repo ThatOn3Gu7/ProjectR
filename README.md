@@ -1,6 +1,16 @@
-# ProjectR
 <div align="center">
-  
+
+```
+██████╗ ██████╗  ██████╗      ██╗███████╗ ██████╗████████╗██████╗ 
+██╔══██╗██╔══██╗██╔═══██╗     ██║██╔════╝██╔════╝╚══██╔══╝██╔══██╗
+██████╔╝██████╔╝██║   ██║     ██║█████╗  ██║        ██║   ██████╔╝
+██╔═══╝ ██╔══██╗██║   ██║██   ██║██╔══╝  ██║        ██║   ██╔══██╗
+██║     ██║  ██║╚██████╔╝╚█████╔╝███████╗╚██████╗   ██║   ██║  ██║
+╚═╝     ╚═╝  ╚═╝ ╚═════╝  ╚════╝ ╚══════╝ ╚═════╝   ╚═╝   ╚═╝  ╚═╝
+
+                                              > C0ded by: ThatOn3Gu7
+ ``` 
+
 ![Bash](https://img.shields.io/badge/Bash-4.4%2B-4EAA25?style=flat-square&logo=gnubash&logoColor=white)
 ![Platform](https://img.shields.io/badge/Platform-Linux%20%7C%20macOS%20%7C%20Termux-0078D4?style=flat-square)
 ![License](https://img.shields.io/badge/License-MIT-yellow?style=flat-square)
