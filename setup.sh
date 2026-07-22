@@ -100,11 +100,11 @@ _detect_source_dir() {
 _detect_source_dir
 
 # Helpers
-info() { printf "${ACCENT}[*]${RST} %s\n" "$*"; }
-success() { printf "${OPTION}[✓]${RST} %s\n" "$*"; }
-warn() { printf "${INFO}[ℹ]${RST} %s\n" "$*" >&2; }
+info() { printf "${ACCENT}  [*]${RST} %s\n" "$*"; }
+success() { printf "${OPTION}  [✓]${RST} %s\n" "$*"; }
+warn() { printf "${INFO}  [ℹ]${RST} %s\n" "$*" >&2; }
 fail() {
-  printf "${ERROR}[✗]${RST} %s\n" "$*" >&2
+  printf "${ERROR}  [✗]${RST} %s\n" "$*" >&2
   exit 1
 }
 
