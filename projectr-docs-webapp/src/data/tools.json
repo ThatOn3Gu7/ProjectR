@@ -1,0 +1,2042 @@
+[
+  {
+    "name": "Git",
+    "category": "Dev",
+    "description": "Distributed version control system.",
+    "installCmd": "project install git",
+    "icon": "🛠️",
+    "homepage": "https://git-scm.com/"
+  },
+  {
+    "name": "Neovim",
+    "category": "Dev",
+    "description": "Hyperextensible Vim-based text editor.",
+    "installCmd": "project install neovim",
+    "icon": "💻",
+    "homepage": "https://neovim.io/"
+  },
+  {
+    "name": "Tmux",
+    "category": "Dev",
+    "description": "Terminal multiplexer for persistent, split sessions.",
+    "installCmd": "project install tmux",
+    "icon": "🧰",
+    "homepage": "https://github.com/tmux/tmux"
+  },
+  {
+    "name": "Fzf",
+    "category": "Dev",
+    "description": "General-purpose command-line fuzzy finder.",
+    "installCmd": "project install fzf",
+    "icon": "🔧",
+    "homepage": "https://github.com/junegunn/fzf"
+  },
+  {
+    "name": "Lazygit",
+    "category": "Dev",
+    "description": "Simple terminal UI for git commands.",
+    "installCmd": "project install lazygit",
+    "icon": "🧑‍💻",
+    "homepage": "https://github.com/jesseduffield/lazygit"
+  },
+  {
+    "name": "Ripgrep",
+    "category": "Dev",
+    "description": "Line-oriented search tool that recursively searches directories.",
+    "installCmd": "project install ripgrep",
+    "icon": "🛠️",
+    "homepage": "https://github.com/BurntSushi/ripgrep"
+  },
+  {
+    "name": "Node.js",
+    "category": "Dev",
+    "description": "JavaScript runtime built on Chrome's V8 engine.",
+    "installCmd": "project install nodejs",
+    "icon": "💻",
+    "homepage": "https://nodejs.org/"
+  },
+  {
+    "name": "Go",
+    "category": "Dev",
+    "description": "Statically typed, compiled language designed at Google.",
+    "installCmd": "project install go",
+    "icon": "🧰",
+    "homepage": "https://go.dev/"
+  },
+  {
+    "name": "Rust",
+    "category": "Dev",
+    "description": "Systems language focused on safety and performance.",
+    "installCmd": "project install rust",
+    "icon": "🔧",
+    "homepage": "https://www.rust-lang.org/"
+  },
+  {
+    "name": "GCC",
+    "category": "Dev",
+    "description": "GNU Compiler Collection for C, C++, and more.",
+    "installCmd": "project install gcc",
+    "icon": "🧑‍💻",
+    "homepage": "https://gcc.gnu.org/"
+  },
+  {
+    "name": "GDB",
+    "category": "Dev",
+    "description": "The GNU Project debugger.",
+    "installCmd": "project install gdb",
+    "icon": "🛠️",
+    "homepage": "https://www.sourceware.org/gdb/"
+  },
+  {
+    "name": "ShellCheck",
+    "category": "Dev",
+    "description": "Static analysis tool for shell scripts.",
+    "installCmd": "project install shellcheck",
+    "icon": "💻",
+    "homepage": "https://www.shellcheck.net/"
+  },
+  {
+    "name": "code-server",
+    "category": "Dev",
+    "description": "Run VS Code on a remote server, access it in the browser.",
+    "installCmd": "project install code-server",
+    "icon": "🧰",
+    "homepage": "https://github.com/coder/code-server"
+  },
+  {
+    "name": "Vim",
+    "category": "Dev",
+    "description": "Highly configurable, ubiquitous modal text editor.",
+    "installCmd": "project install vim",
+    "icon": "🔧",
+    "homepage": "https://www.vim.org/"
+  },
+  {
+    "name": "Emacs",
+    "category": "Dev",
+    "description": "Extensible, customizable text editor and computing environment.",
+    "installCmd": "project install emacs",
+    "icon": "🧑‍💻",
+    "homepage": "https://www.gnu.org/software/emacs/"
+  },
+  {
+    "name": "Tig",
+    "category": "Dev",
+    "description": "Text-mode interface for git.",
+    "installCmd": "project install tig",
+    "icon": "🛠️",
+    "homepage": "https://jonas.github.io/tig/"
+  },
+  {
+    "name": "Delta",
+    "category": "Dev",
+    "description": "Syntax-highlighting pager for git, diff, and grep output.",
+    "installCmd": "project install delta",
+    "icon": "💻",
+    "homepage": "https://github.com/dandavison/delta"
+  },
+  {
+    "name": "Difftastic",
+    "category": "Dev",
+    "description": "Structural diff tool that understands syntax.",
+    "installCmd": "project install difftastic",
+    "icon": "🧰",
+    "homepage": "https://github.com/Wilfred/difftastic"
+  },
+  {
+    "name": "Direnv",
+    "category": "Dev",
+    "description": "Loads and unloads environment variables per directory.",
+    "installCmd": "project install direnv",
+    "icon": "🔧",
+    "homepage": "https://direnv.net/"
+  },
+  {
+    "name": "asdf",
+    "category": "Dev",
+    "description": "Extendable version manager for multiple runtimes.",
+    "installCmd": "project install asdf",
+    "icon": "🧑‍💻",
+    "homepage": "https://asdf-vm.com/"
+  },
+  {
+    "name": "mise",
+    "category": "Dev",
+    "description": "Fast polyglot dev-tool and environment-variable manager.",
+    "installCmd": "project install mise",
+    "icon": "🛠️",
+    "homepage": "https://mise.jdx.dev/"
+  },
+  {
+    "name": "pyenv",
+    "category": "Dev",
+    "description": "Simple Python version management.",
+    "installCmd": "project install pyenv",
+    "icon": "💻",
+    "homepage": "https://github.com/pyenv/pyenv"
+  },
+  {
+    "name": "nvm",
+    "category": "Dev",
+    "description": "Node Version Manager for the shell.",
+    "installCmd": "project install nvm",
+    "icon": "🧰",
+    "homepage": "https://github.com/nvm-sh/nvm"
+  },
+  {
+    "name": "rbenv",
+    "category": "Dev",
+    "description": "Lightweight Ruby version management.",
+    "installCmd": "project install rbenv",
+    "icon": "🔧",
+    "homepage": "https://github.com/rbenv/rbenv"
+  },
+  {
+    "name": "jenv",
+    "category": "Dev",
+    "description": "Manage multiple JDK installations.",
+    "installCmd": "project install jenv",
+    "icon": "🧑‍💻",
+    "homepage": "https://www.jenv.be/"
+  },
+  {
+    "name": "Make",
+    "category": "Dev",
+    "description": "Classic build automation tool.",
+    "installCmd": "project install make",
+    "icon": "🛠️",
+    "homepage": "https://www.gnu.org/software/make/"
+  },
+  {
+    "name": "CMake",
+    "category": "Dev",
+    "description": "Cross-platform build-system generator.",
+    "installCmd": "project install cmake",
+    "icon": "💻",
+    "homepage": "https://cmake.org/"
+  },
+  {
+    "name": "Ninja",
+    "category": "Dev",
+    "description": "Small build system focused on speed.",
+    "installCmd": "project install ninja",
+    "icon": "🧰",
+    "homepage": "https://ninja-build.org/"
+  },
+  {
+    "name": "Bazel",
+    "category": "Dev",
+    "description": "Fast, scalable multi-language build and test tool.",
+    "installCmd": "project install bazel",
+    "icon": "🔧",
+    "homepage": "https://bazel.build/"
+  },
+  {
+    "name": "Gradle",
+    "category": "Dev",
+    "description": "Build automation tool for JVM and beyond.",
+    "installCmd": "project install gradle",
+    "icon": "🧑‍💻",
+    "homepage": "https://gradle.org/"
+  },
+  {
+    "name": "Maven",
+    "category": "Dev",
+    "description": "Build automation and dependency management for Java.",
+    "installCmd": "project install maven",
+    "icon": "🛠️",
+    "homepage": "https://maven.apache.org/"
+  },
+  {
+    "name": "Python",
+    "category": "Dev",
+    "description": "General-purpose, high-level programming language.",
+    "installCmd": "project install python",
+    "icon": "💻",
+    "homepage": "https://www.python.org/"
+  },
+  {
+    "name": "Poetry",
+    "category": "Dev",
+    "description": "Python packaging and dependency management.",
+    "installCmd": "project install poetry",
+    "icon": "🧰",
+    "homepage": "https://python-poetry.org/"
+  },
+  {
+    "name": "Pipenv",
+    "category": "Dev",
+    "description": "Python dependency management combining pip and virtualenv.",
+    "installCmd": "project install pipenv",
+    "icon": "🔧",
+    "homepage": "https://pipenv.pypa.io/"
+  },
+  {
+    "name": "virtualenv",
+    "category": "Dev",
+    "description": "Tool for creating isolated Python environments.",
+    "installCmd": "project install virtualenv",
+    "icon": "🧑‍💻",
+    "homepage": "https://virtualenv.pypa.io/"
+  },
+  {
+    "name": "Ruby",
+    "category": "Dev",
+    "description": "Dynamic, object-oriented scripting language.",
+    "installCmd": "project install ruby",
+    "icon": "🛠️",
+    "homepage": "https://www.ruby-lang.org/"
+  },
+  {
+    "name": "PHP",
+    "category": "Dev",
+    "description": "Popular general-purpose scripting language for the web.",
+    "installCmd": "project install php",
+    "icon": "💻",
+    "homepage": "https://www.php.net/"
+  },
+  {
+    "name": "Composer",
+    "category": "Dev",
+    "description": "Dependency manager for PHP.",
+    "installCmd": "project install composer",
+    "icon": "🧰",
+    "homepage": "https://getcomposer.org/"
+  },
+  {
+    "name": "Lua",
+    "category": "Dev",
+    "description": "Lightweight, embeddable scripting language.",
+    "installCmd": "project install lua",
+    "icon": "🔧",
+    "homepage": "https://www.lua.org/"
+  },
+  {
+    "name": "Deno",
+    "category": "Dev",
+    "description": "Secure runtime for JavaScript and TypeScript.",
+    "installCmd": "project install deno",
+    "icon": "🧑‍💻",
+    "homepage": "https://deno.com/"
+  },
+  {
+    "name": "Bun",
+    "category": "Dev",
+    "description": "Fast all-in-one JavaScript runtime and toolkit.",
+    "installCmd": "project install bun",
+    "icon": "🛠️",
+    "homepage": "https://bun.sh/"
+  },
+  {
+    "name": "TypeScript",
+    "category": "Dev",
+    "description": "Typed superset of JavaScript that compiles to plain JS.",
+    "installCmd": "project install typescript",
+    "icon": "💻",
+    "homepage": "https://www.typescriptlang.org/"
+  },
+  {
+    "name": "ESLint",
+    "category": "Dev",
+    "description": "Pluggable linter for JavaScript and TypeScript.",
+    "installCmd": "project install eslint",
+    "icon": "🧰",
+    "homepage": "https://eslint.org/"
+  },
+  {
+    "name": "Prettier",
+    "category": "Dev",
+    "description": "Opinionated code formatter for many languages.",
+    "installCmd": "project install prettier",
+    "icon": "🔧",
+    "homepage": "https://prettier.io/"
+  },
+  {
+    "name": "Black",
+    "category": "Dev",
+    "description": "Uncompromising Python code formatter.",
+    "installCmd": "project install black",
+    "icon": "🧑‍💻",
+    "homepage": "https://black.readthedocs.io/"
+  },
+  {
+    "name": "Flake8",
+    "category": "Dev",
+    "description": "Style guide and lint tool for Python.",
+    "installCmd": "project install flake8",
+    "icon": "🛠️",
+    "homepage": "https://flake8.pycqa.org/"
+  },
+  {
+    "name": "Pylint",
+    "category": "Dev",
+    "description": "Static code analyser for Python.",
+    "installCmd": "project install pylint",
+    "icon": "💻",
+    "homepage": "https://pylint.readthedocs.io/"
+  },
+  {
+    "name": "Valgrind",
+    "category": "Dev",
+    "description": "Instrumentation framework for memory debugging and profiling.",
+    "installCmd": "project install valgrind",
+    "icon": "🧰",
+    "homepage": "https://valgrind.org/"
+  },
+  {
+    "name": "strace",
+    "category": "Dev",
+    "description": "Traces system calls and signals on Linux.",
+    "installCmd": "project install strace",
+    "icon": "🔧",
+    "homepage": "https://strace.io/"
+  },
+  {
+    "name": "Hyperfine",
+    "category": "Dev",
+    "description": "Command-line benchmarking tool.",
+    "installCmd": "project install hyperfine",
+    "icon": "🧑‍💻",
+    "homepage": "https://github.com/sharkdp/hyperfine"
+  },
+  {
+    "name": "Tokei",
+    "category": "Dev",
+    "description": "Counts lines of code by language, quickly.",
+    "installCmd": "project install tokei",
+    "icon": "🛠️",
+    "homepage": "https://github.com/XAMPPRocky/tokei"
+  },
+  {
+    "name": "Cloc",
+    "category": "Dev",
+    "description": "Counts blank lines, comment lines, and lines of code.",
+    "installCmd": "project install cloc",
+    "icon": "💻",
+    "homepage": "https://github.com/AlDanial/cloc"
+  },
+  {
+    "name": "entr",
+    "category": "Dev",
+    "description": "Runs arbitrary commands when files change.",
+    "installCmd": "project install entr",
+    "icon": "🧰",
+    "homepage": "https://eradman.com/entrproject/"
+  },
+  {
+    "name": "watchexec",
+    "category": "Dev",
+    "description": "Executes commands in response to file changes.",
+    "installCmd": "project install watchexec",
+    "icon": "🔧",
+    "homepage": "https://github.com/watchexec/watchexec"
+  },
+  {
+    "name": "Just",
+    "category": "Dev",
+    "description": "Handy command runner, a modern alternative to make.",
+    "installCmd": "project install just",
+    "icon": "🧑‍💻",
+    "homepage": "https://github.com/casey/just"
+  },
+  {
+    "name": "Task",
+    "category": "Dev",
+    "description": "Task runner and build tool written in Go.",
+    "installCmd": "project install task",
+    "icon": "🛠️",
+    "homepage": "https://taskfile.dev/"
+  },
+  {
+    "name": "act",
+    "category": "Dev",
+    "description": "Runs GitHub Actions workflows locally.",
+    "installCmd": "project install act",
+    "icon": "💻",
+    "homepage": "https://github.com/nektos/act"
+  },
+  {
+    "name": "pre-commit",
+    "category": "Dev",
+    "description": "Framework for managing multi-language pre-commit hooks.",
+    "installCmd": "project install pre-commit",
+    "icon": "🧰",
+    "homepage": "https://pre-commit.com/"
+  },
+  {
+    "name": "Husky",
+    "category": "Dev",
+    "description": "Git hooks made easy for JavaScript projects.",
+    "installCmd": "project install husky",
+    "icon": "🔧",
+    "homepage": "https://typicode.github.io/husky/"
+  },
+  {
+    "name": "Commitizen",
+    "category": "Dev",
+    "description": "Command-line utility for standardized commit messages.",
+    "installCmd": "project install commitizen",
+    "icon": "🧑‍💻",
+    "homepage": "https://commitizen-tools.github.io/commitizen/"
+  },
+  {
+    "name": "GitHub CLI",
+    "category": "Dev",
+    "description": "Official command-line tool for GitHub.",
+    "installCmd": "project install github-cli",
+    "icon": "🛠️",
+    "homepage": "https://cli.github.com/"
+  },
+  {
+    "name": "GitLab CLI",
+    "category": "Dev",
+    "description": "Official command-line tool for GitLab (glab).",
+    "installCmd": "project install gitlab-cli",
+    "icon": "💻",
+    "homepage": "https://gitlab.com/gitlab-org/cli"
+  },
+  {
+    "name": "Hub",
+    "category": "Dev",
+    "description": "Command-line wrapper for git that adds GitHub features.",
+    "installCmd": "project install hub",
+    "icon": "🧰",
+    "homepage": "https://github.com/mislav/hub"
+  },
+  {
+    "name": "Git LFS",
+    "category": "Dev",
+    "description": "Git extension for versioning large files.",
+    "installCmd": "project install git-lfs",
+    "icon": "🔧",
+    "homepage": "https://git-lfs.com/"
+  },
+  {
+    "name": "git-flow",
+    "category": "Dev",
+    "description": "Git branching model extensions.",
+    "installCmd": "project install git-flow",
+    "icon": "🧑‍💻",
+    "homepage": "https://github.com/nvie/gitflow"
+  },
+  {
+    "name": "git-extras",
+    "category": "Dev",
+    "description": "Collection of useful extra git commands.",
+    "installCmd": "project install git-extras",
+    "icon": "🛠️",
+    "homepage": "https://github.com/tj/git-extras"
+  },
+  {
+    "name": "Starship",
+    "category": "Dev",
+    "description": "Minimal, fast, customizable shell prompt.",
+    "installCmd": "project install starship",
+    "icon": "💻",
+    "homepage": "https://starship.rs/"
+  },
+  {
+    "name": "Zoxide",
+    "category": "Dev",
+    "description": "Smarter cd command that learns your habits.",
+    "installCmd": "project install zoxide",
+    "icon": "🧰",
+    "homepage": "https://github.com/ajeetdsouza/zoxide"
+  },
+  {
+    "name": "thefuck",
+    "category": "Dev",
+    "description": "Corrects your previous console command.",
+    "installCmd": "project install thefuck",
+    "icon": "🔧",
+    "homepage": "https://github.com/nvbn/thefuck"
+  },
+  {
+    "name": "Atuin",
+    "category": "Dev",
+    "description": "Magical shell history, synced and searchable.",
+    "installCmd": "project install atuin",
+    "icon": "🧑‍💻",
+    "homepage": "https://atuin.sh/"
+  },
+  {
+    "name": "McFly",
+    "category": "Dev",
+    "description": "Fly through your shell history with smart search.",
+    "installCmd": "project install mcfly",
+    "icon": "🛠️",
+    "homepage": "https://github.com/cantino/mcfly"
+  },
+  {
+    "name": "Navi",
+    "category": "Dev",
+    "description": "Interactive cheatsheet tool for the command line.",
+    "installCmd": "project install navi",
+    "icon": "💻",
+    "homepage": "https://github.com/denisidoro/navi"
+  },
+  {
+    "name": "tldr",
+    "category": "Dev",
+    "description": "Simplified, community-driven man pages.",
+    "installCmd": "project install tldr",
+    "icon": "🧰",
+    "homepage": "https://tldr.sh/"
+  },
+  {
+    "name": "ctop",
+    "category": "Dev",
+    "description": "Top-like interface for container metrics.",
+    "installCmd": "project install ctop",
+    "icon": "🔧",
+    "homepage": "https://github.com/bcicen/ctop"
+  },
+  {
+    "name": "Lazydocker",
+    "category": "Dev",
+    "description": "Terminal UI for docker and docker-compose.",
+    "installCmd": "project install lazydocker",
+    "icon": "🧑‍💻",
+    "homepage": "https://github.com/jesseduffield/lazydocker"
+  },
+  {
+    "name": "Dive",
+    "category": "Dev",
+    "description": "Tool for exploring layers in a docker image.",
+    "installCmd": "project install dive",
+    "icon": "🛠️",
+    "homepage": "https://github.com/wagoodman/dive"
+  },
+  {
+    "name": "Hadolint",
+    "category": "Dev",
+    "description": "Dockerfile linter that validates best practices.",
+    "installCmd": "project install hadolint",
+    "icon": "💻",
+    "homepage": "https://github.com/hadolint/hadolint"
+  },
+  {
+    "name": "shfmt",
+    "category": "Dev",
+    "description": "Shell script formatter.",
+    "installCmd": "project install shfmt",
+    "icon": "🧰",
+    "homepage": "https://github.com/mvdan/sh"
+  },
+  {
+    "name": "yamllint",
+    "category": "Dev",
+    "description": "Linter for YAML files.",
+    "installCmd": "project install yamllint",
+    "icon": "🔧",
+    "homepage": "https://github.com/adrienverge/yamllint"
+  },
+  {
+    "name": "Universal Ctags",
+    "category": "Dev",
+    "description": "Generates tag files for source code navigation.",
+    "installCmd": "project install universal-ctags",
+    "icon": "🧑‍💻",
+    "homepage": "https://ctags.io/"
+  },
+  {
+    "name": "cscope",
+    "category": "Dev",
+    "description": "Source code browsing tool for large C projects.",
+    "installCmd": "project install cscope",
+    "icon": "🛠️",
+    "homepage": "https://cscope.sourceforge.net/"
+  },
+  {
+    "name": "Bear",
+    "category": "Dev",
+    "description": "Generates a compilation database for clang tooling.",
+    "installCmd": "project install bear",
+    "icon": "💻",
+    "homepage": "https://github.com/rizsotto/Bear"
+  },
+  {
+    "name": "Meson",
+    "category": "Dev",
+    "description": "Fast, user-friendly build system.",
+    "installCmd": "project install meson",
+    "icon": "🧰",
+    "homepage": "https://mesonbuild.com/"
+  },
+  {
+    "name": "Conan",
+    "category": "Dev",
+    "description": "C/C++ package manager.",
+    "installCmd": "project install conan",
+    "icon": "🔧",
+    "homepage": "https://conan.io/"
+  },
+  {
+    "name": "vcpkg",
+    "category": "Dev",
+    "description": "C/C++ library manager from Microsoft.",
+    "installCmd": "project install vcpkg",
+    "icon": "🧑‍💻",
+    "homepage": "https://vcpkg.io/"
+  },
+  {
+    "name": "Yarn",
+    "category": "Dev",
+    "description": "Fast, reliable JavaScript package manager.",
+    "installCmd": "project install yarn",
+    "icon": "🛠️",
+    "homepage": "https://yarnpkg.com/"
+  },
+  {
+    "name": "pnpm",
+    "category": "Dev",
+    "description": "Fast, disk space efficient JavaScript package manager.",
+    "installCmd": "project install pnpm",
+    "icon": "💻",
+    "homepage": "https://pnpm.io/"
+  },
+  {
+    "name": "Volta",
+    "category": "Dev",
+    "description": "JavaScript tool manager that pins versions per project.",
+    "installCmd": "project install volta",
+    "icon": "🧰",
+    "homepage": "https://volta.sh/"
+  },
+  {
+    "name": "esbuild",
+    "category": "Dev",
+    "description": "Extremely fast JavaScript bundler and minifier.",
+    "installCmd": "project install esbuild",
+    "icon": "🔧",
+    "homepage": "https://esbuild.github.io/"
+  },
+  {
+    "name": "Biome",
+    "category": "Dev",
+    "description": "Fast formatter and linter toolchain for web projects.",
+    "installCmd": "project install biome",
+    "icon": "🧑‍💻",
+    "homepage": "https://biomejs.dev/"
+  },
+  {
+    "name": "Curl",
+    "category": "Essentials",
+    "description": "Command-line tool for transferring data with URLs.",
+    "installCmd": "project install curl",
+    "icon": "📦",
+    "homepage": "https://curl.se/"
+  },
+  {
+    "name": "Wget",
+    "category": "Essentials",
+    "description": "Non-interactive network downloader.",
+    "installCmd": "project install wget",
+    "icon": "🧭",
+    "homepage": "https://www.gnu.org/software/wget/"
+  },
+  {
+    "name": "Htop",
+    "category": "Essentials",
+    "description": "Interactive process viewer for Unix systems.",
+    "installCmd": "project install htop",
+    "icon": "🔋",
+    "homepage": "https://htop.dev/"
+  },
+  {
+    "name": "Python",
+    "category": "Essentials",
+    "description": "General-purpose, high-level programming language.",
+    "installCmd": "project install python",
+    "icon": "🗂️",
+    "homepage": "https://www.python.org/"
+  },
+  {
+    "name": "Nano",
+    "category": "Essentials",
+    "description": "Small, friendly, easy-to-use terminal text editor.",
+    "installCmd": "project install nano",
+    "icon": "📦",
+    "homepage": "https://www.nano-editor.org/"
+  },
+  {
+    "name": "Bat",
+    "category": "Essentials",
+    "description": "A cat clone with syntax highlighting and git integration.",
+    "installCmd": "project install bat",
+    "icon": "🧭",
+    "homepage": "https://github.com/sharkdp/bat"
+  },
+  {
+    "name": "Duf",
+    "category": "Essentials",
+    "description": "Disk usage/free utility with a friendly terminal UI.",
+    "installCmd": "project install duf",
+    "icon": "🔋",
+    "homepage": "https://github.com/muesli/duf"
+  },
+  {
+    "name": "Lsd",
+    "category": "Essentials",
+    "description": "Modern replacement for ls with icons and colours.",
+    "installCmd": "project install lsd",
+    "icon": "🗂️",
+    "homepage": "https://github.com/lsd-rs/lsd"
+  },
+  {
+    "name": "Eza",
+    "category": "Essentials",
+    "description": "Modern, maintained replacement for ls.",
+    "installCmd": "project install eza",
+    "icon": "📦",
+    "homepage": "https://github.com/eza-community/eza"
+  },
+  {
+    "name": "Neofetch",
+    "category": "Essentials",
+    "description": "Displays system information alongside distro ASCII art.",
+    "installCmd": "project install neofetch",
+    "icon": "🧭",
+    "homepage": "https://github.com/dylanaraps/neofetch"
+  },
+  {
+    "name": "Broot",
+    "category": "Essentials",
+    "description": "Tree-based file navigator you can fly through.",
+    "installCmd": "project install broot",
+    "icon": "🔋",
+    "homepage": "https://dystroy.org/broot/"
+  },
+  {
+    "name": "Tree",
+    "category": "Essentials",
+    "description": "Recursively lists directory contents as a tree.",
+    "installCmd": "project install tree",
+    "icon": "🗂️",
+    "homepage": "https://oldmanprogrammer.net/source.php?dir=projects/tree"
+  },
+  {
+    "name": "Rsync",
+    "category": "Essentials",
+    "description": "Fast, versatile file-copying and syncing tool.",
+    "installCmd": "project install rsync",
+    "icon": "📦",
+    "homepage": "https://rsync.samba.org/"
+  },
+  {
+    "name": "Fd",
+    "category": "Essentials",
+    "description": "Simple, fast alternative to find.",
+    "installCmd": "project install fd",
+    "icon": "🧭",
+    "homepage": "https://github.com/sharkdp/fd"
+  },
+  {
+    "name": "Ncdu",
+    "category": "Essentials",
+    "description": "Disk usage analyzer with an ncurses interface.",
+    "installCmd": "project install ncdu",
+    "icon": "🔋",
+    "homepage": "https://dev.yorhel.nl/ncdu"
+  },
+  {
+    "name": "Tmuxinator",
+    "category": "Essentials",
+    "description": "Manage complex tmux sessions from YAML config.",
+    "installCmd": "project install tmuxinator",
+    "icon": "🗂️",
+    "homepage": "https://github.com/tmuxinator/tmuxinator"
+  },
+  {
+    "name": "Screen",
+    "category": "Essentials",
+    "description": "Full-screen terminal multiplexer.",
+    "installCmd": "project install screen",
+    "icon": "📦",
+    "homepage": "https://www.gnu.org/software/screen/"
+  },
+  {
+    "name": "Zsh",
+    "category": "Essentials",
+    "description": "Extended Bourne shell with many improvements.",
+    "installCmd": "project install zsh",
+    "icon": "🧭",
+    "homepage": "https://www.zsh.org/"
+  },
+  {
+    "name": "Fish",
+    "category": "Essentials",
+    "description": "Smart and user-friendly command-line shell.",
+    "installCmd": "project install fish",
+    "icon": "🔋",
+    "homepage": "https://fishshell.com/"
+  },
+  {
+    "name": "Tldr-pages",
+    "category": "Essentials",
+    "description": "Community-driven, simplified man pages.",
+    "installCmd": "project install tldr-pages",
+    "icon": "🗂️",
+    "homepage": "https://tldr.sh/"
+  },
+  {
+    "name": "Sl",
+    "category": "Fun",
+    "description": "Displays an animated steam locomotive when you mistype ls.",
+    "installCmd": "project install sl",
+    "icon": "🎉",
+    "homepage": "https://github.com/mtoyoda/sl"
+  },
+  {
+    "name": "Cbonsai",
+    "category": "Fun",
+    "description": "Grows procedurally generated bonsai trees in your terminal.",
+    "installCmd": "project install cbonsai",
+    "icon": "🎮",
+    "homepage": "https://gitlab.com/jallbrit/cbonsai"
+  },
+  {
+    "name": "Cmatrix",
+    "category": "Fun",
+    "description": "Simulates the falling green code from The Matrix.",
+    "installCmd": "project install cmatrix",
+    "icon": "🐈",
+    "homepage": "https://github.com/abishekvashok/cmatrix"
+  },
+  {
+    "name": "Pipes.sh",
+    "category": "Fun",
+    "description": "Animated pipes screensaver for the terminal.",
+    "installCmd": "project install pipessh",
+    "icon": "🎨",
+    "homepage": "https://github.com/pipeseroni/pipes.sh"
+  },
+  {
+    "name": "Cowsay",
+    "category": "Fun",
+    "description": "Generates ASCII-art cows with speech bubbles.",
+    "installCmd": "project install cowsay",
+    "icon": "🌈",
+    "homepage": "https://github.com/tnalpgge/rank-amateur-cowsay"
+  },
+  {
+    "name": "Figlet",
+    "category": "Fun",
+    "description": "Renders text as large ASCII-art banners.",
+    "installCmd": "project install figlet",
+    "icon": "🎉",
+    "homepage": "http://www.figlet.org/"
+  },
+  {
+    "name": "Lolcat",
+    "category": "Fun",
+    "description": "Rainbow-colours terminal output.",
+    "installCmd": "project install lolcat",
+    "icon": "🎮",
+    "homepage": "https://github.com/busyloop/lolcat"
+  },
+  {
+    "name": "Nyancat",
+    "category": "Fun",
+    "description": "The Nyan Cat, rendered in your terminal.",
+    "installCmd": "project install nyancat",
+    "icon": "🐈",
+    "homepage": "https://github.com/klange/nyancat"
+  },
+  {
+    "name": "2048",
+    "category": "Fun",
+    "description": "The sliding-tile puzzle game, playable in the terminal.",
+    "installCmd": "project install 2048",
+    "icon": "🎨",
+    "homepage": "https://github.com/mevdschee/2048.c"
+  },
+  {
+    "name": "Asciiquarium",
+    "category": "Fun",
+    "description": "An animated ASCII-art aquarium for your terminal.",
+    "installCmd": "project install asciiquarium",
+    "icon": "🌈",
+    "homepage": "https://github.com/cmatsuoka/asciiquarium"
+  },
+  {
+    "name": "Bastet",
+    "category": "Fun",
+    "description": "A vicious Tetris clone that gives you the worst piece.",
+    "installCmd": "project install bastet",
+    "icon": "🎉",
+    "homepage": "https://fph.altervista.org/prog/bastet.html"
+  },
+  {
+    "name": "Nudoku",
+    "category": "Fun",
+    "description": "Ncurses-based sudoku game for the terminal.",
+    "installCmd": "project install nudoku",
+    "icon": "🎮",
+    "homepage": "https://github.com/jubalh/nudoku"
+  },
+  {
+    "name": "Pacman4console",
+    "category": "Fun",
+    "description": "A text-mode Pac-Man clone.",
+    "installCmd": "project install pacman4console",
+    "icon": "🐈",
+    "homepage": "https://github.com/rmmh/pacman4console"
+  },
+  {
+    "name": "Moon-buggy",
+    "category": "Fun",
+    "description": "Drive a car across the moon's surface as fast as possible.",
+    "installCmd": "project install moon-buggy",
+    "icon": "🎨",
+    "homepage": "https://github.com/wertarbyte/moon-buggy"
+  },
+  {
+    "name": "Ninvaders",
+    "category": "Fun",
+    "description": "Ncurses-based Space Invaders clone.",
+    "installCmd": "project install ninvaders",
+    "icon": "🌈",
+    "homepage": "https://ninvaders.sourceforge.net/"
+  },
+  {
+    "name": "Greed",
+    "category": "Fun",
+    "description": "Classic single-player, non-violent grid-eating game.",
+    "installCmd": "project install greed",
+    "icon": "🎉",
+    "homepage": "https://www.catb.org/~esr/greed/"
+  },
+  {
+    "name": "Robotfindskitten",
+    "category": "Fun",
+    "description": "A Zen simulation of the classic robotfindskitten game.",
+    "installCmd": "project install robotfindskitten",
+    "icon": "🎮",
+    "homepage": "https://robotfindskitten.org/"
+  },
+  {
+    "name": "Typespeed",
+    "category": "Fun",
+    "description": "Test and improve your typing speed against falling words.",
+    "installCmd": "project install typespeed",
+    "icon": "🐈",
+    "homepage": "https://github.com/def/typespeed"
+  },
+  {
+    "name": "Bb",
+    "category": "Fun",
+    "description": "AA-lib demo reel of terminal ASCII-art effects.",
+    "installCmd": "project install bb",
+    "icon": "🎨",
+    "homepage": "http://aa-project.sourceforge.net/aalib/"
+  },
+  {
+    "name": "Genact",
+    "category": "Fun",
+    "description": "A nonsense activity generator for hacker-movie screens.",
+    "installCmd": "project install genact",
+    "icon": "🌈",
+    "homepage": "https://github.com/svenstaro/genact"
+  },
+  {
+    "name": "Hollywood",
+    "category": "Fun",
+    "description": "Fills your terminal with impressive hacker-movie nonsense.",
+    "installCmd": "project install hollywood",
+    "icon": "🎉",
+    "homepage": "https://github.com/dustinkirkland/hollywood"
+  },
+  {
+    "name": "No-more-secrets",
+    "category": "Fun",
+    "description": "Recreates the Sneakers decryption effect for text output.",
+    "installCmd": "project install no-more-secrets",
+    "icon": "🎮",
+    "homepage": "https://github.com/bartobri/no-more-secrets"
+  },
+  {
+    "name": "Cacafire",
+    "category": "Fun",
+    "description": "Sets a terminal ASCII-art fire ablaze.",
+    "installCmd": "project install cacafire",
+    "icon": "🐈",
+    "homepage": "https://github.com/cacalabs/libcaca"
+  },
+  {
+    "name": "Toilet",
+    "category": "Fun",
+    "description": "Displays large, colourful ASCII-art text banners.",
+    "installCmd": "project install toilet",
+    "icon": "🎨",
+    "homepage": "http://caca.zoy.org/wiki/toilet"
+  },
+  {
+    "name": "Pokemonsay",
+    "category": "Fun",
+    "description": "Cowsay, but with Pokémon sprites.",
+    "installCmd": "project install pokemonsay",
+    "icon": "🌈",
+    "homepage": "https://github.com/possatti/pokemonsay"
+  },
+  {
+    "name": "Nmap",
+    "category": "Security",
+    "description": "Network discovery and security auditing scanner.",
+    "installCmd": "project install nmap",
+    "icon": "🔐",
+    "homepage": "https://nmap.org/"
+  },
+  {
+    "name": "Hydra",
+    "category": "Security",
+    "description": "Fast, parallelized network logon cracker.",
+    "installCmd": "project install hydra",
+    "icon": "🛡️",
+    "homepage": "https://github.com/vanhauser-thc/thc-hydra"
+  },
+  {
+    "name": "SQLmap",
+    "category": "Security",
+    "description": "Automated SQL injection and database takeover tool.",
+    "installCmd": "project install sqlmap",
+    "icon": "🕳️",
+    "homepage": "https://sqlmap.org/"
+  },
+  {
+    "name": "Nikto",
+    "category": "Security",
+    "description": "Web server scanner that checks for known vulnerabilities.",
+    "installCmd": "project install nikto",
+    "icon": "🗝️",
+    "homepage": "https://github.com/sullo/nikto"
+  },
+  {
+    "name": "John",
+    "category": "Security",
+    "description": "John the Ripper password-cracking tool.",
+    "installCmd": "project install john",
+    "icon": "🔐",
+    "homepage": "https://www.openwall.com/john/"
+  },
+  {
+    "name": "Hashcat",
+    "category": "Security",
+    "description": "Advanced, GPU-accelerated password recovery tool.",
+    "installCmd": "project install hashcat",
+    "icon": "🛡️",
+    "homepage": "https://hashcat.net/hashcat/"
+  },
+  {
+    "name": "Gobuster",
+    "category": "Security",
+    "description": "Directory, DNS, and VHost brute-forcing tool.",
+    "installCmd": "project install gobuster",
+    "icon": "🕳️",
+    "homepage": "https://github.com/OJ/gobuster"
+  },
+  {
+    "name": "Ffuf",
+    "category": "Security",
+    "description": "Fast web fuzzer written in Go.",
+    "installCmd": "project install ffuf",
+    "icon": "🗝️",
+    "homepage": "https://github.com/ffuf/ffuf"
+  },
+  {
+    "name": "Lynis",
+    "category": "Security",
+    "description": "Security auditing tool for Unix-based systems.",
+    "installCmd": "project install lynis",
+    "icon": "🔐",
+    "homepage": "https://cisofy.com/lynis/"
+  },
+  {
+    "name": "Aircrack-ng",
+    "category": "Security",
+    "description": "Suite of tools for assessing Wi-Fi network security.",
+    "installCmd": "project install aircrack-ng",
+    "icon": "🛡️",
+    "homepage": "https://www.aircrack-ng.org/"
+  },
+  {
+    "name": "Metasploit",
+    "category": "Security",
+    "description": "Penetration-testing framework for exploit development.",
+    "installCmd": "project install metasploit",
+    "icon": "🕳️",
+    "homepage": "https://www.metasploit.com/"
+  },
+  {
+    "name": "Wireshark (tshark)",
+    "category": "Security",
+    "description": "Command-line network protocol analyzer.",
+    "installCmd": "project install wiresharktshark",
+    "icon": "🗝️",
+    "homepage": "https://www.wireshark.org/"
+  },
+  {
+    "name": "OpenVAS",
+    "category": "Security",
+    "description": "Full-featured vulnerability scanner.",
+    "installCmd": "project install openvas",
+    "icon": "🔐",
+    "homepage": "https://www.openvas.org/"
+  },
+  {
+    "name": "Chkrootkit",
+    "category": "Security",
+    "description": "Scans for signs of rootkits on a local system.",
+    "installCmd": "project install chkrootkit",
+    "icon": "🛡️",
+    "homepage": "https://www.chkrootkit.org/"
+  },
+  {
+    "name": "Rkhunter",
+    "category": "Security",
+    "description": "Checks systems for rootkits, backdoors, and exploits.",
+    "installCmd": "project install rkhunter",
+    "icon": "🕳️",
+    "homepage": "https://rkhunter.sourceforge.net/"
+  },
+  {
+    "name": "Fail2ban",
+    "category": "Security",
+    "description": "Bans IPs showing malicious signs like repeated failed logins.",
+    "installCmd": "project install fail2ban",
+    "icon": "🗝️",
+    "homepage": "https://www.fail2ban.org/"
+  },
+  {
+    "name": "Bettercap",
+    "category": "Security",
+    "description": "Swiss-army knife for network attacks and monitoring.",
+    "installCmd": "project install bettercap",
+    "icon": "🔐",
+    "homepage": "https://www.bettercap.org/"
+  },
+  {
+    "name": "Wpscan",
+    "category": "Security",
+    "description": "WordPress security scanner.",
+    "installCmd": "project install wpscan",
+    "icon": "🛡️",
+    "homepage": "https://wpscan.com/"
+  },
+  {
+    "name": "Nuclei",
+    "category": "Security",
+    "description": "Fast, template-based vulnerability scanner.",
+    "installCmd": "project install nuclei",
+    "icon": "🕳️",
+    "homepage": "https://github.com/projectdiscovery/nuclei"
+  },
+  {
+    "name": "Trivy",
+    "category": "Security",
+    "description": "Comprehensive scanner for containers and IaC vulnerabilities.",
+    "installCmd": "project install trivy",
+    "icon": "🗝️",
+    "homepage": "https://trivy.dev/"
+  },
+  {
+    "name": "Holehe",
+    "category": "OSINT",
+    "description": "Checks if an email is registered on various sites.",
+    "installCmd": "project install holehe",
+    "icon": "🕵️",
+    "homepage": "https://github.com/megadose/holehe"
+  },
+  {
+    "name": "Sherlock",
+    "category": "OSINT",
+    "description": "Hunts for social media accounts by username.",
+    "installCmd": "project install sherlock",
+    "icon": "🔎",
+    "homepage": "https://github.com/sherlock-project/sherlock"
+  },
+  {
+    "name": "Maigret",
+    "category": "OSINT",
+    "description": "Collects a dossier on a person by username across sites.",
+    "installCmd": "project install maigret",
+    "icon": "🌐",
+    "homepage": "https://github.com/soxoj/maigret"
+  },
+  {
+    "name": "Amass",
+    "category": "OSINT",
+    "description": "In-depth attack-surface mapping and asset discovery.",
+    "installCmd": "project install amass",
+    "icon": "🕵️",
+    "homepage": "https://github.com/owasp-amass/amass"
+  },
+  {
+    "name": "TheHarvester",
+    "category": "OSINT",
+    "description": "Gathers emails, subdomains, and names from public sources.",
+    "installCmd": "project install theharvester",
+    "icon": "🔎",
+    "homepage": "https://github.com/laramies/theHarvester"
+  },
+  {
+    "name": "Subfinder",
+    "category": "OSINT",
+    "description": "Fast passive subdomain discovery tool.",
+    "installCmd": "project install subfinder",
+    "icon": "🌐",
+    "homepage": "https://github.com/projectdiscovery/subfinder"
+  },
+  {
+    "name": "ExifTool",
+    "category": "OSINT",
+    "description": "Reads, writes, and edits file metadata.",
+    "installCmd": "project install exiftool",
+    "icon": "🕵️",
+    "homepage": "https://exiftool.org/"
+  },
+  {
+    "name": "Recon-ng",
+    "category": "OSINT",
+    "description": "Full-featured web reconnaissance framework.",
+    "installCmd": "project install recon-ng",
+    "icon": "🔎",
+    "homepage": "https://github.com/lanmaster53/recon-ng"
+  },
+  {
+    "name": "Spiderfoot",
+    "category": "OSINT",
+    "description": "Automates OSINT collection from dozens of data sources.",
+    "installCmd": "project install spiderfoot",
+    "icon": "🌐",
+    "homepage": "https://www.spiderfoot.net/"
+  },
+  {
+    "name": "Photon",
+    "category": "OSINT",
+    "description": "Fast crawler designed for OSINT.",
+    "installCmd": "project install photon",
+    "icon": "🕵️",
+    "homepage": "https://github.com/s0md3v/Photon"
+  },
+  {
+    "name": "Metagoofil",
+    "category": "OSINT",
+    "description": "Extracts metadata from public documents.",
+    "installCmd": "project install metagoofil",
+    "icon": "🔎",
+    "homepage": "https://github.com/opsdisk/metagoofil"
+  },
+  {
+    "name": "Shodan CLI",
+    "category": "OSINT",
+    "description": "Command-line client for the Shodan search engine.",
+    "installCmd": "project install shodan-cli",
+    "icon": "🌐",
+    "homepage": "https://cli.shodan.io/"
+  },
+  {
+    "name": "Censys CLI",
+    "category": "OSINT",
+    "description": "Command-line client for the Censys search engine.",
+    "installCmd": "project install censys-cli",
+    "icon": "🕵️",
+    "homepage": "https://github.com/censys/censys-python"
+  },
+  {
+    "name": "Waybackurls",
+    "category": "OSINT",
+    "description": "Fetches known URLs for a domain from the Wayback Machine.",
+    "installCmd": "project install waybackurls",
+    "icon": "🔎",
+    "homepage": "https://github.com/tomnomnom/waybackurls"
+  },
+  {
+    "name": "Whatweb",
+    "category": "OSINT",
+    "description": "Fingerprints websites to identify technologies in use.",
+    "installCmd": "project install whatweb",
+    "icon": "🌐",
+    "homepage": "https://github.com/urbanadventurer/WhatWeb"
+  },
+  {
+    "name": "Docker",
+    "category": "Cloud & Containers",
+    "description": "Platform for building, shipping, and running containers.",
+    "installCmd": "project install docker",
+    "icon": "☁️",
+    "homepage": "https://www.docker.com/"
+  },
+  {
+    "name": "Podman",
+    "category": "Cloud & Containers",
+    "description": "Daemonless container engine, a Docker alternative.",
+    "installCmd": "project install podman",
+    "icon": "🐳",
+    "homepage": "https://podman.io/"
+  },
+  {
+    "name": "Kubectl",
+    "category": "Cloud & Containers",
+    "description": "Command-line tool for controlling Kubernetes clusters.",
+    "installCmd": "project install kubectl",
+    "icon": "⛵",
+    "homepage": "https://kubernetes.io/docs/reference/kubectl/"
+  },
+  {
+    "name": "Helm",
+    "category": "Cloud & Containers",
+    "description": "The package manager for Kubernetes.",
+    "installCmd": "project install helm",
+    "icon": "🏗️",
+    "homepage": "https://helm.sh/"
+  },
+  {
+    "name": "K9s",
+    "category": "Cloud & Containers",
+    "description": "Terminal UI to interact with your Kubernetes clusters.",
+    "installCmd": "project install k9s",
+    "icon": "☁️",
+    "homepage": "https://k9scli.io/"
+  },
+  {
+    "name": "Terraform",
+    "category": "Cloud & Containers",
+    "description": "Infrastructure as code tool for provisioning cloud resources.",
+    "installCmd": "project install terraform",
+    "icon": "🐳",
+    "homepage": "https://www.terraform.io/"
+  },
+  {
+    "name": "Ansible",
+    "category": "Cloud & Containers",
+    "description": "Agentless automation for configuration management.",
+    "installCmd": "project install ansible",
+    "icon": "⛵",
+    "homepage": "https://www.ansible.com/"
+  },
+  {
+    "name": "AWS CLI",
+    "category": "Cloud & Containers",
+    "description": "Unified command-line interface for Amazon Web Services.",
+    "installCmd": "project install aws-cli",
+    "icon": "🏗️",
+    "homepage": "https://aws.amazon.com/cli/"
+  },
+  {
+    "name": "Azure CLI",
+    "category": "Cloud & Containers",
+    "description": "Command-line interface for Microsoft Azure.",
+    "installCmd": "project install azure-cli",
+    "icon": "☁️",
+    "homepage": "https://learn.microsoft.com/cli/azure/"
+  },
+  {
+    "name": "gcloud CLI",
+    "category": "Cloud & Containers",
+    "description": "Command-line tool for Google Cloud.",
+    "installCmd": "project install gcloud-cli",
+    "icon": "🐳",
+    "homepage": "https://cloud.google.com/sdk/gcloud"
+  },
+  {
+    "name": "Minikube",
+    "category": "Cloud & Containers",
+    "description": "Runs a local single-node Kubernetes cluster.",
+    "installCmd": "project install minikube",
+    "icon": "⛵",
+    "homepage": "https://minikube.sigs.k8s.io/"
+  },
+  {
+    "name": "Kind",
+    "category": "Cloud & Containers",
+    "description": "Runs local Kubernetes clusters using Docker containers as nodes.",
+    "installCmd": "project install kind",
+    "icon": "🏗️",
+    "homepage": "https://kind.sigs.k8s.io/"
+  },
+  {
+    "name": "Skaffold",
+    "category": "Cloud & Containers",
+    "description": "Facilitates continuous development for Kubernetes apps.",
+    "installCmd": "project install skaffold",
+    "icon": "☁️",
+    "homepage": "https://skaffold.dev/"
+  },
+  {
+    "name": "Docker Compose",
+    "category": "Cloud & Containers",
+    "description": "Defines and runs multi-container Docker applications.",
+    "installCmd": "project install docker-compose",
+    "icon": "🐳",
+    "homepage": "https://docs.docker.com/compose/"
+  },
+  {
+    "name": "Packer",
+    "category": "Cloud & Containers",
+    "description": "Builds identical machine images for multiple platforms.",
+    "installCmd": "project install packer",
+    "icon": "⛵",
+    "homepage": "https://www.packer.io/"
+  },
+  {
+    "name": "Pulumi",
+    "category": "Cloud & Containers",
+    "description": "Infrastructure as code using familiar programming languages.",
+    "installCmd": "project install pulumi",
+    "icon": "🏗️",
+    "homepage": "https://www.pulumi.com/"
+  },
+  {
+    "name": "Nerdctl",
+    "category": "Cloud & Containers",
+    "description": "Docker-compatible CLI for containerd.",
+    "installCmd": "project install nerdctl",
+    "icon": "☁️",
+    "homepage": "https://github.com/containerd/nerdctl"
+  },
+  {
+    "name": "Buildah",
+    "category": "Cloud & Containers",
+    "description": "Tool for building OCI container images.",
+    "installCmd": "project install buildah",
+    "icon": "🐳",
+    "homepage": "https://buildah.io/"
+  },
+  {
+    "name": "Flyctl",
+    "category": "Cloud & Containers",
+    "description": "Command-line tool for deploying apps on Fly.io.",
+    "installCmd": "project install flyctl",
+    "icon": "⛵",
+    "homepage": "https://fly.io/docs/flyctl/"
+  },
+  {
+    "name": "Doctl",
+    "category": "Cloud & Containers",
+    "description": "Official command-line tool for DigitalOcean.",
+    "installCmd": "project install doctl",
+    "icon": "🏗️",
+    "homepage": "https://docs.digitalocean.com/reference/doctl/"
+  },
+  {
+    "name": "PostgreSQL",
+    "category": "Database",
+    "description": "Advanced open-source relational database.",
+    "installCmd": "project install postgresql",
+    "icon": "🗄️",
+    "homepage": "https://www.postgresql.org/"
+  },
+  {
+    "name": "MySQL",
+    "category": "Database",
+    "description": "Popular open-source relational database.",
+    "installCmd": "project install mysql",
+    "icon": "💾",
+    "homepage": "https://www.mysql.com/"
+  },
+  {
+    "name": "SQLite",
+    "category": "Database",
+    "description": "Self-contained, serverless SQL database engine.",
+    "installCmd": "project install sqlite",
+    "icon": "📊",
+    "homepage": "https://www.sqlite.org/"
+  },
+  {
+    "name": "Redis",
+    "category": "Database",
+    "description": "In-memory data structure store used as a database and cache.",
+    "installCmd": "project install redis",
+    "icon": "🗄️",
+    "homepage": "https://redis.io/"
+  },
+  {
+    "name": "DuckDB",
+    "category": "Database",
+    "description": "In-process analytical SQL database.",
+    "installCmd": "project install duckdb",
+    "icon": "💾",
+    "homepage": "https://duckdb.org/"
+  },
+  {
+    "name": "Pgcli",
+    "category": "Database",
+    "description": "Postgres CLI with auto-completion and syntax highlighting.",
+    "installCmd": "project install pgcli",
+    "icon": "📊",
+    "homepage": "https://www.pgcli.com/"
+  },
+  {
+    "name": "Mycli",
+    "category": "Database",
+    "description": "MySQL CLI with auto-completion and syntax highlighting.",
+    "installCmd": "project install mycli",
+    "icon": "🗄️",
+    "homepage": "https://www.mycli.net/"
+  },
+  {
+    "name": "MongoDB Shell",
+    "category": "Database",
+    "description": "Interactive JavaScript shell for MongoDB.",
+    "installCmd": "project install mongodb-shell",
+    "icon": "💾",
+    "homepage": "https://www.mongodb.com/docs/mongodb-shell/"
+  },
+  {
+    "name": "Litecli",
+    "category": "Database",
+    "description": "SQLite CLI with auto-completion and syntax highlighting.",
+    "installCmd": "project install litecli",
+    "icon": "📊",
+    "homepage": "https://litecli.com/"
+  },
+  {
+    "name": "Redis-cli",
+    "category": "Database",
+    "description": "Command-line interface for talking to Redis.",
+    "installCmd": "project install redis-cli",
+    "icon": "🗄️",
+    "homepage": "https://redis.io/docs/latest/develop/tools/cli/"
+  },
+  {
+    "name": "Usql",
+    "category": "Database",
+    "description": "Universal command-line client for SQL databases.",
+    "installCmd": "project install usql",
+    "icon": "💾",
+    "homepage": "https://github.com/xo/usql"
+  },
+  {
+    "name": "Dbeaver-cli",
+    "category": "Database",
+    "description": "Command-line utilities for the DBeaver database tool.",
+    "installCmd": "project install dbeaver-cli",
+    "icon": "📊",
+    "homepage": "https://dbeaver.io/"
+  },
+  {
+    "name": "Sqlite-utils",
+    "category": "Database",
+    "description": "CLI for manipulating SQLite databases.",
+    "installCmd": "project install sqlite-utils",
+    "icon": "🗄️",
+    "homepage": "https://sqlite-utils.datasette.io/"
+  },
+  {
+    "name": "Pgloader",
+    "category": "Database",
+    "description": "Loads data into PostgreSQL from various sources.",
+    "installCmd": "project install pgloader",
+    "icon": "💾",
+    "homepage": "https://pgloader.io/"
+  },
+  {
+    "name": "Cassandra CQL Shell",
+    "category": "Database",
+    "description": "Interactive shell for Apache Cassandra's query language.",
+    "installCmd": "project install cassandra-cql-shell",
+    "icon": "📊",
+    "homepage": "https://cassandra.apache.org/"
+  },
+  {
+    "name": "HTTPie",
+    "category": "Web & Network",
+    "description": "User-friendly command-line HTTP client.",
+    "installCmd": "project install httpie",
+    "icon": "🌐",
+    "homepage": "https://httpie.io/"
+  },
+  {
+    "name": "Aria2",
+    "category": "Web & Network",
+    "description": "Lightweight multi-protocol, multi-source download utility.",
+    "installCmd": "project install aria2",
+    "icon": "📡",
+    "homepage": "https://aria2.github.io/"
+  },
+  {
+    "name": "Mosh",
+    "category": "Web & Network",
+    "description": "Mobile shell that survives roaming and disconnection.",
+    "installCmd": "project install mosh",
+    "icon": "🔌",
+    "homepage": "https://mosh.org/"
+  },
+  {
+    "name": "Socat",
+    "category": "Web & Network",
+    "description": "Multipurpose relay for bidirectional data transfer.",
+    "installCmd": "project install socat",
+    "icon": "🛰️",
+    "homepage": "http://www.dest-unreach.org/socat/"
+  },
+  {
+    "name": "Lynx",
+    "category": "Web & Network",
+    "description": "Text-based web browser for the terminal.",
+    "installCmd": "project install lynx",
+    "icon": "🌐",
+    "homepage": "https://lynx.invisible-island.net/"
+  },
+  {
+    "name": "Tcpdump",
+    "category": "Web & Network",
+    "description": "Command-line packet analyzer.",
+    "installCmd": "project install tcpdump",
+    "icon": "📡",
+    "homepage": "https://www.tcpdump.org/"
+  },
+  {
+    "name": "WeeChat",
+    "category": "Web & Network",
+    "description": "Extensible, lightweight IRC client.",
+    "installCmd": "project install weechat",
+    "icon": "🔌",
+    "homepage": "https://weechat.org/"
+  },
+  {
+    "name": "Curlie",
+    "category": "Web & Network",
+    "description": "Curl with the ease of use of HTTPie.",
+    "installCmd": "project install curlie",
+    "icon": "🛰️",
+    "homepage": "https://github.com/rs/curlie"
+  },
+  {
+    "name": "Nload",
+    "category": "Web & Network",
+    "description": "Real-time console network traffic monitor.",
+    "installCmd": "project install nload",
+    "icon": "🌐",
+    "homepage": "https://github.com/rolandriegel/nload"
+  },
+  {
+    "name": "Iftop",
+    "category": "Web & Network",
+    "description": "Displays bandwidth usage on a network interface.",
+    "installCmd": "project install iftop",
+    "icon": "📡",
+    "homepage": "http://www.ex-parrot.com/pdw/iftop/"
+  },
+  {
+    "name": "Bmon",
+    "category": "Web & Network",
+    "description": "Bandwidth monitor and rate estimator.",
+    "installCmd": "project install bmon",
+    "icon": "🔌",
+    "homepage": "https://github.com/tgraf/bmon"
+  },
+  {
+    "name": "Speedtest CLI",
+    "category": "Web & Network",
+    "description": "Tests internet bandwidth from the command line.",
+    "installCmd": "project install speedtest-cli",
+    "icon": "🛰️",
+    "homepage": "https://www.speedtest.net/apps/cli"
+  },
+  {
+    "name": "Ngrok",
+    "category": "Web & Network",
+    "description": "Exposes local servers to the internet through secure tunnels.",
+    "installCmd": "project install ngrok",
+    "icon": "🌐",
+    "homepage": "https://ngrok.com/"
+  },
+  {
+    "name": "Netcat",
+    "category": "Web & Network",
+    "description": "Utility for reading and writing across network connections.",
+    "installCmd": "project install netcat",
+    "icon": "📡",
+    "homepage": "http://nc110.sourceforge.net/"
+  },
+  {
+    "name": "Mtr",
+    "category": "Web & Network",
+    "description": "Combines ping and traceroute into one diagnostic tool.",
+    "installCmd": "project install mtr",
+    "icon": "🔌",
+    "homepage": "https://github.com/traviscross/mtr"
+  },
+  {
+    "name": "Dog",
+    "category": "Web & Network",
+    "description": "Command-line DNS client, a modern alternative to dig.",
+    "installCmd": "project install dog",
+    "icon": "🛰️",
+    "homepage": "https://dns.lookup.dog/"
+  },
+  {
+    "name": "Whois",
+    "category": "Web & Network",
+    "description": "Queries registry information for domains and IPs.",
+    "installCmd": "project install whois",
+    "icon": "🌐",
+    "homepage": "https://github.com/rfc1036/whois"
+  },
+  {
+    "name": "Croc",
+    "category": "Web & Network",
+    "description": "Securely and simply transfers files between computers.",
+    "installCmd": "project install croc",
+    "icon": "📡",
+    "homepage": "https://github.com/schollz/croc"
+  },
+  {
+    "name": "Rclone",
+    "category": "Web & Network",
+    "description": "Command-line program to sync files with cloud storage.",
+    "installCmd": "project install rclone",
+    "icon": "🔌",
+    "homepage": "https://rclone.org/"
+  },
+  {
+    "name": "Wormhole",
+    "category": "Web & Network",
+    "description": "Securely transfers files and folders between computers.",
+    "installCmd": "project install wormhole",
+    "icon": "🛰️",
+    "homepage": "https://github.com/magic-wormhole/magic-wormhole"
+  },
+  {
+    "name": "Termshark",
+    "category": "Web & Network",
+    "description": "Terminal UI for tshark, inspired by Wireshark.",
+    "installCmd": "project install termshark",
+    "icon": "🌐",
+    "homepage": "https://termshark.io/"
+  },
+  {
+    "name": "Websocat",
+    "category": "Web & Network",
+    "description": "Command-line client for WebSockets, like netcat.",
+    "installCmd": "project install websocat",
+    "icon": "📡",
+    "homepage": "https://github.com/vi/websocat"
+  },
+  {
+    "name": "Xh",
+    "category": "Web & Network",
+    "description": "Friendly, fast HTTP client, a Rust take on HTTPie.",
+    "installCmd": "project install xh",
+    "icon": "🔌",
+    "homepage": "https://github.com/ducaale/xh"
+  },
+  {
+    "name": "Iperf3",
+    "category": "Web & Network",
+    "description": "Measures maximum achievable network bandwidth.",
+    "installCmd": "project install iperf3",
+    "icon": "🛰️",
+    "homepage": "https://iperf.fr/"
+  },
+  {
+    "name": "Nethogs",
+    "category": "Web & Network",
+    "description": "Groups bandwidth usage by process, not just by protocol.",
+    "installCmd": "project install nethogs",
+    "icon": "🌐",
+    "homepage": "https://github.com/raboof/nethogs"
+  },
+  {
+    "name": "Vnstat",
+    "category": "Web & Network",
+    "description": "Console-based network traffic monitor that keeps a log.",
+    "installCmd": "project install vnstat",
+    "icon": "📡",
+    "homepage": "https://humdi.net/vnstat/"
+  },
+  {
+    "name": "Dnsutils",
+    "category": "Web & Network",
+    "description": "DNS lookup utilities including dig and nslookup.",
+    "installCmd": "project install dnsutils",
+    "icon": "🔌",
+    "homepage": "https://www.isc.org/bind/"
+  },
+  {
+    "name": "Sshuttle",
+    "category": "Web & Network",
+    "description": "Transparent proxy VPN over SSH.",
+    "installCmd": "project install sshuttle",
+    "icon": "🛰️",
+    "homepage": "https://github.com/sshuttle/sshuttle"
+  },
+  {
+    "name": "Autossh",
+    "category": "Web & Network",
+    "description": "Automatically restarts SSH sessions after they drop.",
+    "installCmd": "project install autossh",
+    "icon": "🌐",
+    "homepage": "https://www.harding.motd.ca/autossh/"
+  },
+  {
+    "name": "Localtunnel",
+    "category": "Web & Network",
+    "description": "Exposes localhost to the world for easy testing.",
+    "installCmd": "project install localtunnel",
+    "icon": "📡",
+    "homepage": "https://github.com/localtunnel/localtunnel"
+  },
+  {
+    "name": "Jq",
+    "category": "Data & Docs",
+    "description": "Lightweight command-line JSON processor.",
+    "installCmd": "project install jq",
+    "icon": "📊",
+    "homepage": "https://jqlang.github.io/jq/"
+  },
+  {
+    "name": "Yq",
+    "category": "Data & Docs",
+    "description": "Portable command-line YAML, JSON, and XML processor.",
+    "installCmd": "project install yq",
+    "icon": "📄",
+    "homepage": "https://github.com/mikefarah/yq"
+  },
+  {
+    "name": "Pandoc",
+    "category": "Data & Docs",
+    "description": "Universal document converter between markup formats.",
+    "installCmd": "project install pandoc",
+    "icon": "📚",
+    "homepage": "https://pandoc.org/"
+  },
+  {
+    "name": "Hugo",
+    "category": "Data & Docs",
+    "description": "Fast static site generator.",
+    "installCmd": "project install hugo",
+    "icon": "🧾",
+    "homepage": "https://gohugo.io/"
+  },
+  {
+    "name": "MkDocs",
+    "category": "Data & Docs",
+    "description": "Static site generator geared towards project documentation.",
+    "installCmd": "project install mkdocs",
+    "icon": "📊",
+    "homepage": "https://www.mkdocs.org/"
+  },
+  {
+    "name": "Glow",
+    "category": "Data & Docs",
+    "description": "Renders Markdown on the CLI with style.",
+    "installCmd": "project install glow",
+    "icon": "📄",
+    "homepage": "https://github.com/charmbracelet/glow"
+  },
+  {
+    "name": "VisiData",
+    "category": "Data & Docs",
+    "description": "Interactive terminal tool for exploring tabular data.",
+    "installCmd": "project install visidata",
+    "icon": "📚",
+    "homepage": "https://www.visidata.org/"
+  },
+  {
+    "name": "Csvkit",
+    "category": "Data & Docs",
+    "description": "Suite of command-line tools for working with CSV.",
+    "installCmd": "project install csvkit",
+    "icon": "🧾",
+    "homepage": "https://csvkit.readthedocs.io/"
+  },
+  {
+    "name": "Miller",
+    "category": "Data & Docs",
+    "description": "Like awk, sed, cut, join for CSV, TSV, and JSON.",
+    "installCmd": "project install miller",
+    "icon": "📊",
+    "homepage": "https://miller.readthedocs.io/"
+  },
+  {
+    "name": "Xsv",
+    "category": "Data & Docs",
+    "description": "Fast CSV command-line toolkit.",
+    "installCmd": "project install xsv",
+    "icon": "📄",
+    "homepage": "https://github.com/BurntSushi/xsv"
+  },
+  {
+    "name": "Asciinema",
+    "category": "Data & Docs",
+    "description": "Records and shares terminal sessions.",
+    "installCmd": "project install asciinema",
+    "icon": "📚",
+    "homepage": "https://asciinema.org/"
+  },
+  {
+    "name": "Marp CLI",
+    "category": "Data & Docs",
+    "description": "Converts Markdown slide decks into HTML, PDF, or images.",
+    "installCmd": "project install marp-cli",
+    "icon": "🧾",
+    "homepage": "https://github.com/marp-team/marp-cli"
+  },
+  {
+    "name": "Datasette",
+    "category": "Data & Docs",
+    "description": "Publishes and explores tabular data as a web/CLI tool.",
+    "installCmd": "project install datasette",
+    "icon": "📊",
+    "homepage": "https://datasette.io/"
+  },
+  {
+    "name": "Frogmouth",
+    "category": "Data & Docs",
+    "description": "Terminal-based Markdown viewer.",
+    "installCmd": "project install frogmouth",
+    "icon": "📄",
+    "homepage": "https://github.com/Textualize/frogmouth"
+  },
+  {
+    "name": "Gron",
+    "category": "Data & Docs",
+    "description": "Makes JSON greppable by flattening it into discrete assignments.",
+    "installCmd": "project install gron",
+    "icon": "📚",
+    "homepage": "https://github.com/tomnomnom/gron"
+  },
+  {
+    "name": "Ollama",
+    "category": "AI",
+    "description": "Runs large language models locally.",
+    "installCmd": "project install ollama",
+    "icon": "🤖",
+    "homepage": "https://ollama.com/"
+  },
+  {
+    "name": "Mods",
+    "category": "AI",
+    "description": "AI on the command line, built for pipelines.",
+    "installCmd": "project install mods",
+    "icon": "🧠",
+    "homepage": "https://github.com/charmbracelet/mods"
+  },
+  {
+    "name": "AIChat",
+    "category": "AI",
+    "description": "All-in-one LLM CLI tool with chat and shell assistant modes.",
+    "installCmd": "project install aichat",
+    "icon": "🤖",
+    "homepage": "https://github.com/sigoden/aichat"
+  },
+  {
+    "name": "Tgpt",
+    "category": "AI",
+    "description": "Access AI chatbots in the terminal without an API key.",
+    "installCmd": "project install tgpt",
+    "icon": "🧠",
+    "homepage": "https://github.com/aandrew-me/tgpt"
+  },
+  {
+    "name": "Fabric",
+    "category": "AI",
+    "description": "Framework for augmenting humans using AI prompt patterns.",
+    "installCmd": "project install fabric",
+    "icon": "🤖",
+    "homepage": "https://github.com/danielmiessler/fabric"
+  }
+]
