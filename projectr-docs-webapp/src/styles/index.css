@@ -537,7 +537,21 @@ html.light .scanline-overlay {
   color: var(--text-dim);
   border-top: 1px dashed var(--border);
 }
-
+.hero-demo-wrapper {
+  width: 100%;
+}
+.stats-wrapper {
+  padding: 0 1.5rem;
+  max-width: 1180px;
+  margin: -20px auto 0;
+  position: relative;
+  z-index: 3;
+}
+@media (min-width: 640px) {
+  .stats-wrapper {
+    padding: 0 3rem;
+  }
+}
 /* ═══════════════════════════════════════════════════════════════
    STATS RIBBON
 ═══════════════════════════════════════════════════════════════ */
@@ -946,7 +960,31 @@ html.light .tool-tag {
   font-size: 0.85rem;
   font-weight: 300;
 }
-
+.step-code-wrapper .code-block,
+.step-code-wrapper pre {
+  box-shadow: none !important;
+}
+.step-body {
+  margin-bottom: 12px;
+}
+.disclaimer {
+  color: var(--text-dim);
+  font-size: 0.85rem;
+  margin-top: 8px;
+}
+.disclaimer code {
+  color: var(--green);
+}
+.flags-heading {
+  color: var(--text-bright);
+  font-size: 1rem;
+  margin-bottom: 12px;
+}
+.flags-linkout {
+  color: var(--text-dim);
+  font-size: 0.82rem;
+  margin-top: 16px;
+}
 /* ═══════════════════════════════════════════════════════════════
    ARCHITECTURE TREE
 ═══════════════════════════════════════════════════════════════ */

@@ -55,70 +55,70 @@ export default function ReferencePage() {
           description="Every interactive-menu action has a non-interactive flag equivalent, for scripts and CI pipelines."
         />
         <div className="table-scroll">
-        <table className="flags-table">
-          <thead>
-            <tr>
-              <th>Flag</th>
-              <th>Description</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td><code>--install=&lt;tool&gt;</code></td>
-              <td>Install one or more comma-separated tools by name.</td>
-            </tr>
-            <tr>
-              <td><code>--uninstall=&lt;tool&gt;</code></td>
-              <td>Remove a previously installed tool.</td>
-            </tr>
-            <tr>
-              <td><code>--search=&lt;term&gt;</code></td>
-              <td>Fuzzy-search the registry and detected package managers.</td>
-            </tr>
-            <tr>
-              <td><code>--list</code></td>
-              <td>Print the full tool registry to stdout.</td>
-            </tr>
-            <tr>
-              <td><code>--preset=&lt;name&gt;</code></td>
-              <td>Install a curated group: <code>minimal</code>, <code>developer</code>, or <code>fun</code>.</td>
-            </tr>
-            <tr>
-              <td><code>--dry-run</code></td>
-              <td>Simulate an install/uninstall and print what would happen, without changing anything.</td>
-            </tr>
-            <tr>
-              <td><code>--undo</code></td>
-              <td>Roll back the most recent install session.</td>
-            </tr>
-            <tr>
-              <td><code>--export=&lt;file&gt;</code></td>
-              <td>Write the currently installed tool set to a profile file.</td>
-            </tr>
-            <tr>
-              <td><code>--import=&lt;file&gt;</code></td>
-              <td>Install every tool listed in a profile file.</td>
-            </tr>
-            <tr>
-              <td><code>--audit</code></td>
-              <td>Validate the tool registry and report any malformed or duplicate entries.</td>
-            </tr>
-            <tr>
-              <td><code>doctor</code></td>
-              <td>Check that every installed tool is present and resolvable on PATH.</td>
-            </tr>
-            <tr>
-              <td><code>--plugin-dir=&lt;path&gt;</code></td>
-              <td>Load additional tool definitions from a custom plugin directory.</td>
-            </tr>
-          </tbody>
-        </table>
+          <table className="flags-table">
+            <thead>
+              <tr>
+                <th>Flag</th>
+                <th>Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>--install=&lt;tool&gt;</code></td>
+                <td>Install one or more comma-separated tools by name.</td>
+              </tr>
+              <tr>
+                <td><code>--uninstall=&lt;tool&gt;</code></td>
+                <td>Remove a previously installed tool.</td>
+              </tr>
+              <tr>
+                <td><code>--search=&lt;term&gt;</code></td>
+                <td>Fuzzy-search the registry and detected package managers.</td>
+              </tr>
+              <tr>
+                <td><code>--list</code></td>
+                <td>Print the full tool registry to stdout.</td>
+              </tr>
+              <tr>
+                <td><code>--preset=&lt;name&gt;</code></td>
+                <td>Install a curated group: <code>minimal</code>, <code>developer</code>, or <code>fun</code>.</td>
+              </tr>
+              <tr>
+                <td><code>--dry-run</code></td>
+                <td>Simulate an install/uninstall and print what would happen, without changing anything.</td>
+              </tr>
+              <tr>
+                <td><code>--undo</code></td>
+                <td>Roll back the most recent install session.</td>
+              </tr>
+              <tr>
+                <td><code>--export=&lt;file&gt;</code></td>
+                <td>Write the currently installed tool set to a profile file.</td>
+              </tr>
+              <tr>
+                <td><code>--import=&lt;file&gt;</code></td>
+                <td>Install every tool listed in a profile file.</td>
+              </tr>
+              <tr>
+                <td><code>--audit</code></td>
+                <td>Validate the tool registry and report any malformed or duplicate entries.</td>
+              </tr>
+              <tr>
+                <td><code>doctor</code></td>
+                <td>Check that every installed tool is present and resolvable on PATH.</td>
+              </tr>
+              <tr>
+                <td><code>--plugin-dir=&lt;path&gt;</code></td>
+                <td>Load additional tool definitions from a custom plugin directory.</td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </section>
 
       <div className="divider" />
 
-      <section className="section" id="presets">
+      <section className="step-code-wrapper section" id="presets">
         <SectionHeader
           badge="One Click"
           badgeColor="violet"
@@ -137,7 +137,7 @@ export default function ReferencePage() {
 
       <div className="divider" />
 
-      <section className="section section-alt" id="profiles">
+      <section className="step-code-wrapper section section-alt" id="profiles">
         <SectionHeader
           badge="Portable Setups"
           badgeColor="pink"
@@ -158,7 +158,7 @@ export default function ReferencePage() {
 
       <div className="divider" />
 
-      <section className="section" id="plugins">
+      <section className="step-code-wrapper section" id="plugins">
         <SectionHeader
           badge="Extensible"
           title="🧩 Plugins"
